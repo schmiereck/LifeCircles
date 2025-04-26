@@ -94,23 +94,32 @@ public class StatisticsManager {
     }
 
     /**
-     * Perform clustering of allTypes into clusters of 10% most similar.
+     * Perform clustering of allTypes into clusters of 10% most similar (disjoint).
      */
     private void clusterTypes() {
         clusters.clear();
-        List<CellType> types = new ArrayList<>(allTypes);
-        int clusterSize = Math.max(1, (int)(types.size() * 0.1));
-        for (CellType center : types) {
-            // sort other types by similarity
-            List<CellType> cluster = types.stream()
-                .sorted((a,b) -> Double.compare(center.similarity(b), center.similarity(a)))
+        // Disjunkte Cluster in Gruppen von 10% der Typen
+        List<CellType> remaining = new ArrayList<>(allTypes);
+        if (remaining.isEmpty()) return;
+        int clusterSize = Math.max(1, (int)(remaining.size() * 0.1));
+        List<List<CellType>> newClusters = new ArrayList<>();
+        while (!remaining.isEmpty()) {
+            CellType center = remaining.get(0);
+            List<CellType> cluster = remaining.stream()
+                .sorted((a, b) -> Double.compare(center.similarity(b), center.similarity(a)))
                 .limit(clusterSize)
                 .collect(Collectors.toList());
-            clusters.add(cluster);
+            newClusters.add(cluster);
+            remaining.removeAll(cluster);
         }
-        // Initialize histories if needed
+        // Übernehme neue Cluster
+        clusters.addAll(newClusters);
+        // Stimmen Anzahl der History-Listen auf Clusterzahl ab
         while (clusterHistories.size() < clusters.size()) {
             clusterHistories.add(new ArrayList<>());
+        }
+        while (clusterHistories.size() > clusters.size()) {
+            clusterHistories.remove(clusterHistories.size() - 1);
         }
     }
 
@@ -124,8 +133,10 @@ public class StatisticsManager {
     // Getters for cluster histories
     public List<List<Integer>> getClusterHistories() {
         List<List<Integer>> histories = new ArrayList<>();
-        for (List<Integer> history : clusterHistories) {
-            histories.add(new ArrayList<>(history));
+        for (int i = 0; i < clusters.size(); i++) {
+            if (!clusters.get(i).isEmpty()) {
+                histories.add(new ArrayList<>(clusterHistories.get(i)));
+            }
         }
         return histories;
     }

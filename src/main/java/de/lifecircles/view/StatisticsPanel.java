@@ -19,6 +19,7 @@ public class StatisticsPanel extends VBox {
     private final StatisticsManager statistics;
     private final Label totalLabel = new Label();
     private final Label performanceLabel = new Label();
+    private final Label clustersLabel = new Label();
     private final Canvas populationGraph;
 
     public StatisticsPanel() {
@@ -40,10 +41,12 @@ public class StatisticsPanel extends VBox {
         
         totalLabel.setStyle("-fx-text-fill: black;");
         performanceLabel.setStyle("-fx-text-fill: black;");
+        clustersLabel.setStyle("-fx-text-fill: black;");
         
         countsBox.getChildren().addAll(
             totalLabel,
-            performanceLabel
+            performanceLabel,
+            clustersLabel
         );
 
         TitledPane countsPane = new TitledPane("Population", countsBox);
@@ -72,6 +75,7 @@ public class StatisticsPanel extends VBox {
     private void updateLabels() {
         totalLabel.setText(String.format("Total: %d", statistics.getTotalPopulation()));
         performanceLabel.setText(String.format("Update Time: %.1f ms", statistics.getAverageUpdateTime()));
+        clustersLabel.setText(String.format("Clusters: %d", statistics.getClusterHistories().size()));
     }
 
     private void updateGraph() {
@@ -99,16 +103,25 @@ public class StatisticsPanel extends VBox {
             gc.strokeLine(0, y, populationGraph.getWidth(), y);
         }
 
-        // Draw population lines
-        drawHistoryLine(gc, totalHistory, maxValue, Color.WHITE);
-        // Draw curves for each cluster (10% most similar types)
+        // Draw stacked cluster lines
         var clusterHistories = statistics.getClusterHistories();
         int clusterCount = clusterHistories.size();
+        int historySize = totalHistory.size();
+        int[] cumulative = new int[historySize];
         for (int i = 0; i < clusterCount; i++) {
             var history = clusterHistories.get(i);
+            java.util.List<Integer> stackedHistory = new java.util.ArrayList<>(historySize);
+            for (int j = 0; j < historySize; j++) {
+                int val = (j < history.size() && history.get(j) != null) ? history.get(j) : 0;
+                cumulative[j] += val;
+                stackedHistory.add(cumulative[j]);
+            }
+            // Draw cluster curve
             Color c = Color.hsb(360.0 * i / clusterCount, 0.7, 1.0);
-            drawHistoryLine(gc, history, maxValue, c);
+            drawHistoryLine(gc, stackedHistory, maxValue, c);
         }
+        // Draw total population line on top
+        drawHistoryLine(gc, totalHistory, maxValue, Color.WHITE);
     }
 
     private void drawHistoryLine(GraphicsContext gc, java.util.List<Integer> history, int maxValue, Color color) {

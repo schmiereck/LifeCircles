@@ -107,6 +107,7 @@ public class Environment {
         //PartitioningStrategy partitioner = new QuadTreePartitioningStrategy(width, height);
         // For spatial grid strategy, uncomment below:
         PartitioningStrategy partitioner = PartitioningStrategyFactory.createStrategy(width, height, Cell.getMaxSize());
+        partitioner.build(cells);
         // Process sensor/actor interactions
         ActorSensorCellCalcService.processInteractions(cells, deltaTime, partitioner);
         // Process repulsive forces
@@ -130,15 +131,15 @@ public class Environment {
             BlockerCellCalcService.handleBlockerCollisions(cell, blockers, deltaTime);
 
             // Get nearby cell types for the neural network via partitioner
-            List<Cell> neighborCells = partitioner.getNeighbors(cell);
-            List<CellType> nearbyTypes = neighborCells.stream()
-                .filter(other -> other != cell)
-                .filter(other -> cell.getPosition().distance(other.getPosition()) <= config.getCellInteractionRadius())
-                .map(Cell::getType)
-                .toList();
+            //List<Cell> neighborCells = partitioner.getNeighbors(cell);
+            //List<CellType> nearbyTypes = neighborCells.stream()
+            //    .filter(other -> other != cell)
+            //    .filter(other -> cell.getPosition().distance(other.getPosition()) <= config.getCellInteractionRadius())
+            //    .map(Cell::getType)
+            //    .toList();
 
             // Update position, rotation, and neural network
-            cell.updateWithNeighbors(deltaTime, nearbyTypes);
+            //cell.updateWithNeighbors(deltaTime, nearbyTypes);
 
             // Wrap position around environment boundaries
             wrapPosition(cell);

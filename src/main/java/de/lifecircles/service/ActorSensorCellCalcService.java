@@ -34,7 +34,6 @@ public class ActorSensorCellCalcService {
      * Optimized processing of sensor/actor interactions using a partitioning strategy.
      */
     public static void processInteractions(List<Cell> cells, double deltaTime, PartitioningStrategy partitioner) {
-        partitioner.build(cells);
         for (int i = 0; i < cells.size(); i++) {
             Cell cell1 = cells.get(i);
             for (Cell cell2 : partitioner.getNeighbors(cell1)) {

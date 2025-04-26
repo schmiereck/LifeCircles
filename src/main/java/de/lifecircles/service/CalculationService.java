@@ -98,6 +98,7 @@ public class CalculationService implements Runnable {
             environment.getWidth(), environment.getHeight(), interactionRadius
         );
         partitioner.build(cells);
+        
         // Parallel execution of neural networks and cell updates
         cells.parallelStream().forEach(cell -> {
             List<CellType> neighborTypes = new ArrayList<>();
