@@ -1,5 +1,7 @@
 package de.lifecircles.view;
 
+import java.util.Objects;
+
 import de.lifecircles.service.StatisticsManager;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Insets;
@@ -129,12 +131,15 @@ public class StatisticsPanel extends VBox {
 
         gc.beginPath();
         for (int i = 0; i < history.size(); i++) {
-            double x = i * xStep;
-            double y = height * (1 - (double)history.get(i) / maxValue);
-            if (i == 0) {
-                gc.moveTo(x, y);
-            } else {
-                gc.lineTo(x, y);
+            Integer value = history.get(i);
+            if (Objects.nonNull(value)) {
+                double x = i * xStep;
+                double y = height * (1 - (double) value / maxValue);
+                if (i == 0) {
+                    gc.moveTo(x, y);
+                } else {
+                    gc.lineTo(x, y);
+                }
             }
         }
         gc.stroke();
