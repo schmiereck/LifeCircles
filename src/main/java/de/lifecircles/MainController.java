@@ -1,0 +1,157 @@
+package de.lifecircles;
+
+import de.lifecircles.service.CalculationService;
+import de.lifecircles.service.SimulationConfig;
+import de.lifecircles.view.ConfigPanel;
+import de.lifecircles.view.SimulationView;
+import de.lifecircles.view.StatisticsPanel;
+import de.lifecircles.view.ViewConfig;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+
+/**
+ * Main controller for the application.
+ * Manages the simulation lifecycle and UI components.
+ */
+public class MainController extends BorderPane {
+    private final CalculationService calculationService;
+    private final SimulationView simulationView;
+    private final SimulationConfig simulationConfig;
+    private final ViewConfig viewConfig;
+
+    public MainController() {
+        this.simulationConfig = SimulationConfig.getInstance();
+        this.viewConfig = ViewConfig.getInstance();
+        this.calculationService = new CalculationService();
+        this.simulationView = new SimulationView(calculationService);
+
+        // Create right side panels
+        VBox rightPanels = new VBox(10);
+        rightPanels.setPrefWidth(250);
+
+        // Add config panel
+        ConfigPanel configPanel = new ConfigPanel();
+        
+        // Add statistics panel
+        StatisticsPanel statisticsPanel = new StatisticsPanel();
+
+        rightPanels.getChildren().addAll(configPanel, statisticsPanel);
+        setRight(rightPanels);
+
+        setupUI();
+    }
+
+    private void setupUI() {
+        // Create toolbar with controls
+        ToolBar toolbar = createToolbar();
+        setTop(toolbar);
+
+        // Add simulation view in center
+        setCenter(simulationView);
+        simulationView.setStyle("-fx-background-color: black;");
+
+        // Add status bar at bottom
+        HBox statusBar = createStatusBar();
+        setBottom(statusBar);
+    }
+
+    private ToolBar createToolbar() {
+        Button startButton = new Button("Start");
+        Button pauseButton = new Button("Pause");
+        Button resetButton = new Button("Reset");
+        
+        startButton.setOnAction(e -> {
+            calculationService.start();
+            startButton.setDisable(true);
+            pauseButton.setDisable(false);
+        });
+
+        pauseButton.setOnAction(e -> {
+            calculationService.pause();
+            startButton.setDisable(false);
+            pauseButton.setDisable(true);
+        });
+        pauseButton.setDisable(true);
+
+        resetButton.setOnAction(e -> {
+            calculationService.stop();
+            calculationService.start();
+        });
+
+        // Simulation speed control
+        Label speedLabel = new Label("Speed:");
+        Slider speedSlider = new Slider(0.1, 2.0, 1.0);
+        speedSlider.setBlockIncrement(0.1);
+        speedSlider.valueProperty().addListener((obs, old, newValue) -> {
+            simulationConfig.setTimeStep(0.016666 * newValue.doubleValue());
+        });
+
+        // View controls
+        Button toggleGridButton = new Button("Grid");
+        toggleGridButton.setOnAction(e -> 
+            viewConfig.setShowGrid(!viewConfig.isShowGrid()));
+
+        Button toggleForceButton = new Button("Forces");
+        toggleForceButton.setOnAction(e -> 
+            viewConfig.setShowForceFields(!viewConfig.isShowForceFields()));
+
+        Button toggleDebugButton = new Button("Debug");
+        toggleDebugButton.setOnAction(e -> 
+            viewConfig.setShowDebugInfo(!viewConfig.isShowDebugInfo()));
+
+        return new ToolBar(
+            startButton, pauseButton, resetButton,
+            new Label(" | "),
+            speedLabel, speedSlider,
+            new Label(" | "),
+            toggleGridButton, toggleForceButton, toggleDebugButton
+        );
+    }
+
+    private HBox createStatusBar() {
+        Label cellCountLabel = new Label("Cells: 0");
+        Label calcFpsLabel = new Label("Calc FPS: 0.0");
+        Label renderFpsLabel = new Label("Render FPS: 0.0");
+
+        // Update status every 500ms
+        Thread statusUpdater = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(500);
+                    var state = calculationService.getLatestState();
+                    double calcFps = calculationService.getFps();
+                    double renderFps = simulationView.getFps();
+                    javafx.application.Platform.runLater(() -> {
+                        if (state != null) {
+                            cellCountLabel.setText(String.format("Cells: %d", state.getCells().size()));
+                        }
+                        calcFpsLabel.setText(String.format("Calc FPS: %.1f", calcFps));
+                        renderFpsLabel.setText(String.format("Render FPS: %.1f", renderFps));
+                    });
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        });
+        statusUpdater.setDaemon(true);
+        statusUpdater.start();
+
+        HBox statusBar = new HBox(10, cellCountLabel, calcFpsLabel, renderFpsLabel);
+        statusBar.setStyle("-fx-padding: 5; -fx-background-color: #333333; -fx-text-fill: white;");
+        cellCountLabel.setStyle("-fx-text-fill: white;");
+        calcFpsLabel.setStyle("-fx-text-fill: white;");
+        renderFpsLabel.setStyle("-fx-text-fill: white;");
+        
+        return statusBar;
+    }
+
+    public void shutdown() {
+        calculationService.stop();
+    }
+}

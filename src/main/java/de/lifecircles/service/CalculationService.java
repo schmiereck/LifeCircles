@@ -1,0 +1,196 @@
+package de.lifecircles.service;
+
+import de.lifecircles.model.Cell;
+import de.lifecircles.model.CellType;
+import de.lifecircles.model.Environment;
+import de.lifecircles.model.SensorActor;
+import de.lifecircles.model.Vector2D;
+// import de.lifecircles.model.SensorActor;
+import de.lifecircles.service.dto.SimulationState;
+import de.lifecircles.service.ActorSensorCellCalcService;
+import de.lifecircles.service.BlockerCellCalcService;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+/**
+ * Service responsible for running the simulation calculations in a separate thread.
+ */
+public class CalculationService implements Runnable {
+    private final Environment environment;
+    private final AtomicBoolean running;
+    private final AtomicBoolean paused;
+    private volatile SimulationState latestState;
+    private final Object stateLock = new Object();
+    private final SimulationConfig config;
+    private int updateCount = 0;
+    private long lastFpsTime = System.nanoTime();
+    private volatile double fps = 0.0;
+
+    public CalculationService() {
+        this.config = SimulationConfig.getInstance();
+        this.environment = new Environment(config.getWidth(), config.getHeight());
+        this.running = new AtomicBoolean(false);
+        this.paused = new AtomicBoolean(false);
+        initializeSimulation();
+    }
+
+    private void initializeSimulation() {
+        Random random = new Random();
+        for (int i = 0; i < config.getInitialCellCount(); i++) {
+            Vector2D position = new Vector2D(
+                random.nextDouble() * config.getWidth(),
+                random.nextDouble() * config.getHeight()
+            );
+            Cell cell = new Cell(position);
+            environment.addCell(cell);
+        }
+        updateState();
+    }
+
+    @Override
+    public void run() {
+        running.set(true);
+        long lastUpdateTime = System.nanoTime();
+        double targetDelta = 1.0 / config.getTargetUpdatesPerSecond();
+
+        while (running.get()) {
+            if (!paused.get()) {
+                long currentTime = System.nanoTime();
+                double deltaTime = (currentTime - lastUpdateTime) / 1_000_000_000.0;
+
+                if (deltaTime >= targetDelta) {
+                    update(config.getTimeStep());
+                    // FPS tracking
+                    updateCount++;
+                    long nowFps = System.nanoTime();
+                    if (nowFps - lastFpsTime >= 1_000_000_000L) {
+                        fps = updateCount / ((nowFps - lastFpsTime) / 1_000_000_000.0);
+                        updateCount = 0;
+                        lastFpsTime = nowFps;
+                    }
+                    lastUpdateTime = currentTime;
+                }
+            }
+
+            // Small sleep to prevent excessive CPU usage
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+    }
+
+    private void update(double deltaTime) {
+        // Retrieve cells and process sensor/actor interactions
+        List<Cell> cells = environment.getCells();
+        ActorSensorCellCalcService.processInteractions(cells, deltaTime);
+
+        // Update all cells with their neighborhood information
+        Map<Cell, List<CellType>> cellNeighborTypes = buildNeighborTypeMap(cells, config.getCellInteractionRadius());
+        for (Cell cell : cells) {
+            cell.updateWithNeighbors(deltaTime, cellNeighborTypes.get(cell));
+        }
+
+        // Update environment physics
+        environment.update(deltaTime);
+
+        // Update state for visualization
+        updateState();
+    }
+
+    private Map<Cell, List<CellType>> buildNeighborTypeMap(List<Cell> cells, double interactionRadius) {
+        Map<Cell, List<CellType>> cellNeighborTypes = new HashMap<>();
+
+        for (Cell cell : cells) {
+            List<CellType> neighborTypes = new ArrayList<>();
+            Vector2D cellPos = cell.getPosition();
+
+            for (Cell other : cells) {
+                if (other != cell && cellPos.distance(other.getPosition()) <= interactionRadius) {
+                    neighborTypes.add(other.getType());
+                }
+            }
+
+            cellNeighborTypes.put(cell, neighborTypes);
+        }
+
+        return cellNeighborTypes;
+    }
+
+    private void updateState() {
+        List<SimulationState.CellState> cellStates = new ArrayList<>();
+
+        for (Cell cell : environment.getCells()) {
+            List<SimulationState.ActorState> actorStates = new ArrayList<>();
+            
+            for (SensorActor actor : cell.getSensorActors()) {
+                CellType actorType = actor.getType();
+                actorStates.add(new SimulationState.ActorState(
+                    actor.getPosition(),
+                    new double[]{actorType.getRed(), actorType.getGreen(), actorType.getBlue()},
+                    actor.getForceStrength()
+                ));
+            }
+
+            CellType cellType = cell.getType();
+            cellStates.add(new SimulationState.CellState(
+                cell.getPosition(),
+                cell.getRotation(),
+                cell.getSize(),
+                new double[]{cellType.getRed(), cellType.getGreen(), cellType.getBlue()},
+                actorStates,
+                cell.getEnergy(),
+                cell.getAge()
+            ));
+        }
+
+        synchronized (stateLock) {
+            latestState = new SimulationState(
+                cellStates,
+                environment.getBlockers(),
+                environment.getSunRays(),
+                environment.getWidth(),
+                environment.getHeight()
+            );
+        }
+    }
+
+    public SimulationState getLatestState() {
+        synchronized (stateLock) {
+            return latestState;
+        }
+    }
+
+    public void start() {
+        if (!running.get()) {
+            new Thread(this).start();
+        }
+        paused.set(false);
+    }
+
+    public void pause() {
+        paused.set(true);
+    }
+
+    public void resume() {
+        paused.set(false);
+    }
+
+    public void stop() {
+        running.set(false);
+    }
+
+    public boolean isPaused() {
+        return paused.get();
+    }
+
+    public boolean isRunning() {
+        return running.get();
+    }
+
+    public double getFps() {
+        return fps;
+    }
+}
