@@ -18,9 +18,6 @@ import javafx.scene.paint.Color;
 public class StatisticsPanel extends VBox {
     private final StatisticsManager statistics;
     private final Label totalLabel = new Label();
-    private final Label producerLabel = new Label();
-    private final Label consumerLabel = new Label();
-    private final Label predatorLabel = new Label();
     private final Label performanceLabel = new Label();
     private final Canvas populationGraph;
 
@@ -42,16 +39,10 @@ public class StatisticsPanel extends VBox {
         countsBox.setPadding(new Insets(5));
         
         totalLabel.setStyle("-fx-text-fill: black;");
-        producerLabel.setStyle("-fx-text-fill: #90EE90;"); // Light green
-        consumerLabel.setStyle("-fx-text-fill: #ADD8E6;"); // Light blue
-        predatorLabel.setStyle("-fx-text-fill: #FFB6C1;"); // Light red
         performanceLabel.setStyle("-fx-text-fill: black;");
         
         countsBox.getChildren().addAll(
             totalLabel,
-            producerLabel,
-            consumerLabel,
-            predatorLabel,
             performanceLabel
         );
 

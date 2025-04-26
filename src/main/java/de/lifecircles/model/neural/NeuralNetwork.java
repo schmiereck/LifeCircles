@@ -319,4 +319,9 @@ public class NeuralNetwork {
         }
         return false;
     }
+
+    // Expose the number of synapses for energy cost calculation
+    public int getSynapseCount() {
+        return synapses.size();
+    }
 }

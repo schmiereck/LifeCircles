@@ -134,4 +134,8 @@ public class CellBrain {
                CELL_TYPE_INPUTS +
                ENVIRONMENT_TYPE_INPUTS;
     }
+
+    public int getSynapseCount() {
+        return this.network.getSynapseCount();
+    }
 }

@@ -16,11 +16,9 @@ public class Cell {
     private static final int SENSOR_ACTOR_COUNT = 12;
     private static final double MIN_SIZE = 10.0;
     private static final double MAX_SIZE = 50.0;
-    private static final double DEFAULT_SIZE = 20.0;
     private static final double MAX_ENERGY = 1.0;
     private static final double ENERGY_DECAY_RATE = 0.01;
     private static final double ENERGY_GAIN_FROM_FIELD = 0.05;
-    private static final double ROTATIONAL_FRICTION = 0.5; // friction coefficient for rotation
 
     private Vector2D position;
     private Vector2D velocity;
@@ -34,12 +32,12 @@ public class Cell {
     private double age; // in seconds
     private double reproductionDesire; // neural net output for reproduction
 
-    public Cell(Vector2D position) {
+    public Cell(Vector2D position, final double size) {
         this.position = position;
         this.velocity = new Vector2D(0, 0);
         this.rotation = 0;
         this.angularVelocity = 0;
-        this.size = DEFAULT_SIZE;
+        this.size = size;
         this.type = new CellType(0, 0, 0);
         this.sensorActors = new ArrayList<>();
         initializeSensorActors();
@@ -105,7 +103,7 @@ public class Cell {
     }
 
     public List<SensorActor> getSensorActors() {
-        return Collections.unmodifiableList(sensorActors);
+        return this.sensorActors;
     }
 
     /**
@@ -129,7 +127,7 @@ public class Cell {
         position = position.add(velocity.multiply(deltaTime));
         rotation += angularVelocity * deltaTime;
         // Apply rotational friction
-        angularVelocity *= (1 - ROTATIONAL_FRICTION * deltaTime);
+        angularVelocity *= (1 - SimulationConfig.getInstance().getRotationalFriction() * deltaTime);
         
         // Normalize rotation to [0, 2π)
         rotation = rotation % (2 * Math.PI);
@@ -157,8 +155,11 @@ public class Cell {
         velocity = velocity.add(force.multiply(1.0 / size)); // Larger cells are affected less
 
         // Calculate torque and angular acceleration
-        Vector2D radiusVector = applicationPoint.subtract(position);
-        double torque = radiusVector.getX() * force.getY() - radiusVector.getY() * force.getX();
+        //Vector2D radiusVector = applicationPoint.subtract(position);
+        final double xRadius = applicationPoint.getX() - position.getX();
+        final double yRadius = applicationPoint.getY() - position.getY();
+        //double torque = radiusVector.getX() * force.getY() - radiusVector.getY() * force.getX();
+        double torque = xRadius * force.getY() - yRadius * force.getX();
         angularVelocity += torque / (size * size); // Moment of inertia approximated as size²
     }
 

@@ -51,10 +51,17 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
-* Es scheint mir so, als ob bei den ActorSensors die Interaktionen nicht korrekt funktionieren. Es sieht so aus, als ob gerade unterschiedliche Farben für die anziehende Interaktion verwendet werden (Schwarz zieht weiß an, Rot zieht Blau an, etc.).
-  Prüfe das und ändere es so, dass gleiche Farben aufeinander anziehen wirken und unterschiedliche Farben abstoßend.
+* Berücksichtige beim Energieverbrauch pro Rechenstep die Anzahl der Synapsen im neuronalen Netz.
 
 # DONE
+
+50 Zellen, Calc FPS: 6,2
+* Verteile Berechnungen auf mehrere Threads.
+  * Untersuche die PartitioningStrategies bei der Berechnung von Interaktionen.
+  * Überlege ob die Berechnung der neuronalen Netze auf mehrere Threads verteilt werden kann.
+
+* Es scheint mir so, als ob bei den ActorSensors die Interaktionen nicht korrekt funktionieren. Es sieht so aus, als ob gerade unterschiedliche Farben für die anziehende Interaktion verwendet werden (Schwarz zieht weiß an, Rot zieht Blau an, etc.).
+  Prüfe das und ändere es so, dass gleiche Farben aufeinander anziehen wirken und unterschiedliche Farben abstoßend.
 
 * Fasse in der Anzeige der "Population History" immer die ähnlichsten 10% der Celltypes zusammen und stelle diese zusätzlich als Kurven dar.
 

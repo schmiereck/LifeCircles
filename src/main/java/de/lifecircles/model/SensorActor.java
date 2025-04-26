@@ -8,6 +8,8 @@ public class SensorActor {
 
     private final Cell parentCell;
     private final double angleOnCell; // Angle position on the cell surface (in radians)
+    private final double cosAngleOnCell;
+    private final double sinAngleOnCell;
     private CellType type;
     private double forceStrength; // Positive for attraction, negative for repulsion
     private boolean fireEnergyBeam; // trigger for energy beam
@@ -15,19 +17,34 @@ public class SensorActor {
     public SensorActor(Cell parentCell, double angleOnCell) {
         this.parentCell = parentCell;
         this.angleOnCell = angleOnCell;
+        this.cosAngleOnCell = Math.cos(angleOnCell);
+        this.sinAngleOnCell = Math.sin(angleOnCell);
         this.type = new CellType(0, 0, 0);
         this.forceStrength = 0;
         this.fireEnergyBeam = false;
     }
 
+    //public Vector2D getPosition() {
+    //    // Calculate position relative to cell center
+    //    Vector2D offset = new Vector2D(
+    //        Math.cos(angleOnCell) * parentCell.getSize() / 2,
+    //        Math.sin(angleOnCell) * parentCell.getSize() / 2
+    //    );
+    //    // Rotate by cell's rotation and add to cell's position
+    //    return offset.rotate(parentCell.getRotation()).add(parentCell.getPosition());
+    //}
     public Vector2D getPosition() {
-        // Calculate position relative to cell center
-        Vector2D offset = new Vector2D(
-            Math.cos(angleOnCell) * parentCell.getSize() / 2,
-            Math.sin(angleOnCell) * parentCell.getSize() / 2
-        );
-        // Rotate by cell's rotation and add to cell's position
-        return offset.rotate(parentCell.getRotation()).add(parentCell.getPosition());
+        // Inline optimized: use precomputed angle unit vector and inline rotation
+        double halfSize = parentCell.getSize() * 0.5;
+        double rotation = parentCell.getRotation();
+        double cosR = Math.cos(rotation);
+        double sinR = Math.sin(rotation);
+        Vector2D cellPos = parentCell.getPosition();
+        double x0 = cosAngleOnCell * halfSize;
+        double y0 = sinAngleOnCell * halfSize;
+        double x = x0 * cosR - y0 * sinR + cellPos.getX();
+        double y = x0 * sinR + y0 * cosR + cellPos.getY();
+        return new Vector2D(x, y);
     }
 
     public double getAngleOnCell() {

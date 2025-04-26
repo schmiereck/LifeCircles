@@ -4,23 +4,28 @@ package de.lifecircles.service;
  * Configuration parameters for the simulation.
  */
 public class SimulationConfig {
-    public static final double SCALE_SIMULATION = 3.0D;
+    public static final double SCALE_SIMULATION = 2.0D;
     private double width = 1024 * SCALE_SIMULATION;
     private double height = 768 * SCALE_SIMULATION;
     private int targetUpdatesPerSecond = 60;
     private double timeStep = 1.0D / targetUpdatesPerSecond; // 60 Hz simulation
-    private double cellInteractionRadius = 100.0D;
+    
+    private double cellMaxRadius = 30.0D;
+    private double cellInteractionRadius = 30.0D;
+
     private int initialCellCount = 30;
 
     // Sun ray energy settings
-    private double sunRayRate = 5.0;
+    private double sunRayRate = 4.0;
     private double energyPerRay = 0.1;
     // Spacing between sun rays in pixels; average one ray per this spacing
-    private double sunRaySpacingPx = 120.0;
+    private double sunRaySpacingPx = 60.0;
     // Energy threshold below which a cell dies
     private double energyDeathThreshold = 0.0;
     // Blocker repulsion strength for cell-blocker interactions
     private double blockerRepulsionStrength = 200.0;
+    // Friction coefficient for cell rotation (damping)
+    private double rotationalFriction = 0.2;
 
     // Singleton instance
     private static final SimulationConfig INSTANCE = new SimulationConfig();
@@ -71,6 +76,14 @@ public class SimulationConfig {
         this.cellInteractionRadius = cellInteractionRadius;
     }
 
+    public double getCellMaxRadius() {
+        return cellMaxRadius;
+    }
+
+    public void setCellMaxRadius(double cellMaxRadius) {
+        this.cellMaxRadius = cellMaxRadius;
+    }
+
     public int getInitialCellCount() {
         return initialCellCount;
     }
@@ -117,6 +130,20 @@ public class SimulationConfig {
 
     public void setBlockerRepulsionStrength(double blockerRepulsionStrength) {
         this.blockerRepulsionStrength = blockerRepulsionStrength;
+    }
+
+    /**
+     * Gets the friction coefficient used for cell rotation damping.
+     */
+    public double getRotationalFriction() {
+        return rotationalFriction;
+    }
+
+    /**
+     * Sets the friction coefficient used for cell rotation damping.
+     */
+    public void setRotationalFriction(double rotationalFriction) {
+        this.rotationalFriction = rotationalFriction;
     }
 
     public double getScaleSimulation() {

@@ -166,28 +166,8 @@ public class Renderer {
                 double indicatorSize = screenSize * 0.2;
                 
                 // Determine specialization based on RGB values
-                if (rgb[0] > rgb[1] && rgb[0] > rgb[2]) {
-                    // Predator - Red triangle
-                    drawTriangle(gc, screenPos, indicatorSize, Color.RED);
-                } else if (rgb[1] > rgb[0] && rgb[1] > rgb[2]) {
-                    // Producer - Green circle
-                    gc.setFill(Color.GREEN);
-                    gc.fillOval(
-                        screenPos.getX() - indicatorSize / 2,
-                        screenPos.getY() - screenSize / 2 - indicatorSize - 2,
-                        indicatorSize,
-                        indicatorSize
-                    );
-                } else if (rgb[2] > rgb[0] && rgb[2] > rgb[1]) {
-                    // Consumer - Blue square
-                    gc.setFill(Color.BLUE);
-                    gc.fillRect(
-                        screenPos.getX() - indicatorSize / 2,
-                        screenPos.getY() - screenSize / 2 - indicatorSize - 2,
-                        indicatorSize,
-                        indicatorSize
-                    );
-                }
+                // Indicator triangle
+                drawTriangle(gc, screenPos, indicatorSize, Color.color(rgb[0], rgb[1], rgb[2]));
             }
         }
     }

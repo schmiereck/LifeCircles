@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class ActorSensorCellCalcService {
 
-    private static final double INTERACTION_FORCE = 32.0D * 12.0D;
+    private static final double INTERACTION_FORCE = 32.0D * 2.0D * 1.0D;
 
     /**
      * Processes interactions between sensor/actor points of all cells.

@@ -9,7 +9,7 @@ import java.util.List;
 public class SpatialGridPartitioningStrategy implements PartitioningStrategy {
     private final SpatialGrid grid;
 
-    public SpatialGridPartitioningStrategy(double width, double height, double cellSize) {
+    public SpatialGridPartitioningStrategy(final double width, final double height, final double cellSize) {
         this.grid = new SpatialGrid(width, height, cellSize);
     }
 

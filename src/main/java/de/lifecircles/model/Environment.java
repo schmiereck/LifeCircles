@@ -11,6 +11,7 @@ import de.lifecircles.service.EnergyBeamCellCalcService;
 import de.lifecircles.model.SunRay;
 import de.lifecircles.model.Vector2D;
 import de.lifecircles.service.PartitioningStrategy;
+import de.lifecircles.service.PartitioningStrategyFactory;
 import de.lifecircles.service.QuadTreePartitioningStrategy;
 import de.lifecircles.service.SpatialGridPartitioningStrategy;
 import java.util.ArrayList;
@@ -23,12 +24,11 @@ import java.util.Random;
  * Manages physics simulation and cell interactions.
  */
 public class Environment {
-    private static final double VISCOSITY = 0.5;
+    private static final double VISCOSITY = 0.75;
     private static final double GRAVITY = 9.81;
     private static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
     private static final Random random = new Random();
     private static final double REPOPULATION_THRESHOLD_PERCENT = 0.25;
-    private static final double ENERGY_BEAM_THRESHOLD = 0.001;
     private final SimulationConfig config;
     private final EnergySunCalcService energySunCalcService;
     private final List<SunRay> sunRays;
@@ -49,6 +49,7 @@ public class Environment {
 
         // Add ground blocker by default
         addGroundBlocker();
+        addSunBlocker();
     }
 
     private void addGroundBlocker() {
@@ -60,6 +61,17 @@ public class Environment {
             Blocker.BlockerType.GROUND          // Type
         );
         blockers.add(ground);
+    }
+
+    private void addSunBlocker() {
+        Blocker sunBlocker = new Blocker(
+            new Vector2D(width/4, height - height/8), // Position at bottom
+            width/6,                              // Full width
+            20,                                 // Height
+            javafx.scene.paint.Color.GRAY,      // Color
+            Blocker.BlockerType.PLATFORM          // Type
+        );
+        blockers.add(sunBlocker);
     }
 
     public void addCell(Cell cell) {
@@ -94,7 +106,7 @@ public class Environment {
         // Choose partitioning strategy: QuadTree or SpatialGrid
         //PartitioningStrategy partitioner = new QuadTreePartitioningStrategy(width, height);
         // For spatial grid strategy, uncomment below:
-        PartitioningStrategy partitioner = new SpatialGridPartitioningStrategy(width, height, Cell.getMaxSize());
+        PartitioningStrategy partitioner = PartitioningStrategyFactory.createStrategy(width, height, Cell.getMaxSize());
         // Process sensor/actor interactions
         ActorSensorCellCalcService.processInteractions(cells, deltaTime, partitioner);
         // Process repulsive forces
@@ -133,7 +145,7 @@ public class Environment {
 
             // Handle reproduction
             if (ReproductionManager.canReproduce(cell)) {
-                Cell childCell = ReproductionManager.reproduce(cell);
+                Cell childCell = ReproductionManager.reproduce(config, cell);
                 newCells.add(childCell);
             }
 
@@ -168,25 +180,25 @@ public class Environment {
                 // Repopulate by mutating the last dead cell
                 lastDeadCell.setEnergy(1.0);
                 for (int i = 0; i < initialCount; i++) {
-                    Cell child = ReproductionManager.reproduce(lastDeadCell);
+                    Cell child = ReproductionManager.reproduce(config, lastDeadCell);
                     cells.add(child);
                 }
             } else {
                 for (int i = 0; i < initialCount; i++) {
                     Vector2D pos = new Vector2D(random.nextDouble() * width, random.nextDouble() * height);
-                    Cell newCell = new Cell(pos);
+                    Cell newCell = new Cell(pos, config.getCellMaxRadius() / 2.0D);
                     cells.add(newCell);
                 }
             }
-            return;
-        }
-        int thresholdCount = (int) Math.ceil(initialCount * REPOPULATION_THRESHOLD_PERCENT);
-        if (currentCount < thresholdCount) {
-            int toSpawn = initialCount - currentCount;
-            for (int i = 0; i < toSpawn; i++) {
-                Cell parent = cells.get(random.nextInt(cells.size()));
-                Cell child = ReproductionManager.reproduce(parent);
-                cells.add(child);
+        } else {
+            int thresholdCount = (int) Math.ceil(initialCount * REPOPULATION_THRESHOLD_PERCENT);
+            if (currentCount < thresholdCount) {
+                int toSpawn = initialCount - currentCount;
+                for (int i = 0; i < toSpawn; i++) {
+                    Cell parent = cells.get(random.nextInt(cells.size()));
+                    Cell child = ReproductionManager.reproduce(config, parent);
+                    cells.add(child);
+                }
             }
         }
     }

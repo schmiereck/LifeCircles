@@ -117,6 +117,7 @@ public class MainController extends BorderPane {
     private HBox createStatusBar() {
         Label cellCountLabel = new Label("Cells: 0");
         Label calcFpsLabel = new Label("Calc FPS: 0.0");
+        Label stepCountLabel = new Label("Steps: 0");
         Label renderFpsLabel = new Label("Render FPS: 0.0");
 
         // Update status every 500ms
@@ -126,12 +127,14 @@ public class MainController extends BorderPane {
                     Thread.sleep(500);
                     var state = calculationService.getLatestState();
                     double calcFps = calculationService.getFps();
+                    long steps = calculationService.getStepCount();
                     double renderFps = simulationView.getFps();
                     javafx.application.Platform.runLater(() -> {
                         if (state != null) {
                             cellCountLabel.setText(String.format("Cells: %d", state.getCells().size()));
                         }
                         calcFpsLabel.setText(String.format("Calc FPS: %.1f", calcFps));
+                        stepCountLabel.setText(String.format("Steps: %d", steps));
                         renderFpsLabel.setText(String.format("Render FPS: %.1f", renderFps));
                     });
                 } catch (InterruptedException e) {
@@ -142,10 +145,11 @@ public class MainController extends BorderPane {
         statusUpdater.setDaemon(true);
         statusUpdater.start();
 
-        HBox statusBar = new HBox(10, cellCountLabel, calcFpsLabel, renderFpsLabel);
+        HBox statusBar = new HBox(10, cellCountLabel, calcFpsLabel, stepCountLabel, renderFpsLabel);
         statusBar.setStyle("-fx-padding: 5; -fx-background-color: #333333; -fx-text-fill: white;");
         cellCountLabel.setStyle("-fx-text-fill: white;");
         calcFpsLabel.setStyle("-fx-text-fill: white;");
+        stepCountLabel.setStyle("-fx-text-fill: white;");
         renderFpsLabel.setStyle("-fx-text-fill: white;");
         
         return statusBar;

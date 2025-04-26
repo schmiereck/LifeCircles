@@ -25,7 +25,7 @@ public class EnergyBeamCellCalcService {
     public static List<SunRay> processEnergyBeams(List<Cell> cells, double width, double height) {
         List<SunRay> beams = new ArrayList<>();
         // partition spatially to limit checks
-        PartitioningStrategy partitioner = new SpatialGridPartitioningStrategy(width, height, Cell.getMaxSize());
+        PartitioningStrategy partitioner = PartitioningStrategyFactory.createStrategy(width, height, Cell.getMaxSize());
         partitioner.build(cells);
 
         for (Cell cell : cells) {

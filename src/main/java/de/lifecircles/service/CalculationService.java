@@ -9,8 +9,11 @@ import de.lifecircles.model.Vector2D;
 import de.lifecircles.service.dto.SimulationState;
 import de.lifecircles.service.ActorSensorCellCalcService;
 import de.lifecircles.service.BlockerCellCalcService;
+import de.lifecircles.service.PartitioningStrategy;
+import de.lifecircles.service.SpatialGridPartitioningStrategy;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Service responsible for running the simulation calculations in a separate thread.
@@ -25,6 +28,7 @@ public class CalculationService implements Runnable {
     private int updateCount = 0;
     private long lastFpsTime = System.nanoTime();
     private volatile double fps = 0.0;
+    private final AtomicLong stepCount = new AtomicLong(0);
 
     public CalculationService() {
         this.config = SimulationConfig.getInstance();
@@ -41,7 +45,7 @@ public class CalculationService implements Runnable {
                 random.nextDouble() * config.getWidth(),
                 random.nextDouble() * config.getHeight()
             );
-            Cell cell = new Cell(position);
+            Cell cell = new Cell(position, config.getCellMaxRadius() / 2.0D);
             environment.addCell(cell);
         }
         updateState();
@@ -62,6 +66,7 @@ public class CalculationService implements Runnable {
                     update(config.getTimeStep());
                     // FPS tracking
                     updateCount++;
+                    stepCount.incrementAndGet();
                     long nowFps = System.nanoTime();
                     if (nowFps - lastFpsTime >= 1_000_000_000L) {
                         fps = updateCount / ((nowFps - lastFpsTime) / 1_000_000_000.0);
@@ -82,41 +87,34 @@ public class CalculationService implements Runnable {
         }
     }
 
-    private void update(double deltaTime) {
+    private void update(final double deltaTime) {
         // Retrieve cells and process sensor/actor interactions
-        List<Cell> cells = environment.getCells();
+        final List<Cell> cells = environment.getCells();
         ActorSensorCellCalcService.processInteractions(cells, deltaTime);
 
         // Update all cells with their neighborhood information
-        Map<Cell, List<CellType>> cellNeighborTypes = buildNeighborTypeMap(cells, config.getCellInteractionRadius());
-        for (Cell cell : cells) {
-            cell.updateWithNeighbors(deltaTime, cellNeighborTypes.get(cell));
+        final double interactionRadius = config.getCellInteractionRadius();
+        final PartitioningStrategy partitioner = PartitioningStrategyFactory.createStrategy(
+            environment.getWidth(), environment.getHeight(), interactionRadius
+        );
+        partitioner.build(cells);
+        // Parallel execution of neural networks and cell updates
+        cells.parallelStream().forEach(cell -> {
+            List<CellType> neighborTypes = new ArrayList<>();
+            for (Cell other : partitioner.getNeighbors(cell)) {
+                if (other != cell && cell.getPosition().distance(other.getPosition()) <= interactionRadius) {
+                    neighborTypes.add(other.getType());
+                }
+            }
+            cell.updateWithNeighbors(deltaTime, neighborTypes);
         }
+        );
 
         // Update environment physics
         environment.update(deltaTime);
 
         // Update state for visualization
         updateState();
-    }
-
-    private Map<Cell, List<CellType>> buildNeighborTypeMap(List<Cell> cells, double interactionRadius) {
-        Map<Cell, List<CellType>> cellNeighborTypes = new HashMap<>();
-
-        for (Cell cell : cells) {
-            List<CellType> neighborTypes = new ArrayList<>();
-            Vector2D cellPos = cell.getPosition();
-
-            for (Cell other : cells) {
-                if (other != cell && cellPos.distance(other.getPosition()) <= interactionRadius) {
-                    neighborTypes.add(other.getType());
-                }
-            }
-
-            cellNeighborTypes.put(cell, neighborTypes);
-        }
-
-        return cellNeighborTypes;
     }
 
     private void updateState() {
@@ -192,5 +190,8 @@ public class CalculationService implements Runnable {
 
     public double getFps() {
         return fps;
+    }
+    public long getStepCount() {
+        return stepCount.get();
     }
 }
