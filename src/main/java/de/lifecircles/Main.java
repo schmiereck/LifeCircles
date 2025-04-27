@@ -33,7 +33,7 @@ public class Main extends Application {
         mainController = new MainController();
 
         Scene scene = new Scene(mainController, 1200, 800);
-        primaryStage.setTitle("LifeCircles Simulation");
+        primaryStage.setTitle("LifeCircles Simulation - " + SimulationConfig.getInstance().getTrainMode());
         primaryStage.setScene(scene);
         primaryStage.show();
 

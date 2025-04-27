@@ -2,12 +2,15 @@ package de.lifecircles.view;
 
 import de.lifecircles.service.CalculationService;
 import de.lifecircles.service.dto.SimulationState;
+import de.lifecircles.service.SimulationConfig;
+import de.lifecircles.service.TrainMode;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 /**
  * JavaFX component for visualizing the simulation.
@@ -117,6 +120,10 @@ public class SimulationView extends Pane {
             gc.setStroke(Color.WHITE);
             gc.setLineWidth(2);
             gc.strokeRoundRect(1, 1, canvas.getWidth() - 2, canvas.getHeight() - 2, 20, 20);
+            // Anzeigen von FPS und Trainingsmodus
+            gc.setFill(Color.WHITE);
+            gc.setFont(new Font(14));
+            gc.fillText("FPS: " + String.format("%.1f", getFps()) + "  Mode: " + SimulationConfig.getInstance().getTrainMode(), 10, canvas.getHeight() - 10);
         }
     }
 
