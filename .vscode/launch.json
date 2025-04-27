@@ -12,11 +12,19 @@
         },
         {
             "type": "java",
-            "name": "Main",
+            "name": "Main HIGH_ENERGY",
             "request": "launch",
             "mainClass": "de.lifecircles/de.lifecircles.Main",
             "projectName": "life-circles",
             "args": ["--trainMode=HIGH_ENERGY"]
+        },
+        {
+            "type": "java",
+            "name": "Main HIGH_POSITION",
+            "request": "launch",
+            "mainClass": "de.lifecircles/de.lifecircles.Main",
+            "projectName": "life-circles",
+            "args": ["--trainMode=HIGH_POSITION"]
         }
     ]
 }

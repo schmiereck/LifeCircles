@@ -6,5 +6,6 @@ package de.lifecircles.service;
 public enum TrainMode {
     NONE,
     EVOLUTIONARY,
-    HIGH_ENERGY
+    HIGH_ENERGY,
+    HIGH_POSITION
 }

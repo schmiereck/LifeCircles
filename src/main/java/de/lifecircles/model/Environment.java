@@ -50,7 +50,7 @@ public class Environment {
 
         // Add ground blocker by default
         addGroundBlocker();
-        if (config.getTrainMode() != TrainMode.HIGH_ENERGY) {
+        if (config.getTrainMode() == TrainMode.NONE) {
             addSunBlocker();
         }
     }
@@ -148,7 +148,7 @@ public class Environment {
             wrapPosition(cell);
 
             // Handle reproduction (skip in HIGH_ENERGY mode)
-            if (config.getTrainMode() != TrainMode.HIGH_ENERGY && ReproductionManager.canReproduce(cell)) {
+            if (ReproductionManager.canReproduce(cell)) {
                 Cell childCell = ReproductionManager.reproduce(config, cell);
                 newCells.add(childCell);
             }
@@ -161,9 +161,7 @@ public class Environment {
         }
 
         // Add new cells from reproduction (skip in HIGH_ENERGY mode)
-        if (config.getTrainMode() != TrainMode.HIGH_ENERGY) {
-            cells.addAll(newCells);
-        }
+        cells.addAll(newCells);
 
         // Delegate energy beam processing to service
         sunRays.addAll(
@@ -171,7 +169,7 @@ public class Environment {
         );
 
         // Repopulation (skip in HIGH_ENERGY mode)
-        if (config.getTrainMode() != TrainMode.HIGH_ENERGY) {
+        if (config.getTrainMode() == TrainMode.NONE) {
             calcRepopulationIfNeeded();
         }
 

@@ -9,6 +9,7 @@ import de.lifecircles.service.TrainMode;
 import de.lifecircles.service.TrainStrategy;
 import de.lifecircles.service.HighEnergyTrainStrategy;
 import de.lifecircles.service.DefaultTrainStrategy;
+import de.lifecircles.service.HighPositionTrainStrategy;
 import de.lifecircles.service.dto.SimulationState;
 import de.lifecircles.service.ActorSensorCellCalcService;
 import de.lifecircles.service.BlockerCellCalcService;
@@ -39,9 +40,12 @@ public class CalculationService implements Runnable {
         this.environment = new Environment(config.getWidth(), config.getHeight());
         this.running = new AtomicBoolean(false);
         this.paused = new AtomicBoolean(false);
-        this.trainStrategy = config.getTrainMode() == TrainMode.HIGH_ENERGY
-            ? new HighEnergyTrainStrategy()
-            : new DefaultTrainStrategy();
+        this.trainStrategy = 
+            switch (config.getTrainMode()) {
+                case HIGH_ENERGY -> new HighEnergyTrainStrategy();
+                case HIGH_POSITION -> new HighPositionTrainStrategy();
+                default -> new DefaultTrainStrategy();
+            };
         initializeSimulation();
     }
 
