@@ -5,7 +5,10 @@ import de.lifecircles.model.CellType;
 import de.lifecircles.model.Environment;
 import de.lifecircles.model.SensorActor;
 import de.lifecircles.model.Vector2D;
-// import de.lifecircles.model.SensorActor;
+import de.lifecircles.service.TrainMode;
+import de.lifecircles.service.TrainStrategy;
+import de.lifecircles.service.HighEnergyTrainStrategy;
+import de.lifecircles.service.DefaultTrainStrategy;
 import de.lifecircles.service.dto.SimulationState;
 import de.lifecircles.service.ActorSensorCellCalcService;
 import de.lifecircles.service.BlockerCellCalcService;
@@ -25,6 +28,7 @@ public class CalculationService implements Runnable {
     private volatile SimulationState latestState;
     private final Object stateLock = new Object();
     private final SimulationConfig config;
+    private final TrainStrategy trainStrategy;
     private int updateCount = 0;
     private long lastFpsTime = System.nanoTime();
     private volatile double fps = 0.0;
@@ -35,19 +39,14 @@ public class CalculationService implements Runnable {
         this.environment = new Environment(config.getWidth(), config.getHeight());
         this.running = new AtomicBoolean(false);
         this.paused = new AtomicBoolean(false);
+        this.trainStrategy = config.getTrainMode() == TrainMode.HIGH_ENERGY
+            ? new HighEnergyTrainStrategy()
+            : new DefaultTrainStrategy();
         initializeSimulation();
     }
 
     private void initializeSimulation() {
-        Random random = new Random();
-        for (int i = 0; i < config.getInitialCellCount(); i++) {
-            Vector2D position = new Vector2D(
-                random.nextDouble() * config.getWidth(),
-                random.nextDouble() * config.getHeight()
-            );
-            Cell cell = new Cell(position, config.getCellMaxRadius() / 2.0D);
-            environment.addCell(cell);
-        }
+        trainStrategy.initialize(environment);
         updateState();
     }
 
@@ -113,6 +112,9 @@ public class CalculationService implements Runnable {
 
         // Update environment physics
         environment.update(deltaTime);
+
+        // Strategy-based selection/mutation
+        trainStrategy.selectAndMutate(environment);
 
         // Update state for visualization
         updateState();

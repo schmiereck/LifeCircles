@@ -15,6 +15,9 @@ public class SimulationConfig {
 
     private int initialCellCount = 30;
 
+    // Training mode configuration
+    private TrainMode trainMode = TrainMode.NONE;
+
     // Sun ray energy settings
     private double sunRayRate = 4.0;
     private double energyPerRay = 0.1;
@@ -148,5 +151,13 @@ public class SimulationConfig {
 
     public double getScaleSimulation() {
         return SCALE_SIMULATION;
+    }
+
+    public TrainMode getTrainMode() {
+        return trainMode;
+    }
+
+    public void setTrainMode(TrainMode trainMode) {
+        this.trainMode = trainMode;
     }
 }

@@ -51,6 +51,22 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
+* Füge zu der Zelle einen internen GenerationCounter hinzu um im Training ermitteln zu können, in welcher Generation eine Zelle ist.
+
+* Die Anwendung solle einen Train-Modus bekommen in der wir den zellen spezielle verhalten antrainieren können.
+  * In dem Modus sollen eigene Umgebungen mit dem Blocker verwendet werden. Die Blocker werden je nach Modus gezielt plaziert.
+  * In dem Modus wird eine bestimmte Anzahl Zellen gezielt hinzugefügt und positioniert.
+  * Der Modus hat eine eigene Logik in der jeweils nach n Steps die Gewinner ausgewählt, werden. Kinder von ihnen angelegt werden und die Simulation wird fortgesetzt.
+  * Es gibt also für jeden Modus eine Initialisierungs-, eine Selektions- und eine Mutations-Funktion.
+  * Es soll vorgesehen werden, dass es mehrere Train-Modi gibt.
+  * Der jeweilige Train-Modus wird der Anwendung über eine Enum-Variable angegeben und über ein Argument beim Start der Anwendung ausgewählt.
+* Füge einen Training-Modus "HighEnergy" hinzu.
+  * Die Simulation starten mit 20 Zellen.
+  * Es wir nur der übliche Boden-Blocker hinzugefügt.
+  * Nach 500 Steps wirden die 20% Zellen mit dem höchsten Energie-Level als Gewinner ausgewählt.
+  * Die Zellen werden mutiert und die Simulation wird im Training-Modus fortgesetzt.
+  * java -jar target/LifeCircles.jar --trainMode=HIGH_ENERGY
+  
 # DONE
 
 * Add a new Input to the CellBrain that represents the energy of the cell. 

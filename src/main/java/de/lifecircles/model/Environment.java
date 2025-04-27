@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Random;
+import de.lifecircles.service.TrainMode;
 
 /**
  * Represents the simulation environment.
@@ -49,7 +50,9 @@ public class Environment {
 
         // Add ground blocker by default
         addGroundBlocker();
-        addSunBlocker();
+        if (config.getTrainMode() != TrainMode.HIGH_ENERGY) {
+            addSunBlocker();
+        }
     }
 
     private void addGroundBlocker() {
@@ -144,8 +147,8 @@ public class Environment {
             // Wrap position around environment boundaries
             wrapPosition(cell);
 
-            // Handle reproduction
-            if (ReproductionManager.canReproduce(cell)) {
+            // Handle reproduction (skip in HIGH_ENERGY mode)
+            if (config.getTrainMode() != TrainMode.HIGH_ENERGY && ReproductionManager.canReproduce(cell)) {
                 Cell childCell = ReproductionManager.reproduce(config, cell);
                 newCells.add(childCell);
             }
@@ -157,13 +160,20 @@ public class Environment {
             }
         }
 
-        // Add new cells from reproduction
-        cells.addAll(newCells);
+        // Add new cells from reproduction (skip in HIGH_ENERGY mode)
+        if (config.getTrainMode() != TrainMode.HIGH_ENERGY) {
+            cells.addAll(newCells);
+        }
 
         // Delegate energy beam processing to service
-        sunRays.addAll(EnergyBeamCellCalcService.processEnergyBeams(cells, width, height));
+        sunRays.addAll(
+            EnergyBeamCellCalcService.processEnergyBeams(cells, width, height)
+        );
 
-        calcRepopulationIfNeeded();
+        // Repopulation (skip in HIGH_ENERGY mode)
+        if (config.getTrainMode() != TrainMode.HIGH_ENERGY) {
+            calcRepopulationIfNeeded();
+        }
 
         // Update statistics
         StatisticsManager.getInstance().update(cells);
@@ -233,5 +243,13 @@ public class Environment {
 
     public double getHeight() {
         return height;
+    }
+
+    /**
+     * Resets the cell population with the provided new generation.
+     */
+    public void resetCells(List<Cell> newCells) {
+        cells.clear();
+        cells.addAll(newCells);
     }
 }
