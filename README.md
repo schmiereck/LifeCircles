@@ -51,9 +51,11 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
-* Berücksichtige beim Energieverbrauch pro Rechenstep die Anzahl der Synapsen im neuronalen Netz.
-
 # DONE
+
+* Add a new Input to the CellBrain that represents the energy of the cell. 
+
+* Berücksichtige beim Energieverbrauch pro Rechenstep die Anzahl der Synapsen im neuronalen Netz.
 
 50 Zellen, Calc FPS: 6,2
 * Verteile Berechnungen auf mehrere Threads.

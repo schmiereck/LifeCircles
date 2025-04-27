@@ -16,6 +16,7 @@ public class CellBrain {
     private static final int SENSOR_INPUTS_PER_ACTOR = 4; // type(R,G,B) + field strength
     private static final int CELL_TYPE_INPUTS = 3; // R,G,B
     private static final int ENVIRONMENT_TYPE_INPUTS = 3; // R,G,B for surrounding cells
+    private static final int ENERGY_INPUTS = 1; // cell energy
 
     // Neural network output counts
     private static final int SIZE_OUTPUT = 1;
@@ -33,7 +34,8 @@ public class CellBrain {
         
         int inputCount = (SENSOR_INPUTS_PER_ACTOR * cell.getSensorActors().size()) +
                         CELL_TYPE_INPUTS +
-                        ENVIRONMENT_TYPE_INPUTS;
+                        ENVIRONMENT_TYPE_INPUTS +
+                        ENERGY_INPUTS;
         
         int outputCount = SIZE_OUTPUT +
                          (OUTPUTS_PER_ACTOR * cell.getSensorActors().size()) +
@@ -100,6 +102,9 @@ public class CellBrain {
         inputs[index++] = avgSurroundingType.getGreen();
         inputs[index++] = avgSurroundingType.getBlue();
 
+        // Energy input
+        inputs[index++] = cell.getEnergy();
+
         return inputs;
     }
 
@@ -132,7 +137,8 @@ public class CellBrain {
     private int getInputCount() {
         return (SENSOR_INPUTS_PER_ACTOR * cell.getSensorActors().size()) +
                CELL_TYPE_INPUTS +
-               ENVIRONMENT_TYPE_INPUTS;
+               ENVIRONMENT_TYPE_INPUTS +
+               ENERGY_INPUTS;
     }
 
     public int getSynapseCount() {
