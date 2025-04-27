@@ -28,7 +28,7 @@ public class SimulationConfig {
     // Blocker repulsion strength for cell-blocker interactions
     private double blockerRepulsionStrength = 200.0;
     // Friction coefficient for cell rotation (damping)
-    private double rotationalFriction = 0.2;
+    private double rotationalFriction = 1.99D;
 
     // Singleton instance
     private static final SimulationConfig INSTANCE = new SimulationConfig();

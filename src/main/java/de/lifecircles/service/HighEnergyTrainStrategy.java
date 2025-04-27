@@ -16,8 +16,8 @@ import java.util.Random;
  * erzeugt mutierte Nachkommen und ersetzt die Population.
  */
 public class HighEnergyTrainStrategy implements TrainStrategy {
-    private static final int INITIAL_COUNT = 40;
-    private static final int GENERATION_STEP = 1000;
+    private static final int INITIAL_COUNT = 60;
+    private static final int GENERATION_STEP = 3000;
     private static final double SELECTION_PERCENT = 0.2;
     private final SimulationConfig config = SimulationConfig.getInstance();
     private long stepCounter = 0;
@@ -44,6 +44,7 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
         int winnersCount = Math.max(1, (int) (cells.size() * SELECTION_PERCENT));
         cells.sort((c1, c2) -> Double.compare(c2.getEnergy(), c1.getEnergy()));
         List<Cell> winners = new ArrayList<>(cells.subList(0, winnersCount));
+        winners.forEach(cell -> cell.setEnergy(Cell.MAX_ENERGY));
         // Elites unverändert übernehmen
         List<Cell> nextGen = new ArrayList<>();
         nextGen.addAll(winners);
@@ -51,7 +52,9 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
         // Fülle Population bis INITIAL_COUNT mit mutierten Nachkommen auf
         while (nextGen.size() < INITIAL_COUNT) {
             Cell parent = winners.get(random.nextInt(winnersCount));
-            nextGen.add(ReproductionManager.reproduce(config, parent));
+            Cell child = ReproductionManager.reproduce(config, parent);
+            child.setEnergy(Cell.MAX_ENERGY);
+            nextGen.add(child);
         }
         environment.resetCells(nextGen);
     }
