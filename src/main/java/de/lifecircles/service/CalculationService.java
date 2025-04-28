@@ -104,18 +104,18 @@ public class CalculationService implements Runnable {
         
         // Parallel execution of neural networks and cell updates
         cells.parallelStream().forEach(cell -> {
-            List<CellType> neighborTypes = new ArrayList<>();
+            List<Cell> neighbors = new ArrayList<>();
             for (Cell other : partitioner.getNeighbors(cell)) {
                 if (other != cell && cell.getPosition().distance(other.getPosition()) <= interactionRadius) {
-                    neighborTypes.add(other.getType());
+                    neighbors.add(other);
                 }
             }
-            cell.updateWithNeighbors(deltaTime, neighborTypes);
+            cell.updateWithNeighbors(deltaTime, neighbors);
         }
         );
 
         // Update environment physics
-        environment.update(deltaTime);
+        environment.update(deltaTime, partitioner);
 
         // Strategy-based selection/mutation
         trainStrategy.selectAndMutate(environment);

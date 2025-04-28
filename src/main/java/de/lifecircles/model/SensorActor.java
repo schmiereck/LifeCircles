@@ -13,6 +13,9 @@ public class SensorActor {
     private CellType type;
     private double forceStrength; // Positive for attraction, negative for repulsion
     private boolean fireEnergyBeam; // trigger for energy beam
+    // temporarily stores the sensed actor and its cell
+    private SensorActor sensedActor;
+    private Cell sensedCell;
 
     public SensorActor(Cell parentCell, double angleOnCell) {
         this.parentCell = parentCell;
@@ -22,6 +25,8 @@ public class SensorActor {
         this.type = new CellType(0, 0, 0);
         this.forceStrength = 0;
         this.fireEnergyBeam = false;
+        this.sensedActor = null;
+        this.sensedCell = null;
     }
 
     //public Vector2D getPosition() {
@@ -75,4 +80,11 @@ public class SensorActor {
     public Cell getParentCell() {
         return parentCell;
     }
+
+    /** Temporarily stores the sensed actor */
+    public SensorActor getSensedActor() { return sensedActor; }
+    public void setSensedActor(SensorActor sensedActor) { this.sensedActor = sensedActor; }
+    /** References the cell of the sensed actor */
+    public Cell getSensedCell() { return sensedCell; }
+    public void setSensedCell(Cell sensedCell) { this.sensedCell = sensedCell; }
 }

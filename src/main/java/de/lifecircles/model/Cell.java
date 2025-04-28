@@ -117,11 +117,11 @@ public class Cell {
     /**
      * Updates the cell's position, rotation, and behavior based on its current state.
      * @param deltaTime Time step in seconds
-     * @param surroundingCellTypes List of cell types in the vicinity
+     * @param neighbors List of neighboring cells
      */
-    public void updateWithNeighbors(double deltaTime, List<CellType> surroundingCellTypes) {
+    public void updateWithNeighbors(double deltaTime, List<Cell> neighbors) {
         // Update neural network
-        brain.think(surroundingCellTypes);
+        brain.think(neighbors);
 
         // Update physics
         position = position.add(velocity.multiply(deltaTime));

@@ -4,6 +4,8 @@ import de.lifecircles.model.Cell;
 import de.lifecircles.model.CellType;
 import de.lifecircles.model.SensorActor;
 import de.lifecircles.model.reproduction.ReproductionManager;
+import de.lifecircles.service.ActorSensorCellCalcService;
+import de.lifecircles.model.neural.SensorInputFeature;
 
 import java.util.List;
 import java.util.Random;
@@ -13,7 +15,7 @@ import java.util.Random;
  */
 public class CellBrain {
     // Neural network input counts
-    private static final int SENSOR_INPUTS_PER_ACTOR = 4; // type(R,G,B) + field strength
+    private static final int SENSOR_INPUTS_PER_ACTOR = SensorInputFeature.values().length; 
     private static final int CELL_TYPE_INPUTS = 3; // R,G,B
     private static final int ENVIRONMENT_TYPE_INPUTS = 3; // R,G,B for surrounding cells
     private static final int ENERGY_INPUTS = 1; // cell energy
@@ -48,10 +50,10 @@ public class CellBrain {
 
     /**
      * Updates the cell's behavior based on its current state and environment.
-     * @param surroundingCellTypes List of cell types in the vicinity
+     * @param neighbors List of neighboring cells
      */
-    public void think(List<CellType> surroundingCellTypes) {
-        double[] inputs = generateInputs(surroundingCellTypes);
+    public void think(List<Cell> neighbors) {
+        double[] inputs = generateInputs(neighbors);
         network.setInputs(inputs);
         double[] outputs = network.process();
         applyOutputs(outputs);
@@ -74,21 +76,29 @@ public class CellBrain {
     }
 
 
-    private double[] generateInputs(List<CellType> surroundingCellTypes) {
+    private double[] generateInputs(List<Cell> neighbors) {
         List<SensorActor> actors = cell.getSensorActors();
-        double[] inputs = new double[network.getInputCount()];
-        int index = 0;
+        int actorCount = actors.size();
+        int totalInputs = network.getInputCount();
+        double[] inputs = new double[totalInputs];
 
-        // Sensor inputs
-        for (SensorActor actor : actors) {
-            CellType type = actor.getType();
-            inputs[index++] = type.getRed();
-            inputs[index++] = type.getGreen();
-            inputs[index++] = type.getBlue();
-            inputs[index++] = actor.getForceStrength();
-        }
+        // Sensor inputs per actor using enum ordinals
+        for (int i = 0; i < actorCount; i++) {
+            SensorActor actor = actors.get(i);
+            int base = i * SENSOR_INPUTS_PER_ACTOR;
+            CellType actorType = actor.getType();
+            inputs[base + SensorInputFeature.ACTOR_RED.ordinal()] = actorType.getRed();
+            inputs[base + SensorInputFeature.ACTOR_GREEN.ordinal()] = actorType.getGreen();
+            inputs[base + SensorInputFeature.ACTOR_BLUE.ordinal()] = actorType.getBlue();
+            inputs[base + SensorInputFeature.FORCE_STRENGTH.ordinal()] = actor.getForceStrength();
+            CellType sensed = findFirstSensedCell(actor, neighbors);
+            inputs[base + SensorInputFeature.SENSED_RED.ordinal()] = sensed.getRed();
+            inputs[base + SensorInputFeature.SENSED_GREEN.ordinal()] = sensed.getGreen();
+            inputs[base + SensorInputFeature.SENSED_BLUE.ordinal()] = sensed.getBlue();
+        } 
 
         // Cell type inputs
+        int index = actorCount * SENSOR_INPUTS_PER_ACTOR;
         CellType cellType = cell.getType();
         inputs[index++] = cellType.getRed();
         inputs[index++] = cellType.getGreen();
@@ -96,7 +106,7 @@ public class CellBrain {
 
         // Environment type inputs (average of surrounding cells)
         CellType avgSurroundingType = CellType.mix(
-            surroundingCellTypes.toArray(new CellType[0])
+            neighbors.stream().map(Cell::getType).toArray(CellType[]::new)
         );
         inputs[index++] = avgSurroundingType.getRed();
         inputs[index++] = avgSurroundingType.getGreen();
@@ -143,5 +153,18 @@ public class CellBrain {
 
     public int getSynapseCount() {
         return this.network.getSynapseCount();
+    }
+
+    private CellType findFirstSensedCell(SensorActor actor, List<Cell> neighbors) {
+        for (Cell otherCell : neighbors) {
+            for (SensorActor otherActor : otherCell.getSensorActors()) {
+                double intensity = ActorSensorCellCalcService.sense(actor, otherActor);
+                if (intensity != 0) {
+                    return otherCell.getType();
+                }
+            }
+        }
+        // No sensed cell: return default (e.g., black)
+        return new CellType(0, 0, 0);
     }
 }

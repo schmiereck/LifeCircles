@@ -15,14 +15,18 @@ import java.util.Random;
  * erzeugt mutierte Nachkommen und ersetzt die Population.
  */
 public class HighPositionTrainStrategy implements TrainStrategy {
-    private static final int INITIAL_COUNT = 60;
-    private static final int GENERATION_STEP = 3000;
+    private static final int INITIAL_COUNT = 20;
+    private static final int GENERATION_STEP = 500;
     private static final double SELECTION_PERCENT = 0.2;
     private final SimulationConfig config = SimulationConfig.getInstance();
     private long stepCounter = 0;
 
     @Override
     public void initialize(Environment environment) {
+        // Add ground blocker by default
+        environment.addGroundBlocker();
+        //environment.addSunBlocker();
+
         Random random = new Random();
         for (int i = 0; i < INITIAL_COUNT; i++) {
             double x = random.nextDouble() * config.getWidth();

@@ -16,7 +16,7 @@ import java.util.Random;
  * erzeugt mutierte Nachkommen und ersetzt die Population.
  */
 public class HighEnergyTrainStrategy implements TrainStrategy {
-    private static final int INITIAL_COUNT = 60;
+    private static final int INITIAL_COUNT = 20;
     private static final int GENERATION_STEP = 3000;
     private static final double SELECTION_PERCENT = 0.2;
     private final SimulationConfig config = SimulationConfig.getInstance();
@@ -24,6 +24,10 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
 
     @Override
     public void initialize(Environment environment) {
+        // Add ground blocker by default
+        environment.addGroundBlocker();
+        environment.addSunBlocker();
+
         // Initiale Population
         Random random = new Random();
         for (int i = 0; i < INITIAL_COUNT; i++) {

@@ -45,11 +45,33 @@ public class ActorSensorCellCalcService {
     }
 
     private static void processInteraction(Cell cell1, Cell cell2, double deltaTime) {
+        // reset any previous sensed references
+        for (SensorActor actor : cell1.getSensorActors()) {
+            actor.setSensedActor(null);
+            actor.setSensedCell(null);
+        }
+        for (SensorActor actor : cell2.getSensorActors()) {
+            actor.setSensedActor(null);
+            actor.setSensedCell(null);
+        }
+
         for (SensorActor actor1 : cell1.getSensorActors()) {
             for (SensorActor actor2 : cell2.getSensorActors()) {
                 // Calculate and apply forces between sensor actors
                 Vector2D force1to2 = calculateForceOn(actor1, actor2);
                 Vector2D force2to1 = calculateForceOn(actor2, actor1);
+
+                // integrate sensing logic
+                double senseValue1 = sense(actor1, actor2);
+                if (senseValue1 != 0) {
+                    actor1.setSensedActor(actor2);
+                    actor1.setSensedCell(cell2);
+                }
+                double senseValue2 = sense(actor2, actor1);
+                if (senseValue2 != 0) {
+                    actor2.setSensedActor(actor1);
+                    actor2.setSensedCell(cell1);
+                }
 
                 cell2.applyForce(force1to2, actor2.getPosition(), deltaTime);
                 cell1.applyForce(force2to1, actor1.getPosition(), deltaTime);

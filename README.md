@@ -51,8 +51,22 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
+
+* Berechne die Temporären Positionen der SensorAktor Punkte nur einmal in einem Step, nachdem die Positionen der Zellen berechnet wurden.
+  Lege diese in dem SensorAktor ab und verwende diese für die weiteren Berechnungen, so das die Positionen nicht immer neu berechnet werden müssen.
+
 * Füge zu der Zelle einen internen GenerationCounter hinzu um im Training ermitteln zu können, in welcher Generation eine Zelle ist.
   * Erhöhe den Counter beim Child, wenn sich eine Zelle teilt.
+
+# DONE
+
+* Füge im CellBrain dem jeweiligen Sensor-Input zusätzlich den Typ des eigenen Aktors hinzu sowie dessen Ausgabe Stärke.
+
+* Lege in jedem SensorActor eine temporäre Variable "sensedActor" hinzu, die wir für weiter Zugriffe auf den wahrgenommenen Aktor und dessen Zelle verwenden.
+  Wir gehen davon aus, dass ein Sensor physikalisch nicht mehr als einen Aktor und seine Nachbarzelle wahrnehmen kann.
+  Erweitere den SensorActor um eine Referenz auf dessen Zelle, so das wir einfach auf deren internas zugreifen können.
+
+* Füge im CellBrain dem jeweiligen Sensor-Input zusätzlich, zum Typ des Aktors, den Typ der Zelle hinzu den der Sensor gerade wahrnimmt.
 
 * Füge einen Training-Modus "HighPosition" hinzu.
   * Orientiere Dich an der HighEnergyTrainStrategy.
@@ -62,7 +76,8 @@ Das System-Design der Anwendung soll enthalten:
   * Die Zellen werden mutiert und die Simulation wird im Training-Modus fortgesetzt.
   * launch.json: java -jar target/LifeCircles.jar --trainMode=HIGH_POSITION
 
-# DONE
+* Berechne den Partitionierungs-Algorithmus für die Berechnung der Interaktionen nur einmal in einem Step, nachdem die Positionen der Zellen berechnet wurden.
+  Übergebe ihn allen Funktionen die ihn benötigen als Argument.
 
 * Die Anwendung solle einen Train-Modus bekommen in der wir den zellen spezielle verhalten antrainieren können.
   * In dem Modus sollen eigene Umgebungen mit dem Blocker verwendet werden. Die Blocker werden je nach Modus gezielt plaziert.

@@ -47,15 +47,9 @@ public class Environment {
         this.config = SimulationConfig.getInstance();
         this.sunRays = new ArrayList<>();
         this.energySunCalcService = new EnergySunCalcService();
-
-        // Add ground blocker by default
-        addGroundBlocker();
-        if (config.getTrainMode() == TrainMode.NONE) {
-            addSunBlocker();
-        }
     }
 
-    private void addGroundBlocker() {
+    public void addGroundBlocker() {
         Blocker ground = new Blocker(
             new Vector2D(width/2, height - 10), // Position at bottom
             width,                              // Full width
@@ -66,7 +60,7 @@ public class Environment {
         blockers.add(ground);
     }
 
-    private void addSunBlocker() {
+    public void addSunBlocker() {
         Blocker sunBlocker = new Blocker(
             new Vector2D(width/4, height - height/8), // Position at bottom
             width/6,                              // Full width
@@ -96,8 +90,9 @@ public class Environment {
     /**
      * Updates the simulation state.
      * @param deltaTime Time step in seconds
+     * @param partitioner Pre-built partitioning strategy for interactions
      */
-    public void update(double deltaTime) {
+    public void update(double deltaTime, PartitioningStrategy partitioner) {
         // Calculate sun energy rays
         sunRays.clear();
         sunRays.addAll(
@@ -106,10 +101,7 @@ public class Environment {
             )
         );
 
-        // Choose partitioning strategy: QuadTree or SpatialGrid
-        //PartitioningStrategy partitioner = new QuadTreePartitioningStrategy(width, height);
-        // For spatial grid strategy, uncomment below:
-        PartitioningStrategy partitioner = PartitioningStrategyFactory.createStrategy(width, height, Cell.getMaxSize());
+        // Using provided partitioner for interactions
         partitioner.build(cells);
         // Process sensor/actor interactions
         ActorSensorCellCalcService.processInteractions(cells, deltaTime, partitioner);

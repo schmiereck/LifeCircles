@@ -15,6 +15,10 @@ public class DefaultTrainStrategy implements TrainStrategy {
 
     @Override
     public void initialize(Environment environment) {
+        // Add ground blocker by default
+        environment.addGroundBlocker();
+        environment.addSunBlocker();
+
         Random random = new Random();
         for (int i = 0; i < config.getInitialCellCount(); i++) {
             double x = random.nextDouble() * config.getWidth();
