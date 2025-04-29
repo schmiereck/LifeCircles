@@ -51,7 +51,19 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
+* Energieübertragung als Input spüren.
+  * Im Sensor ablegen, so das die Zelle spührt, von welcher Stelle die Energie herkam.
+  * Energie von SunRay.
+  * Energie von anderer Zelle.
+
+* Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
+
 # DONE
+
+* Prüfe nochmals, ob die aktuell verwendete SpatialGridPartitioningStrategy die Partitionierung richtig im Zusammenhang mit der maximalen Zellgröße verwendet.
+
+* CellBrain.findFirstSensedCell und CellBrain.findFirstSensedActor sollen die sensedActor sensedCell temporär Variablen des SensorActors verwenden.
+  Prüfe nochmals, ob diese auch korrekt an der richtigen Stelle gesetzt werden.
 
 * Füge zu der Zelle einen internen GenerationCounter hinzu um im Training ermitteln zu können, in welcher Generation eine Zelle ist.
   * Erhöhe den Counter beim Child, wenn sich eine Zelle teilt.

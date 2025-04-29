@@ -33,8 +33,8 @@ public class Environment {
     private final SimulationConfig config;
     private final EnergySunCalcService energySunCalcService;
     private final List<SunRay> sunRays;
-    private final double width;
-    private final double height;
+    private double width;
+    private double height;
     private final List<Cell> cells;
     private final List<Blocker> blockers;
     private Cell lastDeadCell;
@@ -241,5 +241,13 @@ public class Environment {
     public void resetCells(List<Cell> newCells) {
         cells.clear();
         cells.addAll(newCells);
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
     }
 }

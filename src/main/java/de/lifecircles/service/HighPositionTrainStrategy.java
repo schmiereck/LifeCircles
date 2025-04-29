@@ -23,6 +23,9 @@ public class HighPositionTrainStrategy implements TrainStrategy {
 
     @Override
     public void initialize(Environment environment) {
+        environment.setWidth(800);
+        environment.setHeight(600);
+
         // Add ground blocker by default
         environment.addGroundBlocker();
         //environment.addSunBlocker();
