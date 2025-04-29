@@ -25,7 +25,7 @@ import de.lifecircles.service.TrainMode;
  * Manages physics simulation and cell interactions.
  */
 public class Environment {
-    private static final double VISCOSITY = 0.75;
+    private static final double VISCOSITY = 1.75;
     private static final double GRAVITY = 9.81;
     private static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
     private static final Random random = new Random();
