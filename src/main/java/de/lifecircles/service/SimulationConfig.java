@@ -5,8 +5,8 @@ package de.lifecircles.service;
  */
 public class SimulationConfig {
     public static final double SCALE_SIMULATION = 2.0D;
-    private double width = 500 * SCALE_SIMULATION;
-    private double height = 600 * SCALE_SIMULATION;
+    private double width = 1024 * 2;// * SCALE_SIMULATION;
+    private double height = 1200;// * SCALE_SIMULATION;
     private int targetUpdatesPerSecond = 60;
     private double timeStep = 1.0D / targetUpdatesPerSecond; // 60 Hz simulation
     

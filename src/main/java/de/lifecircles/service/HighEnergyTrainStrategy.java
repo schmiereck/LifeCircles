@@ -17,7 +17,7 @@ import java.util.Random;
  */
 public class HighEnergyTrainStrategy implements TrainStrategy {
     private static final int INITIAL_COUNT = 20;
-    private static final int GENERATION_STEP = 3000;
+    private static final int GENERATION_STEP = 800;
     private static final double SELECTION_PERCENT = 0.2;
     private final SimulationConfig config = SimulationConfig.getInstance();
     private long stepCounter = 0;

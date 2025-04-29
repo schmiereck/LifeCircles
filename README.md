@@ -51,14 +51,19 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
-
-* Berechne die Temporären Positionen der SensorAktor Punkte nur einmal in einem Step, nachdem die Positionen der Zellen berechnet wurden.
-  Lege diese in dem SensorAktor ab und verwende diese für die weiteren Berechnungen, so das die Positionen nicht immer neu berechnet werden müssen.
+# DONE
 
 * Füge zu der Zelle einen internen GenerationCounter hinzu um im Training ermitteln zu können, in welcher Generation eine Zelle ist.
   * Erhöhe den Counter beim Child, wenn sich eine Zelle teilt.
 
-# DONE
+* Füge für die Inputs des CellBrain die nicht von Sensor abhängen ebenfalls einen Enum ein und verwende den ordinal für den Zugriff auf den Input.
+
+* Füge zum Cellbrain einen Input pro eigenen Sensor für den ActorType des Sensed-Actors hinzu.
+
+* Füge zum Cellbrain einen Input für die eigene ForceStrength pro Actor hinzu.
+
+* Berechne die Temporären Positionen der SensorAktor Punkte nur einmal in einem Step, nachdem die Positionen der Zellen berechnet wurden.
+  Lege diese in dem SensorAktor ab und verwende diese für die weiteren Berechnungen, so das die Positionen nicht immer neu berechnet werden müssen.
 
 * Füge im CellBrain dem jeweiligen Sensor-Input zusätzlich den Typ des eigenen Aktors hinzu sowie dessen Ausgabe Stärke.
 

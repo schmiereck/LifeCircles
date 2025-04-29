@@ -47,15 +47,19 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         }
         int winnersCount = Math.max(1, (int) (cells.size() * SELECTION_PERCENT));
         // Sortiere nach Y-Koordinate aufsteigend (höhere Zellen oben)
-        cells.sort(Comparator.comparingDouble(c -> c.getPosition().getY()));
+        //cells.sort(Comparator.comparingDouble((Cell c) -> c.getPosition().getY()).reversed());
+        cells.sort(Comparator.comparingDouble((Cell c) -> c.getPosition().getY()));
         List<Cell> winners = new ArrayList<>(cells.subList(0, winnersCount));
+        winners.forEach(cell -> cell.setEnergy(Cell.MAX_ENERGY));
         List<Cell> nextGen = new ArrayList<>();
         nextGen.addAll(winners);
         Random random = new Random();
         // Fülle bis INITIAL_COUNT mit mutierten Nachkommen auf
         while (nextGen.size() < INITIAL_COUNT) {
             Cell parent = winners.get(random.nextInt(winnersCount));
-            nextGen.add(ReproductionManager.reproduce(config, parent));
+            Cell child = ReproductionManager.reproduce(config, parent);
+            nextGen.add(child);
+            child.setEnergy(Cell.MAX_ENERGY);
         }
         environment.resetCells(nextGen);
     }

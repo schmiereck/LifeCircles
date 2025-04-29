@@ -67,6 +67,9 @@ public class ReproductionManager {
         // Create mutated brain for child
         child.setBrain(parent.getBrain().mutate(child));
 
+        // Inherit and increment generation counter
+        child.setGeneration(parent.getGeneration() + 1);
+
         return child;
     }
 

@@ -16,6 +16,8 @@ public class SensorActor {
     // temporarily stores the sensed actor and its cell
     private SensorActor sensedActor;
     private Cell sensedCell;
+    // cached position for current simulation step
+    private Vector2D cachedPosition;
 
     public SensorActor(Cell parentCell, double angleOnCell) {
         this.parentCell = parentCell;
@@ -27,6 +29,7 @@ public class SensorActor {
         this.fireEnergyBeam = false;
         this.sensedActor = null;
         this.sensedCell = null;
+        this.cachedPosition = null;
     }
 
     //public Vector2D getPosition() {
@@ -87,4 +90,18 @@ public class SensorActor {
     /** References the cell of the sensed actor */
     public Cell getSensedCell() { return sensedCell; }
     public void setSensedCell(Cell sensedCell) { this.sensedCell = sensedCell; }
+
+    /**
+     * Computes and stores the current position of this sensor actor.
+     */
+    public void updateCachedPosition() {
+        this.cachedPosition = getPosition();
+    }
+
+    /**
+     * Returns the cached position computed for this simulation step.
+     */
+    public Vector2D getCachedPosition() {
+        return cachedPosition;
+    }
 }

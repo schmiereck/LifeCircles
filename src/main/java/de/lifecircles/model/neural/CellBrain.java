@@ -6,6 +6,7 @@ import de.lifecircles.model.SensorActor;
 import de.lifecircles.model.reproduction.ReproductionManager;
 import de.lifecircles.service.ActorSensorCellCalcService;
 import de.lifecircles.model.neural.SensorInputFeature;
+import de.lifecircles.model.neural.GlobalInputFeature;
 
 import java.util.List;
 import java.util.Random;
@@ -77,43 +78,54 @@ public class CellBrain {
 
 
     private double[] generateInputs(List<Cell> neighbors) {
-        List<SensorActor> actors = cell.getSensorActors();
-        int actorCount = actors.size();
+        List<SensorActor> myActorList = cell.getSensorActors();
+        int actorCount = myActorList.size();
         int totalInputs = network.getInputCount();
         double[] inputs = new double[totalInputs];
 
         // Sensor inputs per actor using enum ordinals
         for (int i = 0; i < actorCount; i++) {
-            SensorActor actor = actors.get(i);
+            SensorActor maActor = myActorList.get(i);
             int base = i * SENSOR_INPUTS_PER_ACTOR;
-            CellType actorType = actor.getType();
-            inputs[base + SensorInputFeature.ACTOR_RED.ordinal()] = actorType.getRed();
-            inputs[base + SensorInputFeature.ACTOR_GREEN.ordinal()] = actorType.getGreen();
-            inputs[base + SensorInputFeature.ACTOR_BLUE.ordinal()] = actorType.getBlue();
-            inputs[base + SensorInputFeature.FORCE_STRENGTH.ordinal()] = actor.getForceStrength();
-            CellType sensed = findFirstSensedCell(actor, neighbors);
-            inputs[base + SensorInputFeature.SENSED_RED.ordinal()] = sensed.getRed();
-            inputs[base + SensorInputFeature.SENSED_GREEN.ordinal()] = sensed.getGreen();
-            inputs[base + SensorInputFeature.SENSED_BLUE.ordinal()] = sensed.getBlue();
+            CellType myActorType = maActor.getType();
+            inputs[base + SensorInputFeature.ACTOR_RED.ordinal()] = myActorType.getRed();
+            inputs[base + SensorInputFeature.ACTOR_GREEN.ordinal()] = myActorType.getGreen();
+            inputs[base + SensorInputFeature.ACTOR_BLUE.ordinal()] = myActorType.getBlue();
+            inputs[base + SensorInputFeature.FORCE_STRENGTH.ordinal()] = maActor.getForceStrength();
+            CellType sensedCellType = findFirstSensedCell(maActor, neighbors);
+            inputs[base + SensorInputFeature.SENSED_RED.ordinal()] = sensedCellType.getRed();
+            inputs[base + SensorInputFeature.SENSED_GREEN.ordinal()] = sensedCellType.getGreen();
+            inputs[base + SensorInputFeature.SENSED_BLUE.ordinal()] = sensedCellType.getBlue();
+            inputs[base + SensorInputFeature.SENSED_FORCE_STRENGTH.ordinal()] = findFirstSensedActorForce(maActor, neighbors);
+            // Sensed actor color inputs
+            SensorActor sensedActor = findFirstSensedActor(maActor, neighbors);
+            if (sensedActor != null) {
+                CellType sensedActorType = sensedActor.getType();
+                inputs[base + SensorInputFeature.SENSED_ACTOR_RED.ordinal()] = sensedActorType.getRed();
+                inputs[base + SensorInputFeature.SENSED_ACTOR_GREEN.ordinal()] = sensedActorType.getGreen();
+                inputs[base + SensorInputFeature.SENSED_ACTOR_BLUE.ordinal()] = sensedActorType.getBlue();
+            } else {
+                inputs[base + SensorInputFeature.SENSED_ACTOR_RED.ordinal()] = 0.0;
+                inputs[base + SensorInputFeature.SENSED_ACTOR_GREEN.ordinal()] = 0.0;
+                inputs[base + SensorInputFeature.SENSED_ACTOR_BLUE.ordinal()] = 0.0;
+            }
         } 
 
-        // Cell type inputs
-        int index = actorCount * SENSOR_INPUTS_PER_ACTOR;
+        // Global inputs (cell type, environment type, energy)
+        int baseGlobal = actorCount * SENSOR_INPUTS_PER_ACTOR;
         CellType cellType = cell.getType();
-        inputs[index++] = cellType.getRed();
-        inputs[index++] = cellType.getGreen();
-        inputs[index++] = cellType.getBlue();
+        inputs[baseGlobal + GlobalInputFeature.CELL_RED.ordinal()] = cellType.getRed();
+        inputs[baseGlobal + GlobalInputFeature.CELL_GREEN.ordinal()] = cellType.getGreen();
+        inputs[baseGlobal + GlobalInputFeature.CELL_BLUE.ordinal()] = cellType.getBlue();
 
-        // Environment type inputs (average of surrounding cells)
         CellType avgSurroundingType = CellType.mix(
             neighbors.stream().map(Cell::getType).toArray(CellType[]::new)
         );
-        inputs[index++] = avgSurroundingType.getRed();
-        inputs[index++] = avgSurroundingType.getGreen();
-        inputs[index++] = avgSurroundingType.getBlue();
+        inputs[baseGlobal + GlobalInputFeature.ENV_RED.ordinal()] = avgSurroundingType.getRed();
+        inputs[baseGlobal + GlobalInputFeature.ENV_GREEN.ordinal()] = avgSurroundingType.getGreen();
+        inputs[baseGlobal + GlobalInputFeature.ENV_BLUE.ordinal()] = avgSurroundingType.getBlue();
 
-        // Energy input
-        inputs[index++] = cell.getEnergy();
+        inputs[baseGlobal + GlobalInputFeature.ENERGY.ordinal()] = cell.getEnergy();
 
         return inputs;
     }
@@ -166,5 +178,35 @@ public class CellBrain {
         }
         // No sensed cell: return default (e.g., black)
         return new CellType(0, 0, 0);
+    }
+
+    /**
+     * Returns the force strength of the first sensed actor, or 0 if none.
+     */
+    private double findFirstSensedActorForce(SensorActor actor, List<Cell> neighbors) {
+        for (Cell otherCell : neighbors) {
+            for (SensorActor otherActor : otherCell.getSensorActors()) {
+                double intensity = ActorSensorCellCalcService.sense(actor, otherActor);
+                if (intensity != 0) {
+                    return otherActor.getForceStrength();
+                }
+            }
+        }
+        return 0.0;
+    }
+
+    /**
+     * Returns the first sensed SensorActor from neighbors, or null if none.
+     */
+    private SensorActor findFirstSensedActor(SensorActor actor, List<Cell> neighbors) {
+        for (Cell otherCell : neighbors) {
+            for (SensorActor otherActor : otherCell.getSensorActors()) {
+                double intensity = ActorSensorCellCalcService.sense(actor, otherActor);
+                if (intensity != 0) {
+                    return otherActor;
+                }
+            }
+        }
+        return null;
     }
 }

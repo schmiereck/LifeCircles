@@ -21,6 +21,12 @@ public class ActorSensorCellCalcService {
      * @param deltaTime the time elapsed since last update
      */
     public static void processInteractions(List<Cell> cells, double deltaTime) {
+        // cache positions for all sensorActors in this simulation step
+        for (Cell cell : cells) {
+            for (SensorActor actor : cell.getSensorActors()) {
+                actor.updateCachedPosition();
+            }
+        }
         for (int i = 0; i < cells.size(); i++) {
             Cell cell1 = cells.get(i);
             for (int j = i + 1; j < cells.size(); j++) {
@@ -34,6 +40,12 @@ public class ActorSensorCellCalcService {
      * Optimized processing of sensor/actor interactions using a partitioning strategy.
      */
     public static void processInteractions(List<Cell> cells, double deltaTime, PartitioningStrategy partitioner) {
+        // cache positions for all sensorActors in this simulation step
+        for (Cell cell : cells) {
+            for (SensorActor actor : cell.getSensorActors()) {
+                actor.updateCachedPosition();
+            }
+        }
         for (int i = 0; i < cells.size(); i++) {
             Cell cell1 = cells.get(i);
             for (Cell cell2 : partitioner.getNeighbors(cell1)) {
@@ -73,8 +85,8 @@ public class ActorSensorCellCalcService {
                     actor2.setSensedCell(cell1);
                 }
 
-                cell2.applyForce(force1to2, actor2.getPosition(), deltaTime);
-                cell1.applyForce(force2to1, actor1.getPosition(), deltaTime);
+                cell2.applyForce(force1to2, actor2.getCachedPosition(), deltaTime);
+                cell1.applyForce(force2to1, actor1.getCachedPosition(), deltaTime);
             }
         }
     }
@@ -85,7 +97,7 @@ public class ActorSensorCellCalcService {
      * @return The sensed type intensity between -1 and 1, or 0 if out of range
      */
     public static double sense(SensorActor sensorActor, SensorActor other) {
-        double distance = sensorActor.getPosition().distance(other.getPosition());
+        double distance = sensorActor.getCachedPosition().distance(other.getCachedPosition());
         int totalSensors = sensorActor.getParentCell().getSensorActors().size();
         double chord = sensorActor.getParentCell().getSize() * Math.sin(Math.PI / totalSensors);
         if (distance > chord) {
@@ -103,7 +115,7 @@ public class ActorSensorCellCalcService {
      * @return Force vector (direction and magnitude)
      */
     public static Vector2D calculateForceOn(SensorActor sensorActor, SensorActor other) {
-        Vector2D direction = other.getPosition().subtract(sensorActor.getPosition());
+        Vector2D direction = other.getCachedPosition().subtract(sensorActor.getCachedPosition());
         double distance = direction.length();
         if (distance == 0) {
             return new Vector2D(0, 0);

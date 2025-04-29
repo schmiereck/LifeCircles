@@ -31,6 +31,7 @@ public class Cell {
     private double energy;
     private double age; // in seconds
     private double reproductionDesire; // neural net output for reproduction
+    private int generation; // generation counter
 
     public Cell(Vector2D position, final double size) {
         this.position = position;
@@ -45,6 +46,7 @@ public class Cell {
         this.energy = MAX_ENERGY;
         this.age = 0.0;
         this.reproductionDesire = 0.0;
+        this.generation = 0; // initialize generation counter
     }
 
     private void initializeSensorActors() {
@@ -189,5 +191,19 @@ public class Cell {
 
     public CellBrain getBrain() {
         return this.brain;
+    }
+
+    /**
+     * Returns the generation counter of this cell.
+     */
+    public int getGeneration() {
+        return generation;
+    }
+
+    /**
+     * Sets the generation counter of this cell.
+     */
+    public void setGeneration(int generation) {
+        this.generation = generation;
     }
 }
