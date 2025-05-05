@@ -92,16 +92,20 @@ public class NeuralNetwork {
         }
 
         // process output layer
-        for (Neuron neuron : outputNeurons) {
+        for (Neuron neuron : this.outputNeurons) {
             neuron.activate();
         }
 
         // Collect outputs
-        double[] outputs = new double[outputNeurons.size()];
-        for (int i = 0; i < outputs.length; i++) {
-            outputs[i] = outputNeurons.get(i).getValue();
+        double[] outputs = new double[this.outputNeurons.size()];
+        for (int outputNeuronPos = 0; outputNeuronPos < outputs.length; outputNeuronPos++) {
+            outputs[outputNeuronPos] = this.getOutput(outputNeuronPos);
         }
         return outputs;
+    }
+
+    public double getOutput(final int outputNeuronPos) {
+        return this.outputNeurons.get(outputNeuronPos).getValue();
     }
 
     /**

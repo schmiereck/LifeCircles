@@ -3,6 +3,8 @@ package de.lifecircles.service;
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.SensorActor;
 import de.lifecircles.model.Vector2D;
+import de.lifecircles.model.neural.SensorInputFeature;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +16,11 @@ public class EnergyTransferCellCalcService {
     private static final double MAX_ENERGY_TRANSFER = 0.01;
     // Minimum energy threshold for transfer
     private static final double MIN_ENERGY_FOR_TRANSFER = 0.1;
+    // Threshold for energy absorption (output value)
+    private static final double ENERGY_ABSORPTION_THRESHOLD = 0.9;
 
     /**
-     * Processes energy transfer between cells based on sensor-actor interactions.
+     * Processes energy transfer and absorption between cells based on sensor-actor interactions.
      * @param cells list of cells in the environment
      * @param deltaTime time step in seconds
      */
@@ -29,32 +33,42 @@ public class EnergyTransferCellCalcService {
                 if (!sensor.shouldFireEnergyBeam()) continue;
 
                 // Find nearby cells that can receive energy
-                for (Cell other : partitioner.getNeighbors(cell)) {
+                List<Cell> nearbyCells = partitioner.getNeighbors(cell);
+                for (Cell other : nearbyCells) {
                     if (other == cell) continue;
-                    
-                    // Check if any of the other cell's actors are within range
-                    boolean canTransfer = false;
+                    if (other.getEnergy() <= 0) continue; // Skip cells with no energy
+
+                    // Check if any of other's actors should receive energy
                     for (SensorActor otherActor : other.getSensorActors()) {
-                        double distance = sensor.getPosition().subtract(otherActor.getPosition()).length();
-                        if (distance < sensor.getForceStrength() * Cell.getMaxSize()) {
-                            canTransfer = true;
+                        double intensity = ActorSensorCellCalcService.sense(sensor, otherActor);
+                        if (intensity != 0) {
+                            // Check if this is an absorption attempt
+                            double absorptionOutput = cell.getBrain().getNetwork().getOutput(SensorInputFeature.ENERGY_ABSORPTION.ordinal());
+                            if (absorptionOutput >= ENERGY_ABSORPTION_THRESHOLD) {
+                                // Calculate energy absorption amount
+                                double absorptionAmount = Math.min(
+                                    MAX_ENERGY_TRANSFER,
+                                    other.getEnergy() * deltaTime
+                                );
+                                
+                                // Absorb energy from other cell
+                                cell.setEnergy(cell.getEnergy() + absorptionAmount);
+                                other.setEnergy(other.getEnergy() - absorptionAmount);
+                            } else {
+                                // Regular energy transfer
+                                double transferAmount = Math.min(
+                                    MAX_ENERGY_TRANSFER,
+                                    cell.getEnergy() * deltaTime
+                                );
+                                
+                                // Transfer energy
+                                cell.setEnergy(cell.getEnergy() - transferAmount);
+                                other.setEnergy(other.getEnergy() + transferAmount);
+                            }
+                            
+                            // Break after first successful transfer/absorption
                             break;
                         }
-                    }
-
-                    if (canTransfer) {
-                        // Calculate energy transfer amount
-                        double transferAmount = Math.min(
-                            MAX_ENERGY_TRANSFER,
-                            cell.getEnergy() * deltaTime
-                        );
-                        
-                        // Transfer energy
-                        cell.setEnergy(cell.getEnergy() - transferAmount);
-                        other.setEnergy(other.getEnergy() + transferAmount);
-                        
-                        // Break after first successful transfer
-                        break;
                     }
                 }
             }

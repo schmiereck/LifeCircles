@@ -4,16 +4,17 @@ package de.lifecircles.model.neural;
  * Enum defining feature indices for each SensorActor input block.
  */
 public enum SensorInputFeature {
-    ACTOR_RED,
-    ACTOR_GREEN,
-    ACTOR_BLUE,
+    MY_ACTOR_RED,
+    MY_ACTOR_GREEN,
+    MY_ACTOR_BLUE,
     FORCE_STRENGTH,
-    SENSED_RED,
-    SENSED_GREEN,
-    SENSED_BLUE,
+    SENSED_CELL_TYPE_RED,
+    SENSED_CELL_TYPE_GREEN,
+    SENSED_CELL_TYPE_BLUE,
     SENSED_FORCE_STRENGTH,
-    SENSED_ACTOR_RED,
-    SENSED_ACTOR_GREEN,
-    SENSED_ACTOR_BLUE,
-    TOP_POSITION
+    SENSED_ACTOR_TYPE_RED,
+    SENSED_ACTOR_TYPE_GREEN,
+    SENSED_ACTOR_TYPE_BLUE,
+    TOP_POSITION,
+    ENERGY_ABSORPTION
 }

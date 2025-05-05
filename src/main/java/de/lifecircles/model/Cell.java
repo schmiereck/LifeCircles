@@ -18,7 +18,7 @@ public class Cell {
     private static final double MIN_SIZE = 10.0;
     private static final double MAX_SIZE = 50.0;
     public static final double MAX_ENERGY = 1.0;
-    private static final int TEMP_THINK_HACK_COUNTER_MAX = 10;
+    private static final int TEMP_THINK_HACK_COUNTER_MAX = 20;
 
     private Vector2D position;
     private Vector2D velocity;
