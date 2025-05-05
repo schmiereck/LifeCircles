@@ -51,12 +51,12 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
-* Fühlen wann ein SunRay auf sich trifft.
-
-* Aktiv Energie über Actor vom Nachbar-Sensor absaugen können (Räuber).
+* Eine Zelle soll aktiv Energie über einen Actor vom Nachbar-Sensor absaugen können (Räuber).
+  Füge einen neuen SensorInputFeature für das Energie-Absaugen hinzu und verwende diesen als Input für das CellBrain.
+  Wenn also ein Sensor einen Aktor einer anderen Zelle spürt, soll er, wenn der entsprechende Output dies signalisiert, die Energie der Zelle absaugen.
 
 * Berechnungen des CellBrain nur alle n-Steps.
-  * Small Manager-brain als Steuerung wie oft Sub-Brains for special-Tasks are updated.
+  * Small Manager-Brain als Steuerung wie oft Sub-Brains for special-Tasks are updated.
   * Neu Neuron-Type/ or Input for time depending things (level up a Number and reset if a Value is reached).
 
 * Age als Kurve und Input.
@@ -71,6 +71,8 @@ Das System-Design der Anwendung soll enthalten:
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
 # DONE
+
+* Eine Zelle soll fühlen, wenn ein SunRay auf sie trifft.
 
 * Der Energieaustausch zwischen Zellen soll über die Sensoren und Aktoren erfolgen und nicht über Rays.
   Wenn also ein Sensor einen Aktor einer anderen Zelle spürt, soll er, wenn der entsprechende Output dies signalisiert, die Energie der Zelle abgeben.

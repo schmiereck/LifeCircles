@@ -8,5 +8,6 @@ public enum GlobalInputFeature {
     CELL_GREEN,
     CELL_BLUE,
     ENERGY,
-    AGE
+    AGE,
+    SUNRAY_HIT
 }

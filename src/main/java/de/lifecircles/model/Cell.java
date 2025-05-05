@@ -32,6 +32,7 @@ public class Cell {
     private double age; // in seconds
     private double reproductionDesire; // neural net output for reproduction
     private int generation; // generation counter
+    private boolean sunRayHit = false; // Flag to indicate if cell was hit by sun ray
 
     private int tempThinkHackCounter = 0;
 
@@ -99,6 +100,22 @@ public class Cell {
 
     public void setRotation(double rotation) {
         this.rotation = rotation;
+    }
+
+    /**
+     * Notifies the cell that it has been hit by a SunRay.
+     * This method can be used to trigger cell behavior changes when hit by sunlight.
+     */
+    public void notifySunRayHit() {
+        sunRayHit = true;
+    }
+
+    public void resetSunRayHit() {
+        sunRayHit = false;
+    }
+
+    public boolean isSunRayHit() {
+        return sunRayHit;
     }
 
     public double getAngularVelocity() {

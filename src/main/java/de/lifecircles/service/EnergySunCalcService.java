@@ -63,6 +63,7 @@ public class EnergySunCalcService {
             if (hitCell != null && nearestCellHitY <= nearestBlockerHitY) {
                 endY = nearestCellHitY;
                 hitCell.setEnergy(hitCell.getEnergy() + config.getEnergyPerRay());
+                hitCell.notifySunRayHit();
             } else if (nearestBlockerHitY < Double.MAX_VALUE) {
                 endY = nearestBlockerHitY;
             } else {

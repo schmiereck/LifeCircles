@@ -26,6 +26,7 @@ public class CellBrainService {
 
         inputs[GlobalInputFeature.ENERGY.ordinal()] = cell.getEnergy();
         inputs[GlobalInputFeature.AGE.ordinal()] = cell.getAge();
+        inputs[GlobalInputFeature.SUNRAY_HIT.ordinal()] = cell.isSunRayHit() ? 1.0 : 0.0;
 
         int baseGlobal = GlobalInputFeature.values().length;
 
