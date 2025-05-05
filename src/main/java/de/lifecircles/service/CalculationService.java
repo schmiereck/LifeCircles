@@ -122,7 +122,7 @@ public class CalculationService implements Runnable {
         trainStrategy.selectAndMutate(environment);
 
         // Update state for visualization
-        updateState();
+        //updateState();
     }
 
     private void updateState() {
@@ -165,7 +165,8 @@ public class CalculationService implements Runnable {
 
     public SimulationState getLatestState() {
         synchronized (stateLock) {
-            return latestState;
+            this.updateState();
+           return this.latestState;
         }
     }
 

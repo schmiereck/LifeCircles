@@ -54,9 +54,6 @@ Das System-Design der Anwendung soll enthalten:
 * Füge im SimulationState einen Timestamp hinzu und
   verwende diesen, um nur dann ein neues DTO-Objekt zu erzeugen, wenn sich die Simulation wirklich geändert hat.
 
-* Stelle die Berechnung des SimulationState DTO-Objektes so um, dass es vom View nach 30 FPS asynchron angefordert wird und 
-  nicht nach jedem Calc-Step erzeugt wird.
-
 * Berechnungen des CellBrain nur alle n-Steps.
   * Small Manager-Brain als Steuerung wie oft Sub-Brains for special-Tasks are updated.
   * Neu Neuron-Type/ or Input for time depending things (level up a Number and reset if a Value is reached).
@@ -73,6 +70,10 @@ Das System-Design der Anwendung soll enthalten:
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
 # DONE
+
+* Stelle die Berechnung des SimulationState DTO-Objektes so um, dass es vom View nach 30 FPS asynchron angefordert wird und 
+  nicht nach jedem Calc-Step erzeugt wird.
+  Stelle die Funktion getLatestState() so um, dass der SimulationState nur angelegt wird, wenn er vom View angefordert wird.
 
 * Füge eine Konstante in der SimulationConfig ein die definiert, nach wie vielen Steps eine Zelle stirbt.
   * Füge an dieser Stelle eine Funktion hinzu, die die Zellen entfernt, die nicht mehr aktiv sind.
