@@ -12,6 +12,8 @@ public class NeuralNetwork {
     private final List<Synapse> synapses;
     private final Random random = new Random();
 
+    private static final double DEFAULT_MUTATION_RATE = 0.25;
+
     /**
      * Constructs a network with a single hidden layer.
      */
@@ -143,56 +145,83 @@ public class NeuralNetwork {
     }
 
     /**
-     * Mutates the network's weights and biases.
-     */
-    public void mutate2(double mutationRate, double mutationStrength) {
-        // Mutate neuron biases
-        for (Neuron neuron : getAllNeurons()) {
-            if (random.nextDouble() < mutationRate) {
-                double mutation = (random.nextDouble() * 2 - 1) * mutationStrength;
-                neuron.setBias(neuron.getBias() + mutation);
-            }
-        }
-
-        // Mutate synapse weights
-        for (Synapse synapse : synapses) {
-            if (random.nextDouble() < mutationRate) {
-                double mutation = (random.nextDouble() * 2 - 1) * mutationStrength;
-                synapse.setWeight(synapse.getWeight() + mutation);
-            }
-        }
-    }
-
-    /**
      * Creates a mutated copy of this neural network.
      * @param mutationRate Probability of each weight/bias being mutated
      * @param mutationStrength Maximum amount of mutation
      */
     public NeuralNetwork mutate(double mutationRate, double mutationStrength) {
-        // capture hidden layer sizes
+        // Create a new network with the same architecture
         int[] hiddenSizes = new int[hiddenLayers.size()];
         for (int i = 0; i < hiddenLayers.size(); i++) {
             hiddenSizes[i] = hiddenLayers.get(i).size();
         }
         NeuralNetwork mutated = new NeuralNetwork(
-                inputNeurons.size(),
-                hiddenSizes,
-                outputNeurons.size()
+            inputNeurons.size(),
+            hiddenSizes,
+            outputNeurons.size()
         );
 
-        // copy and potentially mutate input neurons
-        copyAndMutateNeurons(inputNeurons, mutated.inputNeurons, mutationRate, mutationStrength);
-        // copy and potentially mutate hidden layers
-        for (int i = 0; i < hiddenLayers.size(); i++) {
-            copyAndMutateNeurons(hiddenLayers.get(i), mutated.hiddenLayers.get(i), mutationRate, mutationStrength);
+        // Copy all neurons
+        for (int i = 0; i < inputNeurons.size(); i++) {
+            mutated.inputNeurons.get(i).setBias(inputNeurons.get(i).getBias());
         }
-        // copy and potentially mutate output neurons
-        copyAndMutateNeurons(outputNeurons, mutated.outputNeurons, mutationRate, mutationStrength);
+        for (int i = 0; i < outputNeurons.size(); i++) {
+            mutated.outputNeurons.get(i).setBias(outputNeurons.get(i).getBias());
+        }
+        for (int i = 0; i < hiddenLayers.size(); i++) {
+            for (int j = 0; j < hiddenLayers.get(i).size(); j++) {
+                mutated.hiddenLayers.get(i).get(j).setBias(hiddenLayers.get(i).get(j).getBias());
+            }
+        }
 
-        // apply structural mutations
+        // Copy all synapses
+        for (Synapse synapse : synapses) {
+            Neuron source = synapse.getSourceNeuron();
+            Neuron target = synapse.getTargetNeuron();
+            
+            // Find corresponding neurons in the new network
+            Neuron newSource = findCorrespondingNeuron(mutated, source);
+            Neuron newTarget = findCorrespondingNeuron(mutated, target);
+            
+            if (newSource != null && newTarget != null) {
+                Synapse newSynapse = new Synapse(newSource, newTarget);
+                newSynapse.setWeight(synapse.getWeight());
+            }
+        }
+
+        // Mutate weights and biases
+        for (Neuron neuron : mutated.getAllNeurons()) {
+            if (Math.random() < mutationRate) {
+                double mutation = (Math.random() * 2.0D - 1.0D) * mutationStrength;
+                neuron.setBias(neuron.getBias() + mutation);
+            }
+        }
+        for (Synapse synapse : mutated.synapses) {
+            if (Math.random() < mutationRate) {
+                double mutation = (Math.random() * 2.0D - 1.0D) * mutationStrength;
+                synapse.setWeight(synapse.getWeight() + mutation);
+            }
+        }
+
+        // Apply structural mutations
         mutated.applyStructuralMutations(mutationRate);
 
         return mutated;
+    }
+
+    private Neuron findCorrespondingNeuron(NeuralNetwork network, Neuron original) {
+        if (inputNeurons.contains(original)) {
+            return network.inputNeurons.get(inputNeurons.indexOf(original));
+        }
+        if (outputNeurons.contains(original)) {
+            return network.outputNeurons.get(outputNeurons.indexOf(original));
+        }
+        for (int i = 0; i < hiddenLayers.size(); i++) {
+            if (hiddenLayers.get(i).contains(original)) {
+                return network.hiddenLayers.get(i).get(hiddenLayers.get(i).indexOf(original));
+            }
+        }
+        return null;
     }
 
     public List<Neuron> getAllNeurons() {
@@ -222,23 +251,26 @@ public class NeuralNetwork {
 
     // Structural mutation helpers
     private void applyStructuralMutations(double mutationRate) {
-        if (random.nextDouble() < mutationRate) {
+        // Structural mutations should be much less frequent than weight/bias mutations
+        double structuralMutationRate = mutationRate * DEFAULT_MUTATION_RATE; // Only 10% of the regular mutation rate
+        
+        if (random.nextDouble() < structuralMutationRate) {
             int pos = random.nextInt(hiddenLayers.size() + 1);
             addHiddenLayer(pos, 1);
         }
-        if (!hiddenLayers.isEmpty() && random.nextDouble() < mutationRate) {
+        if (!hiddenLayers.isEmpty() && random.nextDouble() < structuralMutationRate) {
             int li = random.nextInt(hiddenLayers.size());
             addNeuronToHiddenLayer(li);
         }
-        if (!hiddenLayers.isEmpty() && random.nextDouble() < mutationRate) {
+        if (!hiddenLayers.isEmpty() && random.nextDouble() < structuralMutationRate) {
             int li = random.nextInt(hiddenLayers.size());
             removeNeuronFromHiddenLayer(li);
         }
-        if (!hiddenLayers.isEmpty() && random.nextDouble() < mutationRate) {
-            addRandomSynapseInHiddenLayers();
+        if (random.nextDouble() < structuralMutationRate) {
+            addRandomSynapse();
         }
-        if (!synapses.isEmpty() && random.nextDouble() < mutationRate) {
-            removeRandomSynapseFromHiddenLayers();
+        if (random.nextDouble() < structuralMutationRate) {
+            removeRandomSynapse();
         }
     }
 
@@ -291,27 +323,39 @@ public class NeuralNetwork {
         }
     }
 
-    public void addRandomSynapseInHiddenLayers() {
-        int li = random.nextInt(hiddenLayers.size());
-        List<Neuron> layer = hiddenLayers.get(li);
-        if (layer.size() < 2) return;
-        int i = random.nextInt(layer.size());
-        int j = random.nextInt(layer.size());
-        if (i != j) {
-            Synapse s = new Synapse(layer.get(i), layer.get(j));
-            synapses.add(s);
+    public void addRandomSynapse() {
+        // Wählen Sie zufällige Quelle und Ziel-Layer
+        List<List<Neuron>> allLayers = new ArrayList<>();
+        allLayers.add(inputNeurons);
+        allLayers.addAll(hiddenLayers);
+        allLayers.add(outputNeurons);
+        
+        int sourceLayerIndex = random.nextInt(allLayers.size());
+        int targetLayerIndex = random.nextInt(allLayers.size());
+        
+        // Make sure we're not connecting within the same layer
+        if (sourceLayerIndex == targetLayerIndex) {
+            targetLayerIndex = (sourceLayerIndex + 1) % allLayers.size();
         }
+        
+        List<Neuron> sourceLayer = allLayers.get(sourceLayerIndex);
+        List<Neuron> targetLayer = allLayers.get(targetLayerIndex);
+        
+        if (sourceLayer.isEmpty() || targetLayer.isEmpty()) return;
+        
+        // Wählen Sie zufällige Neuronen aus den beiden Layern
+        Neuron sourceNeuron = sourceLayer.get(random.nextInt(sourceLayer.size()));
+        Neuron targetNeuron = targetLayer.get(random.nextInt(targetLayer.size()));
+        
+        // Erstellen Sie die Synapse
+        Synapse s = new Synapse(sourceNeuron, targetNeuron);
+        synapses.add(s);
     }
 
-    public void removeRandomSynapseFromHiddenLayers() {
-        List<Synapse> list = new ArrayList<>();
-        for (Synapse s : synapses) {
-            if (isInHiddenLayer(s.getSourceNeuron()) && isInHiddenLayer(s.getTargetNeuron())) {
-                list.add(s);
-            }
-        }
-        if (list.isEmpty()) return;
-        Synapse rem = list.get(random.nextInt(list.size()));
+    public void removeRandomSynapse() {
+        if (synapses.isEmpty()) return;
+        
+        Synapse rem = synapses.get(random.nextInt(synapses.size()));
         rem.getSourceNeuron().getOutputSynapses().remove(rem);
         rem.getTargetNeuron().getInputSynapses().remove(rem);
         synapses.remove(rem);
@@ -331,5 +375,9 @@ public class NeuralNetwork {
 
     public List<Synapse> getSynapses() {
         return this.synapses;
+    }
+
+    public List<List<Neuron>> getHiddenLayers() {
+        return this.hiddenLayers;
     }
 }

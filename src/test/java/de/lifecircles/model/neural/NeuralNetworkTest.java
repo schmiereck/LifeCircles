@@ -46,11 +46,15 @@ public class NeuralNetworkTest {
     }
 
     public void testProblem(final double[][] inputs, final double[][] outputs) {
-        final int hiddenCount = 2;
+        final int hiddenCount = 8;
+        final int[] hiddenCountArr = new int[]{hiddenCount, hiddenCount, hiddenCount};
+        final int populationSize = 1_000;
+        final double populationMutateSize = 0.4; // x %
         // Create initial population of 100 networks
         List<NeuralNetwork> population = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            population.add(new NeuralNetwork(2, hiddenCount, 1));
+        for (int i = 0; i < populationSize; i++) {
+            //population.add(new NeuralNetwork(2, hiddenCount, 1));
+            population.add(new NeuralNetwork(2, hiddenCountArr, 1));
         }
 
         // Initialize synapse weights for the first generation
@@ -61,15 +65,15 @@ public class NeuralNetworkTest {
         }
 
         // Run for N generations
-        for (int generation = 0; generation < 10_000; generation++) {
+        for (int generation = 0; generation < 1_000_000; generation++) {
             // Evaluate all networks
             List<NetworkScore> scores = new ArrayList<>();
             for (NeuralNetwork network : population) {
                 double totalError = 0;
-                for (int i = 0; i < inputs.length; i++) {
-                    network.setInputs(inputs[i]);
+                for (int trainPos = 0; trainPos < inputs.length; trainPos++) {
+                    network.setInputs(inputs[trainPos]);
                     double[] output = network.process();
-                    double error = outputs[i][0] - output[0];
+                    double error = outputs[trainPos][0] - output[0];
                     totalError += error * error; // Using squared error instead of absolute error
                 }
                 scores.add(new NetworkScore(network, totalError));
@@ -78,8 +82,8 @@ public class NeuralNetworkTest {
             // Sort by error (lower is better)
             scores.sort(Comparator.comparingDouble(NetworkScore::getError));
 
-            // Select top 20% (20 networks)
-            int topCount = (int) (population.size() * 0.2);
+            // Select top x %.
+            int topCount = (int) (population.size() * populationMutateSize);
             List<NeuralNetwork> bestNetworks = new ArrayList<>();
             for (int i = 0; i < topCount; i++) {
                 bestNetworks.add(scores.get(i).getNetwork());
@@ -92,22 +96,29 @@ public class NeuralNetworkTest {
             population.addAll(bestNetworks);
             
             // Add mutated copies of the best networks
-            for (NeuralNetwork best : bestNetworks) {
-                // Create 4 mutated copies of each best network (since we already added 1 unmutated)
-                for (int i = 0; i < 4; i++) {
-                    NeuralNetwork mutated = new NeuralNetwork(2, hiddenCount, 1);
-                    mutated.copyFrom(best);
-                    // Use more aggressive mutation parameters
-                    double mutationRate = 0.3; // 10% chance of mutation
-                    double mutationStrength = 0.25; // Larger mutation strength
-                    mutated.mutate(mutationRate, mutationStrength);
-                    population.add(mutated);
-                }
+            // Create 4 mutated copies of each best network (since we already added 1 unmutated)
+            while (population.size() < populationSize) {
+                //NeuralNetwork best = bestNetworks.get((int) (Math.random() * (bestNetworks.size() - (topCount * 0.1D))) + (int)(topCount * 0.1D));
+                NeuralNetwork best = bestNetworks.get((int) (Math.random() * (bestNetworks.size())));
+                double mutationRate = 0.01 + Math.random() * 0.2D; // x % chance of mutation
+                double mutationStrength = 0.05 + Math.random() * 0.2D;
+
+                NeuralNetwork mutated = best.mutate(mutationRate, mutationStrength);
+
+                population.add(mutated);
             }
 
             // Print progress
             double bestScore = scores.get(0).getError();
-            System.out.printf("Generation %d: Best error = %.4f%n", generation, bestScore);
+            NeuralNetwork neuralNetwork2 = bestNetworks.get(0);
+            NeuralNetwork neuralNetwork = bestNetworks.get((int) (Math.random() * 19));
+            System.out.printf("Generation %d: Best error = %.4f | \t%d\t%d\t%d | \t%d\t%d\t%d%n", generation, bestScore,
+                    neuralNetwork2.getSynapseCount(),
+                    neuralNetwork2.getAllNeurons().size(),
+                    neuralNetwork2.getHiddenLayers().size(),
+                    neuralNetwork.getSynapseCount(),
+                    neuralNetwork.getAllNeurons().size(),
+                    neuralNetwork.getHiddenLayers().size());
         }
 
         // Use the best network from the final generation
