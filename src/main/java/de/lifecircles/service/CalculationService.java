@@ -93,7 +93,6 @@ public class CalculationService implements Runnable {
     private void update(final double deltaTime) {
         // Retrieve cells and process sensor/actor interactions
         final List<Cell> cells = environment.getCells();
-        ActorSensorCellCalcService.processInteractions(cells, deltaTime);
 
         // Update all cells with their neighborhood information
         final double interactionRadius = config.getCellInteractionRadius();
@@ -101,6 +100,8 @@ public class CalculationService implements Runnable {
             environment.getWidth(), environment.getHeight(), interactionRadius
         );
         partitioner.build(cells);
+
+        ActorSensorCellCalcService.processInteractions(cells, deltaTime, partitioner);
         
         // Parallel execution of neural networks and cell updates
         cells.parallelStream().forEach(cell -> {

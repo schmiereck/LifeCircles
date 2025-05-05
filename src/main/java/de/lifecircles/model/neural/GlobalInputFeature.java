@@ -7,5 +7,6 @@ public enum GlobalInputFeature {
     CELL_RED,
     CELL_GREEN,
     CELL_BLUE,
-    ENERGY
+    ENERGY,
+    AGE
 }

@@ -20,7 +20,7 @@ public class ActorSensorCellCalcService {
      * @param cells     the list of cells to process
      * @param deltaTime the time elapsed since last update
      */
-    public static void processInteractions(List<Cell> cells, double deltaTime) {
+    public static void processInteractions(final List<Cell> cells, final double deltaTime) {
         // cache positions for all sensorActors in this simulation step
         for (Cell cell : cells) {
             for (SensorActor actor : cell.getSensorActors()) {
@@ -39,7 +39,7 @@ public class ActorSensorCellCalcService {
     /**
      * Optimized processing of sensor/actor interactions using a partitioning strategy.
      */
-    public static void processInteractions(List<Cell> cells, double deltaTime, PartitioningStrategy partitioner) {
+    public static void processInteractions(final List<Cell> cells, final double deltaTime, final PartitioningStrategy partitioner) {
         // cache positions for all sensorActors in this simulation step
         for (Cell cell : cells) {
             for (SensorActor actor : cell.getSensorActors()) {
@@ -56,7 +56,7 @@ public class ActorSensorCellCalcService {
         }
     }
 
-    private static void processInteraction(Cell cell1, Cell cell2, double deltaTime) {
+    private static void processInteraction(final Cell cell1, final Cell cell2, final double deltaTime) {
         // reset any previous sensed references
         for (SensorActor actor : cell1.getSensorActors()) {
             actor.setSensedActor(null);

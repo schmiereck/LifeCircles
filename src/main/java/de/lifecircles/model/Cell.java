@@ -1,6 +1,7 @@
 package de.lifecircles.model;
 
 import de.lifecircles.model.neural.CellBrain;
+import de.lifecircles.model.neural.CellBrainService;
 import de.lifecircles.service.EnergyCellCalcService;
 import de.lifecircles.service.SimulationConfig;
 import java.util.ArrayList;
@@ -17,8 +18,7 @@ public class Cell {
     private static final double MIN_SIZE = 10.0;
     private static final double MAX_SIZE = 50.0;
     public static final double MAX_ENERGY = 1.0;
-    private static final double ENERGY_DECAY_RATE = 0.01;
-    private static final double ENERGY_GAIN_FROM_FIELD = 0.05;
+    private static final int TEMP_THINK_HACK_COUNTER_MAX = 10;
 
     private Vector2D position;
     private Vector2D velocity;
@@ -32,6 +32,27 @@ public class Cell {
     private double age; // in seconds
     private double reproductionDesire; // neural net output for reproduction
     private int generation; // generation counter
+
+    private int tempThinkHackCounter = 0;
+
+    /**
+     * Returns the index of the sensor that is currently at the top position.
+     * @return Index of the topmost sensor (0-11)
+     */
+    public int getTopSensorIndex() {
+        double maxY = Double.NEGATIVE_INFINITY;
+        int topSensorIndex = -1;
+        
+        for (int i = 0; i < sensorActors.size(); i++) {
+            SensorActor sensor = sensorActors.get(i);
+            double sensorY = sensor.getCachedPosition().getY();
+            if (sensorY > maxY) {
+                maxY = sensorY;
+                topSensorIndex = i;
+            }
+        }
+        return topSensorIndex;
+    }
 
     public Cell(Vector2D position, final double size) {
         this.position = position;
@@ -121,15 +142,23 @@ public class Cell {
      * @param deltaTime Time step in seconds
      * @param neighbors List of neighboring cells
      */
-    public void updateWithNeighbors(double deltaTime, List<Cell> neighbors) {
+    public void updateWithNeighbors(final double deltaTime, final List<Cell> neighbors) {
         // Update neural network
-        brain.think(neighbors);
+        final boolean useSynapseEnergyCost;
+        if (this.tempThinkHackCounter > TEMP_THINK_HACK_COUNTER_MAX) {
+            CellBrainService.think(this, neighbors);
+            useSynapseEnergyCost = true;
+            this.tempThinkHackCounter = 0;
+        } else {
+            useSynapseEnergyCost = false;
+            this.tempThinkHackCounter++;
+        }
 
         // Update physics
         position = position.add(velocity.multiply(deltaTime));
         rotation += angularVelocity * deltaTime;
         // Apply rotational friction
-        angularVelocity *= (1 - SimulationConfig.getInstance().getRotationalFriction() * deltaTime);
+        angularVelocity *= (1.0D - SimulationConfig.getInstance().getRotationalFriction() * deltaTime);
         
         // Normalize rotation to [0, 2π)
         rotation = rotation % (2 * Math.PI);
@@ -138,12 +167,12 @@ public class Cell {
         }
 
         // Update energy and age
-        EnergyCellCalcService.decayEnergy(this, deltaTime);
+        EnergyCellCalcService.decayEnergy(this, deltaTime, useSynapseEnergyCost);
         // Mark cell death if energy below threshold
         if (energy <= SimulationConfig.getInstance().getEnergyDeathThreshold()) {
             this.energy = 0.0;
         }
-        age += deltaTime;
+        this.age += deltaTime;
     }
 
     /**
@@ -178,7 +207,7 @@ public class Cell {
     }
 
     public double getAge() {
-        return age;
+        return this.age;
     }
 
     public void setEnergy(double energy) {

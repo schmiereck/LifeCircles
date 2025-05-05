@@ -27,8 +27,16 @@ public class SimulationConfig {
     private double energyDeathThreshold = 0.0;
     // Blocker repulsion strength for cell-blocker interactions
     private double blockerRepulsionStrength = 200.0;
-    // Friction coefficient for cell rotation (damping)
-    private double rotationalFriction = 1.99D;
+    /** 
+     * Friction coefficient for cell rotation (damping)
+     * A higher value means less rotation.
+     */
+    private double rotationalFriction = 0.999D;
+    /** 
+     * Viscosity coefficient for cell movement damping.
+     * A higher value means less movement.
+     */
+    private double viscosity = 2.75D;
 
     // Singleton instance
     private static final SimulationConfig INSTANCE = new SimulationConfig();
@@ -159,5 +167,13 @@ public class SimulationConfig {
 
     public void setTrainMode(TrainMode trainMode) {
         this.trainMode = trainMode;
+    }
+
+    public double getViscosity() {
+        return this.viscosity;
+    }
+
+    public void setViscosity(final double viscosity) {
+        this.viscosity = viscosity;
     }
 }

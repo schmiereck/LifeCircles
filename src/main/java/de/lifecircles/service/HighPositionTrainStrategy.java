@@ -16,17 +16,17 @@ import java.util.Random;
  */
 public class HighPositionTrainStrategy implements TrainStrategy {
     private static final int INITIAL_COUNT = 20;
-    private static final int GENERATION_STEP = 500;
+    private static final int GENERATION_STEP = 1500;
     private static final double SELECTION_PERCENT = 0.2;
     private final SimulationConfig config = SimulationConfig.getInstance();
     private long stepCounter = 0;
 
     @Override
     public void initialize(Environment environment) {
-        config.setWidth(1200);
-        environment.setWidth(1200);
-        config.setHeight(800);
-        environment.setHeight(800);
+        config.setWidth(1600);
+        environment.setWidth(1600);
+        config.setHeight(1200);
+        environment.setHeight(1200);
 
         // Add ground blocker by default
         environment.addGroundBlocker();

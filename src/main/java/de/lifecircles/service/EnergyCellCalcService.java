@@ -17,9 +17,9 @@ public class EnergyCellCalcService {
      * @param cell      the cell whose energy to decay
      * @param deltaTime time step in seconds
      */
-    public static void decayEnergy(Cell cell, double deltaTime) {
+    public static void decayEnergy(final Cell cell, final double deltaTime, final boolean useSynapseEnergyCost) {
         int synapseCount = cell.getBrain().getSynapseCount();
-        double synapseEnergyCost = synapseCount * ENERGY_COST_PER_SYNAPSE * deltaTime;
+        double synapseEnergyCost = useSynapseEnergyCost ? synapseCount * ENERGY_COST_PER_SYNAPSE * deltaTime : 0;
         double newEnergy = Math.max(0.0, cell.getEnergy() - ENERGY_DECAY_RATE * deltaTime - synapseEnergyCost);
         cell.setEnergy(newEnergy);
     }

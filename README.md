@@ -51,6 +51,21 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
+* Der Energieaustausch zwischen Zellen soll über die Sensoren und Aktoren erfolgen und nicht über Rays.
+  Wenn also ein Sensor einen Aktor einer anderen Zelle spürt, soll er, wenn der entsprechende Output dies signalisiert, die Energie der Zelle abgeben.
+
+* Fühlen wann ein SunRay auf sich trifft.
+
+* Aktiv Energie über Actor vom Nachbar-Sensor absaugen können (Räuber).
+
+* Berechnungen des CellBrain nur alle n-Steps.
+  * Small Manager-brain als Steuerung wie oft Sub-Brains for special-Tasks are updated.
+  * Neu Neuron-Type/ or Input for time depending things (level up a Number and reset if a Value is reached).
+
+* Age als Kurve und Input.
+
+* Unterschiedliche Viscosity in der Umgebung und als Input für die Sensor-Interaktionen.
+
 * Energieübertragung als Input spüren.
   * Im Sensor ablegen, so das die Zelle spührt, von welcher Stelle die Energie herkam.
   * Energie von SunRay.
@@ -59,6 +74,8 @@ Das System-Design der Anwendung soll enthalten:
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
 # DONE
+
+* Eine Cell soll fühlen können, welcher Sensor oben ist.
 
 * Prüfe nochmals, ob die aktuell verwendete SpatialGridPartitioningStrategy die Partitionierung richtig im Zusammenhang mit der maximalen Zellgröße verwendet.
 
