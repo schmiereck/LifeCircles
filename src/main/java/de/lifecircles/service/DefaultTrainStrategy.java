@@ -18,6 +18,10 @@ public class DefaultTrainStrategy implements TrainStrategy {
         // Add ground blocker by default
         environment.addGroundBlocker();
         environment.addSunBlocker();
+        environment.addWallBlocker(1200.0D, 600.0D, 100.0D);
+        environment.addWallBlocker(1200.0D + 150.0D * 1, 600.0D, 100.0D);
+        environment.addWallBlocker(1200.0D + 150.0D * 2, 600.0D, 100.0D);
+        environment.addWallBlocker(1200.0D + 150.0D * 3, 600.0D, 100.0D);
 
         Random random = new Random();
         for (int i = 0; i < config.getInitialCellCount(); i++) {

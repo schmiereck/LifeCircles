@@ -61,13 +61,26 @@ public class Environment {
 
     public void addSunBlocker() {
         Blocker sunBlocker = new Blocker(
-            new Vector2D(width/4, height - height/8), // Position at bottom
+            new Vector2D(width/4, this.height - height/8), // Position at bottom
             width/6,                              // Full width
             20,                                 // Height
             javafx.scene.paint.Color.GRAY,      // Color
             Blocker.BlockerType.PLATFORM          // Type
         );
         blockers.add(sunBlocker);
+    }
+
+    public void addWallBlocker(double x, double yTop, double yBottom) {
+        final double wallHeight = yTop - yBottom;
+        final double wallWidth = 20;
+        Blocker wallBlocker = new Blocker(
+            new Vector2D(x + wallWidth/2, (this.height - yBottom) - wallHeight/2), // Position at bottom
+            wallWidth,                              // Full width
+            wallHeight,                                 // Height
+            javafx.scene.paint.Color.GRAY,      // Color
+            Blocker.BlockerType.WALL          // Type
+        );
+        blockers.add(wallBlocker);
     }
 
     public void addCell(Cell cell) {
@@ -145,18 +158,18 @@ public class Environment {
                 newCells.add(childCell);
             }
 
-            // Remove dead cells (no energy)
-            if (cell.getEnergy() <= 0) {
+            // Remove cell after configured age.
+            if ((cell.getAge() >= config.getCellDeathAge()) || (cell.getEnergy() <= 0.0D)) {
                 lastDeadCell = cell;
                 iterator.remove();
             }
         }
 
-        // Add new cells from reproduction (skip in HIGH_ENERGY mode)
-        cells.addAll(newCells);
-
         // Process energy transfers between cells
         EnergyTransferCellCalcService.processEnergyTransfers(partitioner, cells, deltaTime);
+
+        // Add new cells from reproduction (skip in HIGH_ENERGY mode)
+        cells.addAll(newCells);
 
         // Repopulation (skip in HIGH_ENERGY mode)
         if (config.getTrainMode() == TrainMode.NONE) {

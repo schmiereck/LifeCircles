@@ -96,17 +96,25 @@ public class SimulationView extends Pane {
     }
 
     private void startRenderLoop() {
+        long frameDelay = 1_000_000_000L / 30; // 30 FPS = 1/30 seconds = ~33.33 ms
+        
         new AnimationTimer() {
+            private long lastRenderTime = System.nanoTime();
+            
             @Override
             public void handle(long now) {
-                render();
-                // FPS tracking
-                frameCount++;
-                long nowFps = System.nanoTime();
-                if (nowFps - lastFpsTime >= 1_000_000_000L) {
-                    fps = frameCount / ((nowFps - lastFpsTime) / 1_000_000_000.0);
-                    frameCount = 0;
-                    lastFpsTime = nowFps;
+                if (now - lastRenderTime >= frameDelay) {
+                    render();
+                    lastRenderTime = now;
+                    
+                    // FPS tracking
+                    frameCount++;
+                    long nowFps = System.nanoTime();
+                    if (nowFps - lastFpsTime >= 1_000_000_000L) {
+                        fps = frameCount / ((nowFps - lastFpsTime) / 1_000_000_000.0);
+                        frameCount = 0;
+                        lastFpsTime = nowFps;
+                    }
                 }
             }
         }.start();

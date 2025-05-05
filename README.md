@@ -51,6 +51,12 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
+* Füge im SimulationState einen Timestamp hinzu und
+  verwende diesen, um nur dann ein neues DTO-Objekt zu erzeugen, wenn sich die Simulation wirklich geändert hat.
+
+* Stelle die Berechnung des SimulationState DTO-Objektes so um, dass es vom View nach 30 FPS asynchron angefordert wird und 
+  nicht nach jedem Calc-Step erzeugt wird.
+
 * Berechnungen des CellBrain nur alle n-Steps.
   * Small Manager-Brain als Steuerung wie oft Sub-Brains for special-Tasks are updated.
   * Neu Neuron-Type/ or Input for time depending things (level up a Number and reset if a Value is reached).
@@ -67,6 +73,13 @@ Das System-Design der Anwendung soll enthalten:
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
 # DONE
+
+* Füge eine Konstante in der SimulationConfig ein die definiert, nach wie vielen Steps eine Zelle stirbt.
+  * Füge an dieser Stelle eine Funktion hinzu, die die Zellen entfernt, die nicht mehr aktiv sind.
+
+* Prüfe, ob die Anziehende Kraft zwischen Actor und Sensor auch abtoßend wirken kann.
+  So war das eigentlich ursprünglich gedacht, wenn diese einen negativen Wert hat.
+  Wenn sie noch nicht abstoßend wirken kann, implementier dies so.
 
 * Eine Zelle soll aktiv Energie über einen Actor vom Nachbar-Sensor absaugen können (Räuber).
   Füge einen neuen SensorInputFeature für das Energie-Absaugen hinzu und verwende diesen als Input für das CellBrain.

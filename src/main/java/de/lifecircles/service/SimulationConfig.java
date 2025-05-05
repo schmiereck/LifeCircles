@@ -23,20 +23,23 @@ public class SimulationConfig {
     private double energyPerRay = 0.1;
     // Spacing between sun rays in pixels; average one ray per this spacing
     private double sunRaySpacingPx = 60.0;
-    // Energy threshold below which a cell dies
-    private double energyDeathThreshold = 0.0;
+    // Age in Seconds after which a cell is considered dead.
+    private int cellDeathAge = 100;
     // Blocker repulsion strength for cell-blocker interactions
     private double blockerRepulsionStrength = 200.0;
     /** 
      * Friction coefficient for cell rotation (damping)
      * A higher value means less rotation.
      */
-    private double rotationalFriction = 0.999D;
+    private double rotationalFriction = 0.75D;
     /** 
      * Viscosity coefficient for cell movement damping.
      * A higher value means less movement.
      */
     private double viscosity = 2.75D;
+
+    public static final double ACTOR_INTERACTION_FORCE = 16.0D * 2.0D * 1.0D;
+    private static final double CELL_REPULSION_STRENGTH = 75.0;
 
     // Singleton instance
     private static final SimulationConfig INSTANCE = new SimulationConfig();
@@ -88,15 +91,23 @@ public class SimulationConfig {
     }
 
     public double getCellMaxRadius() {
-        return cellMaxRadius;
+        return this.cellMaxRadius;
     }
 
     public void setCellMaxRadius(double cellMaxRadius) {
         this.cellMaxRadius = cellMaxRadius;
     }
 
+    public int getCellDeathAge() {
+        return this.cellDeathAge;
+    }
+
+    public void setCellDeathAge(int cellDeathAge) {
+        this.cellDeathAge = cellDeathAge;
+    }
+
     public int getInitialCellCount() {
-        return initialCellCount;
+        return this.initialCellCount;
     }
 
     public void setInitialCellCount(int initialCellCount) {
@@ -104,7 +115,7 @@ public class SimulationConfig {
     }
 
     public double getSunRayRate() {
-        return sunRayRate;
+        return this.sunRayRate;
     }
 
     public void setSunRayRate(double sunRayRate) {
@@ -112,7 +123,7 @@ public class SimulationConfig {
     }
 
     public double getEnergyPerRay() {
-        return energyPerRay;
+        return this.energyPerRay;
     }
 
     public void setEnergyPerRay(double energyPerRay) {
@@ -120,23 +131,15 @@ public class SimulationConfig {
     }
 
     public double getSunRaySpacingPx() {
-        return sunRaySpacingPx;
+        return this.sunRaySpacingPx;
     }
 
     public void setSunRaySpacingPx(double sunRaySpacingPx) {
         this.sunRaySpacingPx = sunRaySpacingPx;
     }
 
-    public double getEnergyDeathThreshold() {
-        return energyDeathThreshold;
-    }
-
-    public void setEnergyDeathThreshold(double energyDeathThreshold) {
-        this.energyDeathThreshold = energyDeathThreshold;
-    }
-
     public double getBlockerRepulsionStrength() {
-        return blockerRepulsionStrength;
+        return this.blockerRepulsionStrength;
     }
 
     public void setBlockerRepulsionStrength(double blockerRepulsionStrength) {
@@ -147,7 +150,7 @@ public class SimulationConfig {
      * Gets the friction coefficient used for cell rotation damping.
      */
     public double getRotationalFriction() {
-        return rotationalFriction;
+        return this.rotationalFriction;
     }
 
     /**
@@ -158,11 +161,11 @@ public class SimulationConfig {
     }
 
     public double getScaleSimulation() {
-        return SCALE_SIMULATION;
+        return this.SCALE_SIMULATION;
     }
 
     public TrainMode getTrainMode() {
-        return trainMode;
+        return this.trainMode;
     }
 
     public void setTrainMode(TrainMode trainMode) {
@@ -175,5 +178,13 @@ public class SimulationConfig {
 
     public void setViscosity(final double viscosity) {
         this.viscosity = viscosity;
+    }
+
+    public double getActorInteractionForce() {
+        return ACTOR_INTERACTION_FORCE;
+    }
+
+    public double getCellRepulsionStrength() {
+        return CELL_REPULSION_STRENGTH;
     }
 }

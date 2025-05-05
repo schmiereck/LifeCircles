@@ -12,8 +12,6 @@ import java.util.List;
  */
 public class ActorSensorCellCalcService {
 
-    private static final double INTERACTION_FORCE = 32.0D * 2.0D * 1.0D;
-
     /**
      * Processes interactions between sensor/actor points of all cells.
      *
@@ -67,28 +65,44 @@ public class ActorSensorCellCalcService {
             actor.setSensedCell(null);
         }
 
+        // Process interactions in one direction only
         for (SensorActor actor1 : cell1.getSensorActors()) {
             for (SensorActor actor2 : cell2.getSensorActors()) {
-                // Calculate and apply forces between sensor actors
-                Vector2D force1to2 = calculateForceOn(actor1, actor2);
-                Vector2D force2to1 = calculateForceOn(actor2, actor1);
-
                 // integrate sensing logic
                 double senseValue1 = sense(actor1, actor2);
                 if (senseValue1 != 0) {
                     actor1.setSensedActor(actor2);
                     actor1.setSensedCell(cell2);
-                }
-                double senseValue2 = sense(actor2, actor1);
-                if (senseValue2 != 0) {
                     actor2.setSensedActor(actor1);
                     actor2.setSensedCell(cell1);
                 }
+
+                // Calculate force in one direction and derive the opposite direction
+                Vector2D force1to2 = calculateForceOn(actor1);
+                Vector2D force2to1 = force1to2.multiply(-1);
 
                 cell2.applyForce(force1to2, actor2.getCachedPosition(), deltaTime);
                 cell1.applyForce(force2to1, actor1.getCachedPosition(), deltaTime);
             }
         }
+    }
+
+    /**
+     * Senses the types of nearby actors.
+     * @param other The other sensor/actor point
+     * @return The sensed type intensity between -1 and 1, or 0 if out of range
+     */
+    public static double senseWithType(SensorActor sensorActor, SensorActor other) {
+        double distance = sensorActor.getCachedPosition().distance(other.getCachedPosition());
+        int totalSensors = sensorActor.getParentCell().getSensorActors().size();
+        double chord = sensorActor.getParentCell().getSize() * Math.sin(Math.PI / totalSensors);
+        if (distance > chord) {
+            return 0;
+        }
+        double intensity = 1 - (distance / chord);
+        double similarity = sensorActor.getType().similarity(other.getType());
+        double weight = 2.0 * similarity - 1.0; // map [0,1] to [-1,1]
+        return intensity * weight;
     }
 
     /**
@@ -104,9 +118,9 @@ public class ActorSensorCellCalcService {
             return 0;
         }
         double intensity = 1 - (distance / chord);
-        double similarity = sensorActor.getType().similarity(other.getType());
-        double weight = 2.0 * similarity - 1.0; // map [0,1] to [-1,1]
-        return intensity * weight;
+        //double similarity = sensorActor.getType().similarity(other.getType());
+        //double weight = 2.0 * similarity - 1.0; // map [0,1] to [-1,1]
+        return intensity; // * weight;
     }
 
     /**
@@ -114,16 +128,23 @@ public class ActorSensorCellCalcService {
      * @param other The other sensor/actor point
      * @return Force vector (direction and magnitude)
      */
-    public static Vector2D calculateForceOn(SensorActor sensorActor, SensorActor other) {
-        Vector2D direction = other.getCachedPosition().subtract(sensorActor.getCachedPosition());
+    public static Vector2D calculateForceOn(SensorActor sensorActor) {
+        SensorActor sensedActor = sensorActor.getSensedActor();
+        if (sensedActor == null) {
+            return new Vector2D(0, 0);
+        }
+        
+        Vector2D direction = sensedActor.getCachedPosition().subtract(sensorActor.getCachedPosition());
         double distance = direction.length();
         if (distance == 0) {
             return new Vector2D(0, 0);
         }
-        double weight = -sense(sensorActor, other) * INTERACTION_FORCE;
+        
+        double weight = -sense(sensorActor, sensedActor) * SimulationConfig.getInstance().getActorInteractionForce();
         if (weight == 0) {
             return new Vector2D(0, 0);
         }
+        
         return direction.normalize().multiply(weight);
     }
 }

@@ -18,7 +18,7 @@ public class Cell {
     private static final double MIN_SIZE = 10.0;
     private static final double MAX_SIZE = 50.0;
     public static final double MAX_ENERGY = 1.0;
-    private static final int TEMP_THINK_HACK_COUNTER_MAX = 20;
+    private static final int TEMP_THINK_HACK_COUNTER_MAX = 10;
 
     private Vector2D position;
     private Vector2D velocity;
@@ -172,10 +172,10 @@ public class Cell {
         }
 
         // Update physics
-        position = position.add(velocity.multiply(deltaTime));
-        rotation += angularVelocity * deltaTime;
+        this.position = this.position.add(this.velocity.multiply(deltaTime));
+        this.rotation += this.angularVelocity * deltaTime;
         // Apply rotational friction
-        angularVelocity *= (1.0D - SimulationConfig.getInstance().getRotationalFriction() * deltaTime);
+        this.angularVelocity *= (1.0D - SimulationConfig.getInstance().getRotationalFriction()) * deltaTime;
         
         // Normalize rotation to [0, 2π)
         rotation = rotation % (2 * Math.PI);
@@ -186,8 +186,8 @@ public class Cell {
         // Update energy and age
         EnergyCellCalcService.decayEnergy(this, deltaTime, useSynapseEnergyCost);
         // Mark cell death if energy below threshold
-        if (energy <= SimulationConfig.getInstance().getEnergyDeathThreshold()) {
-            this.energy = 0.0;
+        if (energy < 0.0D) {
+            this.energy = 0.0D;
         }
         this.age += deltaTime;
     }
