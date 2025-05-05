@@ -328,4 +328,8 @@ public class NeuralNetwork {
     public int getSynapseCount() {
         return synapses.size();
     }
+
+    public List<Synapse> getSynapses() {
+        return this.synapses;
+    }
 }
