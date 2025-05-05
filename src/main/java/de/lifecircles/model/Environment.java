@@ -7,7 +7,7 @@ import de.lifecircles.service.BlockerCellCalcService;
 import de.lifecircles.service.RepulsionCellCalcService;
 import de.lifecircles.service.SimulationConfig;
 import de.lifecircles.service.EnergySunCalcService;
-import de.lifecircles.service.EnergyBeamCellCalcService;
+import de.lifecircles.service.EnergyTransferCellCalcService;
 import de.lifecircles.model.SunRay;
 import de.lifecircles.model.Vector2D;
 import de.lifecircles.service.PartitioningStrategy;
@@ -155,10 +155,8 @@ public class Environment {
         // Add new cells from reproduction (skip in HIGH_ENERGY mode)
         cells.addAll(newCells);
 
-        // Delegate energy beam processing to service
-        sunRays.addAll(
-            EnergyBeamCellCalcService.processEnergyBeams(cells, width, height)
-        );
+        // Process energy transfers between cells
+        EnergyTransferCellCalcService.processEnergyTransfers(partitioner, cells, deltaTime);
 
         // Repopulation (skip in HIGH_ENERGY mode)
         if (config.getTrainMode() == TrainMode.NONE) {

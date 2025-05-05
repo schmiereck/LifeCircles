@@ -51,9 +51,6 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
-* Der Energieaustausch zwischen Zellen soll über die Sensoren und Aktoren erfolgen und nicht über Rays.
-  Wenn also ein Sensor einen Aktor einer anderen Zelle spürt, soll er, wenn der entsprechende Output dies signalisiert, die Energie der Zelle abgeben.
-
 * Fühlen wann ein SunRay auf sich trifft.
 
 * Aktiv Energie über Actor vom Nachbar-Sensor absaugen können (Räuber).
@@ -74,6 +71,9 @@ Das System-Design der Anwendung soll enthalten:
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
 # DONE
+
+* Der Energieaustausch zwischen Zellen soll über die Sensoren und Aktoren erfolgen und nicht über Rays.
+  Wenn also ein Sensor einen Aktor einer anderen Zelle spürt, soll er, wenn der entsprechende Output dies signalisiert, die Energie der Zelle abgeben.
 
 * Eine Cell soll fühlen können, welcher Sensor oben ist.
 
