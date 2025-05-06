@@ -129,27 +129,29 @@ public class CalculationService implements Runnable {
         List<SimulationState.CellState> cellStates = new ArrayList<>();
 
         for (Cell cell : environment.getCells()) {
-            List<SimulationState.ActorState> actorStates = new ArrayList<>();
-            
-            for (SensorActor actor : cell.getSensorActors()) {
-                CellType actorType = actor.getType();
-                actorStates.add(new SimulationState.ActorState(
-                    actor.getPosition(),
-                    new double[]{actorType.getRed(), actorType.getGreen(), actorType.getBlue()},
-                    actor.getForceStrength()
+            if (Objects.nonNull(cell)) {
+                List<SimulationState.ActorState> actorStates = new ArrayList<>();
+
+                for (SensorActor actor : cell.getSensorActors()) {
+                    CellType actorType = actor.getType();
+                    actorStates.add(new SimulationState.ActorState(
+                            actor.getPosition(),
+                            new double[]{actorType.getRed(), actorType.getGreen(), actorType.getBlue()},
+                            actor.getForceStrength()
+                    ));
+                }
+
+                CellType cellType = cell.getType();
+                cellStates.add(new SimulationState.CellState(
+                        cell.getPosition(),
+                        cell.getRotation(),
+                        cell.getSize(),
+                        new double[]{cellType.getRed(), cellType.getGreen(), cellType.getBlue()},
+                        actorStates,
+                        cell.getEnergy(),
+                        cell.getAge()
                 ));
             }
-
-            CellType cellType = cell.getType();
-            cellStates.add(new SimulationState.CellState(
-                cell.getPosition(),
-                cell.getRotation(),
-                cell.getSize(),
-                new double[]{cellType.getRed(), cellType.getGreen(), cellType.getBlue()},
-                actorStates,
-                cell.getEnergy(),
-                cell.getAge()
-            ));
         }
 
         synchronized (stateLock) {
