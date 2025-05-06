@@ -3,6 +3,8 @@ package de.lifecircles.model.reproduction;
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.CellType;
 import de.lifecircles.model.Vector2D;
+import de.lifecircles.model.neural.CellBrain;
+import de.lifecircles.model.neural.NeuralNetwork;
 import de.lifecircles.service.SimulationConfig;
 
 import java.util.Random;
@@ -45,14 +47,22 @@ public class ReproductionManager {
 
         // Set initial size (slightly mutated from parent's initial size)
         final double parentSize = parent.getSize();
-        double initialSize = mutateValue(parentSize, sizeMutationStrength, config.getCellMaxRadius());
+        final double initialSize = mutateValue(parentSize, sizeMutationStrength, config.getCellMaxRadius());
+
+        // Create mutated brain for child
+        final CellBrain parentBrain = parent.getBrain();
+        final NeuralNetwork parentBrainNetwork = parentBrain.getNetwork();
+        final NeuralNetwork childBrainNetwork = parentBrainNetwork.mutate(
+                ReproductionManager.getMutationRate(),
+                ReproductionManager.getMutationStrength()
+        );
 
         // Create child cell
-        Cell child = new Cell(childPosition, initialSize);
+        final Cell child = new Cell(childPosition, initialSize, childBrainNetwork);
 
         // Inherit and mutate type
-        CellType parentType = parent.getType();
-        CellType childType = new CellType(
+        final CellType parentType = parent.getType();
+        final CellType childType = new CellType(
             mutateValue(parentType.getRed(), typeMutationStrength),
             mutateValue(parentType.getGreen(), typeMutationStrength),
             mutateValue(parentType.getBlue(), typeMutationStrength)
@@ -60,12 +70,9 @@ public class ReproductionManager {
         child.setType(childType);
 
         // Share energy equally between parent and child
-        double parentEnergy = parent.getEnergy();
+        final double parentEnergy = parent.getEnergy();
         parent.setEnergy(parentEnergy / 2);
         child.setEnergy(parentEnergy / 2);
-
-        // Create mutated brain for child
-        child.setBrain(parent.getBrain().mutate(child));
 
         // Inherit and increment generation counter
         child.setGeneration(parent.getGeneration() + 1);

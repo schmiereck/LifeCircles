@@ -2,10 +2,8 @@ package de.lifecircles.service;
 
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.SensorActor;
-import de.lifecircles.model.Vector2D;
 import de.lifecircles.model.neural.SensorInputFeature;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,7 +41,7 @@ public class EnergyTransferCellCalcService {
                         double intensity = ActorSensorCellCalcService.sense(sensor, otherActor);
                         if (intensity != 0) {
                             // Check if this is an absorption attempt
-                            double absorptionOutput = cell.getBrain().getNetwork().getOutput(SensorInputFeature.ENERGY_ABSORPTION.ordinal());
+                            double absorptionOutput = cell.getBrain().getNetwork().getOutputValue(SensorInputFeature.ENERGY_ABSORPTION.ordinal());
                             if (absorptionOutput >= ENERGY_ABSORPTION_THRESHOLD) {
                                 // Calculate energy absorption amount
                                 double absorptionAmount = Math.min(

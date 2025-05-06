@@ -9,9 +9,12 @@ public class Synapse {
     private double weight;
 
     public Synapse(Neuron sourceNeuron, Neuron targetNeuron) {
+        this(sourceNeuron, targetNeuron, Math.random() * 2 - 1); // Random weight between -1 and 1
+    }
+    public Synapse(Neuron sourceNeuron, Neuron targetNeuron, final double weight) {
         this.sourceNeuron = sourceNeuron;
         this.targetNeuron = targetNeuron;
-        this.weight = Math.random() * 2 - 1; // Random weight between -1 and 1
+        this.weight = weight;
         
         sourceNeuron.addOutputSynapse(this);
         targetNeuron.addInputSynapse(this);
@@ -26,7 +29,7 @@ public class Synapse {
     }
 
     public double getWeight() {
-        return weight;
+        return this.weight;
     }
 
     public void setWeight(double weight) {

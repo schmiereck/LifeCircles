@@ -18,7 +18,7 @@ public class CellBrain {
     private final Cell cell;
     private final NeuralNetwork network;
 
-    public CellBrain(Cell cell) {
+    public CellBrain(final Cell cell) {
         this.cell = cell;
         
         int inputCount = GlobalInputFeature.values().length +
@@ -32,20 +32,9 @@ public class CellBrain {
         this.network = new NeuralNetwork(inputCount, hiddenCount, outputCount);
     }
 
-    /**
-     * Creates a mutated copy of this brain for a new cell.
-     */
-    public CellBrain mutate(Cell newCell) {
-        CellBrain childBrain = new CellBrain(newCell);
-        
-        // Copy and mutate network weights and biases
-        childBrain.network.copyFrom(this.network);
-        childBrain.network.mutate(
-            ReproductionManager.getMutationRate(),
-            ReproductionManager.getMutationStrength()
-        );
-        
-        return childBrain;
+    public CellBrain(final Cell cell, final NeuralNetwork neuralNetwork) {
+        this.cell = cell;
+        this.network = neuralNetwork;
     }
 
     public int getSynapseCount() {

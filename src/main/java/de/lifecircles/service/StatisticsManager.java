@@ -29,15 +29,6 @@ public class StatisticsManager {
     private double averageUpdateTime = 0.0;
     private int updateCount = 0;
 
-    // All encountered types
-    private final Set<CellType> allTypes = new HashSet<>();
-
-    // Clusters of types (each list holds the 10% most similar types for that cluster center)
-    private final List<List<CellType>> clusters = new ArrayList<>();
-
-    // History per cluster
-    private final List<List<Integer>> clusterHistories = new ArrayList<>();
-
     private StatisticsManager() {}
 
     public static StatisticsManager getInstance() {
@@ -48,9 +39,6 @@ public class StatisticsManager {
      * Updates statistics based on current cell population.
      */
     public void update(List<Cell> cells) {
-        collectTypes(cells);
-        clusterTypes();
-
         // Update performance metrics
         long currentTime = System.nanoTime();
         double updateTime = (currentTime - lastUpdateTime) / 1_000_000.0; // Convert to ms
@@ -64,17 +52,6 @@ public class StatisticsManager {
 
         // Update history
         updateHistory(totalHistory, cells.size());
-
-        // Update cluster histories
-        for (int i = 0; i < clusters.size(); i++) {
-            int clusterCount = 0;
-            for (Cell cell : cells) {
-                if (clusters.get(i).contains(cell.getType())) {
-                    clusterCount++;
-                }
-            }
-            updateHistory(clusterHistories.get(i), clusterCount);
-        }
     }
 
     private void updateHistory(List<Integer> history, int value) {
@@ -84,62 +61,12 @@ public class StatisticsManager {
         }
     }
 
-    /**
-     * Register types of current cells.
-     */
-    private void collectTypes(List<Cell> cells) {
-        for (Cell cell : cells) {
-            allTypes.add(cell.getType());
-        }
-    }
-
-    /**
-     * Perform clustering of allTypes into clusters of 10% most similar (disjoint).
-     */
-    private void clusterTypes() {
-        clusters.clear();
-        // Disjunkte Cluster in Gruppen von 10% der Typen
-        List<CellType> remaining = new ArrayList<>(allTypes);
-        if (remaining.isEmpty()) return;
-        int clusterSize = Math.max(1, (int)(remaining.size() * 0.1));
-        List<List<CellType>> newClusters = new ArrayList<>();
-        while (!remaining.isEmpty()) {
-            CellType center = remaining.get(0);
-            List<CellType> cluster = remaining.stream()
-                .sorted((a, b) -> Double.compare(center.similarity(b), center.similarity(a)))
-                .limit(clusterSize)
-                .collect(Collectors.toList());
-            newClusters.add(cluster);
-            remaining.removeAll(cluster);
-        }
-        // Übernehme neue Cluster
-        clusters.addAll(newClusters);
-        // Stimmen Anzahl der History-Listen auf Clusterzahl ab
-        while (clusterHistories.size() < clusters.size()) {
-            clusterHistories.add(new ArrayList<>());
-        }
-        while (clusterHistories.size() > clusters.size()) {
-            clusterHistories.remove(clusterHistories.size() - 1);
-        }
-    }
-
     // Getters for current population
     public int getTotalPopulation() { return totalPopulation.get(); }
     public IntegerProperty totalPopulationProperty() { return totalPopulation; }
 
     // Getters for history
     public List<Integer> getTotalHistory() { return new ArrayList<>(totalHistory); }
-
-    // Getters for cluster histories
-    public List<List<Integer>> getClusterHistories() {
-        List<List<Integer>> histories = new ArrayList<>();
-        for (int i = 0; i < clusters.size(); i++) {
-            if (!clusters.get(i).isEmpty()) {
-                histories.add(new ArrayList<>(clusterHistories.get(i)));
-            }
-        }
-        return histories;
-    }
 
     // Performance metrics
     public double getAverageUpdateTime() { return averageUpdateTime; }

@@ -75,7 +75,6 @@ public class StatisticsPanel extends VBox {
     private void updateLabels() {
         totalLabel.setText(String.format("Total: %d", statistics.getTotalPopulation()));
         performanceLabel.setText(String.format("Update Time: %.1f ms", statistics.getAverageUpdateTime()));
-        clustersLabel.setText(String.format("Clusters: %d", statistics.getClusterHistories().size()));
     }
 
     private void updateGraph() {
@@ -103,23 +102,6 @@ public class StatisticsPanel extends VBox {
             gc.strokeLine(0, y, populationGraph.getWidth(), y);
         }
 
-        // Draw stacked cluster lines
-        var clusterHistories = statistics.getClusterHistories();
-        int clusterCount = clusterHistories.size();
-        int historySize = totalHistory.size();
-        int[] cumulative = new int[historySize];
-        for (int i = 0; i < clusterCount; i++) {
-            var history = clusterHistories.get(i);
-            java.util.List<Integer> stackedHistory = new java.util.ArrayList<>(historySize);
-            for (int j = 0; j < historySize; j++) {
-                int val = (j < history.size() && history.get(j) != null) ? history.get(j) : 0;
-                cumulative[j] += val;
-                stackedHistory.add(cumulative[j]);
-            }
-            // Draw cluster curve
-            Color c = Color.hsb(360.0 * i / clusterCount, 0.7, 1.0);
-            drawHistoryLine(gc, stackedHistory, maxValue, c);
-        }
         // Draw total population line on top
         drawHistoryLine(gc, totalHistory, maxValue, Color.WHITE);
     }

@@ -10,26 +10,39 @@ import java.util.List;
 public class Neuron {
     private double value;
     private double bias;
-    private final List<Synapse> inputSynapses;
+    private Synapse[] inputSynapses; // Geändert zu Array für schnellere Iteration
+    private int inputSynapseCount;   // Aktuelle Anzahl von Synapsen im Array
     private final List<Synapse> outputSynapses;
+    private ActivationFunction activationFunction;
+    
+    private static final int INITIAL_SYNAPSE_CAPACITY = 8;
 
     public Neuron() {
         this.value = 0.0;
         this.bias = Math.random() * 2 - 1; // Random bias between -1 and 1
-        this.inputSynapses = new ArrayList<>();
+        this.inputSynapses = new Synapse[INITIAL_SYNAPSE_CAPACITY];
+        this.inputSynapseCount = 0;
         this.outputSynapses = new ArrayList<>();
+        this.activationFunction = ActivationFunction.Sigmoid;
     }
 
     public void addInputSynapse(Synapse synapse) {
-        inputSynapses.add(synapse);
+        // Array vergrößern, falls erforderlich
+        if (this.inputSynapseCount >= this.inputSynapses.length) {
+            Synapse[] newInputSynapses = new Synapse[this.inputSynapses.length * 2];
+            System.arraycopy(this.inputSynapses, 0, newInputSynapses, 0, this.inputSynapses.length);
+            this.inputSynapses = newInputSynapses;
+        }
+
+        this.inputSynapses[inputSynapseCount++] = synapse;
     }
 
     public void addOutputSynapse(Synapse synapse) {
-        outputSynapses.add(synapse);
+        this.outputSynapses.add(synapse);
     }
 
     public double getValue() {
-        return value;
+        return this.value;
     }
 
     public void setValue(double value) {
@@ -37,37 +50,67 @@ public class Neuron {
     }
 
     public double getBias() {
-        return bias;
+        return this.bias;
     }
 
     public void setBias(double bias) {
         this.bias = bias;
     }
 
-    public List<Synapse> getInputSynapses() {
-        return inputSynapses;
+    /**
+     * Gibt ein Array mit allen Input-Synapsen zurück.
+     * Hinweis: Array kann größer sein als die tatsächliche Anzahl der Synapsen.
+     * Verwende inputSynapseCount für die tatsächliche Anzahl.
+     */
+    public Synapse[] getInputSynapses() {
+        return this.inputSynapses;
+    }
+    
+    /**
+     * Gibt die Anzahl der tatsächlich vorhandenen Input-Synapsen zurück.
+     */
+    public int getInputSynapseCount() {
+        return this.inputSynapseCount;
     }
 
     public List<Synapse> getOutputSynapses() {
-        return outputSynapses;
+        return this.outputSynapses;
+    }
+
+    /**
+     * Entfernt eine Input-Synapse.
+     * Diese Operation ist langsamer als Zugriffe.
+     */
+    public void removeInputSynapse(Synapse synapse) {
+        for (int i = 0; i < this.inputSynapseCount; i++) {
+            if (this.inputSynapses[i] == synapse) {
+                // Verschiebe alle Elemente nach dem zu löschenden um eine Position nach vorne
+                if (i < this.inputSynapseCount - 1) {
+                    System.arraycopy(inputSynapses, i + 1, inputSynapses, i, inputSynapseCount - i - 1);
+                }
+                this.inputSynapseCount--;
+                this.inputSynapses[inputSynapseCount] = null; // Verhindere memory leak
+                return;
+            }
+        }
     }
 
     /**
      * Calculates the neuron's output value based on its inputs.
+     * Optimized version using array iteration instead of ArrayList.
      */
     public void activate() {
-        double sum = bias;
-        for (Synapse synapse : inputSynapses) {
+        double sum = this.bias;
+        // Direkte Array-Iteration für bessere Performance
+        for (int i = 0; i < this.inputSynapseCount; i++) {
+            Synapse synapse = this.inputSynapses[i];
             sum += synapse.getSourceNeuron().getValue() * synapse.getWeight();
         }
-        value = sigmoid(sum);
+        this.value = this.activationFunction.apply(sum);
     }
 
-    /**
-     * Sigmoid activation function.
-     */
-    private double sigmoid(double x) {
-        return 1.0 / (1.0 + Math.exp(-x));
+    public void setActivationFunction(ActivationFunction activationFunction) {
+        this.activationFunction = activationFunction;
     }
 
     /**

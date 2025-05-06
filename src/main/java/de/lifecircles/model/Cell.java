@@ -2,6 +2,7 @@ package de.lifecircles.model;
 
 import de.lifecircles.model.neural.CellBrain;
 import de.lifecircles.model.neural.CellBrainService;
+import de.lifecircles.model.neural.NeuralNetwork;
 import de.lifecircles.service.EnergyCellCalcService;
 import de.lifecircles.service.SimulationConfig;
 import java.util.ArrayList;
@@ -65,6 +66,22 @@ public class Cell {
         this.sensorActors = new ArrayList<>();
         initializeSensorActors();
         this.brain = new CellBrain(this);
+        this.energy = MAX_ENERGY;
+        this.age = 0.0;
+        this.reproductionDesire = 0.0;
+        this.generation = 0; // initialize generation counter
+    }
+
+    public Cell(Vector2D position, final double size, final NeuralNetwork neuralNetwork) {
+        this.position = position;
+        this.velocity = new Vector2D(0, 0);
+        this.rotation = 0;
+        this.angularVelocity = 0;
+        this.size = size;
+        this.type = new CellType(0, 0, 0);
+        this.sensorActors = new ArrayList<>();
+        initializeSensorActors();
+        this.brain = new CellBrain(this, neuralNetwork);
         this.energy = MAX_ENERGY;
         this.age = 0.0;
         this.reproductionDesire = 0.0;

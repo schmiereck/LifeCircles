@@ -1,6 +1,7 @@
 package de.lifecircles.model.neural;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Represents the neural network that controls cell behavior.
@@ -11,8 +12,9 @@ public class NeuralNetwork {
     private final List<Neuron> outputNeurons;
     private final List<Synapse> synapses;
     private final Random random = new Random();
+    private double[] outputs;
 
-    private static final double DEFAULT_MUTATION_RATE = 0.25;
+    private static final double DEFAULT_MUTATION_RATE = 0.1D;
 
     /**
      * Constructs a network with a single hidden layer.
@@ -36,7 +38,7 @@ public class NeuralNetwork {
 
         // create input neurons
         for (int i = 0; i < inputCount; i++) {
-            inputNeurons.add(new Neuron());
+            this.inputNeurons.add(new Neuron());
         }
 
         // create hidden layers
@@ -45,21 +47,22 @@ public class NeuralNetwork {
             for (int i = 0; i < count; i++) {
                 layer.add(new Neuron());
             }
-            hiddenLayers.add(layer);
+            this.hiddenLayers.add(layer);
         }
 
         // create output neurons
         for (int i = 0; i < outputCount; i++) {
-            outputNeurons.add(new Neuron());
+            this.outputNeurons.add(new Neuron());
         }
+        this.outputs = new double[this.outputNeurons.size()];
 
         // connect layers sequentially: input -> hidden1 -> ... -> hiddenN -> output
-        List<Neuron> prev = inputNeurons;
-        for (List<Neuron> layer : hiddenLayers) {
+        List<Neuron> prev = this.inputNeurons;
+        for (List<Neuron> layer : this.hiddenLayers) {
             connectLayers(prev, layer);
             prev = layer;
         }
-        connectLayers(prev, outputNeurons);
+        connectLayers(prev, this.outputNeurons);
     }
 
     private void connectLayers(List<Neuron> sourceLayer, List<Neuron> targetLayer) {
@@ -87,7 +90,7 @@ public class NeuralNetwork {
      */
     public double[] process() {
         // process hidden layers
-        for (List<Neuron> layer : hiddenLayers) {
+        for (List<Neuron> layer : this.hiddenLayers) {
             for (Neuron neuron : layer) {
                 neuron.activate();
             }
@@ -99,14 +102,13 @@ public class NeuralNetwork {
         }
 
         // Collect outputs
-        double[] outputs = new double[this.outputNeurons.size()];
-        for (int outputNeuronPos = 0; outputNeuronPos < outputs.length; outputNeuronPos++) {
-            outputs[outputNeuronPos] = this.getOutput(outputNeuronPos);
+        for (int outputNeuronPos = 0; outputNeuronPos < this.outputs.length; outputNeuronPos++) {
+            this.outputs[outputNeuronPos] = this.getOutputValue(outputNeuronPos);
         }
-        return outputs;
+        return this.outputs;
     }
 
-    public double getOutput(final int outputNeuronPos) {
+    public double getOutputValue(final int outputNeuronPos) {
         return this.outputNeurons.get(outputNeuronPos).getValue();
     }
 
@@ -114,20 +116,20 @@ public class NeuralNetwork {
      * Copies weights and biases from another network.
      */
     public void copyFrom(NeuralNetwork other) {
-        if (inputNeurons.size() != other.inputNeurons.size() ||
-            hiddenLayers.size() != other.hiddenLayers.size() ||
-            outputNeurons.size() != other.outputNeurons.size()) {
+        if (this.inputNeurons.size() != other.inputNeurons.size() ||
+                this.hiddenLayers.size() != other.hiddenLayers.size() ||
+                this.outputNeurons.size() != other.outputNeurons.size()) {
             throw new IllegalArgumentException("Network architectures do not match");
         }
 
         // copy input neurons
-        copyNeurons(other.inputNeurons, inputNeurons);
+        this.copyNeurons(other.inputNeurons, this.inputNeurons);
         // copy hidden layers
-        for (int i = 0; i < hiddenLayers.size(); i++) {
-            copyNeurons(other.hiddenLayers.get(i), hiddenLayers.get(i));
+        for (int i = 0; i < this.hiddenLayers.size(); i++) {
+            this.copyNeurons(other.hiddenLayers.get(i), this.hiddenLayers.get(i));
         }
         // copy output neurons
-        copyNeurons(other.outputNeurons, outputNeurons);
+        this.copyNeurons(other.outputNeurons, this.outputNeurons);
     }
 
     private void copyNeurons(List<Neuron> source, List<Neuron> target) {
@@ -174,14 +176,17 @@ public class NeuralNetwork {
             }
         }
 
+        // Erstelle ein Mapping zwischen Neuronen des Quellnetzwerks und des mutierten Netzwerks
+        Map<Neuron, Neuron> neuronMapping = createNeuronMapping(mutated);
+
         // Copy all synapses
         for (Synapse synapse : synapses) {
             Neuron source = synapse.getSourceNeuron();
             Neuron target = synapse.getTargetNeuron();
             
-            // Find corresponding neurons in the new network
-            Neuron newSource = findCorrespondingNeuron(mutated, source);
-            Neuron newTarget = findCorrespondingNeuron(mutated, target);
+            // Verwende die Mapping-Tabelle für schnellen Zugriff
+            Neuron newSource = neuronMapping.get(source);
+            Neuron newTarget = neuronMapping.get(target);
             
             if (newSource != null && newTarget != null) {
                 Synapse newSynapse = new Synapse(newSource, newTarget);
@@ -190,12 +195,13 @@ public class NeuralNetwork {
         }
 
         // Mutate weights and biases
-        for (Neuron neuron : mutated.getAllNeurons()) {
+        mutated.applyToAllNeurons(neuron -> {
             if (Math.random() < mutationRate) {
                 double mutation = (Math.random() * 2.0D - 1.0D) * mutationStrength;
                 neuron.setBias(neuron.getBias() + mutation);
             }
-        }
+        });
+        
         for (Synapse synapse : mutated.synapses) {
             if (Math.random() < mutationRate) {
                 double mutation = (Math.random() * 2.0D - 1.0D) * mutationStrength;
@@ -208,30 +214,76 @@ public class NeuralNetwork {
 
         return mutated;
     }
-
-    private Neuron findCorrespondingNeuron(NeuralNetwork network, Neuron original) {
-        if (inputNeurons.contains(original)) {
-            return network.inputNeurons.get(inputNeurons.indexOf(original));
+    
+    /**
+     * Wendet eine Funktion auf alle Neuronen des Netzwerks an.
+     * Dies ist effizienter als eine neue Liste aller Neuronen zu erstellen.
+     * 
+     * @param function Die Funktion, die auf jedes Neuron angewendet werden soll
+     */
+    public void applyToAllNeurons(Consumer<Neuron> function) {
+        // Anwenden auf Input-Neuronen
+        for (Neuron neuron : inputNeurons) {
+            function.accept(neuron);
         }
-        if (outputNeurons.contains(original)) {
+        
+        // Anwenden auf Hidden-Layer-Neuronen
+        for (List<Neuron> layer : hiddenLayers) {
+            for (Neuron neuron : layer) {
+                function.accept(neuron);
+            }
+        }
+        
+        // Anwenden auf Output-Neuronen
+        for (Neuron neuron : outputNeurons) {
+            function.accept(neuron);
+        }
+    }
+
+    /**
+     * Erstellt eine Mapping-Tabelle, die jedem Neuron des Quellnetzwerks
+     * das entsprechende Neuron im Zielnetzwerk zuordnet.
+     */
+    private Map<Neuron, Neuron> createNeuronMapping(NeuralNetwork target) {
+        Map<Neuron, Neuron> mapping = new HashMap<>();
+        
+        // Input-Neuronen zuordnen
+        for (int i = 0; i < this.inputNeurons.size(); i++) {
+            mapping.put(this.inputNeurons.get(i), target.inputNeurons.get(i));
+        }
+        
+        // Hidden-Layer-Neuronen zuordnen
+        for (int i = 0; i < this.hiddenLayers.size(); i++) {
+            List<Neuron> sourceLayer = this.hiddenLayers.get(i);
+            List<Neuron> targetLayer = target.hiddenLayers.get(i);
+            for (int j = 0; j < sourceLayer.size(); j++) {
+                mapping.put(sourceLayer.get(j), targetLayer.get(j));
+            }
+        }
+        
+        // Output-Neuronen zuordnen
+        for (int i = 0; i < this.outputNeurons.size(); i++) {
+            mapping.put(this.outputNeurons.get(i), target.outputNeurons.get(i));
+        }
+        
+        return mapping;
+    }
+
+    // Die alte Methode kann entweder entfernt oder durch die optimierte Version ersetzt werden
+    private Neuron findCorrespondingNeuron(NeuralNetwork network, Neuron original) {
+        // Diese Methode wird nicht mehr benötigt, wenn die neue Mapping-Implementierung verwendet wird
+        if (this.inputNeurons.contains(original)) {
+            return network.inputNeurons.get(this.inputNeurons.indexOf(original));
+        }
+        if (this.outputNeurons.contains(original)) {
             return network.outputNeurons.get(outputNeurons.indexOf(original));
         }
-        for (int i = 0; i < hiddenLayers.size(); i++) {
-            if (hiddenLayers.get(i).contains(original)) {
-                return network.hiddenLayers.get(i).get(hiddenLayers.get(i).indexOf(original));
+        for (int i = 0; i < this.hiddenLayers.size(); i++) {
+            if (this.hiddenLayers.get(i).contains(original)) {
+                return network.hiddenLayers.get(i).get(this.hiddenLayers.get(i).indexOf(original));
             }
         }
         return null;
-    }
-
-    public List<Neuron> getAllNeurons() {
-        List<Neuron> allNeurons = new ArrayList<>();
-        allNeurons.addAll(inputNeurons);
-        for (List<Neuron> layer : hiddenLayers) {
-            allNeurons.addAll(layer);
-        }
-        allNeurons.addAll(outputNeurons);
-        return allNeurons;
     }
 
     private void copyAndMutateNeurons(List<Neuron> source, List<Neuron> target,
@@ -254,22 +306,22 @@ public class NeuralNetwork {
         // Structural mutations should be much less frequent than weight/bias mutations
         double structuralMutationRate = mutationRate * DEFAULT_MUTATION_RATE; // Only 10% of the regular mutation rate
         
-        if (random.nextDouble() < structuralMutationRate) {
-            int pos = random.nextInt(hiddenLayers.size() + 1);
+        if (this.random.nextDouble() < structuralMutationRate) {
+            int pos = this.random.nextInt(this.hiddenLayers.size() + 1);
             addHiddenLayer(pos, 1);
         }
-        if (!hiddenLayers.isEmpty() && random.nextDouble() < structuralMutationRate) {
-            int li = random.nextInt(hiddenLayers.size());
+        if (!this.hiddenLayers.isEmpty() && this.random.nextDouble() < structuralMutationRate) {
+            int li = this.random.nextInt(this.hiddenLayers.size());
             addNeuronToHiddenLayer(li);
         }
-        if (!hiddenLayers.isEmpty() && random.nextDouble() < structuralMutationRate) {
-            int li = random.nextInt(hiddenLayers.size());
+        if (!this.hiddenLayers.isEmpty() && this.random.nextDouble() < structuralMutationRate) {
+            int li = random.nextInt(this.hiddenLayers.size());
             removeNeuronFromHiddenLayer(li);
         }
-        if (random.nextDouble() < structuralMutationRate) {
+        if (this.random.nextDouble() < structuralMutationRate) {
             addRandomSynapse();
         }
-        if (random.nextDouble() < structuralMutationRate) {
+        if (this.random.nextDouble() < structuralMutationRate) {
             removeRandomSynapse();
         }
     }
@@ -283,13 +335,13 @@ public class NeuralNetwork {
         List<Neuron> prev = index == 0 ? inputNeurons : hiddenLayers.get(index - 1);
         for (Neuron src : prev) {
             for (Neuron tgt : newLayer) {
-                synapses.add(new Synapse(src, tgt));
+                synapses.add(new Synapse(src, tgt, Math.random() * 0.002D - 0.001D));
             }
         }
         List<Neuron> next = index == hiddenLayers.size() - 1 ? outputNeurons : hiddenLayers.get(index + 1);
         for (Neuron src : newLayer) {
             for (Neuron tgt : next) {
-                synapses.add(new Synapse(src, tgt));
+                synapses.add(new Synapse(src, tgt, Math.random() * 0.002D - 0.001D));
             }
         }
     }
@@ -299,11 +351,11 @@ public class NeuralNetwork {
         hiddenLayers.get(layerIndex).add(newN);
         List<Neuron> prev = layerIndex == 0 ? inputNeurons : hiddenLayers.get(layerIndex - 1);
         for (Neuron src : prev) {
-            synapses.add(new Synapse(src, newN));
+            synapses.add(new Synapse(src, newN, Math.random() * 0.002D - 0.001D));
         }
         List<Neuron> next = layerIndex == hiddenLayers.size() - 1 ? outputNeurons : hiddenLayers.get(layerIndex + 1);
         for (Neuron tgt : next) {
-            synapses.add(new Synapse(newN, tgt));
+            synapses.add(new Synapse(newN, tgt, Math.random() * 0.002D - 0.001D));
         }
     }
 
@@ -317,7 +369,12 @@ public class NeuralNetwork {
             Synapse s = it.next();
             if (s.getSourceNeuron() == rem || s.getTargetNeuron() == rem) {
                 s.getSourceNeuron().getOutputSynapses().remove(s);
-                s.getTargetNeuron().getInputSynapses().remove(s);
+                // Für Input-Synapsen die neue Methode verwenden
+                if (s.getTargetNeuron() == rem) {
+                    it.remove();
+                    continue;
+                }
+                s.getTargetNeuron().removeInputSynapse(s);
                 it.remove();
             }
         }
@@ -348,7 +405,7 @@ public class NeuralNetwork {
         Neuron targetNeuron = targetLayer.get(random.nextInt(targetLayer.size()));
         
         // Erstellen Sie die Synapse
-        Synapse s = new Synapse(sourceNeuron, targetNeuron);
+        Synapse s = new Synapse(sourceNeuron, targetNeuron, Math.random() * 0.002D - 0.001D);
         synapses.add(s);
     }
 
@@ -357,7 +414,7 @@ public class NeuralNetwork {
         
         Synapse rem = synapses.get(random.nextInt(synapses.size()));
         rem.getSourceNeuron().getOutputSynapses().remove(rem);
-        rem.getTargetNeuron().getInputSynapses().remove(rem);
+        rem.getTargetNeuron().removeInputSynapse(rem);
         synapses.remove(rem);
     }
 
@@ -381,3 +438,4 @@ public class NeuralNetwork {
         return this.hiddenLayers;
     }
 }
+
