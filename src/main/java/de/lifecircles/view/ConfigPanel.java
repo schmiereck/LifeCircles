@@ -1,6 +1,6 @@
 package de.lifecircles.view;
 
-import de.lifecircles.model.reproduction.ReproductionManager;
+import de.lifecircles.service.SimulationConfig;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -33,33 +33,53 @@ public class ConfigPanel extends VBox {
         grid.setVgap(5);
         grid.setPadding(new Insets(5));
 
+        final SimulationConfig simulationConfig = SimulationConfig.getInstance();
+
         // Energy threshold
-        Label energyLabel = new Label("Energy Threshold:");
+        Label energyLabel = new Label("Min. Energy:");
         energyLabel.setStyle("-fx-text-fill: black;");
-        Slider energySlider = new Slider(0.1, 1.0, ReproductionManager.getEnergyThreshold());
+        Slider energySlider = new Slider(0.1, 1.0, simulationConfig.getMinReproductionEnergy());
         energySlider.setShowTickLabels(true);
-        energySlider.valueProperty().addListener((obs, old, newValue) -> 
-            ReproductionManager.setEnergyThreshold(newValue.doubleValue()));
+        energySlider.valueProperty().addListener((obs, old, newValue) ->
+                simulationConfig.setMinReproductionEnergy(newValue.doubleValue()));
 
         // Mutation rate
         Label mutationLabel = new Label("Mutation Rate:");
         mutationLabel.setStyle("-fx-text-fill: black;");
-        Slider mutationSlider = new Slider(0.0, 0.5, ReproductionManager.getMutationRate());
+        Slider mutationSlider = new Slider(0.0, 0.5, simulationConfig.getMutationRate());
         mutationSlider.setShowTickLabels(true);
-        mutationSlider.valueProperty().addListener((obs, old, newValue) -> 
-            ReproductionManager.setMutationRate(newValue.doubleValue()));
+        mutationSlider.valueProperty().addListener((obs, old, newValue) ->
+                simulationConfig.setMutationRate(newValue.doubleValue()));
+
+        // Mutation Strength
+        Label strengthLabel = new Label("Mutation Strength:");
+        strengthLabel.setStyle("-fx-text-fill: black;");
+        Slider strengthSlider = new Slider(0.0, 0.5, simulationConfig.getMutationStrength());
+        strengthSlider.setShowTickLabels(true);
+        strengthSlider.valueProperty().addListener((obs, old, newValue) ->
+                simulationConfig.setMutationStrength(newValue.doubleValue()));
 
         // Reproduction desire threshold
-        Label desireLabel = new Label("Reproduction Desire Threshold:");
+        Label desireLabel = new Label("Min. Desire:");
         desireLabel.setStyle("-fx-text-fill: black;");
-        Slider desireSlider = new Slider(0.0, 1.0, ReproductionManager.getReproductionDesireThreshold());
+        Slider desireSlider = new Slider(0.0, 1.0, simulationConfig.getMinReproductionDesire());
         desireSlider.setShowTickLabels(true);
-        desireSlider.valueProperty().addListener((obs, old, newValue) -> 
-            ReproductionManager.setReproductionDesireThreshold(newValue.doubleValue()));
+        desireSlider.valueProperty().addListener((obs, old, newValue) ->
+                simulationConfig.setMinReproductionDesire(newValue.doubleValue()));
+
+        // Reproduction desire threshold
+        Label ageLabel = new Label("Min. Age (s):");
+        ageLabel.setStyle("-fx-text-fill: black;");
+        Slider ageSlider = new Slider(0.0, 20.0, simulationConfig.getMinReproductionAge());
+        ageSlider.setShowTickLabels(true);
+        ageSlider.valueProperty().addListener((obs, old, newValue) ->
+                simulationConfig.setMinReproductionAge(newValue.doubleValue()));
 
         grid.addRow(0, energyLabel, energySlider);
         grid.addRow(1, mutationLabel, mutationSlider);
-        grid.addRow(2, desireLabel, desireSlider);
+        grid.addRow(2, strengthLabel, strengthSlider);
+        grid.addRow(3, desireLabel, desireSlider);
+        grid.addRow(4, ageLabel, ageSlider);
 
         TitledPane pane = new TitledPane("Reproduction", grid);
         pane.setCollapsible(true);

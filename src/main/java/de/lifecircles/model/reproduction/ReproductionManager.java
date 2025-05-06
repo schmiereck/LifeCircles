@@ -13,28 +13,22 @@ import java.util.Random;
  * Manages cell reproduction and mutation.
  */
 public class ReproductionManager {
-    private static double energyThreshold = 0.2;
-    private static double minReproductionAge = 2.0; // seconds
     private static double typeMutationStrength = 0.1;
     private static double sizeMutationStrength = 0.2;
-    private static double mutationRate = 0.1;
-    private static double mutationStrength = 0.2;
-    private static double reproductionDesireThreshold = 0.5;
     private static final Random random = new Random();
 
     /**
      * Checks if a cell is ready to reproduce.
      */
-    public static boolean canReproduce(Cell cell) {
-        return cell.getEnergy() >= energyThreshold &&
-               cell.getAge() >= minReproductionAge &&
-               cell.getReproductionDesire() >= reproductionDesireThreshold;
+    public static boolean canReproduce(SimulationConfig config, Cell cell) {
+        return cell.getEnergy() >= config.getMinReproductionEnergy() &&
+               cell.getAge() >= config.getMinReproductionAge() &&
+               cell.getReproductionDesire() >= config.getMinReproductionDesire();
     }
 
     /**
      * Creates a child cell through reproduction.
      * The child inherits traits from the parent with mutations.
-     * @param config 
      */
     public static Cell reproduce(SimulationConfig config, Cell parent) {
         // Calculate child position slightly offset from parent
@@ -53,8 +47,8 @@ public class ReproductionManager {
         final CellBrain parentBrain = parent.getBrain();
         final NeuralNetwork parentBrainNetwork = parentBrain.getNetwork();
         final NeuralNetwork childBrainNetwork = parentBrainNetwork.mutate(
-                ReproductionManager.getMutationRate(),
-                ReproductionManager.getMutationStrength()
+                config.getMutationRate(),
+                config.getMutationStrength()
         );
 
         // Create child cell
@@ -89,20 +83,4 @@ public class ReproductionManager {
         double mutation = (random.nextDouble() * 2 - 1) * strength;
         return Math.max(Math.max(0.0, Math.min(max, value + mutation)), max);
     }
-
-    // Getters and setters for configuration
-    public static double getEnergyThreshold() { return energyThreshold; }
-    public static void setEnergyThreshold(double threshold) { energyThreshold = threshold; }
-
-    public static double getMutationRate() { return mutationRate; }
-    public static void setMutationRate(double rate) { mutationRate = rate; }
-
-    public static double getMutationStrength() { return mutationStrength; }
-    public static void setMutationStrength(double strength) { mutationStrength = strength; }
-
-    /**
-     * Threshold for neural network reproduction output.
-     */
-    public static double getReproductionDesireThreshold() { return reproductionDesireThreshold; }
-    public static void setReproductionDesireThreshold(double threshold) { reproductionDesireThreshold = threshold; }
 }

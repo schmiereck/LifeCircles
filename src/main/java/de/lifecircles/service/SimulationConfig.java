@@ -31,15 +31,22 @@ public class SimulationConfig {
      * Friction coefficient for cell rotation (damping)
      * A higher value means less rotation.
      */
-    private double rotationalFriction = 0.75D;
+    private double rotationalFriction = 0.85D;
     /** 
      * Viscosity coefficient for cell movement damping.
      * A higher value means less movement.
      */
-    private double viscosity = 2.75D;
+    private double viscosity = 4.75D;
 
-    public static final double ACTOR_INTERACTION_FORCE = 16.0D * 2.0D * 1.0D;
-    private static final double CELL_REPULSION_STRENGTH = 75.0;
+    public static final double ACTOR_INTERACTION_FORCE = 16.0D * 4.0D * 2.0D;
+    private static final double CELL_REPULSION_STRENGTH = 175.0;
+
+    private double minReproductionEnergy = 0.2D;
+    private double minReproductionAge = 4.0D; // seconds
+
+    private double mutationRate = 0.1;
+    private double mutationStrength = 0.2;
+    private double minReproductionDesire = 0.5;
 
     // Singleton instance
     private static final SimulationConfig INSTANCE = new SimulationConfig();
@@ -191,4 +198,29 @@ public class SimulationConfig {
     public double getCellRepulsionStrength() {
         return CELL_REPULSION_STRENGTH;
     }
+
+    public double getMinReproductionEnergy() {
+        return this.minReproductionEnergy;
+    }
+
+    public void setMinReproductionEnergy(double minReproductionEnergy) {
+        this.minReproductionEnergy = minReproductionEnergy;
+    }
+
+    public double getMinReproductionAge() {
+        return this.minReproductionAge;
+    }
+
+    public void setMinReproductionAge(double minReproductionAge) {
+        this.minReproductionAge = minReproductionAge;
+    }
+
+    public double getMutationRate() { return this.mutationRate; }
+    public void setMutationRate(double rate) { this.mutationRate = rate; }
+
+    public double getMutationStrength() { return this.mutationStrength; }
+    public void setMutationStrength(double strength) { this.mutationStrength = strength; }
+
+    public double getMinReproductionDesire() { return this.minReproductionDesire; }
+    public void setMinReproductionDesire(double threshold) { this.minReproductionDesire = threshold; }
 }

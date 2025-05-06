@@ -153,8 +153,8 @@ public class Environment {
             wrapPosition(cell);
 
             // Handle reproduction (skip in HIGH_ENERGY mode)
-            if (ReproductionManager.canReproduce(cell)) {
-                Cell childCell = ReproductionManager.reproduce(config, cell);
+            if (ReproductionManager.canReproduce(this.config, cell)) {
+                Cell childCell = ReproductionManager.reproduce(this.config, cell);
                 newCells.add(childCell);
             }
 
