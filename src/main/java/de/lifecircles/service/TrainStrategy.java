@@ -15,4 +15,6 @@ public interface TrainStrategy {
      * Selection and mutation logic after a generation.
      */
     void selectAndMutate(Environment environment);
+
+    Environment initializeEnvironment();
 }

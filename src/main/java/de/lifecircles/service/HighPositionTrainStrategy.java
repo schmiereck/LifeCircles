@@ -22,12 +22,17 @@ public class HighPositionTrainStrategy implements TrainStrategy {
     private long stepCounter = 0;
 
     @Override
-    public void initialize(Environment environment) {
+    public Environment initializeEnvironment() {
         config.setWidth(1600);
-        environment.setWidth(1600);
         config.setHeight(1200);
-        environment.setHeight(1200);
 
+        config.setScaleSimulation(1.6D);
+
+        return new Environment(config.getWidth(), config.getHeight());
+    }
+
+    @Override
+    public void initialize(Environment environment) {
         // Add ground blocker by default
         environment.addGroundBlocker();
         //environment.addSunBlocker();

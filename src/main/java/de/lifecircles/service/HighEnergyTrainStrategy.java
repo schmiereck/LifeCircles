@@ -23,6 +23,11 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
     private long stepCounter = 0;
 
     @Override
+    public Environment initializeEnvironment() {
+        return new Environment(config.getWidth(), config.getHeight());
+    }
+
+    @Override
     public void initialize(Environment environment) {
         // Add ground blocker by default
         environment.addGroundBlocker();

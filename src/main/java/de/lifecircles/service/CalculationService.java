@@ -37,16 +37,16 @@ public class CalculationService implements Runnable {
 
     public CalculationService() {
         this.config = SimulationConfig.getInstance();
-        this.environment = new Environment(config.getWidth(), config.getHeight());
+        this.trainStrategy =
+                switch (config.getTrainMode()) {
+                    case HIGH_ENERGY -> new HighEnergyTrainStrategy();
+                    case HIGH_POSITION -> new HighPositionTrainStrategy();
+                    default -> new DefaultTrainStrategy();
+                };
+        this.environment = this.trainStrategy.initializeEnvironment();
         this.running = new AtomicBoolean(false);
         this.paused = new AtomicBoolean(false);
-        this.trainStrategy = 
-            switch (config.getTrainMode()) {
-                case HIGH_ENERGY -> new HighEnergyTrainStrategy();
-                case HIGH_POSITION -> new HighPositionTrainStrategy();
-                default -> new DefaultTrainStrategy();
-            };
-        initializeSimulation();
+        this.initializeSimulation();
     }
 
     private void initializeSimulation() {

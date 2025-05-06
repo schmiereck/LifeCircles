@@ -306,23 +306,46 @@ public class NeuralNetwork {
         // Structural mutations should be much less frequent than weight/bias mutations
         double structuralMutationRate = mutationRate * DEFAULT_MUTATION_RATE; // Only 10% of the regular mutation rate
         
-        if (this.random.nextDouble() < structuralMutationRate) {
+        // Möglichkeit, ein komplettes Hidden Layer hinzuzufügen
+        if (this.random.nextDouble() < structuralMutationRate * 1.5) { // Erhöhte Wahrscheinlichkeit
             int pos = this.random.nextInt(this.hiddenLayers.size() + 1);
-            addHiddenLayer(pos, 1);
+            // Zufällige Neuronenzahl zwischen 1 und 5
+            int neuronCount = 1 + this.random.nextInt(5);
+            addHiddenLayer(pos, neuronCount);
         }
-        if (!this.hiddenLayers.isEmpty() && this.random.nextDouble() < structuralMutationRate) {
+
+        // Wahrscheinlichkeit, ein Neuron zu einem bestehenden Layer hinzuzufügen
+        if (!this.hiddenLayers.isEmpty() && this.random.nextDouble() < structuralMutationRate * 2) { // Verdoppelte Wahrscheinlichkeit
             int li = this.random.nextInt(this.hiddenLayers.size());
             addNeuronToHiddenLayer(li);
         }
+
+        // Wahrscheinlichkeit, ein Neuron zu entfernen
         if (!this.hiddenLayers.isEmpty() && this.random.nextDouble() < structuralMutationRate) {
             int li = random.nextInt(this.hiddenLayers.size());
             removeNeuronFromHiddenLayer(li);
         }
-        if (this.random.nextDouble() < structuralMutationRate) {
+
+        // Wahrscheinlichkeit, eine zufällige Synapse hinzuzufügen
+        if (this.random.nextDouble() < structuralMutationRate * 3) { // Deutlich erhöhte Wahrscheinlichkeit
             addRandomSynapse();
         }
+
+        // Wahrscheinlichkeit, eine zufällige Synapse zu entfernen
         if (this.random.nextDouble() < structuralMutationRate) {
             removeRandomSynapse();
+        }
+
+        // Neue Mutation: Aktivierungsfunktion eines zufälligen Neurons ändern
+        if (!this.hiddenLayers.isEmpty() && this.random.nextDouble() < structuralMutationRate) {
+            // Wähle ein zufälliges Hidden Layer
+            List<Neuron> layer = this.hiddenLayers.get(random.nextInt(this.hiddenLayers.size()));
+            if (!layer.isEmpty()) {
+                Neuron neuron = layer.get(random.nextInt(layer.size()));
+                // Wähle eine zufällige Aktivierungsfunktion
+                ActivationFunction[] functions = ActivationFunction.values();
+                neuron.setActivationFunction(functions[random.nextInt(functions.length)]);
+            }
         }
     }
 
@@ -437,5 +460,63 @@ public class NeuralNetwork {
     public List<List<Neuron>> getHiddenLayers() {
         return this.hiddenLayers;
     }
-}
 
+    /**
+     * Returns the total count of all neurons in the network.
+     * This is more efficient than creating a list of all neurons first.
+     * 
+     * @return the total number of neurons in the network
+     */
+    public int getAllNeuronsSize() {
+        int count = inputNeurons.size() + outputNeurons.size();
+        
+        for (List<Neuron> layer : hiddenLayers) {
+            count += layer.size();
+        }
+        
+        return count;
+    }
+
+    /**
+     * Creates a mutated copy with more radikalen Änderungen wenn nötig.
+     * Diese Methode ermöglicht stärkere Mutationen als die Standardmethode.
+     */
+    public NeuralNetwork mutateAggressively(double mutationRate, double mutationStrength) {
+        NeuralNetwork mutated = this.mutate(mutationRate, mutationStrength);
+
+        // 50% Chance für eine zusätzliche Strukturmutation
+        if (random.nextDouble() < 0.5) {
+            // Füge ein zusätzliches Hidden Layer hinzu
+            int pos = random.nextInt(mutated.hiddenLayers.size() + 1);
+            int neuronCount = 2 + random.nextInt(4); // 2-5 Neuronen
+            mutated.addHiddenLayer(pos, neuronCount);
+        }
+
+        // 50% Chance für mehrere zusätzliche Neuronen
+        if (random.nextDouble() < 0.5 && !mutated.hiddenLayers.isEmpty()) {
+            int count = 1 + random.nextInt(3); // 1-3 neue Neuronen
+            for (int i = 0; i < count; i++) {
+                int layer = random.nextInt(mutated.hiddenLayers.size());
+                mutated.addNeuronToHiddenLayer(layer);
+            }
+        }
+
+        // 70% Chance für mehrere zusätzliche Synapsen
+        if (random.nextDouble() < 0.7) {
+            int count = 2 + random.nextInt(4); // 2-5 neue Synapsen
+            for (int i = 0; i < count; i++) {
+                mutated.addRandomSynapse();
+            }
+        }
+
+        return mutated;
+    }
+
+    public double getInputLayerSize() {
+        return this.inputNeurons.size();
+    }
+
+    public double getOutputLayerSize() {
+        return this.outputNeurons.size();
+    }
+}

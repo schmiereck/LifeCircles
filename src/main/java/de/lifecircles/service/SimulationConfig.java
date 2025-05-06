@@ -4,7 +4,7 @@ package de.lifecircles.service;
  * Configuration parameters for the simulation.
  */
 public class SimulationConfig {
-    public static final double SCALE_SIMULATION = 2.0D;
+    public double scaleSimulation = 2.0D;
     private double width = 1024 * 2;// * SCALE_SIMULATION;
     private double height = 1200;// * SCALE_SIMULATION;
     private int targetUpdatesPerSecond = 60;
@@ -161,7 +161,11 @@ public class SimulationConfig {
     }
 
     public double getScaleSimulation() {
-        return this.SCALE_SIMULATION;
+        return this.scaleSimulation;
+    }
+
+    public void setScaleSimulation(final double scaleSimulation) {
+        this.scaleSimulation = scaleSimulation;
     }
 
     public TrainMode getTrainMode() {

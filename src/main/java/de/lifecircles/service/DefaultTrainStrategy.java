@@ -14,6 +14,16 @@ public class DefaultTrainStrategy implements TrainStrategy {
     private final SimulationConfig config = SimulationConfig.getInstance();
 
     @Override
+    public Environment initializeEnvironment() {
+        config.setWidth(1600 * 2);
+        config.setHeight(1200);
+
+        config.setScaleSimulation(3.2D);
+
+        return new Environment(config.getWidth(), config.getHeight());
+    }
+
+    @Override
     public void initialize(Environment environment) {
         // Add ground blocker by default
         environment.addGroundBlocker();
