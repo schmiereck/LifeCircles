@@ -3,7 +3,6 @@ package de.lifecircles.service;
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.SensorActor;
 import de.lifecircles.model.Vector2D;
-import de.lifecircles.service.PartitioningStrategy;
 
 import java.util.List;
 
@@ -95,7 +94,7 @@ public class ActorSensorCellCalcService {
     public static double senseWithType(SensorActor sensorActor, SensorActor other) {
         double distance = sensorActor.getCachedPosition().distance(other.getCachedPosition());
         int totalSensors = sensorActor.getParentCell().getSensorActors().size();
-        double chord = sensorActor.getParentCell().getSize() * Math.sin(Math.PI / totalSensors);
+        double chord = sensorActor.getParentCell().getRadiusSize() * Math.sin(Math.PI / totalSensors);
         if (distance > chord) {
             return 0;
         }
@@ -113,7 +112,7 @@ public class ActorSensorCellCalcService {
     public static double sense(SensorActor sensorActor, SensorActor other) {
         double distance = sensorActor.getCachedPosition().distance(other.getCachedPosition());
         int totalSensors = sensorActor.getParentCell().getSensorActors().size();
-        double chord = sensorActor.getParentCell().getSize() * Math.sin(Math.PI / totalSensors);
+        double chord = sensorActor.getParentCell().getRadiusSize() * Math.sin(Math.PI / totalSensors);
         if (distance > chord) {
             return 0;
         }

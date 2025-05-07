@@ -3,7 +3,6 @@ package de.lifecircles.service;
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.Blocker;
 import de.lifecircles.model.SunRay;
-import de.lifecircles.service.SimulationConfig;
 import de.lifecircles.model.Vector2D;
 import java.util.List;
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ public class EnergySunCalcService {
             Cell hitCell = null;
             for (Cell cell : cells) {
                 double dx = Math.abs(cell.getPosition().getX() - rayX);
-                double r = cell.getSize();
+                double r = cell.getRadiusSize();
                 if (dx <= r) {
                     double yIntersect = cell.getPosition().getY() - Math.sqrt(r * r - dx * dx);
                     if (yIntersect >= 0 && yIntersect < nearestCellHitY) {

@@ -41,7 +41,7 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         for (int i = 0; i < INITIAL_COUNT; i++) {
             double x = random.nextDouble() * config.getWidth();
             double y = random.nextDouble() * config.getHeight();
-            environment.addCell(new Cell(new Vector2D(x, y), config.getCellMaxRadius() / 2.0));
+            environment.addCell(new Cell(new Vector2D(x, y), config.getCellMaxRadiusSize() / 2.0));
         }
     }
 
@@ -60,7 +60,7 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         //cells.sort(Comparator.comparingDouble((Cell c) -> c.getPosition().getY()).reversed());
         cells.sort(Comparator.comparingDouble((Cell c) -> c.getPosition().getY()));
         List<Cell> winners = new ArrayList<>(cells.subList(0, winnersCount));
-        winners.forEach(cell -> cell.setEnergy(Cell.MAX_ENERGY));
+        winners.forEach(cell -> cell.setEnergy(SimulationConfig.CELL_MAX_ENERGY));
         List<Cell> nextGen = new ArrayList<>();
         nextGen.addAll(winners);
         Random random = new Random();
@@ -69,7 +69,7 @@ public class HighPositionTrainStrategy implements TrainStrategy {
             Cell parent = winners.get(random.nextInt(winnersCount));
             Cell child = ReproductionManager.reproduce(config, parent);
             nextGen.add(child);
-            child.setEnergy(Cell.MAX_ENERGY);
+            child.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
         }
         environment.resetCells(nextGen);
     }

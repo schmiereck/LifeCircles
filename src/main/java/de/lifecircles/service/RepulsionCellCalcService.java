@@ -2,7 +2,7 @@ package de.lifecircles.service;
 
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.Vector2D;
-import de.lifecircles.service.SpatialGrid;
+
 import java.util.List;
 
 /**
@@ -19,7 +19,7 @@ public class RepulsionCellCalcService {
                 if (cell2 == cell1) continue;
                 Vector2D delta = cell2.getPosition().subtract(cell1.getPosition());
                 double distance = delta.length();
-                double combinedRadius = cell1.getSize() / 2 + cell2.getSize() / 2;
+                double combinedRadius = cell1.getRadiusSize() / 2 + cell2.getRadiusSize() / 2;
                 if (distance < combinedRadius) {
                     double overlap = combinedRadius - distance;
                     double forceMagnitude = SimulationConfig.getInstance().getCellRepulsionStrength() * overlap;

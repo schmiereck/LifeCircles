@@ -3,7 +3,7 @@ package de.lifecircles.service;
 import de.lifecircles.model.Blocker;
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.Vector2D;
-import de.lifecircles.service.SimulationConfig;
+
 import java.util.List;
 
 /**
@@ -25,7 +25,7 @@ public class BlockerCellCalcService {
             Vector2D nearestPoint = blocker.getNearestPoint(cellPos);
             Vector2D deltaVec = cellPos.subtract(nearestPoint);
             double distance = deltaVec.length();
-            double radius = cell.getSize() / 2;
+            double radius = cell.getRadiusSize() / 2;
             if (distance < radius) {
                 double penetration = radius - distance;
                 Vector2D direction = distance > 0 ? deltaVec.divide(distance) : new Vector2D(0, -1);

@@ -58,6 +58,8 @@ Das System-Design der Anwendung soll enthalten:
   * Füge eine Konstante in der SimulationConfig ein die definiert, wie lange eine Zelle braucht um auf ihre normale Größe zu wachsen.
 * Eine geteilte Zelle soll mit der Rotationsrichtung der Mutter-Zelle starten.
 
+* Prüfe den Grid-Paritionierungs-Algorithmus und die Berechnung der Interaktionen.
+  * Die größe der Grid-Zellen sollte der maximal Zell-Radius + der maximale Focre-Field-Radius sein.
 
 * Füge im SimulationState einen Timestamp hinzu und
   verwende diesen, um nur dann ein neues DTO-Objekt zu erzeugen, wenn sich die Simulation wirklich geändert hat.

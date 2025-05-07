@@ -43,7 +43,7 @@ public class SensorActor {
     //}
     public Vector2D getPosition() {
         // Inline optimized: use precomputed angle unit vector and inline rotation
-        double halfSize = parentCell.getSize() * 0.5;
+        double halfSize = parentCell.getRadiusSize() * 0.5;
         double rotation = parentCell.getRotation();
         double cosR = Math.cos(rotation);
         double sinR = Math.sin(rotation);

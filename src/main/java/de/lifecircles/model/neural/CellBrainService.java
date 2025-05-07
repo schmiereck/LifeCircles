@@ -10,7 +10,7 @@ public class CellBrainService {
     /** Threshold for energy beam trigger output */
     public static final double ENERGY_BEAM_THRESHOLD = 0.9;
 
-    public static double[] generateInputs(final Cell cell, final List<Cell> neighbors) {
+    public static double[] generateInputs(final Cell cell) {
         final List<SensorActor> myActorList = cell.getSensorActors();
         final int actorCount = myActorList.size();
         final CellBrain cellBrain = cell.getBrain();
@@ -75,7 +75,7 @@ public class CellBrainService {
 
     public static void applyOutputs(final Cell cell, double[] outputs) {
         // Apply size output
-        cell.setSize(outputs[GlobalOutputFeature.SIZE.ordinal()] * 40 + 10); // Scale to 10-50 range
+        cell.setRadiusSize(outputs[GlobalOutputFeature.SIZE.ordinal()] * 40 + 10); // Scale to 10-50 range
         // Set reproduction desire output
         cell.setReproductionDesire(outputs[GlobalOutputFeature.REPRODUCTION_DESIRE.ordinal()]);
 
@@ -103,13 +103,12 @@ public class CellBrainService {
 
     /**
      * Updates the cell's behavior based on its current state and environment.
-     * @param neighbors List of neighboring cells
      */
-    public static void think(final Cell cell, final List<Cell> neighbors) {
+    public static void think(final Cell cell) {
         final CellBrain cellBrain = cell.getBrain();
         final NeuralNetwork network = cellBrain.getNetwork();
 
-        final double[] inputs = CellBrainService.generateInputs(cell, neighbors);
+        final double[] inputs = CellBrainService.generateInputs(cell);
         network.setInputs(inputs);
         final double[] outputs = network.process();
         CellBrainService.applyOutputs(cell, outputs);

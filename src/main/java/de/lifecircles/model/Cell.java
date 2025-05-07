@@ -6,7 +6,6 @@ import de.lifecircles.model.neural.NeuralNetwork;
 import de.lifecircles.service.EnergyCellCalcService;
 import de.lifecircles.service.SimulationConfig;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,17 +14,11 @@ import java.util.List;
  * Behavior is controlled by a neural network brain.
  */
 public class Cell {
-    private static final int SENSOR_ACTOR_COUNT = 12;
-    private static final double MIN_SIZE = 10.0;
-    private static final double MAX_SIZE = 50.0;
-    public static final double MAX_ENERGY = 1.0;
-    private static final int TEMP_THINK_HACK_COUNTER_MAX = 10;
-
     private Vector2D position;
     private Vector2D velocity;
     private double rotation; // in radians
     private double angularVelocity;
-    private double size;
+    private double radiusSize;
     private CellType type;
     private final List<SensorActor> sensorActors;
     private CellBrain brain;
@@ -56,41 +49,41 @@ public class Cell {
         return topSensorIndex;
     }
 
-    public Cell(Vector2D position, final double size) {
+    public Cell(Vector2D position, final double radiusSize) {
         this.position = position;
         this.velocity = new Vector2D(0, 0);
         this.rotation = 0;
         this.angularVelocity = 0;
-        this.size = size;
+        this.radiusSize = radiusSize;
         this.type = new CellType(0, 0, 0);
         this.sensorActors = new ArrayList<>();
         initializeSensorActors();
         this.brain = new CellBrain(this);
-        this.energy = MAX_ENERGY;
+        this.energy = SimulationConfig.CELL_MAX_ENERGY;
         this.age = 0.0;
         this.reproductionDesire = 0.0;
         this.generation = 0; // initialize generation counter
     }
 
-    public Cell(Vector2D position, final double size, final NeuralNetwork neuralNetwork) {
+    public Cell(Vector2D position, final double radiusSize, final NeuralNetwork neuralNetwork) {
         this.position = position;
         this.velocity = new Vector2D(0, 0);
         this.rotation = 0;
         this.angularVelocity = 0;
-        this.size = size;
+        this.radiusSize = radiusSize;
         this.type = new CellType(0, 0, 0);
         this.sensorActors = new ArrayList<>();
         initializeSensorActors();
         this.brain = new CellBrain(this, neuralNetwork);
-        this.energy = MAX_ENERGY;
+        this.energy = SimulationConfig.CELL_MAX_ENERGY;
         this.age = 0.0;
         this.reproductionDesire = 0.0;
         this.generation = 0; // initialize generation counter
     }
 
     private void initializeSensorActors() {
-        double angleStep = 2 * Math.PI / SENSOR_ACTOR_COUNT;
-        for (int i = 0; i < SENSOR_ACTOR_COUNT; i++) {
+        double angleStep = 2 * Math.PI / SimulationConfig.CELL_SENSOR_ACTOR_COUNT;
+        for (int i = 0; i < SimulationConfig.CELL_SENSOR_ACTOR_COUNT; i++) {
             sensorActors.add(new SensorActor(this, i * angleStep));
         }
     }
@@ -143,12 +136,13 @@ public class Cell {
         this.angularVelocity = angularVelocity;
     }
 
-    public double getSize() {
-        return size;
+    public double getRadiusSize() {
+        return this.radiusSize;
     }
 
-    public void setSize(double size) {
-        this.size = Math.max(MIN_SIZE, Math.min(MAX_SIZE, size));
+    public void setRadiusSize(double radiusSize) {
+        this.radiusSize = Math.max(SimulationConfig.getInstance().getCellMinRadiusSize(),
+                Math.min(SimulationConfig.getInstance().getCellMaxRadiusSize(), radiusSize));
     }
 
     public CellType getType() {
@@ -164,23 +158,14 @@ public class Cell {
     }
 
     /**
-     * Returns the maximum allowed cell size (diameter).
-     * Used for spatial grid cell sizing.
-     */
-    public static double getMaxSize() {
-        return MAX_SIZE;
-    }
-
-    /**
      * Updates the cell's position, rotation, and behavior based on its current state.
      * @param deltaTime Time step in seconds
-     * @param neighbors List of neighboring cells
      */
-    public void updateWithNeighbors(final double deltaTime, final List<Cell> neighbors) {
+    public void updateWithNeighbors(final double deltaTime) {
         // Update neural network
         final boolean useSynapseEnergyCost;
-        if (this.tempThinkHackCounter > TEMP_THINK_HACK_COUNTER_MAX) {
-            CellBrainService.think(this, neighbors);
+        if (this.tempThinkHackCounter > SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX) {
+            CellBrainService.think(this);
             useSynapseEnergyCost = true;
             this.tempThinkHackCounter = 0;
         } else {
@@ -217,7 +202,7 @@ public class Cell {
      */
     public void applyForce(Vector2D force, Vector2D applicationPoint, double deltaTime) {
         // Linear acceleration
-        velocity = velocity.add(force.multiply(1.0 / size)); // Larger cells are affected less
+        velocity = velocity.add(force.multiply(1.0 / radiusSize)); // Larger cells are affected less
 
         // Calculate torque and angular acceleration
         //Vector2D radiusVector = applicationPoint.subtract(position);
@@ -225,7 +210,7 @@ public class Cell {
         final double yRadius = applicationPoint.getY() - position.getY();
         //double torque = radiusVector.getX() * force.getY() - radiusVector.getY() * force.getX();
         double torque = xRadius * force.getY() - yRadius * force.getX();
-        angularVelocity += torque / (size * size); // Moment of inertia approximated as size²
+        angularVelocity += torque / (radiusSize * radiusSize); // Moment of inertia approximated as size²
     }
 
     public double getEnergy() {
@@ -245,7 +230,7 @@ public class Cell {
     }
 
     public void setEnergy(double energy) {
-        this.energy = Math.max(0.0, Math.min(MAX_ENERGY, energy));
+        this.energy = Math.max(0.0, Math.min(SimulationConfig.CELL_MAX_ENERGY, energy));
     }
 
     public void setBrain(CellBrain brain) {

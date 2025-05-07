@@ -4,17 +4,8 @@ import de.lifecircles.model.Cell;
 import de.lifecircles.model.CellType;
 import de.lifecircles.model.Environment;
 import de.lifecircles.model.SensorActor;
-import de.lifecircles.model.Vector2D;
-import de.lifecircles.service.TrainMode;
-import de.lifecircles.service.TrainStrategy;
-import de.lifecircles.service.HighEnergyTrainStrategy;
-import de.lifecircles.service.DefaultTrainStrategy;
-import de.lifecircles.service.HighPositionTrainStrategy;
 import de.lifecircles.service.dto.SimulationState;
-import de.lifecircles.service.ActorSensorCellCalcService;
-import de.lifecircles.service.BlockerCellCalcService;
-import de.lifecircles.service.PartitioningStrategy;
-import de.lifecircles.service.SpatialGridPartitioningStrategy;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -92,34 +83,28 @@ public class CalculationService implements Runnable {
 
     private void update(final double deltaTime) {
         // Retrieve cells and process sensor/actor interactions
-        final List<Cell> cells = environment.getCells();
+        final List<Cell> cells = this.environment.getCells();
 
         // Update all cells with their neighborhood information
-        final double interactionRadius = config.getCellInteractionRadius();
+        final double interactionRadius = this.config.getCellMaxRadiusSize();
         final PartitioningStrategy partitioner = PartitioningStrategyFactory.createStrategy(
-            environment.getWidth(), environment.getHeight(), interactionRadius
-        );
+                this.environment.getWidth(), this.environment.getHeight(), interactionRadius);
+
         partitioner.build(cells);
 
         ActorSensorCellCalcService.processInteractions(cells, deltaTime, partitioner);
         
         // Parallel execution of neural networks and cell updates
         cells.parallelStream().forEach(cell -> {
-            List<Cell> neighbors = new ArrayList<>();
-            for (Cell other : partitioner.getNeighbors(cell)) {
-                if (other != cell && cell.getPosition().distance(other.getPosition()) <= interactionRadius) {
-                    neighbors.add(other);
-                }
-            }
-            cell.updateWithNeighbors(deltaTime, neighbors);
+            cell.updateWithNeighbors(deltaTime);
         }
         );
 
         // Update environment physics
-        environment.update(deltaTime, partitioner);
+        this.environment.update(deltaTime, partitioner);
 
         // Strategy-based selection/mutation
-        trainStrategy.selectAndMutate(environment);
+        this.trainStrategy.selectAndMutate(this.environment);
 
         // Update state for visualization
         //updateState();
@@ -145,7 +130,7 @@ public class CalculationService implements Runnable {
                 cellStates.add(new SimulationState.CellState(
                         cell.getPosition(),
                         cell.getRotation(),
-                        cell.getSize(),
+                        cell.getRadiusSize(),
                         new double[]{cellType.getRed(), cellType.getGreen(), cellType.getBlue()},
                         actorStates,
                         cell.getEnergy(),

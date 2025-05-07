@@ -1,16 +1,38 @@
 package de.lifecircles.service;
 
+import de.lifecircles.model.Vector2D;
+
 /**
  * Configuration parameters for the simulation.
  */
 public class SimulationConfig {
+    // Environment:
+    public static final double GRAVITY = 9.81;
+    public static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
+    public static final double REPOPULATION_THRESHOLD_PERCENT = 0.25;
+
+    // Sun:
+
+    // Sun ray energy settings
+    private double sunRayRate = 4.0;
+    private double energyPerRay = 0.1;
+    // Spacing between sun rays in pixels; average one ray per this spacing
+    private double sunRaySpacingPx = 60.0;
+
+    // View:
     public double scaleSimulation = 2.0D;
     private double width = 1024 * 2;// * SCALE_SIMULATION;
     private double height = 1200;// * SCALE_SIMULATION;
     private int targetUpdatesPerSecond = 60;
     private double timeStep = 1.0D / targetUpdatesPerSecond; // 60 Hz simulation
-    
-    private double cellMaxRadius = 30.0D;
+
+    // Cell:
+    public static final int CELL_SENSOR_ACTOR_COUNT = 12;
+    public static final double CELL_MAX_ENERGY = 1.0;
+    public static final int CELL_TEMP_THINK_HACK_COUNTER_MAX = 10;
+
+    private double cellMinRadiusSize = 10.0D;
+    private double cellMaxRadiusSize = 50.0D;
     private double cellInteractionRadius = 30.0D;
 
     private int initialCellCount = 30;
@@ -18,11 +40,6 @@ public class SimulationConfig {
     // Training mode configuration
     private TrainMode trainMode = TrainMode.NONE;
 
-    // Sun ray energy settings
-    private double sunRayRate = 4.0;
-    private double energyPerRay = 0.1;
-    // Spacing between sun rays in pixels; average one ray per this spacing
-    private double sunRaySpacingPx = 60.0;
     // Age in Seconds after which a cell is considered dead.
     private int cellDeathAge = 100;
     // Blocker repulsion strength for cell-blocker interactions
@@ -31,12 +48,12 @@ public class SimulationConfig {
      * Friction coefficient for cell rotation (damping)
      * A higher value means less rotation.
      */
-    private double rotationalFriction = 0.85D;
+    private double rotationalFriction = 0.9D;
     /** 
      * Viscosity coefficient for cell movement damping.
      * A higher value means less movement.
      */
-    private double viscosity = 4.75D;
+    private double viscosity = 5.75D;
 
     public static final double ACTOR_INTERACTION_FORCE = 16.0D * 4.0D * 2.0D;
     private static final double CELL_REPULSION_STRENGTH = 175.0;
@@ -97,12 +114,20 @@ public class SimulationConfig {
         this.cellInteractionRadius = cellInteractionRadius;
     }
 
-    public double getCellMaxRadius() {
-        return this.cellMaxRadius;
+    public double getCellMinRadiusSize() {
+        return this.cellMinRadiusSize;
     }
 
-    public void setCellMaxRadius(double cellMaxRadius) {
-        this.cellMaxRadius = cellMaxRadius;
+    public void setCellMinRadiusSize(double cellMinRadiusSize) {
+        this.cellMinRadiusSize = cellMinRadiusSize;
+    }
+
+    public double getCellMaxRadiusSize() {
+        return this.cellMaxRadiusSize;
+    }
+
+    public void setCellMaxRadiusSize(double cellMaxRadiusSize) {
+        this.cellMaxRadiusSize = cellMaxRadiusSize;
     }
 
     public int getCellDeathAge() {

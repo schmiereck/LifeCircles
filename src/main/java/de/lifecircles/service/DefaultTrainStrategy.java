@@ -3,7 +3,6 @@ package de.lifecircles.service;
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.Environment;
 import de.lifecircles.model.Vector2D;
-import de.lifecircles.service.SimulationConfig;
 
 import java.util.Random;
 
@@ -37,7 +36,7 @@ public class DefaultTrainStrategy implements TrainStrategy {
         for (int i = 0; i < config.getInitialCellCount(); i++) {
             double x = random.nextDouble() * config.getWidth();
             double y = random.nextDouble() * config.getHeight();
-            environment.addCell(new Cell(new Vector2D(x, y), config.getCellMaxRadius() / 2.0));
+            environment.addCell(new Cell(new Vector2D(x, y), config.getCellMaxRadiusSize() / 2.0));
         }
     }
 

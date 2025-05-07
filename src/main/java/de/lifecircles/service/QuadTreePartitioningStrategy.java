@@ -28,6 +28,6 @@ public class QuadTreePartitioningStrategy implements PartitioningStrategy {
     @Override
     public List<Cell> getNeighbors(Cell cell) {
         // Query within a radius of max diameter to retrieve nearby cells
-        return quadTree.queryRange(cell.getPosition(), Cell.getMaxSize());
+        return quadTree.queryRange(cell.getPosition(), SimulationConfig.getInstance().getCellMaxRadiusSize());
     }
 }

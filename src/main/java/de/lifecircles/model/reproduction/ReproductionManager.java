@@ -34,14 +34,14 @@ public class ReproductionManager {
         // Calculate child position slightly offset from parent
         double angle = random.nextDouble() * 2 * Math.PI;
         Vector2D offset = new Vector2D(
-            Math.cos(angle) * (parent.getSize() * 0.3D),
-            Math.sin(angle) * (parent.getSize() * 0.3D)
+            Math.cos(angle) * (parent.getRadiusSize() * 0.3D),
+            Math.sin(angle) * (parent.getRadiusSize() * 0.3D)
         );
         Vector2D childPosition = parent.getPosition().add(offset);
 
         // Set initial size (slightly mutated from parent's initial size)
-        final double parentSize = parent.getSize();
-        final double initialSize = mutateValue(parentSize, sizeMutationStrength, config.getCellMaxRadius());
+        final double parentSize = parent.getRadiusSize();
+        final double initialSize = mutateValue(parentSize, sizeMutationStrength, config.getCellMaxRadiusSize());
 
         // Create mutated brain for child
         final CellBrain parentBrain = parent.getBrain();

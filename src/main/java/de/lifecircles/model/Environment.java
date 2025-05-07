@@ -8,12 +8,8 @@ import de.lifecircles.service.RepulsionCellCalcService;
 import de.lifecircles.service.SimulationConfig;
 import de.lifecircles.service.EnergySunCalcService;
 import de.lifecircles.service.EnergyTransferCellCalcService;
-import de.lifecircles.model.SunRay;
-import de.lifecircles.model.Vector2D;
 import de.lifecircles.service.PartitioningStrategy;
-import de.lifecircles.service.PartitioningStrategyFactory;
-import de.lifecircles.service.QuadTreePartitioningStrategy;
-import de.lifecircles.service.SpatialGridPartitioningStrategy;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
@@ -25,10 +21,7 @@ import de.lifecircles.service.TrainMode;
  * Manages physics simulation and cell interactions.
  */
 public class Environment {
-    private static final double GRAVITY = 9.81;
-    private static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
     private static final Random random = new Random();
-    private static final double REPOPULATION_THRESHOLD_PERCENT = 0.25;
     private final SimulationConfig config;
     private final EnergySunCalcService energySunCalcService;
     private final List<SunRay> sunRays;
@@ -133,7 +126,7 @@ public class Environment {
             cell.applyForce(viscousForce, cell.getPosition(), deltaTime);
 
             // Apply gravity
-            cell.applyForce(GRAVITY_VECTOR.multiply(cell.getSize()), cell.getPosition(), deltaTime);
+            cell.applyForce(SimulationConfig.GRAVITY_VECTOR.multiply(cell.getRadiusSize()), cell.getPosition(), deltaTime);
 
             // Handle blocker collisions after force application
             BlockerCellCalcService.handleBlockerCollisions(cell, blockers, deltaTime);
@@ -198,12 +191,12 @@ public class Environment {
             } else {
                 for (int i = 0; i < initialCount; i++) {
                     Vector2D pos = new Vector2D(random.nextDouble() * width, random.nextDouble() * height);
-                    Cell newCell = new Cell(pos, config.getCellMaxRadius() / 2.0D);
+                    Cell newCell = new Cell(pos, config.getCellMaxRadiusSize() / 2.0D);
                     cells.add(newCell);
                 }
             }
         } else {
-            int thresholdCount = (int) Math.ceil(initialCount * REPOPULATION_THRESHOLD_PERCENT);
+            int thresholdCount = (int) Math.ceil(initialCount * SimulationConfig.REPOPULATION_THRESHOLD_PERCENT);
             if (currentCount < thresholdCount) {
                 int toSpawn = initialCount - currentCount;
                 for (int i = 0; i < toSpawn; i++) {
