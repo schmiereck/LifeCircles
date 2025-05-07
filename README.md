@@ -81,6 +81,8 @@ Das System-Design der Anwendung soll enthalten:
 
 # DONE
 
+* Füge bei der aktivierung der Output-Neuronen ein Flag hinzu und berechne für Outputs keine Aktivierungsfunktion.
+
 * Stelle die Berechnung des SimulationState DTO-Objektes so um, dass es vom View nach 30 FPS asynchron angefordert wird und 
   nicht nach jedem Calc-Step erzeugt wird.
   Stelle die Funktion getLatestState() so um, dass der SimulationState nur angelegt wird, wenn er vom View angefordert wird.

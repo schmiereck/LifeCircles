@@ -8,6 +8,5 @@ public enum ActorOutputFeature {
     TYPE_GREEN,
     TYPE_BLUE,
     FORCE,
-    ENERGY_BEAM,
     ENERGY_ABSORPTION
 }

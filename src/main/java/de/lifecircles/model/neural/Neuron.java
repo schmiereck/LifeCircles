@@ -14,6 +14,7 @@ public class Neuron {
     private int inputSynapseCount;   // Aktuelle Anzahl von Synapsen im Array
     private final List<Synapse> outputSynapses;
     private ActivationFunction activationFunction;
+    private boolean isOutputNeuron; // Flag für Output-Neuronen
     
     private static final int INITIAL_SYNAPSE_CAPACITY = 8;
 
@@ -24,6 +25,7 @@ public class Neuron {
         this.inputSynapseCount = 0;
         this.outputSynapses = new ArrayList<>();
         this.activationFunction = ActivationFunction.Sigmoid;
+        this.isOutputNeuron = false; // Standardmäßig kein Output-Neuron
     }
 
     public void addInputSynapse(Synapse synapse) {
@@ -98,6 +100,7 @@ public class Neuron {
     /**
      * Calculates the neuron's output value based on its inputs.
      * Optimized version using array iteration instead of ArrayList.
+     * For output neurons, no activation function is applied.
      */
     public void activate() {
         double sum = this.bias;
@@ -106,11 +109,36 @@ public class Neuron {
             Synapse synapse = this.inputSynapses[i];
             sum += synapse.getSourceNeuron().getValue() * synapse.getWeight();
         }
-        this.value = this.activationFunction.apply(sum);
+        
+        // Für Output-Neuronen wird keine Aktivierungsfunktion angewendet
+        if (this.isOutputNeuron) {
+            this.value = sum;
+        } else {
+            this.value = this.activationFunction.apply(sum);
+        }
     }
 
     public void setActivationFunction(ActivationFunction activationFunction) {
         this.activationFunction = activationFunction;
+    }
+
+    /**
+     * Sets whether this neuron is an output neuron.
+     * Output neurons will not apply activation functions.
+     * 
+     * @param isOutputNeuron true if this neuron is an output neuron
+     */
+    public void setOutputNeuron(boolean isOutputNeuron) {
+        this.isOutputNeuron = isOutputNeuron;
+    }
+    
+    /**
+     * Checks if this neuron is an output neuron.
+     * 
+     * @return true if this neuron is an output neuron
+     */
+    public boolean isOutputNeuron() {
+        return this.isOutputNeuron;
     }
 
     /**
@@ -119,6 +147,9 @@ public class Neuron {
     public Neuron copy() {
         Neuron copy = new Neuron();
         copy.bias = this.bias;
+        copy.isOutputNeuron = this.isOutputNeuron; // Übertrage Output-Neuron-Status
+        copy.activationFunction = this.activationFunction;
         return copy;
     }
 }
+

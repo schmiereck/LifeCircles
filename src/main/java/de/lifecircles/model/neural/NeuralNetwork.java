@@ -52,7 +52,9 @@ public class NeuralNetwork {
 
         // create output neurons
         for (int i = 0; i < outputCount; i++) {
-            this.outputNeurons.add(new Neuron());
+            Neuron outputNeuron = new Neuron();
+            outputNeuron.setOutputNeuron(true); // Markiere als Output-Neuron
+            this.outputNeurons.add(outputNeuron);
         }
         this.outputs = new double[this.outputNeurons.size()];
 
@@ -129,7 +131,12 @@ public class NeuralNetwork {
             this.copyNeurons(other.hiddenLayers.get(i), this.hiddenLayers.get(i));
         }
         // copy output neurons
-        this.copyNeurons(other.outputNeurons, this.outputNeurons);
+        for (int i = 0; i < this.outputNeurons.size(); i++) {
+            Neuron src = other.outputNeurons.get(i);
+            Neuron dst = this.outputNeurons.get(i);
+            dst.setBias(src.getBias());
+            dst.setOutputNeuron(true); // Stelle sicher, dass Output-Neuronen richtig markiert sind
+        }
     }
 
     private void copyNeurons(List<Neuron> source, List<Neuron> target) {
@@ -264,6 +271,8 @@ public class NeuralNetwork {
         // Output-Neuronen zuordnen
         for (int i = 0; i < this.outputNeurons.size(); i++) {
             mapping.put(this.outputNeurons.get(i), target.outputNeurons.get(i));
+            // Stelle sicher, dass Output-Neuronen richtig markiert sind
+            target.outputNeurons.get(i).setOutputNeuron(true);
         }
         
         return mapping;

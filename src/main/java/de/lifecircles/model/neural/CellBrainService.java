@@ -7,8 +7,6 @@ import de.lifecircles.model.CellType;
 import de.lifecircles.model.SensorActor;
 
 public class CellBrainService {
-    /** Threshold for energy beam trigger output */
-    public static final double ENERGY_BEAM_THRESHOLD = 0.9;
 
     public static double[] generateInputs(final Cell cell) {
         final List<SensorActor> myActorList = cell.getSensorActors();
@@ -75,7 +73,8 @@ public class CellBrainService {
 
     public static void applyOutputs(final Cell cell, double[] outputs) {
         // Apply size output
-        cell.setRadiusSize(outputs[GlobalOutputFeature.SIZE.ordinal()] * 40 + 10); // Scale to 10-50 range
+        //cell.setRadiusSize(outputs[GlobalOutputFeature.SIZE.ordinal()] * 40.0D + 10.0D); // Scale to 10-50 range
+        cell.setRadiusSize(outputs[GlobalOutputFeature.SIZE.ordinal()]); // Scale to 10-50 range
         // Set reproduction desire output
         cell.setReproductionDesire(outputs[GlobalOutputFeature.REPRODUCTION_DESIRE.ordinal()]);
 
@@ -93,9 +92,8 @@ public class CellBrainService {
             actor.setType(newType);
 
             // Set force strength (range -1 to 1)
-            actor.setForceStrength(outputs[index + ActorOutputFeature.FORCE.ordinal()] * 2 - 1);
-            // Set energy beam trigger
-            actor.setFireEnergyBeam(outputs[index + ActorOutputFeature.ENERGY_BEAM.ordinal()] > ENERGY_BEAM_THRESHOLD);
+            //actor.setForceStrength(outputs[index + ActorOutputFeature.FORCE.ordinal()] * 2.0D - 1.0D);
+            actor.setForceStrength(outputs[index + ActorOutputFeature.FORCE.ordinal()]);
 
             index += ActorOutputFeature.values().length;
         }
