@@ -4,7 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.util.Map;
-import de.lifecircles.service.TrainMode;
+import de.lifecircles.service.trainStrategy.TrainMode;
 import de.lifecircles.service.SimulationConfig;
 
 /**

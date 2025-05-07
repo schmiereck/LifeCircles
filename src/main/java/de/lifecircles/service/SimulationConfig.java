@@ -1,6 +1,7 @@
 package de.lifecircles.service;
 
 import de.lifecircles.model.Vector2D;
+import de.lifecircles.service.trainStrategy.TrainMode;
 
 /**
  * Configuration parameters for the simulation.

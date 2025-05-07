@@ -8,4 +8,6 @@ module de.lifecircles {
     exports de.lifecircles.service;
     exports de.lifecircles.service.dto;
     exports de.lifecircles.view;
+    exports de.lifecircles.service.trainStrategy;
+    exports de.lifecircles.service.partitioningStrategy;
 }

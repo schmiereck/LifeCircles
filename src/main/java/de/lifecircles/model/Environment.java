@@ -1,18 +1,18 @@
 package de.lifecircles.model;
 
 import de.lifecircles.service.ReproductionManagerService;
-import de.lifecircles.service.StatisticsManager;
+import de.lifecircles.service.StatisticsManagerService;
 import de.lifecircles.service.ActorSensorCellCalcService;
 import de.lifecircles.service.BlockerCellCalcService;
 import de.lifecircles.service.RepulsionCellCalcService;
 import de.lifecircles.service.SimulationConfig;
 import de.lifecircles.service.EnergySunCalcService;
 import de.lifecircles.service.EnergyTransferCellCalcService;
-import de.lifecircles.service.PartitioningStrategy;
+import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
 
 import java.util.*;
 
-import de.lifecircles.service.TrainMode;
+import de.lifecircles.service.trainStrategy.TrainMode;
 
 /**
  * Represents the simulation environment.
@@ -170,7 +170,7 @@ public class Environment {
         }
 
         // Update statistics
-        StatisticsManager.getInstance().update(cells);
+        StatisticsManagerService.getInstance().update(cells);
     }
 
     /**

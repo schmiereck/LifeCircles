@@ -4,7 +4,13 @@ import de.lifecircles.model.Cell;
 import de.lifecircles.model.CellType;
 import de.lifecircles.model.Environment;
 import de.lifecircles.model.SensorActor;
-import de.lifecircles.service.dto.SimulationState;
+import de.lifecircles.service.dto.SimulationStateDto;
+import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
+import de.lifecircles.service.partitioningStrategy.PartitioningStrategyFactory;
+import de.lifecircles.service.trainStrategy.DefaultTrainStrategy;
+import de.lifecircles.service.trainStrategy.HighEnergyTrainStrategy;
+import de.lifecircles.service.trainStrategy.HighPositionTrainStrategy;
+import de.lifecircles.service.trainStrategy.TrainStrategy;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -17,7 +23,7 @@ public class CalculationService implements Runnable {
     private final Environment environment;
     private final AtomicBoolean running;
     private final AtomicBoolean paused;
-    private volatile SimulationState latestState;
+    private volatile SimulationStateDto latestState;
     private final Object stateLock = new Object();
     private final SimulationConfig config;
     private final TrainStrategy trainStrategy;
@@ -115,15 +121,15 @@ public class CalculationService implements Runnable {
     }
 
     private void updateState() {
-        List<SimulationState.CellState> cellStates = new ArrayList<>();
+        List<SimulationStateDto.CellState> cellStates = new ArrayList<>();
 
         for (Cell cell : environment.getCells()) {
             if (Objects.nonNull(cell)) {
-                List<SimulationState.ActorState> actorStates = new ArrayList<>();
+                List<SimulationStateDto.ActorState> actorStates = new ArrayList<>();
 
                 for (SensorActor actor : cell.getSensorActors()) {
                     CellType actorType = actor.getType();
-                    actorStates.add(new SimulationState.ActorState(
+                    actorStates.add(new SimulationStateDto.ActorState(
                             actor.getPosition(),
                             new double[]{actorType.getRed(), actorType.getGreen(), actorType.getBlue()},
                             actor.getForceStrength()
@@ -131,7 +137,7 @@ public class CalculationService implements Runnable {
                 }
 
                 CellType cellType = cell.getType();
-                cellStates.add(new SimulationState.CellState(
+                cellStates.add(new SimulationStateDto.CellState(
                         cell.getPosition(),
                         cell.getRotation(),
                         cell.getRadiusSize(),
@@ -144,7 +150,7 @@ public class CalculationService implements Runnable {
         }
 
         synchronized (stateLock) {
-            latestState = new SimulationState(
+            latestState = new SimulationStateDto(
                 cellStates,
                 environment.getBlockers(),
                 environment.getSunRays(),
@@ -154,7 +160,7 @@ public class CalculationService implements Runnable {
         }
     }
 
-    public SimulationState getLatestState() {
+    public SimulationStateDto getLatestState() {
         synchronized (stateLock) {
             this.updateState();
            return this.latestState;

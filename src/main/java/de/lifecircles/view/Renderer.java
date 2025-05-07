@@ -1,7 +1,7 @@
 package de.lifecircles.view;
 
 import de.lifecircles.model.Vector2D;
-import de.lifecircles.service.dto.SimulationState;
+import de.lifecircles.service.dto.SimulationStateDto;
 import de.lifecircles.service.SimulationConfig;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -22,7 +22,7 @@ public class Renderer {
         this.config = ViewConfig.getInstance();
     }
 
-    public void render(SimulationState state) {
+    public void render(SimulationStateDto state) {
         clear();
         if (config.isShowGrid()) {
             drawGrid();
@@ -31,7 +31,7 @@ public class Renderer {
         if (config.isShowSunRays()) {
             gc.setStroke(Color.YELLOW.deriveColor(0, 1, 1, 0.5));
             gc.setLineWidth(1.5);
-            for (SimulationState.SunRayState ray : state.getSunRays()) {
+            for (SimulationStateDto.SunRayState ray : state.getSunRays()) {
                 Point2D start = camera.worldToScreen(new Vector2D(ray.getStartX(), ray.getStartY()));
                 Point2D end = camera.worldToScreen(new Vector2D(ray.getEndX(), ray.getEndY()));
                 gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
@@ -39,17 +39,17 @@ public class Renderer {
         }
         
         // Render blockers first (background)
-        for (SimulationState.BlockerState blocker : state.getBlockers()) {
+        for (SimulationStateDto.BlockerState blocker : state.getBlockers()) {
             renderBlocker(blocker);
         }
         
-        for (SimulationState.CellState cell : state.getCells()) {
+        for (SimulationStateDto.CellState cell : state.getCells()) {
             if (config.isShowForceFields()) {
                 drawForceFields(cell);
             }
         }
 
-        for (SimulationState.CellState cell : state.getCells()) {
+        for (SimulationStateDto.CellState cell : state.getCells()) {
             renderCell(cell);
             if (config.isShowActors()) {
                 drawActors(cell);
@@ -97,7 +97,7 @@ public class Renderer {
         }
     }
 
-    private void renderCell(SimulationState.CellState cell) {
+    private void renderCell(SimulationStateDto.CellState cell) {
         Point2D screenPos = camera.worldToScreen(cell.getPosition());
         double screenSize = cell.getSize() * camera.getScale();
 
@@ -188,8 +188,8 @@ public class Renderer {
         gc.fillPolygon(xPoints, yPoints, 3);
     }
 
-    private void drawActors(SimulationState.CellState cell) {
-        for (SimulationState.ActorState actor : cell.getActors()) {
+    private void drawActors(SimulationStateDto.CellState cell) {
+        for (SimulationStateDto.ActorState actor : cell.getActors()) {
             Point2D screenPos = camera.worldToScreen(actor.getPosition());
             double actorSize = config.getActorSize() * camera.getScale();
 
@@ -205,8 +205,8 @@ public class Renderer {
         }
     }
 
-    private void drawForceFields(SimulationState.CellState cell) {
-        for (SimulationState.ActorState actor : cell.getActors()) {
+    private void drawForceFields(SimulationStateDto.CellState cell) {
+        for (SimulationStateDto.ActorState actor : cell.getActors()) {
             if (Math.abs(actor.getForceStrength()) > 0.1) {
                 Point2D screenPos = camera.worldToScreen(actor.getPosition());
                 double[] rgb = actor.getTypeRGB();
@@ -248,7 +248,7 @@ public class Renderer {
         }
     }
 
-    private void renderBlocker(SimulationState.BlockerState blocker) {
+    private void renderBlocker(SimulationStateDto.BlockerState blocker) {
         Point2D screenPos = camera.worldToScreen(new Vector2D(blocker.getX(), blocker.getY()));
         double screenWidth = camera.scaleToScreen(blocker.getWidth());
         double screenHeight = camera.scaleToScreen(blocker.getHeight());
@@ -262,7 +262,7 @@ public class Renderer {
         );
     }
 
-    private void drawDebugInfo(SimulationState state) {
+    private void drawDebugInfo(SimulationStateDto state) {
         gc.setFill(config.getTextColor());
         gc.setTextAlign(TextAlignment.LEFT);
         gc.fillText(String.format("Cells: %d", state.getCells().size()), 10, 20);

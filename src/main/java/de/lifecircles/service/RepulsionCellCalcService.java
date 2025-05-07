@@ -2,6 +2,7 @@ package de.lifecircles.service;
 
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.Vector2D;
+import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
 
 import java.util.List;
 

@@ -2,7 +2,7 @@ package de.lifecircles.view;
 
 import java.util.Objects;
 
-import de.lifecircles.service.StatisticsManager;
+import de.lifecircles.service.StatisticsManagerService;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
@@ -16,7 +16,7 @@ import javafx.scene.paint.Color;
  * Panel displaying simulation statistics and population graphs.
  */
 public class StatisticsPanel extends VBox {
-    private final StatisticsManager statistics;
+    private final StatisticsManagerService statistics;
     private final Label totalLabel = new Label();
     private final Label performanceLabel = new Label();
     private final Label clustersLabel = new Label();
@@ -29,7 +29,7 @@ public class StatisticsPanel extends VBox {
     private long minUpdateIntervalNanos = 200_000_000L * 5L; // 5*200ms in Nanosekunden
 
     public StatisticsPanel() {
-        this.statistics = StatisticsManager.getInstance();
+        this.statistics = StatisticsManagerService.getInstance();
         this.populationGraph = new Canvas(230, 150);
 
         setPadding(new Insets(10));

@@ -1,9 +1,8 @@
 package de.lifecircles.view;
 
 import de.lifecircles.service.CalculationService;
-import de.lifecircles.service.dto.SimulationState;
+import de.lifecircles.service.dto.SimulationStateDto;
 import de.lifecircles.service.SimulationConfig;
-import de.lifecircles.service.TrainMode;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -121,7 +120,7 @@ public class SimulationView extends Pane {
     }
 
     private void render() {
-        SimulationState state = calculationService.getLatestState();
+        SimulationStateDto state = calculationService.getLatestState();
         if (state != null) {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             renderer.render(state);

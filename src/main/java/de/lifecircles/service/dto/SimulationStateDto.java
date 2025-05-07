@@ -1,7 +1,6 @@
 package de.lifecircles.service.dto;
 
 import de.lifecircles.model.Blocker;
-import de.lifecircles.model.Cell;
 import de.lifecircles.model.SunRay;
 import de.lifecircles.model.Vector2D;
 import javafx.scene.paint.Color;
@@ -14,14 +13,14 @@ import java.util.stream.Collectors;
  * Thread-safe Data Transfer Object for simulation state.
  * Used to transfer state between calculation and visualization threads.
  */
-public class SimulationState {
+public class SimulationStateDto {
     private final List<CellState> cells;
     private final List<BlockerState> blockers;
     private final List<SunRayState> sunRays;
     private final double width;
     private final double height;
 
-    public SimulationState(List<CellState> cells, List<Blocker> blockers, List<SunRay> sunRays, double width, double height) {
+    public SimulationStateDto(List<CellState> cells, List<Blocker> blockers, List<SunRay> sunRays, double width, double height) {
         this.cells = new ArrayList<>(cells);
         this.blockers = blockers.stream()
             .map(BlockerState::new)

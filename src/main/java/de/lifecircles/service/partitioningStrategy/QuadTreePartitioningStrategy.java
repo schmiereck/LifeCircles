@@ -1,6 +1,8 @@
-package de.lifecircles.service;
+package de.lifecircles.service.partitioningStrategy;
 
 import de.lifecircles.model.Cell;
+import de.lifecircles.service.SimulationConfig;
+
 import java.util.List;
 
 /**

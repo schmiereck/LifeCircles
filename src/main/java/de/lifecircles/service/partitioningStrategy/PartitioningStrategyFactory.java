@@ -1,4 +1,4 @@
-package de.lifecircles.service;
+package de.lifecircles.service.partitioningStrategy;
 
 public class PartitioningStrategyFactory {
     final private static Strategy strategy = Strategy.SPATIAL_GRID;

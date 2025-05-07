@@ -1,4 +1,4 @@
-package de.lifecircles.service;
+package de.lifecircles.service.partitioningStrategy;
 
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.Vector2D;

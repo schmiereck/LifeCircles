@@ -1,4 +1,4 @@
-package de.lifecircles.service;
+package de.lifecircles.service.trainStrategy;
 
 /**
  * Enumeration of training modes for the simulation.

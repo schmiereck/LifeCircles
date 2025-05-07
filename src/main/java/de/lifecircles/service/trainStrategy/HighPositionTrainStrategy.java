@@ -1,8 +1,10 @@
-package de.lifecircles.service;
+package de.lifecircles.service.trainStrategy;
 
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.Environment;
 import de.lifecircles.model.Vector2D;
+import de.lifecircles.service.ReproductionManagerService;
+import de.lifecircles.service.SimulationConfig;
 
 import java.util.ArrayList;
 import java.util.Comparator;

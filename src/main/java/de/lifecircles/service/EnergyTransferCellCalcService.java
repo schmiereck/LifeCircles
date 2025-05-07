@@ -2,7 +2,7 @@ package de.lifecircles.service;
 
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.SensorActor;
-import de.lifecircles.model.neural.SensorInputFeature;
+import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
 
 import java.util.List;
 

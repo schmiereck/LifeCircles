@@ -1,4 +1,4 @@
-package de.lifecircles.service;
+package de.lifecircles.service.trainStrategy;
 
 import de.lifecircles.model.Environment;
 
