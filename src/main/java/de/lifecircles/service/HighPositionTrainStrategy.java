@@ -3,7 +3,7 @@ package de.lifecircles.service;
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.Environment;
 import de.lifecircles.model.Vector2D;
-import de.lifecircles.model.reproduction.ReproductionManager;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -67,7 +67,7 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         // Fülle bis INITIAL_COUNT mit mutierten Nachkommen auf
         while (nextGen.size() < INITIAL_COUNT) {
             Cell parent = winners.get(random.nextInt(winnersCount));
-            Cell child = ReproductionManager.reproduce(config, parent);
+            Cell child = ReproductionManagerService.reproduce(config, parent);
             nextGen.add(child);
             child.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
         }

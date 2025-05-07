@@ -3,13 +3,9 @@ package de.lifecircles.model.neural;
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.CellType;
 import de.lifecircles.model.SensorActor;
-import de.lifecircles.model.reproduction.ReproductionManager;
 import de.lifecircles.service.ActorSensorCellCalcService;
-import de.lifecircles.model.neural.SensorInputFeature;
-import de.lifecircles.model.neural.GlobalInputFeature;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * Manages the neural network that controls cell behavior.

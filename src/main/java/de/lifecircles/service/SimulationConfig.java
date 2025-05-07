@@ -60,12 +60,12 @@ public class SimulationConfig {
     private double cellActorMinForceStrength = 0.0D;
     private double cellActorMaxForceStrength = 16.0D * 4.0D * 2.0D;
 
-    private double minReproductionEnergy = 0.2D;
-    private double minReproductionAge = 4.0D; // seconds
+    private double reproductionEnergyThreshold = 0.2D;
+    private double reproductionAgeThreshold = 4.0D; // seconds
+    private double reproductionDesireThreshold = 0.5;
 
     private double mutationRate = 0.1;
     private double mutationStrength = 0.2;
-    private double minReproductionDesire = 0.5;
 
     // Singleton instance
     private static final SimulationConfig INSTANCE = new SimulationConfig();
@@ -222,20 +222,20 @@ public class SimulationConfig {
         return CELL_REPULSION_STRENGTH;
     }
 
-    public double getMinReproductionEnergy() {
-        return this.minReproductionEnergy;
+    public double getReproductionEnergyThreshold() {
+        return this.reproductionEnergyThreshold;
     }
 
-    public void setMinReproductionEnergy(double minReproductionEnergy) {
-        this.minReproductionEnergy = minReproductionEnergy;
+    public void setReproductionEnergyThreshold(double reproductionEnergyThreshold) {
+        this.reproductionEnergyThreshold = reproductionEnergyThreshold;
     }
 
-    public double getMinReproductionAge() {
-        return this.minReproductionAge;
+    public double getReproductionAgeThreshold() {
+        return this.reproductionAgeThreshold;
     }
 
-    public void setMinReproductionAge(double minReproductionAge) {
-        this.minReproductionAge = minReproductionAge;
+    public void setReproductionAgeThreshold(double reproductionAgeThreshold) {
+        this.reproductionAgeThreshold = reproductionAgeThreshold;
     }
 
     public double getMutationRate() { return this.mutationRate; }
@@ -244,8 +244,8 @@ public class SimulationConfig {
     public double getMutationStrength() { return this.mutationStrength; }
     public void setMutationStrength(double strength) { this.mutationStrength = strength; }
 
-    public double getMinReproductionDesire() { return this.minReproductionDesire; }
-    public void setMinReproductionDesire(double threshold) { this.minReproductionDesire = threshold; }
+    public double getReproductionDesireThreshold() { return this.reproductionDesireThreshold; }
+    public void setReproductionDesireThreshold(double threshold) { this.reproductionDesireThreshold = threshold; }
 
     public double getCellActorMinForceStrength() {
         return this.cellActorMinForceStrength;

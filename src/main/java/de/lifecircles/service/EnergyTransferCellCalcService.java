@@ -41,7 +41,8 @@ public class EnergyTransferCellCalcService {
                         double intensity = ActorSensorCellCalcService.sense(sensor, otherActor);
                         if (intensity != 0) {
                             // Check if this is an absorption attempt
-                            double absorptionOutput = cell.getBrain().getNetwork().getOutputValue(SensorInputFeature.ENERGY_ABSORPTION.ordinal());
+                            //double absorptionOutput = cell.getBrain().getNetwork().getOutputValue(SensorInputFeature.ENERGY_ABSORPTION.ordinal());
+                            double absorptionOutput = sensor.getEnergyAbsorption();
                             if (absorptionOutput >= ENERGY_ABSORPTION_THRESHOLD) {
                                 // Calculate energy absorption amount
                                 double absorptionAmount = Math.min(

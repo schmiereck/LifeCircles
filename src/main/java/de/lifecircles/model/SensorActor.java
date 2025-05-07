@@ -20,6 +20,8 @@ public class SensorActor {
     private Cell sensedCell;
     // cached position for current simulation step
     private Vector2D cachedPosition;
+    private double reproductionDesire;
+    private double energyAbsorption;
 
     public SensorActor(Cell parentCell, double angleOnCell) {
         this.parentCell = parentCell;
@@ -105,6 +107,22 @@ public class SensorActor {
      * Returns the cached position computed for this simulation step.
      */
     public Vector2D getCachedPosition() {
-        return cachedPosition;
+        return this.cachedPosition;
+    }
+
+    public double getReproductionDesire() {
+        return this.reproductionDesire;
+    }
+
+    public void setReproductionDesire(double reproductionDesire) {
+        this.reproductionDesire = Math.max(0.0, Math.min(1.0, reproductionDesire));
+    }
+
+    public double getEnergyAbsorption() {
+        return this.energyAbsorption;
+    }
+
+    public void setEnergyAbsorption(double energyAbsorption) {
+        this.energyAbsorption = Math.max(0.0, Math.min(1.0, energyAbsorption));
     }
 }

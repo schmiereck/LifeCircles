@@ -24,7 +24,6 @@ public class Cell {
     private CellBrain brain;
     private double energy;
     private double age; // in seconds
-    private double reproductionDesire; // neural net output for reproduction
     private int generation; // generation counter
     private boolean sunRayHit = false; // Flag to indicate if cell was hit by sun ray
 
@@ -66,7 +65,6 @@ public class Cell {
         this.brain = new CellBrain(this);
         this.energy = SimulationConfig.CELL_MAX_ENERGY;
         this.age = 0.0;
-        this.reproductionDesire = 0.0;
         this.generation = 0; // initialize generation counter
     }
 
@@ -82,7 +80,6 @@ public class Cell {
         this.brain = new CellBrain(this, neuralNetwork);
         this.energy = SimulationConfig.CELL_MAX_ENERGY;
         this.age = 0.0;
-        this.reproductionDesire = 0.0;
         this.generation = 0; // initialize generation counter
     }
 
@@ -222,12 +219,10 @@ public class Cell {
         return energy;
     }
 
-    public double getReproductionDesire() {
-        return reproductionDesire;
-    }
-
-    public void setReproductionDesire(double reproductionDesire) {
-        this.reproductionDesire = Math.max(0.0, Math.min(1.0, reproductionDesire));
+    public double getMaxReproductionDesire() {
+        return sensorActors.stream()
+                .mapToDouble(SensorActor::getReproductionDesire)
+                .max().orElse(0.0);
     }
 
     public double getAge() {

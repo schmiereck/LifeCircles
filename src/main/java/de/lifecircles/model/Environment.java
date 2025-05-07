@@ -1,6 +1,6 @@
 package de.lifecircles.model;
 
-import de.lifecircles.model.reproduction.ReproductionManager;
+import de.lifecircles.service.ReproductionManagerService;
 import de.lifecircles.service.StatisticsManager;
 import de.lifecircles.service.ActorSensorCellCalcService;
 import de.lifecircles.service.BlockerCellCalcService;
@@ -10,10 +10,8 @@ import de.lifecircles.service.EnergySunCalcService;
 import de.lifecircles.service.EnergyTransferCellCalcService;
 import de.lifecircles.service.PartitioningStrategy;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
+
 import de.lifecircles.service.TrainMode;
 
 /**
@@ -146,9 +144,11 @@ public class Environment {
             wrapPosition(cell);
 
             // Handle reproduction (skip in HIGH_ENERGY mode)
-            if (ReproductionManager.canReproduce(this.config, cell)) {
-                Cell childCell = ReproductionManager.reproduce(this.config, cell);
-                newCells.add(childCell);
+            if (ReproductionManagerService.canReproduce(this.config, cell)) {
+                Cell childCell = ReproductionManagerService.reproduce(this.config, cell);
+                if (Objects.nonNull(childCell)) {
+                    newCells.add(childCell);
+                }
             }
 
             // Remove cell after configured age.
@@ -185,7 +185,7 @@ public class Environment {
                 // Repopulate by mutating the last dead cell
                 lastDeadCell.setEnergy(1.0);
                 for (int i = 0; i < initialCount; i++) {
-                    Cell child = ReproductionManager.reproduce(config, lastDeadCell);
+                    Cell child = ReproductionManagerService.reproduce(config, lastDeadCell);
                     cells.add(child);
                 }
             } else {
@@ -201,7 +201,7 @@ public class Environment {
                 int toSpawn = initialCount - currentCount;
                 for (int i = 0; i < toSpawn; i++) {
                     Cell parent = cells.get(random.nextInt(cells.size()));
-                    Cell child = ReproductionManager.reproduce(config, parent);
+                    Cell child = ReproductionManagerService.reproduce(config, parent);
                     cells.add(child);
                 }
             }

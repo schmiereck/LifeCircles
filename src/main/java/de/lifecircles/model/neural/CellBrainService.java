@@ -66,7 +66,7 @@ public class CellBrainService {
             // Add TOP_POSITION input based on actual sensor position
             inputs[baseGlobal + SensorInputFeature.TOP_POSITION.ordinal()] = (actorPos == topSensorIndex) ? 1.0 : 0.0;
             baseGlobal += SensorInputFeature.values().length;
-        } 
+        }
 
         return inputs;
     }
@@ -75,8 +75,6 @@ public class CellBrainService {
         // Apply size output
         //cell.setRadiusSize(outputs[GlobalOutputFeature.SIZE.ordinal()] * 40.0D + 10.0D); // Scale to 10-50 range
         cell.setRadiusSize(outputs[GlobalOutputFeature.SIZE.ordinal()]); // Scale to 10-50 range
-        // Set reproduction desire output
-        cell.setReproductionDesire(outputs[GlobalOutputFeature.REPRODUCTION_DESIRE.ordinal()]);
 
         int index = GlobalOutputFeature.values().length;
 
@@ -87,13 +85,15 @@ public class CellBrainService {
             CellType newType = new CellType(
                 outputs[index + ActorOutputFeature.TYPE_RED.ordinal()],
                 outputs[index + ActorOutputFeature.TYPE_GREEN.ordinal()],
-                outputs[index + ActorOutputFeature.TYPE_BLUE.ordinal()]  
+                outputs[index + ActorOutputFeature.TYPE_BLUE.ordinal()]
             );
             actor.setType(newType);
 
             // Set force strength (range -1 to 1)
             //actor.setForceStrength(outputs[index + ActorOutputFeature.FORCE.ordinal()] * 2.0D - 1.0D);
             actor.setForceStrength(outputs[index + ActorOutputFeature.FORCE.ordinal()]);
+            actor.setReproductionDesire(outputs[index + ActorOutputFeature.REPRODUCTION_DESIRE.ordinal()]);
+            actor.setEnergyAbsorption(outputs[index + ActorOutputFeature.ENERGY_ABSORPTION.ordinal()]);
 
             index += ActorOutputFeature.values().length;
         }
@@ -111,5 +111,5 @@ public class CellBrainService {
         final double[] outputs = network.process();
         CellBrainService.applyOutputs(cell, outputs);
     }
-    
+
 }

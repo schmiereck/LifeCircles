@@ -38,10 +38,10 @@ public class ConfigPanel extends VBox {
         // Energy threshold
         Label energyLabel = new Label("Min. Energy:");
         energyLabel.setStyle("-fx-text-fill: black;");
-        Slider energySlider = new Slider(0.1, 1.0, simulationConfig.getMinReproductionEnergy());
+        Slider energySlider = new Slider(0.1, 1.0, simulationConfig.getReproductionEnergyThreshold());
         energySlider.setShowTickLabels(true);
         energySlider.valueProperty().addListener((obs, old, newValue) ->
-                simulationConfig.setMinReproductionEnergy(newValue.doubleValue()));
+                simulationConfig.setReproductionEnergyThreshold(newValue.doubleValue()));
 
         // Mutation rate
         Label mutationLabel = new Label("Mutation Rate:");
@@ -62,18 +62,18 @@ public class ConfigPanel extends VBox {
         // Reproduction desire threshold
         Label desireLabel = new Label("Min. Desire:");
         desireLabel.setStyle("-fx-text-fill: black;");
-        Slider desireSlider = new Slider(0.0, 1.0, simulationConfig.getMinReproductionDesire());
+        Slider desireSlider = new Slider(0.0, 1.0, simulationConfig.getReproductionDesireThreshold());
         desireSlider.setShowTickLabels(true);
         desireSlider.valueProperty().addListener((obs, old, newValue) ->
-                simulationConfig.setMinReproductionDesire(newValue.doubleValue()));
+                simulationConfig.setReproductionDesireThreshold(newValue.doubleValue()));
 
         // Reproduction desire threshold
         Label ageLabel = new Label("Min. Age (s):");
         ageLabel.setStyle("-fx-text-fill: black;");
-        Slider ageSlider = new Slider(0.0, 20.0, simulationConfig.getMinReproductionAge());
+        Slider ageSlider = new Slider(0.0, 20.0, simulationConfig.getReproductionAgeThreshold());
         ageSlider.setShowTickLabels(true);
         ageSlider.valueProperty().addListener((obs, old, newValue) ->
-                simulationConfig.setMinReproductionAge(newValue.doubleValue()));
+                simulationConfig.setReproductionAgeThreshold(newValue.doubleValue()));
 
         grid.addRow(0, energyLabel, energySlider);
         grid.addRow(1, mutationLabel, mutationSlider);
