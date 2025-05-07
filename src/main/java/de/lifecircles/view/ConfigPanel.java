@@ -114,9 +114,33 @@ public class ConfigPanel extends VBox {
         specBox.selectedProperty().addListener((obs, old, newValue) -> 
             viewConfig.setShowSpecialization(newValue));
 
+        // Grid visualization
+        CheckBox gridBox = new CheckBox("Show Grid");
+        gridBox.setStyle("-fx-text-fill: black;");
+        gridBox.setSelected(viewConfig.isShowGrid());
+        gridBox.selectedProperty().addListener((obs, old, newValue) -> 
+            viewConfig.setShowGrid(newValue));
+
+        // Force fields visualization
+        CheckBox forceBox = new CheckBox("Show Forces");
+        forceBox.setStyle("-fx-text-fill: black;");
+        forceBox.setSelected(viewConfig.isShowForceFields());
+        forceBox.selectedProperty().addListener((obs, old, newValue) -> 
+            viewConfig.setShowForceFields(newValue));
+
+        // Debug information
+        CheckBox debugBox = new CheckBox("Show Debug");
+        debugBox.setStyle("-fx-text-fill: black;");
+        debugBox.setSelected(viewConfig.isShowDebugInfo());
+        debugBox.selectedProperty().addListener((obs, old, newValue) -> 
+            viewConfig.setShowDebugInfo(newValue));
+
         grid.addRow(0, energyBox);
         grid.addRow(1, ageBox);
         grid.addRow(2, specBox);
+        grid.addRow(3, gridBox);
+        grid.addRow(4, forceBox);
+        grid.addRow(5, debugBox);
 
         TitledPane pane = new TitledPane("Visualization", grid);
         pane.setCollapsible(true);

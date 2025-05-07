@@ -92,25 +92,10 @@ public class MainController extends BorderPane {
             simulationConfig.setTimeStep(0.016666 * newValue.doubleValue());
         });
 
-        // View controls
-        Button toggleGridButton = new Button("Grid");
-        toggleGridButton.setOnAction(e -> 
-            viewConfig.setShowGrid(!viewConfig.isShowGrid()));
-
-        Button toggleForceButton = new Button("Forces");
-        toggleForceButton.setOnAction(e -> 
-            viewConfig.setShowForceFields(!viewConfig.isShowForceFields()));
-
-        Button toggleDebugButton = new Button("Debug");
-        toggleDebugButton.setOnAction(e -> 
-            viewConfig.setShowDebugInfo(!viewConfig.isShowDebugInfo()));
-
         return new ToolBar(
             startButton, pauseButton, resetButton,
             new Label(" | "),
-            speedLabel, speedSlider,
-            new Label(" | "),
-            toggleGridButton, toggleForceButton, toggleDebugButton
+            speedLabel, speedSlider
         );
     }
 

@@ -51,8 +51,6 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
-* Verschiebe die Schalter für "Grid", "Forces", "Debug" als Checkboxen in das "Visualization" Panel.
-
 * Baue einen Tag-/ Nacht-Zyklus ein, der die Anzahl der Sonnenstrahlen und die Energie-Absorption der Zellen beeinflusst.
   * Füge eine Konstante in der SimulationConfig ein, die definiert, wie lange ein Tag/Nacht-Zyklus dauert.
   * Füge eine Konstante in der SimulationConfig ein, die definiert, wie viele Sonnenstrahlen pro Tag/Nacht-Zyklus erzeugt werden.
@@ -80,6 +78,8 @@ Das System-Design der Anwendung soll enthalten:
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
 # DONE
+
+* Verschiebe die Schalter für "Grid", "Forces", "Debug" als Checkboxen in das "Visualization" Panel.
 
 * Die PartitioningStrategy sollte mit einer Grid-Size von Sell-Radius + Field-Radius aufgerufen werden, um alle Nachbarn die Kräfte übertragen können zu finden.
 
