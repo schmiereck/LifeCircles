@@ -51,6 +51,8 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
+* Make de.lifecircles.model.Cell.updateWithNeighbors static and move it to CellCalcService.
+
 * Prüfe den Grid-Paritionierungs-Algorithmus und die Berechnung der Interaktionen.
   * Die größe der Grid-Zellen sollte der maximal Zell-Radius + der maximale Focre-Field-Radius sein.
 
