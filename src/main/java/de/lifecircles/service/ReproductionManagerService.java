@@ -67,6 +67,10 @@ public class ReproductionManagerService {
                 // Create child cell
                 child = new Cell(childPosition, parentSize, childBrainNetwork);
 
+                // Übernehme die Rotation der Mutter-Zelle
+                //child.setAngularVelocity(parent.getAngularVelocity());
+                child.setRotation(parent.getRotation());
+
                 // Inherit and mutate type
                 final CellType parentType = parent.getType();
                 final CellType childType = new CellType(
