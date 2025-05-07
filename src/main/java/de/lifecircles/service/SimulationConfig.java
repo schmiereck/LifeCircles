@@ -22,6 +22,9 @@ public class SimulationConfig {
     // Spacing between sun rays in pixels; average one ray per this spacing
     private double sunRaySpacingPx = 60.0;
 
+    // Day/Night cycle duration in seconds
+    public static final double DAY_NIGHT_CYCLE_DURATION = 60.0;
+
     // View:
     public double scaleSimulation = 2.0D;
     private double width = 1024 * 2;// * SCALE_SIMULATION;

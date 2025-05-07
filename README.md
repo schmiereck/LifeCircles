@@ -51,6 +51,13 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
+* Verschiebe die Schalter für "Grid", "Forces", "Debug" als Checkboxen in das "Visualization" Panel.
+
+* Baue einen Tag-/ Nacht-Zyklus ein, der die Anzahl der Sonnenstrahlen und die Energie-Absorption der Zellen beeinflusst.
+  * Füge eine Konstante in der SimulationConfig ein, die definiert, wie lange ein Tag/Nacht-Zyklus dauert.
+  * Füge eine Konstante in der SimulationConfig ein, die definiert, wie viele Sonnenstrahlen pro Tag/Nacht-Zyklus erzeugt werden.
+  * Die Intensität soll einer Sinus-Funktion folgen (Mittags volle Intensität, Nachts keine Intensität).
+
 * Prüfe den Grid-Paritionierungs-Algorithmus und die Berechnung der Interaktionen.
   * Die größe der Grid-Zellen sollte der maximal Zell-Radius + der maximale Focre-Field-Radius sein.
 

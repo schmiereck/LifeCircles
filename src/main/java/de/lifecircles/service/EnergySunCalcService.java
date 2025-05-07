@@ -14,6 +14,7 @@ import java.util.Random;
  */
 public class EnergySunCalcService {
     private double rayAccumulator = 0.0;
+    private double timeInCycle = 0.0; // Tracks time within the day/night cycle
     private final Random random = new Random();
 
     public List<SunRay> calculateSunEnergy(
@@ -24,8 +25,17 @@ public class EnergySunCalcService {
             SimulationConfig config,
             double deltaTime) {
         List<SunRay> rays = new ArrayList<>();
+
+
+        // Update time in the day/night cycle
+        this.timeInCycle = (timeInCycle + deltaTime) % SimulationConfig.DAY_NIGHT_CYCLE_DURATION;
+
+        // Calculate intensity based on sinusoidal function
+        double intensity = Math.sin((timeInCycle / SimulationConfig.DAY_NIGHT_CYCLE_DURATION) * Math.PI);
+
         // Accumulate ray count based on pixel spacing to maintain constant density
-        double raysPerSecond = width / config.getSunRaySpacingPx();
+        // Adjust rays per second based on intensity
+        double raysPerSecond = intensity * (width / config.getSunRaySpacingPx());
         rayAccumulator += raysPerSecond * deltaTime;
         int numRays = (int) rayAccumulator;
         rayAccumulator -= numRays;
