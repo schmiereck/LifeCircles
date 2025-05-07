@@ -27,17 +27,7 @@ public class Renderer {
         if (config.isShowGrid()) {
             drawGrid();
         }
-        // Render sun rays
-        if (config.isShowSunRays()) {
-            gc.setStroke(Color.YELLOW.deriveColor(0, 1, 1, 0.5));
-            gc.setLineWidth(1.5);
-            for (SimulationStateDto.SunRayState ray : state.getSunRays()) {
-                Point2D start = camera.worldToScreen(new Vector2D(ray.getStartX(), ray.getStartY()));
-                Point2D end = camera.worldToScreen(new Vector2D(ray.getEndX(), ray.getEndY()));
-                gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
-            }
-        }
-        
+
         // Render blockers first (background)
         for (SimulationStateDto.BlockerState blocker : state.getBlockers()) {
             renderBlocker(blocker);
@@ -53,6 +43,17 @@ public class Renderer {
             renderCell(cell);
             if (config.isShowActors()) {
                 drawActors(cell);
+            }
+        }
+
+        // Render sun rays
+        if (config.isShowSunRays()) {
+            gc.setStroke(Color.YELLOW.deriveColor(0, 1, 1, 0.5));
+            gc.setLineWidth(1.5);
+            for (SimulationStateDto.SunRayState ray : state.getSunRays()) {
+                Point2D start = camera.worldToScreen(new Vector2D(ray.getStartX(), ray.getStartY()));
+                Point2D end = camera.worldToScreen(new Vector2D(ray.getEndX(), ray.getEndY()));
+                gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
             }
         }
 
@@ -99,7 +100,7 @@ public class Renderer {
 
     private void renderCell(SimulationStateDto.CellState cell) {
         Point2D screenPos = camera.worldToScreen(cell.getPosition());
-        double screenSize = cell.getSize() * camera.getScale();
+        double screenSize = cell.getRadiusSize() * camera.getScale();
 
         // Draw cell body
         if (config.isShowCellBodies()) {
@@ -213,7 +214,7 @@ public class Renderer {
                 
                 // Dynamic force field radius based on actor spacing
                 int actorCount = cell.getActors().size();
-                double chord = cell.getSize() * Math.sin(Math.PI / actorCount);
+                double chord = cell.getRadiusSize() * Math.sin(Math.PI / actorCount);
                 double radius = chord * camera.getScale();
                 
                 // Create radial gradient for force field

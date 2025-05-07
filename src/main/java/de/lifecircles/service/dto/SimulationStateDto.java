@@ -53,18 +53,18 @@ public class SimulationStateDto {
     public static class CellState {
         private final Vector2D position;
         private final double rotation;
-        private final double size;
+        private final double radiusSize;
         private final double[] typeRGB;
         private final List<ActorState> actors;
         private final double energy;
         private final double age;
 
-        public CellState(Vector2D position, double rotation, double size, 
+        public CellState(Vector2D position, double rotation, double radiusSize,
                         double[] typeRGB, List<ActorState> actors, double energy, double age) {
 
             this.position = position;
             this.rotation = rotation;
-            this.size = size;
+            this.radiusSize = radiusSize;
             this.typeRGB = typeRGB.clone();
             this.actors = new ArrayList<>(actors);
             this.energy = energy;
@@ -79,12 +79,12 @@ public class SimulationStateDto {
             return rotation;
         }
 
-        public double getSize() {
-            return size;
+        public double getRadiusSize() {
+            return radiusSize;
         }
 
         public double[] getTypeRGB() {
-            return typeRGB.clone();
+            return typeRGB;
         }
 
         public List<ActorState> getActors() {
@@ -116,7 +116,7 @@ public class SimulationStateDto {
         }
 
         public double[] getTypeRGB() {
-            return typeRGB.clone();
+            return typeRGB;
         }
 
         public double getForceStrength() {
