@@ -55,8 +55,10 @@ public class SimulationConfig {
      */
     private double viscosity = 5.75D;
 
-    public static final double ACTOR_INTERACTION_FORCE = 16.0D * 4.0D * 2.0D;
     private static final double CELL_REPULSION_STRENGTH = 175.0;
+
+    private double cellActorMinForceStrength = 0.0D;
+    private double cellActorMaxForceStrength = 16.0D * 4.0D * 2.0D;
 
     private double minReproductionEnergy = 0.2D;
     private double minReproductionAge = 4.0D; // seconds
@@ -216,10 +218,6 @@ public class SimulationConfig {
         this.viscosity = viscosity;
     }
 
-    public double getActorInteractionForce() {
-        return ACTOR_INTERACTION_FORCE;
-    }
-
     public double getCellRepulsionStrength() {
         return CELL_REPULSION_STRENGTH;
     }
@@ -248,4 +246,12 @@ public class SimulationConfig {
 
     public double getMinReproductionDesire() { return this.minReproductionDesire; }
     public void setMinReproductionDesire(double threshold) { this.minReproductionDesire = threshold; }
+
+    public double getCellActorMinForceStrength() {
+        return this.cellActorMinForceStrength;
+    }
+
+    public double getCellActorMaxForceStrength() {
+        return this.cellActorMaxForceStrength;
+    }
 }

@@ -81,6 +81,8 @@ Das System-Design der Anwendung soll enthalten:
 
 # DONE
 
+* Nachdem sich eine Zelle geteilt hat, soll für das Child (CellBrain) auf jeden Fall ein think durchgeführt werden um sicher zu stellen, dass die Outputs gesetzt sind.
+
 * Füge bei der aktivierung der Output-Neuronen ein Flag hinzu und berechne für Outputs keine Aktivierungsfunktion.
 
 * Stelle die Berechnung des SimulationState DTO-Objektes so um, dass es vom View nach 30 FPS asynchron angefordert wird und 

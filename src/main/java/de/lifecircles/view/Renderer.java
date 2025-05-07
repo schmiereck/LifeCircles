@@ -219,11 +219,12 @@ public class Renderer {
                 // Create radial gradient for force field
                 Color baseColor = Color.color(
                     rgb[0], rgb[1], rgb[2],
-                    config.getForceFieldOpacity() * Math.abs(actor.getForceStrength())
+                    config.getForceFieldOpacity() * Math.abs(actor.getForceStrength() /
+                            SimulationConfig.getInstance().getCellActorMaxForceStrength())
                 );
                 
                 gc.setFill(baseColor);
-                if (actor.getForceStrength() > 0) {
+                if (actor.getForceStrength() > 0.0D) {
                     // Attractive force - inward gradient
                     gc.setGlobalAlpha(config.getForceFieldOpacity());
                     gc.fillOval(

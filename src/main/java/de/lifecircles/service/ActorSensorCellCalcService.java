@@ -124,7 +124,6 @@ public class ActorSensorCellCalcService {
 
     /**
      * Calculates the force vector this actor applies to another actor.
-     * @param other The other sensor/actor point
      * @return Force vector (direction and magnitude)
      */
     public static Vector2D calculateForceOn(SensorActor sensorActor) {
@@ -139,7 +138,7 @@ public class ActorSensorCellCalcService {
             return new Vector2D(0, 0);
         }
         
-        double weight = -sense(sensorActor, sensedActor) * SimulationConfig.getInstance().getActorInteractionForce();
+        double weight = -sense(sensorActor, sensedActor);
         if (weight == 0) {
             return new Vector2D(0, 0);
         }

@@ -1,5 +1,7 @@
 package de.lifecircles.model;
 
+import de.lifecircles.service.SimulationConfig;
+
 /**
  * Represents a sensor/actor point on a cell's surface.
  * Can both sense nearby actors and emit force fields.
@@ -72,7 +74,8 @@ public class SensorActor {
     }
 
     public void setForceStrength(double forceStrength) {
-        this.forceStrength = forceStrength;
+        this.forceStrength = Math.max(SimulationConfig.getInstance().getCellActorMinForceStrength(),
+                Math.min(SimulationConfig.getInstance().getCellActorMaxForceStrength(), forceStrength));;
     }
 
     /** Flag indicating whether to fire an energy beam */

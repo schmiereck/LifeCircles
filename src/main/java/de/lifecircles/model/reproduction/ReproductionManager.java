@@ -2,8 +2,10 @@ package de.lifecircles.model.reproduction;
 
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.CellType;
+import de.lifecircles.model.SensorActor;
 import de.lifecircles.model.Vector2D;
 import de.lifecircles.model.neural.CellBrain;
+import de.lifecircles.model.neural.CellBrainService;
 import de.lifecircles.model.neural.NeuralNetwork;
 import de.lifecircles.service.SimulationConfig;
 
@@ -70,6 +72,9 @@ public class ReproductionManager {
 
         // Inherit and increment generation counter
         child.setGeneration(parent.getGeneration() + 1);
+        
+        // Ensure child's neural network outputs are set by running think once
+        CellBrainService.think(child);
 
         return child;
     }

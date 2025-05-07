@@ -28,7 +28,7 @@ public class Cell {
     private int generation; // generation counter
     private boolean sunRayHit = false; // Flag to indicate if cell was hit by sun ray
 
-    private int tempThinkHackCounter = 0;
+    private int tempThinkHackCounter = SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX;
 
     /**
      * Returns the index of the sensor that is currently at the top position.
@@ -36,16 +36,21 @@ public class Cell {
      */
     public int getTopSensorIndex() {
         double maxY = Double.NEGATIVE_INFINITY;
-        int topSensorIndex = -1;
+        int topSensorIndex = 0; // Default to first sensor if positions aren't calculated yet
         
         for (int i = 0; i < sensorActors.size(); i++) {
             SensorActor sensor = sensorActors.get(i);
-            double sensorY = sensor.getCachedPosition().getY();
-            if (sensorY > maxY) {
-                maxY = sensorY;
-                topSensorIndex = i;
+            Vector2D cachedPosition = sensor.getCachedPosition();
+            
+            if (cachedPosition != null) {
+                double sensorY = cachedPosition.getY();
+                if (sensorY > maxY) {
+                    maxY = sensorY;
+                    topSensorIndex = i;
+                }
             }
         }
+
         return topSensorIndex;
     }
 
@@ -164,7 +169,7 @@ public class Cell {
     public void updateWithNeighbors(final double deltaTime) {
         // Update neural network
         final boolean useSynapseEnergyCost;
-        if (this.tempThinkHackCounter > SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX) {
+        if (this.tempThinkHackCounter >= SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX) {
             CellBrainService.think(this);
             useSynapseEnergyCost = true;
             this.tempThinkHackCounter = 0;
