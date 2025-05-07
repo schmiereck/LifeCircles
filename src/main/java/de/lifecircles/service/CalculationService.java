@@ -55,7 +55,7 @@ public class CalculationService implements Runnable {
     public void run() {
         running.set(true);
         long lastUpdateTime = System.nanoTime();
-        double targetDelta = 1.0 / config.getTargetUpdatesPerSecond();
+        double targetDelta = config.getTimeStep();
 
         while (running.get()) {
             if (!paused.get()) {

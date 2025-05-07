@@ -12,35 +12,32 @@ public class SimulationConfig {
     public static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
     public static final double REPOPULATION_THRESHOLD_PERCENT = 0.25;
 
-    // Konstante für die Zellwachstumszeit in Sekunden
-    public static final double CELL_GROWTH_DURATION = 2.0;
-
     // Sun:
 
-    // Sun ray energy settings
-    private double sunRayRate = 4.0;
+    private double sunRayRate = 2.0;
     private double energyPerRay = 0.1;
     // Spacing between sun rays in pixels; average one ray per this spacing
     private double sunRaySpacingPx = 60.0;
 
     // Day/Night cycle duration in seconds
-    public static final double DAY_NIGHT_CYCLE_DURATION = 60.0;
+    public static final double DAY_NIGHT_CYCLE_DURATION = 60.0D * 2;
 
     // View:
     public double scaleSimulation = 2.0D;
     private double width = 1024 * 2;// * SCALE_SIMULATION;
     private double height = 1200;// * SCALE_SIMULATION;
-    private int targetUpdatesPerSecond = 60;
-    private double timeStep = 1.0D / targetUpdatesPerSecond; // 60 Hz simulation
+    private double timeStep = 1.0D / 60.0D; // 60 Hz simulation
 
     // Cell:
     public static final int CELL_SENSOR_ACTOR_COUNT = 12;
     public static final double CELL_MAX_ENERGY = 1.0;
     public static final int CELL_TEMP_THINK_HACK_COUNTER_MAX = 10;
 
+    // Konstante für die Zellwachstumszeit in Sekunden
+    public static final double CELL_GROWTH_DURATION = 2.0;
+
     private double cellMinRadiusSize = 10.0D;
     private double cellMaxRadiusSize = 50.0D;
-    private double cellInteractionRadius = 30.0D;
 
     private double cellActorMaxFieldRadius =
             ActorSensorCellCalcService.calcSensorRadius(this.cellMaxRadiusSize, CELL_SENSOR_ACTOR_COUNT);
@@ -103,27 +100,11 @@ public class SimulationConfig {
     }
 
     public double getTimeStep() {
-        return timeStep;
+        return this.timeStep;
     }
 
     public void setTimeStep(double timeStep) {
         this.timeStep = timeStep;
-    }
-
-    public int getTargetUpdatesPerSecond() {
-        return targetUpdatesPerSecond;
-    }
-
-    public void setTargetUpdatesPerSecond(int targetUpdatesPerSecond) {
-        this.targetUpdatesPerSecond = targetUpdatesPerSecond;
-    }
-
-    public double getCellInteractionRadius() {
-        return cellInteractionRadius;
-    }
-
-    public void setCellInteractionRadius(double cellInteractionRadius) {
-        this.cellInteractionRadius = cellInteractionRadius;
     }
 
     public double getCellMinRadiusSize() {
