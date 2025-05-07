@@ -41,17 +41,19 @@ public class StatisticsManager {
     public void update(List<Cell> cells) {
         // Update performance metrics
         long currentTime = System.nanoTime();
-        double updateTime = (currentTime - lastUpdateTime) / 1_000_000.0; // Convert to ms
-        lastUpdateTime = currentTime;
-        
-        updateCount++;
-        averageUpdateTime = averageUpdateTime * 0.95 + updateTime * 0.05;
+        double updateTime = (currentTime - this.lastUpdateTime) / 1_000_000.0; // Convert to ms
+        if ((currentTime - this.lastUpdateTime) > 1_000_000_000L) {
+            this.lastUpdateTime = currentTime;
 
-        // Update current counts
-        totalPopulation.set(cells.size());
+            this.updateCount++;
+            this.averageUpdateTime = this.averageUpdateTime * 0.95 + updateTime * 0.05;
 
-        // Update history
-        updateHistory(totalHistory, cells.size());
+            // Update current counts
+            this.totalPopulation.set(cells.size());
+
+            // Update history
+            this.updateHistory(this.totalHistory, cells.size());
+        }
     }
 
     private void updateHistory(List<Integer> history, int value) {

@@ -51,6 +51,14 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
+* Bisher hat der Output GlobalOutputFeature.REPRODUCTION_DESIRE entschieden, wann sich eine Zelle teilen will.
+  * Verschiebe diesen nach ActorOutputFeature und dieser neue Output entscheidet in welche Richtung sich die Zelle teilen will.
+    Also nicht mehr in eine zufällige Richtung.
+* Eine geteile Zelle soll mit der minSize starten und wärend eines kurzen Wachstumsprozesses (2 s)  auf ihre normale, von GlobalOutputFeature.SIZE vorgegebene, Größe wachsen.
+  * Füge eine Konstante in der SimulationConfig ein die definiert, wie lange eine Zelle braucht um auf ihre normale Größe zu wachsen.
+* Eine geteilte Zelle soll mit der Rotationsrichtung der Mutter-Zelle starten.
+
+
 * Füge im SimulationState einen Timestamp hinzu und
   verwende diesen, um nur dann ein neues DTO-Objekt zu erzeugen, wenn sich die Simulation wirklich geändert hat.
 

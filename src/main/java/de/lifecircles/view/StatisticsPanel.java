@@ -21,6 +21,12 @@ public class StatisticsPanel extends VBox {
     private final Label performanceLabel = new Label();
     private final Label clustersLabel = new Label();
     private final Canvas populationGraph;
+    
+    // Parameter zur Steuerung der Updategeschwindigkeit
+    private int updateInterval = 20; // Nur alle 20 Frames aktualisieren
+    private int frameCounter = 0;
+    private long lastUpdateTimeNanos = 0;
+    private long minUpdateIntervalNanos = 200_000_000L * 5L; // 5*200ms in Nanosekunden
 
     public StatisticsPanel() {
         this.statistics = StatisticsManager.getInstance();
@@ -66,10 +72,42 @@ public class StatisticsPanel extends VBox {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
-                updateLabels();
-                updateGraph();
+                // Ratenbegrenzung: Nur alle X Frames und mindestens alle Y Millisekunden aktualisieren
+                frameCounter++;
+                
+                if (frameCounter >= updateInterval && 
+                    (now - lastUpdateTimeNanos) >= minUpdateIntervalNanos) {
+                    
+                    updateLabels();
+                    updateGraph();
+                    
+                    // Zurücksetzen der Zähler
+                    frameCounter = 0;
+                    lastUpdateTimeNanos = now;
+                }
             }
         }.start();
+    }
+    
+    /**
+     * Setzt das Update-Intervall für das StatisticsPanel.
+     * Ein höherer Wert bedeutet seltenere Updates und verbesserte Performance.
+     * 
+     * @param frames Anzahl der Frames zwischen Updates
+     */
+    public void setUpdateInterval(int frames) {
+        if (frames < 1) frames = 1;
+        this.updateInterval = frames;
+    }
+    
+    /**
+     * Setzt das minimale Zeitintervall zwischen Updates in Millisekunden.
+     * 
+     * @param milliseconds Minimale Zeit zwischen Updates in Millisekunden
+     */
+    public void setMinUpdateInterval(int milliseconds) {
+        if (milliseconds < 0) milliseconds = 0;
+        this.minUpdateIntervalNanos = milliseconds * 1_000_000L;
     }
 
     private void updateLabels() {
