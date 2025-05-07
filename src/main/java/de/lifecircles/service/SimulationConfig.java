@@ -11,6 +11,9 @@ public class SimulationConfig {
     public static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
     public static final double REPOPULATION_THRESHOLD_PERCENT = 0.25;
 
+    // Konstante für die Zellwachstumszeit in Sekunden
+    public static final double CELL_GROWTH_DURATION = 2.0;
+
     // Sun:
 
     // Sun ray energy settings
@@ -46,7 +49,7 @@ public class SimulationConfig {
     private double blockerRepulsionStrength = 200.0;
     /** 
      * Friction coefficient for cell rotation (damping)
-     * A higher value means less rotation.
+     * A higher value means less rotation (0.0D to 1.0D).
      */
     private double rotationalFriction = 0.9D;
     /** 

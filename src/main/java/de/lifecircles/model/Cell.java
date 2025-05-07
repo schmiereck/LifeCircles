@@ -19,6 +19,9 @@ public class Cell {
     private double rotation; // in radians
     private double angularVelocity;
     private double radiusSize;
+    private double targetRadiusSize; // Zielgröße nach dem Wachstum
+    private double growthAge; // Alter seit der Zellteilung für das Wachstum
+    private boolean isGrowing; // Flag ob die Zelle sich im Wachstumsprozess befindet
     private CellType type;
     private final List<SensorActor> sensorActors;
     private CellBrain brain;
@@ -59,6 +62,9 @@ public class Cell {
         this.rotation = 0;
         this.angularVelocity = 0;
         this.radiusSize = radiusSize;
+        this.targetRadiusSize = radiusSize;
+        this.isGrowing = false;
+        this.growthAge = 0;
         this.type = new CellType(0, 0, 0);
         this.sensorActors = new ArrayList<>();
         initializeSensorActors();
@@ -74,6 +80,9 @@ public class Cell {
         this.rotation = 0;
         this.angularVelocity = 0;
         this.radiusSize = radiusSize;
+        this.targetRadiusSize = radiusSize;
+        this.isGrowing = false;
+        this.growthAge = 0;
         this.type = new CellType(0, 0, 0);
         this.sensorActors = new ArrayList<>();
         initializeSensorActors();
@@ -143,8 +152,30 @@ public class Cell {
     }
 
     public void setRadiusSize(double radiusSize) {
-        this.radiusSize = Math.max(SimulationConfig.getInstance().getCellMinRadiusSize(),
+        this.targetRadiusSize = Math.max(SimulationConfig.getInstance().getCellMinRadiusSize(),
                 Math.min(SimulationConfig.getInstance().getCellMaxRadiusSize(), radiusSize));
+        
+        // Wenn die Zelle nicht im Wachstumsprozess ist, wird die Größe sofort angepasst
+        if (!this.isGrowing) {
+            this.radiusSize = this.targetRadiusSize;
+        }
+    }
+    
+    /**
+     * Setzt die Zelle in den Wachstumsmodus und startet mit der Minimalgröße
+     */
+    public void startGrowthProcess() {
+        this.radiusSize = SimulationConfig.getInstance().getCellMinRadiusSize();
+        this.isGrowing = true;
+        this.growthAge = 0;
+    }
+
+    public double getTargetRadiusSize() {
+        return this.targetRadiusSize;
+    }
+
+    public boolean isGrowing() {
+        return this.isGrowing;
     }
 
     public CellType getType() {
@@ -173,6 +204,21 @@ public class Cell {
         } else {
             useSynapseEnergyCost = false;
             this.tempThinkHackCounter++;
+        }
+
+        // Update size if cell is growing
+        if (this.isGrowing) {
+            this.growthAge += deltaTime;
+            if (this.growthAge >= SimulationConfig.CELL_GROWTH_DURATION) {
+                // Wachstumsprozess abgeschlossen
+                this.radiusSize = this.targetRadiusSize;
+                this.isGrowing = false;
+            } else {
+                // Lineare Interpolation zwischen Startgröße und Zielgröße
+                double growthProgress = this.growthAge / SimulationConfig.CELL_GROWTH_DURATION;
+                double minSize = SimulationConfig.getInstance().getCellMinRadiusSize();
+                this.radiusSize = minSize + (this.targetRadiusSize - minSize) * growthProgress;
+            }
         }
 
         // Update physics

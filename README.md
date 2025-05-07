@@ -51,9 +51,6 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
-* Eine geteile Zelle soll mit der minSize starten und wärend eines kurzen Wachstumsprozesses (2 s)  auf ihre normale, von GlobalOutputFeature.SIZE vorgegebene, Größe wachsen.
-  * Füge eine Konstante in der SimulationConfig ein die definiert, wie lange eine Zelle braucht um auf ihre normale Größe zu wachsen.
-
 * Prüfe den Grid-Paritionierungs-Algorithmus und die Berechnung der Interaktionen.
   * Die größe der Grid-Zellen sollte der maximal Zell-Radius + der maximale Focre-Field-Radius sein.
 
@@ -76,6 +73,9 @@ Das System-Design der Anwendung soll enthalten:
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
 # DONE
+
+* Eine geteile Zelle soll mit der minSize starten und wärend eines kurzen Wachstumsprozesses (2 s)  auf ihre normale, von GlobalOutputFeature.SIZE vorgegebene, Größe wachsen.
+  * Füge eine Konstante in der SimulationConfig ein, die definiert, wie lange eine Zelle braucht, um auf ihre normale Größe zu wachsen.
 
 * Eine geteilte Zelle soll mit der Rotationsrichtung der Mutter-Zelle starten.
 * 
