@@ -9,11 +9,20 @@ import java.util.List;
 public class QuadTreePartitioningStrategy implements PartitioningStrategy {
     private final double width;
     private final double height;
+    private final double interactionRadius; // Neues Feld für den Interaktionsradius
     private QuadTree quadTree;
 
     public QuadTreePartitioningStrategy(double width, double height) {
         this.width = width;
         this.height = height;
+        this.interactionRadius = SimulationConfig.getInstance().getCellMaxRadiusSize();
+    }
+    
+    // Neuer Konstruktor mit interactionRadius Parameter
+    public QuadTreePartitioningStrategy(double width, double height, double interactionRadius) {
+        this.width = width;
+        this.height = height;
+        this.interactionRadius = interactionRadius;
     }
 
     @Override
@@ -27,7 +36,7 @@ public class QuadTreePartitioningStrategy implements PartitioningStrategy {
 
     @Override
     public List<Cell> getNeighbors(Cell cell) {
-        // Query within a radius of max diameter to retrieve nearby cells
-        return quadTree.queryRange(cell.getPosition(), SimulationConfig.getInstance().getCellMaxRadiusSize());
+        // Verwende den kombinierten Interaktionsradius statt nur des maximalen Zellradius
+        return quadTree.queryRange(cell.getPosition(), interactionRadius);
     }
 }

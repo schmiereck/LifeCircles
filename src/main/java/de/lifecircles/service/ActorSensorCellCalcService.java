@@ -112,14 +112,19 @@ public class ActorSensorCellCalcService {
     public static double sense(SensorActor sensorActor, SensorActor other) {
         double distance = sensorActor.getCachedPosition().distance(other.getCachedPosition());
         int totalSensors = sensorActor.getParentCell().getSensorActors().size();
-        double chord = sensorActor.getParentCell().getRadiusSize() * Math.sin(Math.PI / totalSensors);
+        double chord = calcSensorRadius(sensorActor.getParentCell().getRadiusSize(), totalSensors);
         if (distance > chord) {
             return 0;
         }
-        double intensity = 1 - (distance / chord);
+        double intensity = 1.0D - (distance / chord);
         //double similarity = sensorActor.getType().similarity(other.getType());
         //double weight = 2.0 * similarity - 1.0; // map [0,1] to [-1,1]
         return intensity; // * weight;
+    }
+
+    public static double calcSensorRadius(final double radiusSize, final int totalSensors) {
+        // Berechnung der vollen Sehnenlänge zwischen zwei benachbarten Sensoren
+        return 2.0D * radiusSize * Math.sin(Math.PI / totalSensors);
     }
 
     /**

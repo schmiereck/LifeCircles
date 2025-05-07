@@ -86,7 +86,11 @@ public class CalculationService implements Runnable {
         final List<Cell> cells = this.environment.getCells();
 
         // Update all cells with their neighborhood information
-        final double interactionRadius = this.config.getCellMaxRadiusSize();
+        // Summe aus maximalem Zellradius und Feld-Radius für Interaktionen
+        final double cellRadius = this.config.getCellMaxRadiusSize();
+        final double fieldRadius = this.config.getCellActorMaxFieldRadius();
+        final double interactionRadius = cellRadius + fieldRadius;
+        
         final PartitioningStrategy partitioner = PartitioningStrategyFactory.createStrategy(
                 this.environment.getWidth(), this.environment.getHeight(), interactionRadius);
 
@@ -191,3 +195,4 @@ public class CalculationService implements Runnable {
         return stepCount.get();
     }
 }
+

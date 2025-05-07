@@ -38,6 +38,9 @@ public class SimulationConfig {
     private double cellMaxRadiusSize = 50.0D;
     private double cellInteractionRadius = 30.0D;
 
+    private double cellActorMaxFieldRadius =
+            ActorSensorCellCalcService.calcSensorRadius(this.cellMaxRadiusSize, CELL_SENSOR_ACTOR_COUNT);
+
     private int initialCellCount = 30;
 
     // Training mode configuration
@@ -256,5 +259,9 @@ public class SimulationConfig {
 
     public double getCellActorMaxForceStrength() {
         return this.cellActorMaxForceStrength;
+    }
+
+    public double getCellActorMaxFieldRadius() {
+        return this.cellActorMaxFieldRadius;
     }
 }

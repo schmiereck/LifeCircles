@@ -74,6 +74,8 @@ Das System-Design der Anwendung soll enthalten:
 
 # DONE
 
+* Die PartitioningStrategy sollte mit einer Grid-Size von Sell-Radius + Field-Radius aufgerufen werden, um alle Nachbarn die Kräfte übertragen können zu finden.
+
 * Eine geteile Zelle soll mit der minSize starten und wärend eines kurzen Wachstumsprozesses (2 s)  auf ihre normale, von GlobalOutputFeature.SIZE vorgegebene, Größe wachsen.
   * Füge eine Konstante in der SimulationConfig ein, die definiert, wie lange eine Zelle braucht, um auf ihre normale Größe zu wachsen.
 

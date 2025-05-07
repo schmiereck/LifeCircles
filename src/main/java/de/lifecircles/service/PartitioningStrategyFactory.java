@@ -13,7 +13,7 @@ public class PartitioningStrategyFactory {
             case SPATIAL_GRID:
                 return new SpatialGridPartitioningStrategy(width, height, cellSize);
             case QUADTREE:
-                return new QuadTreePartitioningStrategy(width, height);
+                return new QuadTreePartitioningStrategy(width, height, cellSize); // Übergebe cellSize als interactionRadius
             default:
                 throw new IllegalArgumentException("Unknown partitioning strategy type: " + strategy);
         }
