@@ -198,15 +198,15 @@ public class Cell {
      */
     public void applyForce(Vector2D force, Vector2D applicationPoint, double deltaTime) {
         // Linear acceleration
-        velocity = velocity.add(force.multiply(1.0 / radiusSize)); // Larger cells are affected less
+        this.velocity = this.velocity.add(force.multiply(1.0D / this.radiusSize)); // Larger cells are affected less
 
         // Calculate torque and angular acceleration
         //Vector2D radiusVector = applicationPoint.subtract(position);
-        final double xRadius = applicationPoint.getX() - position.getX();
-        final double yRadius = applicationPoint.getY() - position.getY();
+        final double xRadius = applicationPoint.getX() - this.position.getX();
+        final double yRadius = applicationPoint.getY() - this.position.getY();
         //double torque = radiusVector.getX() * force.getY() - radiusVector.getY() * force.getX();
         double torque = xRadius * force.getY() - yRadius * force.getX();
-        angularVelocity += torque / (radiusSize * radiusSize); // Moment of inertia approximated as size²
+        this.angularVelocity += torque / (this.radiusSize * this.radiusSize); // Moment of inertia approximated as size²
     }
 
     public double getEnergy() {
