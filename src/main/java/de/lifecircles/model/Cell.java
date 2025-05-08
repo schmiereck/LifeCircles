@@ -191,58 +191,6 @@ public class Cell {
     }
 
     /**
-     * Updates the cell's position, rotation, and behavior based on its current state.
-     * @param deltaTime Time step in seconds
-     */
-    public void updateWithNeighbors(final double deltaTime) {
-        // Update neural network
-        final boolean useSynapseEnergyCost;
-        if (this.tempThinkHackCounter >= SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX) {
-            CellBrainService.think(this);
-            useSynapseEnergyCost = true;
-            this.tempThinkHackCounter = 0;
-        } else {
-            useSynapseEnergyCost = false;
-            this.tempThinkHackCounter++;
-        }
-
-        // Update size if cell is growing
-        if (this.isGrowing) {
-            this.growthAge += deltaTime;
-            if (this.growthAge >= SimulationConfig.CELL_GROWTH_DURATION) {
-                // Wachstumsprozess abgeschlossen
-                this.radiusSize = this.targetRadiusSize;
-                this.isGrowing = false;
-            } else {
-                // Lineare Interpolation zwischen Startgröße und Zielgröße
-                double growthProgress = this.growthAge / SimulationConfig.CELL_GROWTH_DURATION;
-                double minSize = SimulationConfig.getInstance().getCellMinRadiusSize();
-                this.radiusSize = minSize + (this.targetRadiusSize - minSize) * growthProgress;
-            }
-        }
-
-        // Update physics
-        this.position = this.position.add(this.velocity.multiply(deltaTime));
-        this.rotation += this.angularVelocity * deltaTime;
-        // Apply rotational friction
-        this.angularVelocity *= (1.0D - SimulationConfig.getInstance().getRotationalFriction()) * deltaTime;
-        
-        // Normalize rotation to [0, 2π)
-        rotation = rotation % (2 * Math.PI);
-        if (rotation < 0) {
-            rotation += 2 * Math.PI;
-        }
-
-        // Update energy and age
-        EnergyCellCalcService.decayEnergy(this, deltaTime, useSynapseEnergyCost);
-        // Mark cell death if energy below threshold
-        if (energy < 0.0D) {
-            this.energy = 0.0D;
-        }
-        this.age += deltaTime;
-    }
-
-    /**
      * Applies a force to the cell at a specific point.
      * This will affect both linear and angular velocity.
      * @param force Force vector
@@ -299,5 +247,53 @@ public class Cell {
      */
     public void setGeneration(int generation) {
         this.generation = generation;
+    }
+
+    public int getTempThinkHackCounter() {
+        return tempThinkHackCounter;
+    }
+
+    public void setTempThinkHackCounter(int tempThinkHackCounter) {
+        this.tempThinkHackCounter = tempThinkHackCounter;
+    }
+
+    public void setSunRayHit(boolean sunRayHit) {
+        this.sunRayHit = sunRayHit;
+    }
+
+    public void setAge(double age) {
+        this.age = age;
+    }
+
+    public void incAge(double age) {
+        this.age += age;
+    }
+
+    public void setGrowing(boolean growing) {
+        isGrowing = growing;
+    }
+
+    public double getGrowthAge() {
+        return growthAge;
+    }
+
+    public void setGrowthAge(double growthAge) {
+        this.growthAge = growthAge;
+    }
+
+    public void incGrowthAge(double growthAge) {
+        this.growthAge += growthAge;
+    }
+
+    public void setTargetRadiusSize(double targetRadiusSize) {
+        this.targetRadiusSize = targetRadiusSize;
+    }
+
+    public void incTempThinkHackCounter() {
+        this.tempThinkHackCounter++;
+    }
+
+    public void setIsGrowing(boolean isGrowing) {
+        this.isGrowing = isGrowing;
     }
 }

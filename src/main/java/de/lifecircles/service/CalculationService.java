@@ -106,7 +106,7 @@ public class CalculationService implements Runnable {
         
         // Parallel execution of neural networks and cell updates
         cells.parallelStream().forEach(cell -> {
-            cell.updateWithNeighbors(deltaTime);
+            CellCalcService.updateWithNeighbors(cell, deltaTime);
         }
         );
 

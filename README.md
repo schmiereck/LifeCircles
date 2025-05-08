@@ -51,8 +51,6 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
-* Make de.lifecircles.model.Cell.updateWithNeighbors static and move it to CellCalcService.
-
 * Prüfe den Grid-Paritionierungs-Algorithmus und die Berechnung der Interaktionen.
   * Die größe der Grid-Zellen sollte der maximal Zell-Radius + der maximale Focre-Field-Radius sein.
 
@@ -75,6 +73,8 @@ Das System-Design der Anwendung soll enthalten:
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
 # DONE
+
+* Make de.lifecircles.model.Cell.updateWithNeighbors static and move it to CellCalcService.
 
 * Baue einen Tag-/ Nacht-Zyklus ein, der die Anzahl der Sonnenstrahlen und die Energie-Absorption der Zellen beeinflusst.
   * Füge eine Konstante in der SimulationConfig ein, die definiert, wie lange ein Tag/Nacht-Zyklus dauert.
