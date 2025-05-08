@@ -23,27 +23,24 @@ public class Renderer {
     }
 
     public void render(SimulationStateDto state) {
-        clear();
+        this.clear();
         if (config.isShowGrid()) {
-            drawGrid();
+            this.drawGrid();
         }
 
         // Render blockers first (background)
         for (SimulationStateDto.BlockerState blocker : state.getBlockers()) {
-            renderBlocker(blocker);
+            this.renderBlocker(blocker);
         }
         
         for (SimulationStateDto.CellState cell : state.getCells()) {
             if (config.isShowForceFields()) {
-                drawForceFields(cell);
+                this.drawForceFields(cell);
             }
         }
 
         for (SimulationStateDto.CellState cell : state.getCells()) {
-            renderCell(cell);
-            if (config.isShowActors()) {
-                drawActors(cell);
-            }
+            this.renderCell(cell);
         }
 
         // Render sun rays
@@ -58,7 +55,7 @@ public class Renderer {
         }
 
         if (config.isShowDebugInfo()) {
-            drawDebugInfo(state);
+            this.drawDebugInfo(state);
         }
         // Draw light-gray rounded border for simulation bounds (follows zoom/pan)
         SimulationConfig simConfig = SimulationConfig.getInstance();
@@ -99,14 +96,14 @@ public class Renderer {
     }
 
     private void renderCell(SimulationStateDto.CellState cell) {
-        Point2D screenPos = camera.worldToScreen(cell.getPosition());
-        double screenSize = cell.getRadiusSize() * camera.getScale();
+        Point2D screenPos = this.camera.worldToScreen(cell.getPosition());
+        double screenSize = cell.getRadiusSize() * this.camera.getScale();
 
         // Draw cell body
-        if (config.isShowCellBodies()) {
+        if (this.config.isShowCellBodies()) {
             double[] rgb = cell.getTypeRGB();
-            gc.setFill(Color.color(rgb[0], rgb[1], rgb[2], 0.5));
-            gc.fillOval(
+            this.gc.setFill(Color.color(rgb[0], rgb[1], rgb[2], 0.5));
+            this.gc.fillOval(
                 screenPos.getX() - screenSize / 2,
                 screenPos.getY() - screenSize / 2,
                 screenSize,
@@ -114,31 +111,35 @@ public class Renderer {
             );
 
             // Draw outline
-            gc.setStroke(config.getCellOutlineColor());
-            gc.setLineWidth(config.getCellOutlineWidth());
-            gc.strokeOval(
+            this.gc.setStroke(config.getCellOutlineColor());
+            this.gc.setLineWidth(config.getCellOutlineWidth());
+            this.gc.strokeOval(
                 screenPos.getX() - screenSize / 2,
                 screenPos.getY() - screenSize / 2,
                 screenSize,
                 screenSize
             );
 
+            if (config.isShowActors()) {
+                this.drawActors(cell);
+            }
+
             // Draw energy bar
-            if (config.isShowEnergy()) {
+            if (this.config.isShowEnergy()) {
                 double energyBarWidth = screenSize * 0.8;
                 double energyBarHeight = screenSize * 0.1;
                 double energyLevel = cell.getEnergy();
-                
-                gc.setFill(Color.RED);
-                gc.fillRect(
+
+                this.gc.setFill(Color.RED);
+                this.gc.fillRect(
                     screenPos.getX() - energyBarWidth / 2,
                     screenPos.getY() + screenSize / 2 + 2,
                     energyBarWidth,
                     energyBarHeight
                 );
-                
-                gc.setFill(config.getEnergyBarColor());
-                gc.fillRect(
+
+                this.gc.setFill(this.config.getEnergyBarColor());
+                this.gc.fillRect(
                     screenPos.getX() - energyBarWidth / 2,
                     screenPos.getY() + screenSize / 2 + 2,
                     energyBarWidth * energyLevel,
@@ -147,14 +148,14 @@ public class Renderer {
             }
 
             // Draw age indicator
-            if (config.isShowAge()) {
+            if (this.config.isShowAge()) {
                 double maxAge = 60.0; // 1 minute
                 double normalizedAge = Math.min(cell.getAge() / maxAge, 1.0);
                 double ageBarWidth = screenSize * 0.8;
                 double ageBarHeight = screenSize * 0.1;
-                
-                gc.setFill(config.getAgeBarColor());
-                gc.fillRect(
+
+                this.gc.setFill(this.config.getAgeBarColor());
+                this.gc.fillRect(
                     screenPos.getX() - ageBarWidth / 2,
                     screenPos.getY() + screenSize / 2 + 6,
                     ageBarWidth * normalizedAge,
@@ -163,7 +164,7 @@ public class Renderer {
             }
 
             // Draw specialization indicator
-            if (config.isShowSpecialization()) {
+            if (this.config.isShowSpecialization()) {
                 double indicatorSize = screenSize * 0.2;
                 
                 // Determine specialization based on RGB values
