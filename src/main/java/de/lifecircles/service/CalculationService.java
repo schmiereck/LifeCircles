@@ -121,15 +121,15 @@ public class CalculationService implements Runnable {
     }
 
     private void updateState() {
-        List<SimulationStateDto.CellState> cellStates = new ArrayList<>();
+        List<SimulationStateDto.CellStateDto> cellStates = new ArrayList<>();
 
         for (Cell cell : environment.getCells()) {
             if (Objects.nonNull(cell)) {
-                List<SimulationStateDto.ActorState> actorStates = new ArrayList<>();
+                List<SimulationStateDto.ActorStateDto> actorStateDtos = new ArrayList<>();
 
                 for (SensorActor actor : cell.getSensorActors()) {
                     CellType actorType = actor.getType();
-                    actorStates.add(new SimulationStateDto.ActorState(
+                    actorStateDtos.add(new SimulationStateDto.ActorStateDto(
                             actor.getPosition(),
                             new double[]{actorType.getRed(), actorType.getGreen(), actorType.getBlue()},
                             actor.getForceStrength()
@@ -137,12 +137,12 @@ public class CalculationService implements Runnable {
                 }
 
                 CellType cellType = cell.getType();
-                cellStates.add(new SimulationStateDto.CellState(
+                cellStates.add(new SimulationStateDto.CellStateDto(
                         cell.getPosition(),
                         cell.getRotation(),
                         cell.getRadiusSize(),
                         new double[]{cellType.getRed(), cellType.getGreen(), cellType.getBlue()},
-                        actorStates,
+                        actorStateDtos,
                         cell.getEnergy(),
                         cell.getAge()
                 ));

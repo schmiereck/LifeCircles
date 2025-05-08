@@ -71,8 +71,11 @@ public class SensorActor {
     }
 
     public void setForceStrength(double forceStrength) {
-        this.forceStrength = Math.max(SimulationConfig.getInstance().getCellActorMinForceStrength(),
-                Math.min(SimulationConfig.getInstance().getCellActorMaxForceStrength(), forceStrength));;
+        if (forceStrength >= 0) {
+            this.forceStrength = Math.min(SimulationConfig.getInstance().getCellActorMaxForceStrength(), forceStrength);
+        } else {
+            this.forceStrength = Math.max(-SimulationConfig.getInstance().getCellActorMaxForceStrength(), forceStrength);
+        }
     }
 
     /** Exposes parent cell for dynamic sensor field radius */

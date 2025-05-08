@@ -183,10 +183,10 @@ public class Environment {
         if (currentCount == 0) {
             if (lastDeadCell != null) {
                 // Repopulate by mutating the last dead cell
-                lastDeadCell.setEnergy(1.0);
                 for (int i = 0; i < initialCount; i++) {
-                    Cell child = ReproductionManagerService.reproduce(config, lastDeadCell);
-                    cells.add(child);
+                    Cell childCell = ReproductionManagerService.reproduce(config, lastDeadCell);
+                    childCell.setEnergy(1.0D);
+                    cells.add(childCell);
                 }
             } else {
                 for (int i = 0; i < initialCount; i++) {
@@ -200,9 +200,13 @@ public class Environment {
             if (currentCount < thresholdCount) {
                 int toSpawn = initialCount - currentCount;
                 for (int i = 0; i < toSpawn; i++) {
-                    Cell parent = cells.get(random.nextInt(cells.size()));
-                    Cell child = ReproductionManagerService.reproduce(config, parent);
-                    cells.add(child);
+                    Cell parentCell = cells.get(random.nextInt(cells.size()));
+                    if (Objects.nonNull(parentCell)) {
+                        Cell childCell = ReproductionManagerService.reproduce(config, parentCell);
+                        childCell.setEnergy(1.0D);
+                        parentCell.setEnergy(1.0D);
+                        cells.add(childCell);
+                    }
                 }
             }
         }

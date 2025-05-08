@@ -1,6 +1,7 @@
 package de.lifecircles.view;
 
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 /**
  * Configuration settings for the visualization.
@@ -35,6 +36,7 @@ public class ViewConfig {
     private boolean showAge = false;
     private boolean showSpecialization = true;
     // Sun ray visualization
+    public static final Paint SUN_COLOR = Color.YELLOW.deriveColor(0, 1, 0.5D, 0.5);
     private boolean showSunRays = true;
     private Color energyBarColor = Color.GREEN;
     private Color ageBarColor = Color.BLUE;

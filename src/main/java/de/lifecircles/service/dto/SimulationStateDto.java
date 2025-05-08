@@ -14,31 +14,31 @@ import java.util.stream.Collectors;
  * Used to transfer state between calculation and visualization threads.
  */
 public class SimulationStateDto {
-    private final List<CellState> cells;
-    private final List<BlockerState> blockers;
-    private final List<SunRayState> sunRays;
+    private final List<CellStateDto> cells;
+    private final List<BlockerStateDto> blockers;
+    private final List<SunRayStateDto> sunRays;
     private final double width;
     private final double height;
 
-    public SimulationStateDto(List<CellState> cells, List<Blocker> blockers, List<SunRay> sunRays, double width, double height) {
+    public SimulationStateDto(List<CellStateDto> cells, List<Blocker> blockers, List<SunRay> sunRays, double width, double height) {
         this.cells = new ArrayList<>(cells);
         this.blockers = blockers.stream()
-            .map(BlockerState::new)
+            .map(BlockerStateDto::new)
             .collect(Collectors.toList());
-        this.sunRays = sunRays.stream().map(SunRayState::new).collect(Collectors.toList());
+        this.sunRays = sunRays.stream().map(SunRayStateDto::new).collect(Collectors.toList());
         this.width = width;
         this.height = height;
     }
 
-    public List<CellState> getCells() {
+    public List<CellStateDto> getCells() {
         return Collections.unmodifiableList(cells);
     }
 
-    public List<BlockerState> getBlockers() {
+    public List<BlockerStateDto> getBlockers() {
         return Collections.unmodifiableList(blockers);
     }
 
-    public List<SunRayState> getSunRays() {
+    public List<SunRayStateDto> getSunRays() {
         return Collections.unmodifiableList(sunRays);
     }
 
@@ -50,17 +50,17 @@ public class SimulationStateDto {
         return height;
     }
 
-    public static class CellState {
+    public static class CellStateDto {
         private final Vector2D position;
         private final double rotation;
         private final double radiusSize;
         private final double[] typeRGB;
-        private final List<ActorState> actors;
+        private final List<ActorStateDto> actors;
         private final double energy;
         private final double age;
 
-        public CellState(Vector2D position, double rotation, double radiusSize,
-                        double[] typeRGB, List<ActorState> actors, double energy, double age) {
+        public CellStateDto(Vector2D position, double rotation, double radiusSize,
+                            double[] typeRGB, List<ActorStateDto> actors, double energy, double age) {
 
             this.position = position;
             this.rotation = rotation;
@@ -87,7 +87,7 @@ public class SimulationStateDto {
             return typeRGB;
         }
 
-        public List<ActorState> getActors() {
+        public List<ActorStateDto> getActors() {
             return Collections.unmodifiableList(actors);
         }
 
@@ -100,12 +100,12 @@ public class SimulationStateDto {
         }
     }
 
-    public static class ActorState {
+    public static class ActorStateDto {
         private final Vector2D position;
         private final double[] typeRGB;
         private final double forceStrength;
 
-        public ActorState(Vector2D position, double[] typeRGB, double forceStrength) {
+        public ActorStateDto(Vector2D position, double[] typeRGB, double forceStrength) {
             this.position = position;
             this.typeRGB = typeRGB.clone();
             this.forceStrength = forceStrength;
@@ -124,7 +124,7 @@ public class SimulationStateDto {
         }
     }
 
-    public static class BlockerState {
+    public static class BlockerStateDto {
         private final double x;
         private final double y;
         private final double width;
@@ -136,7 +136,7 @@ public class SimulationStateDto {
             return height;
         }
 
-        public BlockerState(Blocker blocker) {
+        public BlockerStateDto(Blocker blocker) {
             Vector2D pos = blocker.getPosition();
             this.x = pos.getX();
             this.y = pos.getY();
@@ -153,10 +153,10 @@ public class SimulationStateDto {
         public Blocker.BlockerType getType() { return type; }
     }
 
-    public static class SunRayState {
+    public static class SunRayStateDto {
         private final double startX, startY, endX, endY;
 
-        public SunRayState(SunRay ray) {
+        public SunRayStateDto(SunRay ray) {
             this.startX = ray.getStart().getX();
             this.startY = ray.getStart().getY();
             this.endX = ray.getEnd().getX();

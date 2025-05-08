@@ -30,7 +30,7 @@ public class EnergySunCalcService {
         this.timeInCycle = (this.timeInCycle + deltaTime) % SimulationConfig.DAY_NIGHT_CYCLE_DURATION;
 
         // Calculate intensity based on sinusoidal function
-        final double intensity = Math.sin((this.timeInCycle / SimulationConfig.DAY_NIGHT_CYCLE_DURATION) * Math.PI);
+        final double intensity = (Math.sin((this.timeInCycle / SimulationConfig.DAY_NIGHT_CYCLE_DURATION) * Math.PI) * 0.8D) + 0.2D;
 
         // Accumulate ray count based on pixel spacing to maintain constant density
         // Adjust rays per second based on intensity

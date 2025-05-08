@@ -30,13 +30,13 @@ public class CellCalcService {
             cell.incGrowthAge(deltaTime);
             if (cell.getGrowthAge() >= SimulationConfig.CELL_GROWTH_DURATION) {
                 // Wachstumsprozess abgeschlossen
-                cell.setRadiusSize(cell.getTargetRadiusSize());
+                cell.setRealRadiusSize(cell.getTargetRadiusSize());
                 cell.setIsGrowing(false);
             } else {
                 // Lineare Interpolation zwischen Startgröße und Zielgröße
                 double growthProgress = cell.getGrowthAge() / SimulationConfig.CELL_GROWTH_DURATION;
                 double minSize = SimulationConfig.getInstance().getCellMinRadiusSize();
-                cell.setRadiusSize(minSize + (cell.getTargetRadiusSize() - minSize) * growthProgress);
+                cell.setRealRadiusSize(minSize + (cell.getTargetRadiusSize() - minSize) * growthProgress);
             }
         }
 

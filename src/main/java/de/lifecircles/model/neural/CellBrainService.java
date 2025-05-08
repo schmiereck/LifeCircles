@@ -5,6 +5,7 @@ import java.util.List;
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.CellType;
 import de.lifecircles.model.SensorActor;
+import de.lifecircles.service.SimulationConfig;
 
 public class CellBrainService {
 
@@ -92,8 +93,9 @@ public class CellBrainService {
 
     public static void applyOutputs(final Cell cell, double[] outputs) {
         // Apply size output
-        //cell.setRadiusSize(outputs[GlobalOutputFeature.SIZE.ordinal()] * 40.0D + 10.0D); // Scale to 10-50 range
-        cell.setRadiusSize(outputs[GlobalOutputFeature.SIZE.ordinal()]); // Scale to 10-50 range
+        cell.setRadiusSize((outputs[GlobalOutputFeature.SIZE.ordinal()] *
+                (SimulationConfig.getInstance().getCellMaxRadiusSize() - SimulationConfig.getInstance().getCellMinRadiusSize())) +
+                SimulationConfig.getInstance().getCellMinRadiusSize());
 
         int index = GlobalOutputFeature.values().length;
 
@@ -110,7 +112,9 @@ public class CellBrainService {
 
             // Set force strength (range -1 to 1)
             //actor.setForceStrength(outputs[index + ActorOutputFeature.FORCE.ordinal()] * 2.0D - 1.0D);
-            actor.setForceStrength(outputs[index + ActorOutputFeature.FORCE.ordinal()]);
+            actor.setForceStrength((outputs[index + ActorOutputFeature.FORCE.ordinal()] *
+                    SimulationConfig.getInstance().getCellActorMaxForceStrength() * 2.0D) -
+                    SimulationConfig.getInstance().getCellActorMaxForceStrength());
             actor.setReproductionDesire(outputs[index + ActorOutputFeature.REPRODUCTION_DESIRE.ordinal()]);
             actor.setEnergyAbsorption(outputs[index + ActorOutputFeature.ENERGY_ABSORPTION.ordinal()]);
             actor.setEnergyDelivery(outputs[index + ActorOutputFeature.ENERGY_DELIVERY.ordinal()]);

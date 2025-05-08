@@ -7,9 +7,6 @@ import de.lifecircles.model.Cell;
  */
 public class EnergyCellCalcService {
 
-    private static final double ENERGY_DECAY_RATE = 0.01D;
-    private static final double ENERGY_COST_PER_SYNAPSE = 0.0000001D;
-
     /**
      * Applies energy decay to the cell.
      *
@@ -18,10 +15,10 @@ public class EnergyCellCalcService {
      */
     public static void decayEnergy(final Cell cell, final double deltaTime, final boolean useSynapseEnergyCost) {
         int synapseCount = cell.getBrain().getSynapseCount();
-        double synapseEnergyCost = useSynapseEnergyCost ? synapseCount * ENERGY_COST_PER_SYNAPSE * deltaTime : 0;
+        double synapseEnergyCost = useSynapseEnergyCost ? synapseCount * SimulationConfig.ENERGY_COST_PER_SYNAPSE * deltaTime : 0;
         double newEnergy = Math.max(0.0,
                 cell.getEnergy() -
-                ((ENERGY_DECAY_RATE * deltaTime) + synapseEnergyCost));
+                ((SimulationConfig.ENERGY_DECAY_RATE * deltaTime) + synapseEnergyCost));
         cell.setEnergy(newEnergy);
     }
 }

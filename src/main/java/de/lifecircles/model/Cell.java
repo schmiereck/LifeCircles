@@ -160,7 +160,12 @@ public class Cell {
             this.radiusSize = this.targetRadiusSize;
         }
     }
-    
+
+    public void setRealRadiusSize(double radiusSize) {
+        this.radiusSize = Math.max(SimulationConfig.getInstance().getCellMinRadiusSize(),
+                Math.min(SimulationConfig.getInstance().getCellMaxRadiusSize(), radiusSize));
+    }
+
     /**
      * Setzt die Zelle in den Wachstumsmodus und startet mit der Minimalgröße
      */
@@ -205,7 +210,7 @@ public class Cell {
         final double xRadius = applicationPoint.getX() - this.position.getX();
         final double yRadius = applicationPoint.getY() - this.position.getY();
         //double torque = radiusVector.getX() * force.getY() - radiusVector.getY() * force.getX();
-        double torque = xRadius * force.getY() - yRadius * force.getX();
+        double torque = (xRadius * force.getY() - yRadius * force.getX()) / SimulationConfig.CELL_ANGULAR_VELOCITY_DIFF; // Scale down torque for stability
         this.angularVelocity += torque / (this.radiusSize * this.radiusSize); // Moment of inertia approximated as size²
     }
 

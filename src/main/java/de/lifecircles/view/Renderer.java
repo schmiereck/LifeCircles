@@ -1,6 +1,7 @@
 package de.lifecircles.view;
 
 import de.lifecircles.model.Vector2D;
+import de.lifecircles.service.ActorSensorCellCalcService;
 import de.lifecircles.service.dto.SimulationStateDto;
 import de.lifecircles.service.SimulationConfig;
 import javafx.geometry.Point2D;
@@ -29,25 +30,25 @@ public class Renderer {
         }
 
         // Render blockers first (background)
-        for (SimulationStateDto.BlockerState blocker : state.getBlockers()) {
+        for (SimulationStateDto.BlockerStateDto blocker : state.getBlockers()) {
             this.renderBlocker(blocker);
         }
         
-        for (SimulationStateDto.CellState cell : state.getCells()) {
+        for (SimulationStateDto.CellStateDto cell : state.getCells()) {
             if (config.isShowForceFields()) {
                 this.drawForceFields(cell);
             }
         }
 
-        for (SimulationStateDto.CellState cell : state.getCells()) {
+        for (SimulationStateDto.CellStateDto cell : state.getCells()) {
             this.renderCell(cell);
         }
 
         // Render sun rays
         if (config.isShowSunRays()) {
-            gc.setStroke(Color.YELLOW.deriveColor(0, 1, 1, 0.5));
+            gc.setStroke(config.SUN_COLOR);
             gc.setLineWidth(1.5);
-            for (SimulationStateDto.SunRayState ray : state.getSunRays()) {
+            for (SimulationStateDto.SunRayStateDto ray : state.getSunRays()) {
                 Point2D start = camera.worldToScreen(new Vector2D(ray.getStartX(), ray.getStartY()));
                 Point2D end = camera.worldToScreen(new Vector2D(ray.getEndX(), ray.getEndY()));
                 gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
@@ -95,7 +96,7 @@ public class Renderer {
         }
     }
 
-    private void renderCell(SimulationStateDto.CellState cell) {
+    private void renderCell(SimulationStateDto.CellStateDto cell) {
         Point2D screenCellPos = this.camera.worldToScreen(cell.getPosition());
         double screenCellRadius = cell.getRadiusSize() * this.camera.getScale();
 
@@ -190,8 +191,8 @@ public class Renderer {
         gc.fillPolygon(xPoints, yPoints, 3);
     }
 
-    private void drawActors(SimulationStateDto.CellState cell) {
-        for (SimulationStateDto.ActorState actor : cell.getActors()) {
+    private void drawActors(SimulationStateDto.CellStateDto cell) {
+        for (SimulationStateDto.ActorStateDto actor : cell.getActors()) {
             Point2D screenPos = camera.worldToScreen(actor.getPosition());
             double actorSize = config.getActorSize() * camera.getScale();
 
@@ -207,50 +208,44 @@ public class Renderer {
         }
     }
 
-    private void drawForceFields(SimulationStateDto.CellState cell) {
-        for (SimulationStateDto.ActorState actor : cell.getActors()) {
-            if (Math.abs(actor.getForceStrength()) > 0.1) {
-                Point2D screenPos = camera.worldToScreen(actor.getPosition());
-                double[] rgb = actor.getTypeRGB();
-                
-                // Dynamic force field radius based on actor spacing
-                int actorCount = cell.getActors().size();
-                double chord = cell.getRadiusSize() * Math.sin(Math.PI / actorCount);
-                double radius = chord * camera.getScale();
-                
-                // Create radial gradient for force field
-                Color baseColor = Color.color(
-                    rgb[0], rgb[1], rgb[2],
-                    config.getForceFieldOpacity() * Math.abs(actor.getForceStrength() /
-                            SimulationConfig.getInstance().getCellActorMaxForceStrength())
+    private void drawForceFields(SimulationStateDto.CellStateDto cell) {
+        for (SimulationStateDto.ActorStateDto actor : cell.getActors()) {
+            Point2D screenPos = camera.worldToScreen(actor.getPosition());
+            double[] rgb = actor.getTypeRGB();
+
+            // Dynamic force field radius based on actor spacing
+            int actorCount = cell.getActors().size();
+            double chord = ActorSensorCellCalcService.calcSensorRadius(cell.getRadiusSize(), actorCount);
+            double radius = chord * camera.getScale();
+
+            final Color baseColor;
+            if (actor.getForceStrength() > 0.0D) {
+                // Attractive force - inward gradient
+                baseColor = Color.color(
+                        0, 1.0D, 0,
+                        config.getForceFieldOpacity() * Math.abs(actor.getForceStrength() /
+                                SimulationConfig.getInstance().getCellActorMaxForceStrength())
                 );
-                
-                gc.setFill(baseColor);
-                if (actor.getForceStrength() > 0.0D) {
-                    // Attractive force - inward gradient
-                    gc.setGlobalAlpha(config.getForceFieldOpacity());
-                    gc.fillOval(
-                        screenPos.getX() - radius,
-                        screenPos.getY() - radius,
-                        radius * 2,
-                        radius * 2
-                    );
-                } else {
-                    // Repulsive force - outward gradient
-                    gc.setGlobalAlpha(config.getForceFieldOpacity() * 0.5);
-                    gc.fillOval(
-                        screenPos.getX() - radius,
-                        screenPos.getY() - radius,
-                        radius * 2,
-                        radius * 2
-                    );
-                }
-                gc.setGlobalAlpha(1.0);
+            } else {
+                // Repulsive force - outward gradient
+                baseColor = Color.color(
+                        1.0D, 0, 0,
+                        config.getForceFieldOpacity() * Math.abs(actor.getForceStrength() /
+                                SimulationConfig.getInstance().getCellActorMaxForceStrength())
+                );
             }
+            gc.setFill(baseColor);
+            gc.fillOval(
+                    screenPos.getX() - radius,
+                    screenPos.getY() - radius,
+                    radius * 2,
+                    radius * 2
+            );
+            gc.setGlobalAlpha(1.0);
         }
     }
 
-    private void renderBlocker(SimulationStateDto.BlockerState blocker) {
+    private void renderBlocker(SimulationStateDto.BlockerStateDto blocker) {
         Point2D screenPos = camera.worldToScreen(new Vector2D(blocker.getX(), blocker.getY()));
         double screenWidth = camera.scaleToScreen(blocker.getWidth());
         double screenHeight = camera.scaleToScreen(blocker.getHeight());

@@ -58,7 +58,7 @@ public class ActorSensorCellCalcService {
     }
 
     private static void processInteraction(final Cell calcCell, final Cell otherCell, final double deltaTime) {
-        double foundSenseForceValue = 0.0D;
+        double foundForceStrength = 0.0D;
         SensorActor foundOtherCellActor = null;
         SensorActor foundCalcCellActor = null;
         Vector2D foundDirection = null;
@@ -71,9 +71,13 @@ public class ActorSensorCellCalcService {
                 double distance = direction.length();
                 
                 if (distance > 0.0D) {
-                    double senseForceValue = sense(otherCellActor, calcCellActor); // Kraft von otherCellActor auf calcCellActor
-                    if ((senseForceValue != 0.0D) && (senseForceValue > foundSenseForceValue)) {
-                        foundSenseForceValue = senseForceValue;
+                    // Kraft von otherCellActor auf calcCellActor
+                    double forceStrength = otherCellActor.getForceStrength(); // Kraftstärke (positiv/negativ)
+                    double senseForceValue = sense(otherCellActor, calcCellActor);
+                    double totalForceStrength = senseForceValue * forceStrength; // Berücksichtige Richtung und Stärke
+                    
+                    if ((senseForceValue != 0.0D) && (Math.abs(totalForceStrength) > Math.abs(foundForceStrength))) {
+                        foundForceStrength = totalForceStrength;
                         foundCalcCellActor = calcCellActor;
                         foundOtherCellActor = otherCellActor;
                         foundDirection = direction;
@@ -85,7 +89,7 @@ public class ActorSensorCellCalcService {
             foundCalcCellActor.setSensedActor(foundOtherCellActor);
             foundCalcCellActor.setSensedCell(otherCell);
 
-            Vector2D forceOnCalcCell = foundDirection.normalize().multiply(foundSenseForceValue);
+            Vector2D forceOnCalcCell = foundDirection.normalize().multiply(foundForceStrength);
             calcCell.applyForce(forceOnCalcCell, foundCalcCellActor.getCachedPosition(), deltaTime);
         }
     }
@@ -103,7 +107,7 @@ public class ActorSensorCellCalcService {
         if (distance > maxSensorRadius) {
             return 0.0D;
         }
-        return 1.0D - (distance / maxSensorRadius);
+        return (distance / maxSensorRadius);
     }
 
     public static double calcSensorRadius(final double radiusSize, final int totalSensors) {
@@ -119,7 +123,7 @@ public class ActorSensorCellCalcService {
     public static double senseWithType(SensorActor sensorActor, SensorActor other) {
         double distance = sensorActor.getCachedPosition().distance(other.getCachedPosition());
         int totalSensors = sensorActor.getParentCell().getSensorActors().size();
-        double chord = sensorActor.getParentCell().getRadiusSize() * Math.sin(Math.PI / totalSensors);
+        double chord = calcSensorRadius(sensorActor.getParentCell().getRadiusSize(), totalSensors);
         if (distance > chord) {
             return 0;
         }

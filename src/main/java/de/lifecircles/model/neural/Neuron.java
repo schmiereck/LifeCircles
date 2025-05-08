@@ -111,11 +111,11 @@ public class Neuron {
         }
         
         // Für Output-Neuronen wird keine Aktivierungsfunktion angewendet
-        if (this.isOutputNeuron) {
-            this.value = sum;
-        } else {
+        //if (this.isOutputNeuron) {
+        //    this.value = sum;
+        //} else {
             this.value = this.activationFunction.apply(sum);
-        }
+        //}
     }
 
     public void setActivationFunction(ActivationFunction activationFunction) {

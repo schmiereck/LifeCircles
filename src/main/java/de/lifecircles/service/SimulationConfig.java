@@ -8,14 +8,14 @@ import de.lifecircles.service.trainStrategy.TrainMode;
  */
 public class SimulationConfig {
     // Environment:
-    public static final double GRAVITY = 9.81;
+    public static final double GRAVITY = 9.81D * 1.25D;
     public static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
     public static final double REPOPULATION_THRESHOLD_PERCENT = 0.25;
 
     // Sun:
 
-    private double sunRayRate = 5.0;
-    private double energyPerRay = 0.02;
+    private double sunRayRate = 10.0;
+    private double energyPerRay = 0.025;
     // Spacing between sun rays in pixels; average one ray per this spacing
     private double sunRaySpacingPx = 60.0;
 
@@ -30,14 +30,19 @@ public class SimulationConfig {
 
     // Cell:
     public static final int CELL_SENSOR_ACTOR_COUNT = 12;
-    public static final double CELL_MAX_ENERGY = 1.0;
+    public static final double CELL_MAX_ENERGY = 1.0D;
     public static final int CELL_TEMP_THINK_HACK_COUNTER_MAX = 10;
+
+    public static final double ENERGY_DECAY_RATE = 0.025D;
+    public static final double ENERGY_COST_PER_SYNAPSE = 0.0000001D;
 
     // Konstante für die Zellwachstumszeit in Sekunden
     public static final double CELL_GROWTH_DURATION = 2.0;
 
-    private double cellMinRadiusSize = 20.0D;
-    private double cellMaxRadiusSize = 60.0D;
+    public static final double CELL_ANGULAR_VELOCITY_DIFF = 20.0D;
+
+    private double cellMinRadiusSize = 6.0D;
+    private double cellMaxRadiusSize = 20.0D;
 
     private double cellActorMaxFieldRadius =
             ActorSensorCellCalcService.calcSensorRadius(this.cellMaxRadiusSize, CELL_SENSOR_ACTOR_COUNT);
@@ -64,10 +69,9 @@ public class SimulationConfig {
 
     private static final double CELL_REPULSION_STRENGTH = 175.0;
 
-    private double cellActorMinForceStrength = 0.0D;
-    private double cellActorMaxForceStrength = 16.0D * 4.0D * 2.0D;
+    private double cellActorMaxForceStrength = 16.0D * 8.0D * 4.0D;
 
-    private double reproductionEnergyThreshold = 0.2D;
+    private double reproductionEnergyThreshold = 0.4D;
     private double reproductionAgeThreshold = 4.0D; // seconds
     private double reproductionDesireThreshold = 0.5;
 
@@ -237,10 +241,6 @@ public class SimulationConfig {
 
     public double getReproductionDesireThreshold() { return this.reproductionDesireThreshold; }
     public void setReproductionDesireThreshold(double threshold) { this.reproductionDesireThreshold = threshold; }
-
-    public double getCellActorMinForceStrength() {
-        return this.cellActorMinForceStrength;
-    }
 
     public double getCellActorMaxForceStrength() {
         return this.cellActorMaxForceStrength;
