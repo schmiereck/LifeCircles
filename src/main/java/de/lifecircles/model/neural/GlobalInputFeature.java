@@ -7,7 +7,7 @@ public enum GlobalInputFeature {
     MY_CELL_TYPE_RED,
     MY_CELL_TYPE_GREEN,
     MY_CELL_TYPE_BLUE,
-    ENERGY,
-    AGE,
-    SUNRAY_HIT
+    MY_CELL_ENERGY,
+    MY_CELL_AGE,
+    MY_CELL_SUNRAY_HIT
 }
