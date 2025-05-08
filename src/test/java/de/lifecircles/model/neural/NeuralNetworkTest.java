@@ -70,7 +70,7 @@ public class NeuralNetworkTest {
 
         // Initialisiere Synapse-Gewichte für die erste Generation
         for (NeuralNetwork network : population) {
-            for (Synapse synapse : network.getSynapses()) {
+            for (Synapse synapse : network.getSynapsesynapseList()) {
                 // Verbesserte Xavier/Glorot-Initialisierung
                 double limit = Math.sqrt(6.0 / (network.getInputLayerSize() + network.getOutputLayerSize()));
                 synapse.setWeight(random.nextDouble() * 2 * limit - limit);
@@ -188,7 +188,7 @@ public class NeuralNetworkTest {
                     NeuralNetwork freshNetwork = new NeuralNetwork(2, architecture, 1);
                     
                     // Gewichte initialisieren
-                    for (Synapse synapse : freshNetwork.getSynapses()) {
+                    for (Synapse synapse : freshNetwork.getSynapsesynapseList()) {
                         double limit = Math.sqrt(6.0 / (freshNetwork.getInputLayerSize() + freshNetwork.getOutputLayerSize()));
                         synapse.setWeight(random.nextDouble() * 2 * limit - limit);
                     }
@@ -213,7 +213,7 @@ public class NeuralNetworkTest {
                     NeuralNetwork freshNetwork = new NeuralNetwork(2, architecture, 1);
                     
                     // Gewichte initialisieren
-                    for (Synapse synapse : freshNetwork.getSynapses()) {
+                    for (Synapse synapse : freshNetwork.getSynapsesynapseList()) {
                         double limit = Math.sqrt(6.0 / (freshNetwork.getInputLayerSize() + freshNetwork.getOutputLayerSize()));
                         synapse.setWeight(random.nextDouble() * 2 * limit - limit);
                     }
@@ -284,8 +284,8 @@ public class NeuralNetworkTest {
     // Crossover: Kombiniert zwei Netzwerke zu einem neuen
     private NeuralNetwork crossover(NeuralNetwork parent1, NeuralNetwork parent2, Random random) {
         NeuralNetwork child = cloneNetwork(parent1);
-        List<Synapse> childSynapses = child.getSynapses();
-        List<Synapse> parent2Synapses = parent2.getSynapses();
+        List<Synapse> childSynapses = child.getSynapsesynapseList();
+        List<Synapse> parent2Synapses = parent2.getSynapsesynapseList();
         
         int minSize = Math.min(childSynapses.size(), parent2Synapses.size());
         
@@ -328,7 +328,7 @@ public class NeuralNetworkTest {
     
     // Hilfsmethode: Gibt die Architektur eines Netzwerks zurück
     private int[] getArchitecture(NeuralNetwork network) {
-        List<List<Neuron>> hiddenLayers = network.getHiddenLayers();
+        List<List<Neuron>> hiddenLayers = network.getHiddenLayerList();
         int[] architecture = new int[hiddenLayers.size()];
         for (int i = 0; i < hiddenLayers.size(); i++) {
             architecture[i] = hiddenLayers.get(i).size();

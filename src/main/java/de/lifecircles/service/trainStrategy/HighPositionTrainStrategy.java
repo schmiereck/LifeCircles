@@ -18,7 +18,7 @@ import java.util.Random;
  */
 public class HighPositionTrainStrategy implements TrainStrategy {
     private static final int INITIAL_COUNT = 20;
-    private static final int GENERATION_STEP = 1500;
+    private static final int GENERATION_STEP = 2500;
     private static final double SELECTION_PERCENT = 0.2;
     private final SimulationConfig config = SimulationConfig.getInstance();
     private long stepCounter = 0;
@@ -42,7 +42,7 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         Random random = new Random();
         for (int i = 0; i < INITIAL_COUNT; i++) {
             double x = random.nextDouble() * config.getWidth();
-            double y = random.nextDouble() * config.getHeight();
+            double y = config.getHeight() - (random.nextDouble() * (config.getHeight() / 4.0D));
             environment.addCell(new Cell(new Vector2D(x, y), config.getCellMaxRadiusSize() / 2.0));
         }
     }

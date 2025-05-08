@@ -27,7 +27,7 @@ public class CalculationService implements Runnable {
     private final Object stateLock = new Object();
     private final SimulationConfig config;
     private final TrainStrategy trainStrategy;
-    private int updateCount = 0;
+    private int updateFpsCount = 0;
     private long lastFpsTime = System.nanoTime();
     private volatile double fps = 0.0;
     private final AtomicLong stepCount = new AtomicLong(0);
@@ -53,25 +53,25 @@ public class CalculationService implements Runnable {
 
     @Override
     public void run() {
-        running.set(true);
+        this.running.set(true);
         long lastUpdateTime = System.nanoTime();
         double targetDelta = config.getTimeStep();
 
-        while (running.get()) {
-            if (!paused.get()) {
+        while (this.running.get()) {
+            if (!this.paused.get()) {
                 long currentTime = System.nanoTime();
                 double deltaTime = (currentTime - lastUpdateTime) / 1_000_000_000.0;
 
                 if (deltaTime >= targetDelta) {
-                    update(config.getTimeStep());
+                    update(this.config.getTimeStep());
                     // FPS tracking
-                    updateCount++;
-                    stepCount.incrementAndGet();
+                    this.updateFpsCount++;
+                    this.stepCount.incrementAndGet();
                     long nowFps = System.nanoTime();
-                    if (nowFps - lastFpsTime >= 1_000_000_000L) {
-                        fps = updateCount / ((nowFps - lastFpsTime) / 1_000_000_000.0);
-                        updateCount = 0;
-                        lastFpsTime = nowFps;
+                    if (nowFps - this.lastFpsTime >= 1_000_000_000L) {
+                        this.fps = this.updateFpsCount / ((nowFps - this.lastFpsTime) / 1_000_000_000.0);
+                        this.updateFpsCount = 0;
+                        this.lastFpsTime = nowFps;
                     }
                     lastUpdateTime = currentTime;
                 }
@@ -149,37 +149,37 @@ public class CalculationService implements Runnable {
             }
         }
 
-        synchronized (stateLock) {
-            latestState = new SimulationStateDto(
+        synchronized (this.stateLock) {
+            this.latestState = new SimulationStateDto(
                 cellStates,
-                environment.getBlockers(),
-                environment.getSunRays(),
-                environment.getWidth(),
-                environment.getHeight()
+                    this.environment.getBlockers(),
+                    this.environment.getSunRays(),
+                    this.environment.getWidth(),
+                    this.environment.getHeight()
             );
         }
     }
 
     public SimulationStateDto getLatestState() {
-        synchronized (stateLock) {
+        synchronized (this.stateLock) {
             this.updateState();
            return this.latestState;
         }
     }
 
     public void start() {
-        if (!running.get()) {
+        if (!this.running.get()) {
             new Thread(this).start();
         }
-        paused.set(false);
+        this.paused.set(false);
     }
 
     public void pause() {
-        paused.set(true);
+        this.paused.set(true);
     }
 
     public void resume() {
-        paused.set(false);
+        this.paused.set(false);
     }
 
     public void stop() {
@@ -187,18 +187,18 @@ public class CalculationService implements Runnable {
     }
 
     public boolean isPaused() {
-        return paused.get();
+        return this.paused.get();
     }
 
     public boolean isRunning() {
-        return running.get();
+        return this.running.get();
     }
 
     public double getFps() {
-        return fps;
+        return this.fps;
     }
     public long getStepCount() {
-        return stepCount.get();
+        return this.stepCount.get();
     }
 }
 

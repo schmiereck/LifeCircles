@@ -36,16 +36,16 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
         // Initiale Population
         Random random = new Random();
         for (int i = 0; i < INITIAL_COUNT; i++) {
-            double x = random.nextDouble() * config.getWidth();
-            double y = random.nextDouble() * config.getHeight();
-            environment.addCell(new Cell(new Vector2D(x, y), config.getCellMaxRadiusSize() / 2.0));
+            double x = random.nextDouble() * this.config.getWidth();
+            double y = random.nextDouble() * this.config.getHeight();
+            environment.addCell(new Cell(new Vector2D(x, y), this.config.getCellMaxRadiusSize() / 2.0));
         }
     }
 
     @Override
     public void selectAndMutate(Environment environment) {
-        stepCounter++;
-        if (stepCounter % GENERATION_STEP != 0) {
+        this.stepCounter++;
+        if (this.stepCounter % GENERATION_STEP != 0) {
             return;
         }
         List<Cell> cells = environment.getCells();
@@ -61,7 +61,7 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
         // Fülle Population bis INITIAL_COUNT mit mutierten Nachkommen auf
         while (nextGen.size() < INITIAL_COUNT) {
             Cell parent = winners.get(random.nextInt(winnersCount));
-            Cell child = ReproductionManagerService.reproduce(config, parent);
+            Cell child = ReproductionManagerService.reproduce(this.config, parent);
             child.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
             nextGen.add(child);
         }
