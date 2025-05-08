@@ -36,8 +36,8 @@ public class SimulationConfig {
     // Konstante für die Zellwachstumszeit in Sekunden
     public static final double CELL_GROWTH_DURATION = 2.0;
 
-    private double cellMinRadiusSize = 10.0D;
-    private double cellMaxRadiusSize = 50.0D;
+    private double cellMinRadiusSize = 20.0D;
+    private double cellMaxRadiusSize = 60.0D;
 
     private double cellActorMaxFieldRadius =
             ActorSensorCellCalcService.calcSensorRadius(this.cellMaxRadiusSize, CELL_SENSOR_ACTOR_COUNT);

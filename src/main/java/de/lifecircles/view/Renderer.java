@@ -96,28 +96,28 @@ public class Renderer {
     }
 
     private void renderCell(SimulationStateDto.CellState cell) {
-        Point2D screenPos = this.camera.worldToScreen(cell.getPosition());
-        double screenSize = cell.getRadiusSize() * this.camera.getScale();
+        Point2D screenCellPos = this.camera.worldToScreen(cell.getPosition());
+        double screenCellRadius = cell.getRadiusSize() * this.camera.getScale();
 
         // Draw cell body
         if (this.config.isShowCellBodies()) {
             double[] rgb = cell.getTypeRGB();
             this.gc.setFill(Color.color(rgb[0], rgb[1], rgb[2], 0.5));
             this.gc.fillOval(
-                screenPos.getX() - screenSize / 2,
-                screenPos.getY() - screenSize / 2,
-                screenSize,
-                screenSize
+                screenCellPos.getX() - screenCellRadius,
+                screenCellPos.getY() - screenCellRadius,
+                screenCellRadius * 2.0D,
+                screenCellRadius * 2.0D
             );
 
             // Draw outline
             this.gc.setStroke(config.getCellOutlineColor());
             this.gc.setLineWidth(config.getCellOutlineWidth());
             this.gc.strokeOval(
-                screenPos.getX() - screenSize / 2,
-                screenPos.getY() - screenSize / 2,
-                screenSize,
-                screenSize
+                screenCellPos.getX() - screenCellRadius,
+                screenCellPos.getY() - screenCellRadius,
+                screenCellRadius * 2.0D,
+                screenCellRadius * 2.0D
             );
 
             if (config.isShowActors()) {
@@ -126,22 +126,22 @@ public class Renderer {
 
             // Draw energy bar
             if (this.config.isShowEnergy()) {
-                double energyBarWidth = screenSize * 0.8;
-                double energyBarHeight = screenSize * 0.1;
+                double energyBarWidth = screenCellRadius * 0.8;
+                double energyBarHeight = screenCellRadius * 0.1;
                 double energyLevel = cell.getEnergy();
 
                 this.gc.setFill(Color.RED);
                 this.gc.fillRect(
-                    screenPos.getX() - energyBarWidth / 2,
-                    screenPos.getY() + screenSize / 2 + 2,
+                    screenCellPos.getX() - energyBarWidth / 2,
+                    screenCellPos.getY() + screenCellRadius / 2 + 2,
                     energyBarWidth,
                     energyBarHeight
                 );
 
                 this.gc.setFill(this.config.getEnergyBarColor());
                 this.gc.fillRect(
-                    screenPos.getX() - energyBarWidth / 2,
-                    screenPos.getY() + screenSize / 2 + 2,
+                    screenCellPos.getX() - energyBarWidth / 2,
+                    screenCellPos.getY() + screenCellRadius / 2 + 2,
                     energyBarWidth * energyLevel,
                     energyBarHeight
                 );
@@ -151,13 +151,13 @@ public class Renderer {
             if (this.config.isShowAge()) {
                 double maxAge = 60.0; // 1 minute
                 double normalizedAge = Math.min(cell.getAge() / maxAge, 1.0);
-                double ageBarWidth = screenSize * 0.8;
-                double ageBarHeight = screenSize * 0.1;
+                double ageBarWidth = screenCellRadius * 0.8;
+                double ageBarHeight = screenCellRadius * 0.1;
 
                 this.gc.setFill(this.config.getAgeBarColor());
                 this.gc.fillRect(
-                    screenPos.getX() - ageBarWidth / 2,
-                    screenPos.getY() + screenSize / 2 + 6,
+                    screenCellPos.getX() - ageBarWidth / 2,
+                    screenCellPos.getY() + screenCellRadius / 2 + 6,
                     ageBarWidth * normalizedAge,
                     ageBarHeight
                 );
@@ -165,11 +165,11 @@ public class Renderer {
 
             // Draw specialization indicator
             if (this.config.isShowSpecialization()) {
-                double indicatorSize = screenSize * 0.2;
+                double indicatorSize = screenCellRadius * 0.2;
                 
                 // Determine specialization based on RGB values
                 // Indicator triangle
-                drawTriangle(gc, screenPos, indicatorSize, Color.color(rgb[0], rgb[1], rgb[2]));
+                drawTriangle(gc, screenCellPos, indicatorSize, Color.color(rgb[0], rgb[1], rgb[2]));
             }
         }
     }

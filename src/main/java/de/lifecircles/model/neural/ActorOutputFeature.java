@@ -6,5 +6,6 @@ public enum ActorOutputFeature {
     TYPE_BLUE,
     FORCE,
     ENERGY_ABSORPTION,
+    ENERGY_DELIVERY,
     REPRODUCTION_DESIRE
 }

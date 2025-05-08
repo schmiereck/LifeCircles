@@ -6,6 +6,7 @@ import de.lifecircles.model.Vector2D;
 import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Service responsible for processing sensor-actor interactions between cells.
@@ -56,26 +57,12 @@ public class ActorSensorCellCalcService {
         });
     }
 
-    private static void processInteraction_old(final Cell calcCell, final Cell otherCell, final double deltaTime) {
-        // Process interactions in one direction only
-        for (SensorActor calcCellActor : calcCell.getSensorActors()) {
-            for (SensorActor otherCellActor : otherCell.getSensorActors()) {
-                // integrate sensing logic
-                double senseValue1 = sense(calcCellActor, otherCellActor);
-                if (senseValue1 != 0) {
-                    calcCellActor.setSensedActor(otherCellActor);
-                    calcCellActor.setSensedCell(otherCell);
-                }
-
-                Vector2D force1to2 = calculateForceOn(calcCellActor);
-                Vector2D forceOnCalcCell = force1to2.multiply(-1);
-
-                calcCell.applyForce(forceOnCalcCell, calcCellActor.getCachedPosition(), deltaTime);
-            }
-        }
-    }
-
     private static void processInteraction(final Cell calcCell, final Cell otherCell, final double deltaTime) {
+        double foundSenseForceValue = 0.0D;
+        SensorActor foundOtherCellActor = null;
+        SensorActor foundCalcCellActor = null;
+        Vector2D foundDirection = null;
+
         // Process interactions in one direction only
         for (SensorActor calcCellActor : calcCell.getSensorActors()) {
             for (SensorActor otherCellActor : otherCell.getSensorActors()) {
@@ -83,17 +70,23 @@ public class ActorSensorCellCalcService {
                 Vector2D direction = calcCellActor.getCachedPosition().subtract(otherCellActor.getCachedPosition());
                 double distance = direction.length();
                 
-                if (distance > 0) {
+                if (distance > 0.0D) {
                     double senseForceValue = sense(otherCellActor, calcCellActor); // Kraft von otherCellActor auf calcCellActor
-                    if (senseForceValue != 0) {
-                        calcCellActor.setSensedActor(otherCellActor);
-                        calcCellActor.setSensedCell(otherCell);
-
-                        Vector2D forceOnCalcCell = direction.normalize().multiply(senseForceValue);
-                        calcCell.applyForce(forceOnCalcCell, calcCellActor.getCachedPosition(), deltaTime);
+                    if ((senseForceValue != 0.0D) && (senseForceValue > foundSenseForceValue)) {
+                        foundSenseForceValue = senseForceValue;
+                        foundCalcCellActor = calcCellActor;
+                        foundOtherCellActor = otherCellActor;
+                        foundDirection = direction;
                     }
                 }
             }
+        }
+        if (Objects.nonNull(foundOtherCellActor)) {
+            foundCalcCellActor.setSensedActor(foundOtherCellActor);
+            foundCalcCellActor.setSensedCell(otherCell);
+
+            Vector2D forceOnCalcCell = foundDirection.normalize().multiply(foundSenseForceValue);
+            calcCell.applyForce(forceOnCalcCell, foundCalcCellActor.getCachedPosition(), deltaTime);
         }
     }
 
@@ -106,14 +99,16 @@ public class ActorSensorCellCalcService {
     public static double sense(SensorActor sensorActor, SensorActor otherSensorActor) {
         double distance = sensorActor.getCachedPosition().distance(otherSensorActor.getCachedPosition());
         int totalSensors = sensorActor.getParentCell().getSensorActors().size();
-        double chord = calcSensorRadius(sensorActor.getParentCell().getRadiusSize(), totalSensors);
-        if (distance > chord) {
-            return 0;
+        double maxSensorRadius = calcSensorRadius(sensorActor.getParentCell().getRadiusSize(), totalSensors);
+        if (distance > maxSensorRadius) {
+            return 0.0D;
         }
-        double intensity = 1.0D - (distance / chord);
-        //double similarity = sensorActor.getType().similarity(otherSensorActor.getType());
-        //double weight = 2.0 * similarity - 1.0; // map [0,1] to [-1,1]
-        return intensity; // * weight;
+        return 1.0D - (distance / maxSensorRadius);
+    }
+
+    public static double calcSensorRadius(final double radiusSize, final int totalSensors) {
+        // Berechnung der vollen Sehnenlänge zwischen zwei benachbarten Sensoren
+        return 2.0D * radiusSize * Math.sin(Math.PI / totalSensors);
     }
 
     /**
@@ -132,11 +127,6 @@ public class ActorSensorCellCalcService {
         double similarity = sensorActor.getType().similarity(other.getType());
         double weight = 2.0 * similarity - 1.0; // map [0,1] to [-1,1]
         return intensity * weight;
-    }
-
-    public static double calcSensorRadius(final double radiusSize, final int totalSensors) {
-        // Berechnung der vollen Sehnenlänge zwischen zwei benachbarten Sensoren
-        return 2.0D * radiusSize * Math.sin(Math.PI / totalSensors);
     }
 
     /**

@@ -7,7 +7,7 @@ import de.lifecircles.model.Cell;
  */
 public class EnergyCellCalcService {
 
-    private static final double ENERGY_DECAY_RATE = 0.005D;
+    private static final double ENERGY_DECAY_RATE = 0.01D;
     private static final double ENERGY_COST_PER_SYNAPSE = 0.0000001D;
 
     /**

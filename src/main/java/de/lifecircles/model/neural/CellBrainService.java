@@ -113,6 +113,7 @@ public class CellBrainService {
             actor.setForceStrength(outputs[index + ActorOutputFeature.FORCE.ordinal()]);
             actor.setReproductionDesire(outputs[index + ActorOutputFeature.REPRODUCTION_DESIRE.ordinal()]);
             actor.setEnergyAbsorption(outputs[index + ActorOutputFeature.ENERGY_ABSORPTION.ordinal()]);
+            actor.setEnergyDelivery(outputs[index + ActorOutputFeature.ENERGY_DELIVERY.ordinal()]);
 
             index += ActorOutputFeature.values().length;
         }

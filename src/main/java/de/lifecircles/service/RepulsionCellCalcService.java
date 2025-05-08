@@ -20,7 +20,7 @@ public class RepulsionCellCalcService {
                 if (cell2 == cell1) continue;
                 Vector2D delta = cell2.getPosition().subtract(cell1.getPosition());
                 double distance = delta.length();
-                double combinedRadius = cell1.getRadiusSize() / 2 + cell2.getRadiusSize() / 2;
+                double combinedRadius = cell1.getRadiusSize() + cell2.getRadiusSize();
                 if (distance < combinedRadius) {
                     double overlap = combinedRadius - distance;
                     double forceMagnitude = SimulationConfig.getInstance().getCellRepulsionStrength() * overlap;

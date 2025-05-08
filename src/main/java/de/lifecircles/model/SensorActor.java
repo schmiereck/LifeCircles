@@ -14,7 +14,6 @@ public class SensorActor {
     private final double sinAngleOnCell;
     private CellType type;
     private double forceStrength; // Positive for attraction, negative for repulsion
-    private boolean fireEnergyBeam; // trigger for energy beam
     // temporarily stores the sensed actor and its cell
     private SensorActor sensedActor;
     private Cell sensedCell;
@@ -22,6 +21,7 @@ public class SensorActor {
     private Vector2D cachedPosition;
     private double reproductionDesire;
     private double energyAbsorption;
+    private double energyDelivery;
 
     public SensorActor(Cell parentCell, double angleOnCell) {
         this.parentCell = parentCell;
@@ -30,7 +30,6 @@ public class SensorActor {
         this.sinAngleOnCell = Math.sin(angleOnCell);
         this.type = new CellType(0, 0, 0);
         this.forceStrength = 0;
-        this.fireEnergyBeam = false;
         this.sensedActor = null;
         this.sensedCell = null;
         this.cachedPosition = null;
@@ -47,7 +46,7 @@ public class SensorActor {
     //}
     public Vector2D getPosition() {
         // Inline optimized: use precomputed angle unit vector and inline rotation
-        double halfSize = parentCell.getRadiusSize() * 0.5;
+        double halfSize = parentCell.getRadiusSize();
         double rotation = parentCell.getRotation();
         double cosR = Math.cos(rotation);
         double sinR = Math.sin(rotation);
@@ -57,10 +56,6 @@ public class SensorActor {
         double x = x0 * cosR - y0 * sinR + cellPos.getX();
         double y = x0 * sinR + y0 * cosR + cellPos.getY();
         return new Vector2D(x, y);
-    }
-
-    public double getAngleOnCell() {
-        return angleOnCell;
     }
 
     public CellType getType() {
@@ -79,10 +74,6 @@ public class SensorActor {
         this.forceStrength = Math.max(SimulationConfig.getInstance().getCellActorMinForceStrength(),
                 Math.min(SimulationConfig.getInstance().getCellActorMaxForceStrength(), forceStrength));;
     }
-
-    /** Flag indicating whether to fire an energy beam */
-    public boolean shouldFireEnergyBeam() { return fireEnergyBeam; }
-    public void setFireEnergyBeam(boolean fireEnergyBeam) { this.fireEnergyBeam = fireEnergyBeam; }
 
     /** Exposes parent cell for dynamic sensor field radius */
     public Cell getParentCell() {
@@ -124,5 +115,13 @@ public class SensorActor {
 
     public void setEnergyAbsorption(double energyAbsorption) {
         this.energyAbsorption = Math.max(0.0, Math.min(1.0, energyAbsorption));
+    }
+
+    public double getEnergyDelivery() {
+        return this.energyDelivery;
+    }
+
+    public void setEnergyDelivery(double energyDelivery) {
+        this.energyDelivery = Math.max(0.0, Math.min(1.0, energyDelivery));
     }
 }
