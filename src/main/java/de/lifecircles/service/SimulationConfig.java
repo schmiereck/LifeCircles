@@ -13,7 +13,6 @@ public class SimulationConfig {
 
     public static final double GRAVITY = 9.81D * 2.5D;
     public static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
-    public static final double REPOPULATION_THRESHOLD_PERCENT = 0.25;
 
     // Environment-Cell:
     /**
@@ -40,10 +39,15 @@ public class SimulationConfig {
     private double width = 1024 * 2;// * SCALE_SIMULATION;
     private double height = 1200;// * SCALE_SIMULATION;
     private double timeStep = 1.0D / 60.0D; // 60 Hz simulation
+
+    //-------------------------------------------------------------------------
+    // Training:
+
     // Training mode configuration
     private TrainMode trainMode = TrainMode.NONE;
 
     private int initialCellCount = 30;
+    public static final double REPOPULATION_THRESHOLD_PERCENT = 0.25;
 
     //-------------------------------------------------------------------------
     // Sun:
@@ -84,7 +88,7 @@ public class SimulationConfig {
     // Age in Seconds after which a cell is considered dead.
     private int cellDeathAge = 100;
 
-    private double cellActorMaxForceStrength = 16.0D * 8.0D * 4.0D;
+    private double cellActorMaxForceStrength = 16.0D * 8.0D * 4.0D * 1.5D;
 
     private double reproductionEnergyThreshold = 0.4D;
     private double reproductionAgeThreshold = 4.0D; // seconds
