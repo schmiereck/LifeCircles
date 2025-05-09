@@ -50,11 +50,6 @@ Das System-Design der Anwendung soll enthalten:
 * SimulationView das die Darstellung in einem eigenen Thread und einer von dem Berechungen unabhängigen Framerate darstellen kann (Datenaustausch über ein Dto-Objekt).
 
 # TODO
-  
-* Ich will eine Zelle anklicken können um sie zu Untersuchen und zu beobachten.
-  * Es soll ein Fenster angezeigt werden in dem ich eine visualisierung des ZellBrain mit den Aktivierungen des Neuronalen-Netzes sehe.
-  * Die Zelle soll nicht als Dto übertragen werden sondern als Referenz auf die Zelle um eine effiziente Anzeige sicher zu stellen.
-  * Der Typ, State, age, energy und generation sollen ebenfalls angezeigt werden.
 
 * Die Sensoren sollen spüren, wenn sie einen Blocker berühren.
   * Es soll als Cell-Typ (0,5, 0,5, 0,5) und als Actor-Typ (0,5, 0,5, 0,5) gesetzt werden.
@@ -81,6 +76,11 @@ Das System-Design der Anwendung soll enthalten:
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
 # DONE
+
+* Ich will eine Zelle anklicken können um sie zu Untersuchen und zu beobachten.
+  * Es soll ein Fenster angezeigt werden in dem ich eine visualisierung des ZellBrain mit den Aktivierungen des Neuronalen-Netzes sehe.
+  * Die Zelle soll nicht als Dto übertragen werden sondern als Referenz auf die Zelle um eine effiziente Anzeige sicher zu stellen.
+  * Der Typ, State, age, energy und generation sollen ebenfalls angezeigt werden.
 
 * Zeige, statt des "Specialization-Indicator", den Zell-State in der Mitte der Zelle als nicht transparente Zahl (0-7) in der Farbe des Zell-Typs an.
 
