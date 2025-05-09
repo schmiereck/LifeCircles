@@ -24,10 +24,18 @@ public class CellBrain {
         
         int outputCount = GlobalInputFeature.values().length +
                          (ActorOutputFeature.values().length * cell.getSensorActors().size());
-        
-        int hiddenCount = (inputCount + outputCount) * 2; // Arbitrary hidden layer size
-        
-        this.network = new NeuralNetwork(inputCount, hiddenCount, outputCount, synapseConnectivity);
+
+        //final int hiddenCount = (inputCount + outputCount) * 2; // Arbitrary hidden layer size
+        final int[] hiddenCountArr = {
+                (int)(inputCount * 1.4D),
+                outputCount
+        };
+
+        this.network = new NeuralNetwork(inputCount, hiddenCountArr, outputCount, synapseConnectivity);
+
+        this.network.addHiddenLayer(0, inputCount / 4, 0.1D); // State 0
+        this.network.addHiddenLayer(0, inputCount / 4, 0.1D); // State 1
+        this.network.addHiddenLayer(0, inputCount / 4, 0.1D); // State 2
     }
 
     /**
