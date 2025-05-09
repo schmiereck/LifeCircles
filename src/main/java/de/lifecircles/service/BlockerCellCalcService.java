@@ -35,9 +35,9 @@ public class BlockerCellCalcService {
                 // push cell just outside blocker
                 Vector2D pushOut = nearestPoint.add(direction.multiply(radius));
                 cell.setPosition(pushOut);
-                if (blocker.getType() == Blocker.BlockerType.GROUND
-                        || blocker.getType() == Blocker.BlockerType.PLATFORM
-                        || blocker.getType() == Blocker.BlockerType.WALL) {
+                if (blocker.getBlockerType() == Blocker.BlockerType.GROUND
+                        || blocker.getBlockerType() == Blocker.BlockerType.PLATFORM
+                        || blocker.getBlockerType() == Blocker.BlockerType.WALL) {
                     Vector2D velocity = cell.getVelocity();
                     cell.setVelocity(new Vector2D(velocity.getX() * 0.8, 0));
                 }

@@ -1,8 +1,6 @@
 package de.lifecircles.service;
 
-import de.lifecircles.model.Cell;
-import de.lifecircles.model.SensorActor;
-import de.lifecircles.model.Vector2D;
+import de.lifecircles.model.*;
 import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
 
 import java.util.List;
@@ -48,6 +46,9 @@ public class ActorSensorCellCalcService {
             }
         }
         
+        // Prüfe Blocker-Kollisionen
+        checkBlockerCollisions(cells);
+        
         cells.parallelStream().forEach(calcCell -> {
             for (Cell otherCell : partitioner.getNeighbors(calcCell)) {
                 if (calcCell != otherCell) {
@@ -55,6 +56,35 @@ public class ActorSensorCellCalcService {
                 }
             }
         });
+    }
+
+    /**
+     * Überprüft, ob Sensoren mit Blockern kollidieren und setzt entsprechende Sensable-Objekte
+     */
+    private static void checkBlockerCollisions(List<Cell> cells) {
+        // Hole die Blocker aus der Environment-Instanz
+        Environment environment = Environment.getInstance();
+        if (environment == null) return;
+        
+        List<Blocker> blockers = environment.getBlockers();
+        if (blockers == null || blockers.isEmpty()) return;
+        
+        // Prüfe für jeden Sensor, ob er einen Blocker berührt
+        for (Cell cell : cells) {
+            for (SensorActor sensor : cell.getSensorActors()) {
+                Vector2D sensorPos = sensor.getCachedPosition();
+                if (sensorPos != null) {
+                    for (Blocker blocker : blockers) {
+                        if (blocker.containsPoint(sensorPos)) {
+                            // Setze den Blocker als wahrgenommenes Objekt
+                            sensor.setSensedCell(blocker);
+                            // Der SensorActor nimmt Blocker als Zelle wahr
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private static void processInteraction(final Cell calcCell, final Cell otherCell, final double deltaTime) {
@@ -65,6 +95,11 @@ public class ActorSensorCellCalcService {
 
         // Process interactions in one direction only
         for (SensorActor calcCellActor : calcCell.getSensorActors()) {
+            // Wenn der Sensor bereits etwas wahrnimmt (z.B. einen Blocker), überspringen
+            if (calcCellActor.getSensedCell() != null) {
+                continue;
+            }
+            
             for (SensorActor otherCellActor : otherCell.getSensorActors()) {
                 // Berechne die Kraft, die der otherCellActor auf calcCellActor ausübt
                 Vector2D direction = calcCellActor.getCachedPosition().subtract(otherCellActor.getCachedPosition());
@@ -131,29 +166,5 @@ public class ActorSensorCellCalcService {
         double similarity = sensorActor.getType().similarity(other.getType());
         double weight = 2.0 * similarity - 1.0; // map [0,1] to [-1,1]
         return intensity * weight;
-    }
-
-    /**
-     * Calculates the force vector this actor applies to another actor.
-     * @return Force vector (direction and magnitude)
-     */
-    public static Vector2D calculateForceOn(SensorActor sensorActor) {
-        SensorActor sensedActor = sensorActor.getSensedActor();
-        if (sensedActor == null) {
-            return new Vector2D(0, 0);
-        }
-        
-        Vector2D direction = sensedActor.getCachedPosition().subtract(sensorActor.getCachedPosition());
-        double distance = direction.length();
-        if (distance == 0) {
-            return new Vector2D(0, 0);
-        }
-        
-        double weight = -sense(sensorActor, sensedActor);
-        if (weight == 0) {
-            return new Vector2D(0, 0);
-        }
-        
-        return direction.normalize().multiply(weight);
     }
 }

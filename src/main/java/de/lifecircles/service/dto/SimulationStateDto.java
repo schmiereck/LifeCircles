@@ -149,7 +149,7 @@ public class SimulationStateDto {
             this.width = blocker.getWidth();
             this.height = blocker.getHeight();
             this.color = blocker.getColor();
-            this.type = blocker.getType();
+            this.type = blocker.getBlockerType();
         }
 
         public double getX() { return x; }

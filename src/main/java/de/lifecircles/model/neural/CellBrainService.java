@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.CellType;
+import de.lifecircles.model.Sensable;
 import de.lifecircles.model.SensorActor;
 import de.lifecircles.service.SimulationConfig;
 
@@ -46,6 +47,7 @@ public class CellBrainService {
             inputs[baseGlobal + SensorInputFeature.MY_ACTOR_GREEN.ordinal()] = myActorType.getGreen();
             inputs[baseGlobal + SensorInputFeature.MY_ACTOR_BLUE.ordinal()] = myActorType.getBlue();
             inputs[baseGlobal + SensorInputFeature.MY_ACTOR_FORCE_STRENGTH.ordinal()] = maActor.getForceStrength();
+            inputs[baseGlobal + SensorInputFeature.MY_ACTOR_TOP_POSITION.ordinal()] = (actorPos == topSensorIndex) ? 1.0 : 0.0;
 
             // Use cached sensing from ActorSensorCellCalcService
             final double sensedCellTypeR;
@@ -53,7 +55,7 @@ public class CellBrainService {
             final double sensedCellTypeB;
             final double sensedCellEnergy;
             final double sensedCellAge;
-            final Cell sensedCell = maActor.getSensedCell();
+            final Sensable sensedCell = maActor.getSensedCell();
             if (Objects.nonNull(sensedCell)) {
                 final CellType sensedCellType = sensedCell.getType();
                 sensedCellTypeR = sensedCellType.getRed();
@@ -69,41 +71,37 @@ public class CellBrainService {
                 inputs[baseGlobal + SensorInputFeature.SENSED_CELL_STATE_1.ordinal()] = normalizedSensedCellState[1];
                 inputs[baseGlobal + SensorInputFeature.SENSED_CELL_STATE_2.ordinal()] = normalizedSensedCellState[2];
             } else {
-                sensedCellTypeR = 0.0D;
-                sensedCellTypeG = 0.0D;
-                sensedCellTypeB = 0.0D;
-                sensedCellEnergy = 0.0D;
-                sensedCellAge = 0.0D;
+                sensedCellTypeR = 0;
+                sensedCellTypeG = 0;
+                sensedCellTypeB = 0;
+                sensedCellEnergy = 0;
+                sensedCellAge = 0;
 
-                inputs[baseGlobal + SensorInputFeature.SENSED_CELL_STATE_0.ordinal()] = 0.0;
-                inputs[baseGlobal + SensorInputFeature.SENSED_CELL_STATE_1.ordinal()] = 0.0;
-                inputs[baseGlobal + SensorInputFeature.SENSED_CELL_STATE_2.ordinal()] = 0.0;
+                inputs[baseGlobal + SensorInputFeature.SENSED_CELL_STATE_0.ordinal()] = 0;
+                inputs[baseGlobal + SensorInputFeature.SENSED_CELL_STATE_1.ordinal()] = 0;
+                inputs[baseGlobal + SensorInputFeature.SENSED_CELL_STATE_2.ordinal()] = 0;
             }
+
             inputs[baseGlobal + SensorInputFeature.SENSED_CELL_TYPE_RED.ordinal()] = sensedCellTypeR;
             inputs[baseGlobal + SensorInputFeature.SENSED_CELL_TYPE_GREEN.ordinal()] = sensedCellTypeG;
             inputs[baseGlobal + SensorInputFeature.SENSED_CELL_TYPE_BLUE.ordinal()] = sensedCellTypeB;
-
             inputs[baseGlobal + SensorInputFeature.SENSED_CELL_ENERGY.ordinal()] = sensedCellEnergy;
             inputs[baseGlobal + SensorInputFeature.SENSED_CELL_AGE.ordinal()] = sensedCellAge;
 
-            final double sensedForce = (maActor.getSensedActor() != null)
-                    ? maActor.getSensedActor().getForceStrength()
-                    : 0.0D;
-            inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_FORCE_STRENGTH.ordinal()] = sensedForce;
-            // Sensed actor color inputs
-            final SensorActor sensedActor = maActor.getSensedActor();
+            final Sensable sensedActor = maActor.getSensedActor();
             if (Objects.nonNull(sensedActor)) {
                 final CellType sensedActorType = sensedActor.getType();
                 inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_RED.ordinal()] = sensedActorType.getRed();
                 inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_GREEN.ordinal()] = sensedActorType.getGreen();
                 inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_BLUE.ordinal()] = sensedActorType.getBlue();
+                inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_FORCE_STRENGTH.ordinal()] = sensedActor.getForceStrength();
             } else {
-                inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_RED.ordinal()] = 0.0;
-                inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_GREEN.ordinal()] = 0.0;
-                inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_BLUE.ordinal()] = 0.0;
+                inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_RED.ordinal()] = 0;
+                inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_GREEN.ordinal()] = 0;
+                inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_BLUE.ordinal()] = 0;
+                inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_FORCE_STRENGTH.ordinal()] = 0;
             }
-            // Add TOP_POSITION input based on actual sensor position
-            inputs[baseGlobal + SensorInputFeature.MY_ACTOR_TOP_POSITION.ordinal()] = (actorPos == topSensorIndex) ? 1.0 : 0.0;
+
             baseGlobal += SensorInputFeature.values().length;
         }
 
@@ -123,9 +121,9 @@ public class CellBrainService {
         for (SensorActor actor : actors) {
             // Set actor type
             CellType newType = new CellType(
-                outputs[index + ActorOutputFeature.TYPE_RED.ordinal()],
-                outputs[index + ActorOutputFeature.TYPE_GREEN.ordinal()],
-                outputs[index + ActorOutputFeature.TYPE_BLUE.ordinal()]
+                    outputs[index + ActorOutputFeature.TYPE_RED.ordinal()],
+                    outputs[index + ActorOutputFeature.TYPE_GREEN.ordinal()],
+                    outputs[index + ActorOutputFeature.TYPE_BLUE.ordinal()]
             );
             actor.setType(newType);
 

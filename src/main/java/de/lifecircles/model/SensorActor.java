@@ -6,7 +6,7 @@ import de.lifecircles.service.SimulationConfig;
  * Represents a sensor/actor point on a cell's surface.
  * Can both sense nearby actors and emit force fields.
  */
-public class SensorActor {
+public class SensorActor implements Sensable {
 
     private final Cell parentCell;
     private final double angleOnCell; // Angle position on the cell surface (in radians)
@@ -15,13 +15,14 @@ public class SensorActor {
     private CellType type;
     private double forceStrength; // Positive for attraction, negative for repulsion
     // temporarily stores the sensed actor and its cell
-    private SensorActor sensedActor;
-    private Cell sensedCell;
+    private Sensable sensedActor;
+    private Sensable sensedCell;
     // cached position for current simulation step
     private Vector2D cachedPosition;
     private double reproductionDesire;
     private double energyAbsorption;
     private double energyDelivery;
+    private boolean touchingBlocker = false;
 
     public SensorActor(Cell parentCell, double angleOnCell) {
         this.parentCell = parentCell;
@@ -84,11 +85,11 @@ public class SensorActor {
     }
 
     /** Temporarily stores the sensed actor */
-    public SensorActor getSensedActor() { return sensedActor; }
-    public void setSensedActor(SensorActor sensedActor) { this.sensedActor = sensedActor; }
+    public Sensable getSensedActor() { return sensedActor; }
+    public void setSensedActor(Sensable sensedActor) { this.sensedActor = sensedActor; }
     /** References the cell of the sensed actor */
-    public Cell getSensedCell() { return sensedCell; }
-    public void setSensedCell(Cell sensedCell) { this.sensedCell = sensedCell; }
+    public Sensable getSensedCell() { return sensedCell; }
+    public void setSensedCell(Sensable sensedCell) { this.sensedCell = sensedCell; }
 
     /**
      * Computes and stores the current position of this sensor actor.
@@ -126,5 +127,33 @@ public class SensorActor {
 
     public void setEnergyDelivery(double energyDelivery) {
         this.energyDelivery = Math.max(0.0, Math.min(1.0, energyDelivery));
+    }
+
+    /**
+     * Prüft, ob der Sensor einen Blocker berührt
+     */
+    public boolean isTouchingBlocker() {
+        return touchingBlocker;
+    }
+
+    /**
+     * Setzt den Blocker-Berührungsstatus und aktualisiert die Typen entsprechend
+     */
+    public void setTouchingBlocker(boolean touchingBlocker) {
+        this.touchingBlocker = touchingBlocker;
+        
+        if (touchingBlocker) {
+            // Setze den Aktor-Typ auf grau (0.5, 0.5, 0.5) wenn ein Blocker berührt wird
+            this.setType(new CellType(0.5, 0.5, 0.5));
+            
+            // Setze auch den Zell-Typ auf grau
+            if (this.parentCell != null) {
+                this.parentCell.setType(new CellType(0.5, 0.5, 0.5));
+            }
+            
+            // Andere Sensor-Inputs zurücksetzen
+            this.sensedActor = null;
+            this.sensedCell = null;
+        }
     }
 }

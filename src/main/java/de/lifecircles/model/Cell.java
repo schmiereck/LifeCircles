@@ -13,7 +13,7 @@ import java.util.List;
  * Contains position, rotation, size, type, and sensor/actor points.
  * Behavior is controlled by a neural network brain.
  */
-public class Cell {
+public class Cell implements Sensable {
     private Vector2D position;
     private Vector2D velocity;
     private double rotation; // in radians
@@ -160,6 +160,7 @@ public class Cell {
         return this.isGrowing;
     }
 
+    @Override
     public CellType getType() {
         return type;
     }
@@ -191,6 +192,7 @@ public class Cell {
         this.angularVelocity += torque / (this.radiusSize * this.radiusSize); // Moment of inertia approximated as size²
     }
 
+    @Override
     public double getEnergy() {
         return energy;
     }
@@ -201,6 +203,7 @@ public class Cell {
                 .max().orElse(0.0);
     }
 
+    @Override
     public double getAge() {
         return this.age;
     }
@@ -291,6 +294,7 @@ public class Cell {
      * Returns the cell state as a normalized value for external sensors.
      * Each bit of the cell state is treated as a separate feature.
      */
+    @Override
     public double[] getNormalizedCellState() {
         double[] normalizedState = new double[SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT];
         for (int i = 0; i < normalizedState.length; i++) {

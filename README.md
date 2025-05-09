@@ -50,10 +50,7 @@ Das System-Design der Anwendung soll enthalten:
 * SimulationView das die Darstellung in einem eigenen Thread und einer von dem Berechungen unabhängigen Framerate darstellen kann (Datenaustausch über ein Dto-Objekt).
 
 # TODO
-
-* Die Sensoren sollen spüren, wenn sie einen Blocker berühren.
-  * Es soll als Cell-Typ (0,5, 0,5, 0,5) und als Actor-Typ (0,5, 0,5, 0,5) gesetzt werden.
-
+  
 * Prüfe den Grid-Paritionierungs-Algorithmus und die Berechnung der Interaktionen.
   * Die größe der Grid-Zellen sollte der maximal Zell-Radius + der maximale Focre-Field-Radius sein.
 
@@ -76,6 +73,11 @@ Das System-Design der Anwendung soll enthalten:
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
 # DONE
+
+* Die Sensoren sollen spüren, wenn sie einen Blocker berühren.
+  * Es soll kein neuer Sensor-Input hinzugefügt werden,
+    sondern als Cell-Typ (0.5, 0.5, 0.5) und als Actor-Typ (0.5, 0.5, 0.5) gesetzt werden.
+    Alle anderen Sensor-Inputs sollen auf 0 gesetzt werden.
 
 * Die Initalisierung des NeuralNetwork im CellBrain fügt alle Verbindungen als Synapsen hinzu.
   * Füge einen Parameter hinzu der festlegt ob alle Synapsen angelegt werden sollen oder nur ein Prozentualer Teile zufällig.

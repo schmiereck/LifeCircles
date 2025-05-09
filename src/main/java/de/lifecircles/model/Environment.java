@@ -29,6 +29,9 @@ public class Environment {
     private final List<Blocker> blockers;
     private Cell lastDeadCell;
 
+    // Singleton-Instanz für einfachen Zugriff
+    private static Environment instance;
+
     public Environment(double width, double height) {
         this.width = width;
         this.height = height;
@@ -37,6 +40,16 @@ public class Environment {
         this.config = SimulationConfig.getInstance();
         this.sunRays = new ArrayList<>();
         this.energySunCalcService = new EnergySunCalcService();
+
+        // Setze diese Instanz als globalen Zugriffspunkt
+        instance = this;
+    }
+
+    /**
+     * Gibt die aktuelle Environment-Instanz zurück
+     */
+    public static Environment getInstance() {
+        return instance;
     }
 
     public void addGroundBlocker() {
