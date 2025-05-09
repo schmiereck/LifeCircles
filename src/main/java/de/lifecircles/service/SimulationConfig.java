@@ -7,11 +7,45 @@ import de.lifecircles.service.trainStrategy.TrainMode;
  * Configuration parameters for the simulation.
  */
 public class SimulationConfig {
+
+    //-------------------------------------------------------------------------
     // Environment:
-    public static final double GRAVITY = 9.81D * 1.25D;
+
+    public static final double GRAVITY = 9.81D * 2.75D;
     public static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
     public static final double REPOPULATION_THRESHOLD_PERCENT = 0.25;
 
+    // Environment-Cell:
+    /**
+     * Friction coefficient for cell rotation (damping)
+     * A higher value means less rotation (0.0D to 1.0D).
+     */
+    private double rotationalFriction = 0.9D;
+    /**
+     * Viscosity coefficient for cell movement damping.
+     * A higher value means less movement.
+     */
+    private double viscosity = 5.75D;
+
+    private static final double CELL_REPULSION_STRENGTH = 175.0;
+
+    // Environment-Blocker:
+
+    // Blocker repulsion strength for cell-blocker interactions
+    private double blockerRepulsionStrength = 200.0;
+
+    // Environment-Mode:
+
+    public double scaleSimulation = 2.0D;
+    private double width = 1024 * 2;// * SCALE_SIMULATION;
+    private double height = 1200;// * SCALE_SIMULATION;
+    private double timeStep = 1.0D / 60.0D; // 60 Hz simulation
+    // Training mode configuration
+    private TrainMode trainMode = TrainMode.NONE;
+
+    private int initialCellCount = 30;
+
+    //-------------------------------------------------------------------------
     // Sun:
 
     private double sunRayRate = 10.0;
@@ -22,19 +56,14 @@ public class SimulationConfig {
     // Day/Night cycle duration in seconds
     public static final double DAY_NIGHT_CYCLE_DURATION = 60.0D * 2;
 
-    // View:
-    public double scaleSimulation = 2.0D;
-    private double width = 1024 * 2;// * SCALE_SIMULATION;
-    private double height = 1200;// * SCALE_SIMULATION;
-    private double timeStep = 1.0D / 60.0D; // 60 Hz simulation
-
+    //-------------------------------------------------------------------------
     // Cell:
     public static final int CELL_SENSOR_ACTOR_COUNT = 12;
     public static final double CELL_MAX_ENERGY = 1.0D;
     public static final int CELL_TEMP_THINK_HACK_COUNTER_MAX = 10;
 
     public static final double ENERGY_DECAY_RATE = 0.025D;
-    public static final double ENERGY_COST_PER_SYNAPSE = 0.0000001D;
+    public static final double ENERGY_COST_PER_SYNAPSE = 0.00000006D;
 
     // Konstante für die Zellwachstumszeit in Sekunden
     public static final double CELL_GROWTH_DURATION = 2.0;
@@ -47,27 +76,8 @@ public class SimulationConfig {
     private double cellActorMaxFieldRadius =
             ActorSensorCellCalcService.calcSensorRadius(this.cellMaxRadiusSize, CELL_SENSOR_ACTOR_COUNT);
 
-    private int initialCellCount = 30;
-
-    // Training mode configuration
-    private TrainMode trainMode = TrainMode.NONE;
-
     // Age in Seconds after which a cell is considered dead.
     private int cellDeathAge = 100;
-    // Blocker repulsion strength for cell-blocker interactions
-    private double blockerRepulsionStrength = 200.0;
-    /** 
-     * Friction coefficient for cell rotation (damping)
-     * A higher value means less rotation (0.0D to 1.0D).
-     */
-    private double rotationalFriction = 0.9D;
-    /** 
-     * Viscosity coefficient for cell movement damping.
-     * A higher value means less movement.
-     */
-    private double viscosity = 5.75D;
-
-    private static final double CELL_REPULSION_STRENGTH = 175.0;
 
     private double cellActorMaxForceStrength = 16.0D * 8.0D * 4.0D;
 
@@ -78,6 +88,7 @@ public class SimulationConfig {
     private double mutationRate = 0.1;
     private double mutationStrength = 0.2;
 
+    //-------------------------------------------------------------------------
     // Singleton instance
     private static final SimulationConfig INSTANCE = new SimulationConfig();
 

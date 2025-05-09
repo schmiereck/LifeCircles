@@ -51,6 +51,20 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
+* Baue einen neuen Zell-Zustand ein der bei der Teilung einer Zelle gesetzt wird.
+  * Dieser Zell-Zustand ändert sich wärend der Lebenszeit einer Zelle nicht mehr.
+  * Der Zell-Zustand bestimmt, welche zusätzlichen Hidden-Layer in einer Zelle aktiv sind.
+    Die inaktiven Layer werden bei der Aktivierung des CellBrain nicht ausgeführt und 
+    fließen auch nicht in die Berechnung den Energie Verbrauchs ein.
+  * Der Zustand der Kind-Zelle wird über drei globale Ausgänge gesteuert. 
+    Diese steuern welcher Layer (0 bis 7) oder welche Kombination von Layern (0 bis 2) zusätzlich aktiv sind.
+    (Flag einbauen um die zwei verschiedenen Implementierungen testen zu können.)
+  * So sollen Zellen mit verschiedenem Verhalten aus dem gleichen Zelltyp hervorgehen können,
+    die alle Erbinformationen des Zelltyps tragen und weiter geben.
+
+* Ich will eine Zelle anklicken können um sie zu Untersuchen und zu beobachten.
+  * Es soll ein Fenster angezeigt werden in dem ich eine visualisierung des ZellBrain mit den Aktivierungen des Neuronalen-Netzes sehe.
+
 * Prüfe den Grid-Paritionierungs-Algorithmus und die Berechnung der Interaktionen.
   * Die größe der Grid-Zellen sollte der maximal Zell-Radius + der maximale Focre-Field-Radius sein.
 
