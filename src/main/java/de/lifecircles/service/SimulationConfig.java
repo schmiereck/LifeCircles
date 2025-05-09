@@ -11,7 +11,7 @@ public class SimulationConfig {
     //-------------------------------------------------------------------------
     // Environment:
 
-    public static final double GRAVITY = 9.81D * 2.75D;
+    public static final double GRAVITY = 9.81D * 2.5D;
     public static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
     public static final double REPOPULATION_THRESHOLD_PERCENT = 0.25;
 
