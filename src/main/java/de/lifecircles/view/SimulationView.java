@@ -87,8 +87,10 @@ public class SimulationView extends Pane {
         // Zoom with mouse wheel, centered on mouse position
         canvas.setOnScroll(e -> {
             // Position der Maus in Weltkoordinaten vor dem Zoom
-            double worldX = camera.screenToWorldX(e.getX());
-            double worldY = camera.screenToWorldY(e.getY());
+            double mouseX = e.getX();
+            double mouseY = e.getY();
+            double worldX = camera.screenToWorldX(mouseX);
+            double worldY = camera.screenToWorldY(mouseY);
             
             // Zoom-Faktor basierend auf der Scroll-Richtung
             double zoomFactor = e.getDeltaY() > 0 ? 1.1 : 0.9;
@@ -101,11 +103,11 @@ public class SimulationView extends Pane {
             camera.setZoom(newZoom);
             
             // Berechne neue Position der Maus in Weltkoordinaten nach dem Zoom
-            double newWorldX = camera.screenToWorldX(e.getX());
-            double newWorldY = camera.screenToWorldY(e.getY());
+            double newWorldX = camera.screenToWorldX(mouseX);
+            double newWorldY = camera.screenToWorldY(mouseY);
             
             // Verschiebe die Kamera, damit der Punkt unter der Maus gleich bleibt
-            camera.moveBy(newWorldX - worldX, newWorldY - worldY);
+            camera.moveBy(worldX - newWorldX, worldY - newWorldY);
         });
 
         // Toggle debug info with D key
@@ -180,3 +182,4 @@ public class SimulationView extends Pane {
         return fps;
     }
 }
+
