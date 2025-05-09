@@ -297,8 +297,8 @@ public class CellDetailView extends Stage {
         double maxVerticalSpacing = height / (maxLayerSize + 1);
         
         // Hintergrund
-        gc.setFill(Color.rgb(30, 30, 30));
-        gc.fillRect(0, 0, width, height);
+        //gc.setFill(Color.rgb(30, 30, 30));
+        //gc.fillRect(0, 0, width, height);
         
         // Synapse-Liste vom Netzwerk holen
         List<Synapse> synapseList = network.getSynapsesynapseList();
