@@ -33,31 +33,7 @@ public class Cell {
 
     private int tempThinkHackCounter = SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX;
 
-    /**
-     * Returns the index of the sensor that is currently at the top position.
-     * @return Index of the topmost sensor (0-11)
-     */
-    public int getTopSensorIndex() {
-        double maxY = Double.NEGATIVE_INFINITY;
-        int topSensorIndex = 0; // Default to first sensor if positions aren't calculated yet
-        
-        for (int i = 0; i < sensorActors.size(); i++) {
-            SensorActor sensor = sensorActors.get(i);
-            Vector2D cachedPosition = sensor.getCachedPosition();
-            
-            if (cachedPosition != null) {
-                double sensorY = cachedPosition.getY();
-                if (sensorY > maxY) {
-                    maxY = sensorY;
-                    topSensorIndex = i;
-                }
-            }
-        }
-
-        return topSensorIndex;
-    }
-
-    public Cell(Vector2D position, final double radiusSize) {
+    public Cell(Vector2D position, final double radiusSize, double synapseConnectivity) {
         this.position = position;
         this.velocity = new Vector2D(0, 0);
         this.rotation = 0;
@@ -69,7 +45,7 @@ public class Cell {
         this.type = new CellType(0, 0, 0);
         this.sensorActors = new ArrayList<>();
         initializeSensorActors();
-        this.brain = new CellBrain(this);
+        this.brain = new CellBrain(this, synapseConnectivity);
         this.energy = SimulationConfig.CELL_MAX_ENERGY;
         this.age = 0.0;
         this.generation = 0; // initialize generation counter
@@ -321,5 +297,29 @@ public class Cell {
             normalizedState[i] = (this.cellState & (1 << i)) != 0 ? 1.0 : 0.0;
         }
         return normalizedState;
+    }
+
+    /**
+     * Returns the index of the sensor that is currently at the top position.
+     * @return Index of the topmost sensor (0-11)
+     */
+    public int getTopSensorIndex() {
+        double maxY = Double.NEGATIVE_INFINITY;
+        int topSensorIndex = 0; // Default to first sensor if positions aren't calculated yet
+
+        for (int i = 0; i < sensorActors.size(); i++) {
+            SensorActor sensor = sensorActors.get(i);
+            Vector2D cachedPosition = sensor.getCachedPosition();
+
+            if (cachedPosition != null) {
+                double sensorY = cachedPosition.getY();
+                if (sensorY > maxY) {
+                    maxY = sensorY;
+                    topSensorIndex = i;
+                }
+            }
+        }
+
+        return topSensorIndex;
     }
 }

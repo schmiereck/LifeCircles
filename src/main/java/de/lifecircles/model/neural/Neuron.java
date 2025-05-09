@@ -151,5 +151,9 @@ public class Neuron {
         copy.activationFunction = this.activationFunction;
         return copy;
     }
+
+    public ActivationFunction getActivationFunction() {
+        return this.activationFunction;
+    }
 }
 

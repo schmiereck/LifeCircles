@@ -95,6 +95,11 @@ public class SimulationConfig {
 
     private double cellStateOutputThreshold = 0.5D; // Threshold für die Berechnung des Zell-Zustands
 
+    /**
+     * Default synapse connectivity for the neural network (0 - 1.0).
+     */
+    public static double brainSynapseConnectivityDefault = 0.2D;
+
     //-------------------------------------------------------------------------
     // Singleton instance
     private static final SimulationConfig INSTANCE = new SimulationConfig();

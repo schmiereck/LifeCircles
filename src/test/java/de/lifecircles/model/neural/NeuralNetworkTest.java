@@ -65,7 +65,8 @@ public class NeuralNetworkTest {
         List<NeuralNetwork> population = new ArrayList<>();
         for (int i = 0; i < populationSize; i++) {
             int[] architecture = architectureVariants[i % architectureVariants.length];
-            population.add(new NeuralNetwork(2, architecture, 1));
+            population.add(new NeuralNetwork(2, architecture, 1,
+                    0.2D));
         }
 
         // Initialisiere Synapse-Gewichte für die erste Generation
@@ -185,7 +186,8 @@ public class NeuralNetworkTest {
                 }
                 else { // 10% Kompletter Neustart (neue zufällige Netzwerke)
                     int[] architecture = architectureVariants[random.nextInt(architectureVariants.length)];
-                    NeuralNetwork freshNetwork = new NeuralNetwork(2, architecture, 1);
+                    NeuralNetwork freshNetwork = new NeuralNetwork(2, architecture, 1,
+                            0.2D);
                     
                     // Gewichte initialisieren
                     for (Synapse synapse : freshNetwork.getSynapsesynapseList()) {
@@ -210,7 +212,8 @@ public class NeuralNetworkTest {
                 // Ersetze den Rest mit neuen zufälligen Netzwerken
                 for (int i = keepCount; i < populationSize; i++) {
                     int[] architecture = architectureVariants[random.nextInt(architectureVariants.length)];
-                    NeuralNetwork freshNetwork = new NeuralNetwork(2, architecture, 1);
+                    NeuralNetwork freshNetwork = new NeuralNetwork(2, architecture, 1,
+                            0.2D);
                     
                     // Gewichte initialisieren
                     for (Synapse synapse : freshNetwork.getSynapsesynapseList()) {

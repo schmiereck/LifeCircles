@@ -38,7 +38,8 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
         for (int i = 0; i < INITIAL_COUNT; i++) {
             double x = random.nextDouble() * this.config.getWidth();
             double y = random.nextDouble() * this.config.getHeight();
-            environment.addCell(new Cell(new Vector2D(x, y), this.config.getCellMaxRadiusSize() / 2.0));
+            environment.addCell(new Cell(new Vector2D(x, y), this.config.getCellMaxRadiusSize() / 2.0,
+                    SimulationConfig.brainSynapseConnectivityDefault));
         }
     }
 

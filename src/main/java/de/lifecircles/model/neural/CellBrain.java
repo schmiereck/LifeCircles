@@ -10,7 +10,13 @@ public class CellBrain {
     private final Cell cell;
     private final NeuralNetwork network;
 
-    public CellBrain(final Cell cell) {
+    /**
+     * Erstellt ein neues CellBrain mit angegebener Synapsen-Konnektivität.
+     * 
+     * @param cell Die Zelle, zu der dieses Gehirn gehört
+     * @param synapseConnectivity Prozentsatz der zu erstellenden Synapsen (0.0-1.0)
+     */
+    public CellBrain(final Cell cell, double synapseConnectivity) {
         this.cell = cell;
         
         int inputCount = GlobalInputFeature.values().length +
@@ -21,9 +27,24 @@ public class CellBrain {
         
         int hiddenCount = (inputCount + outputCount) * 2; // Arbitrary hidden layer size
         
-        this.network = new NeuralNetwork(inputCount, hiddenCount, outputCount);
+        this.network = new NeuralNetwork(inputCount, hiddenCount, outputCount, synapseConnectivity);
     }
 
+    /**
+     * Erstellt ein neues CellBrain mit vollständiger Synapsen-Konnektivität (100%).
+     * 
+     * @param cell Die Zelle, zu der dieses Gehirn gehört
+     */
+    public CellBrain(final Cell cell) {
+        this(cell, 1.0);
+    }
+
+    /**
+     * Erstellt ein CellBrain mit bestehendem neuronalen Netzwerk.
+     * 
+     * @param cell Die Zelle, zu der dieses Gehirn gehört
+     * @param neuralNetwork Das zu verwendende neuronale Netzwerk
+     */
     public CellBrain(final Cell cell, final NeuralNetwork neuralNetwork) {
         this.cell = cell;
         this.network = neuralNetwork;
