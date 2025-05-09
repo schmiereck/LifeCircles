@@ -1,5 +1,7 @@
 package de.lifecircles.model.neural;
 
+import de.lifecircles.service.SimulationConfig;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -16,6 +18,7 @@ public class NeuralNetwork {
     private double[] outputArr;
 
     private static final double DEFAULT_MUTATION_RATE = 0.1D;
+    private int fixedHiddenLayerCount = SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT;
 
     /**
      * Copy-Konstruktor: Erstellt eine exakte Kopie des übergebenen neuronalen Netzwerks
@@ -27,6 +30,8 @@ public class NeuralNetwork {
         this.hiddenLayerList = new ArrayList<>();
         this.outputNeuronList = new ArrayList<>();
         this.synapsesynapseList = new ArrayList<>();
+
+        this.fixedHiddenLayerCount = original.fixedHiddenLayerCount;
         
         // Erstelle eine Map, die die Originalneuronen den neuen Neuronen zuordnet
         Map<Neuron, Neuron> neuronMap = new HashMap<>();
@@ -92,15 +97,15 @@ public class NeuralNetwork {
      * @param outputCount Anzahl der Ausgangsneuronen
      * @param synapseConnectivity Prozentsatz der zu erstellenden Synapsen (0.0-1.0)
      */
-    public NeuralNetwork(int inputCount, int hiddenCount, int outputCount, double synapseConnectivity) {
-        this(inputCount, new int[]{hiddenCount}, outputCount, synapseConnectivity);
+    public NeuralNetwork(int inputCount, int hiddenCount, int outputCount, double synapseConnectivity, final int fixedHiddenLayerCount) {
+        this(inputCount, new int[]{hiddenCount}, outputCount, synapseConnectivity, fixedHiddenLayerCount);
     }
 
     /**
      * Constructs a network with a single hidden layer with full connectivity.
      */
     public NeuralNetwork(int inputCount, int hiddenCount, int outputCount) {
-        this(inputCount, new int[]{hiddenCount}, outputCount, 1.0);
+        this(inputCount, new int[]{hiddenCount}, outputCount, 1.0, 0);
     }
 
     /**
@@ -111,11 +116,13 @@ public class NeuralNetwork {
      * @param outputCount number of output neurons
      * @param synapseConnectivity Prozentsatz der zu erstellenden Synapsen (0.0-1.0)
      */
-    public NeuralNetwork(int inputCount, int[] hiddenCounts, int outputCount, double synapseConnectivity) {
+    public NeuralNetwork(int inputCount, int[] hiddenCounts, int outputCount, double synapseConnectivity, final int fixedHiddenLayerCount) {
         this.inputNeuronList = new ArrayList<>();
         this.hiddenLayerList = new ArrayList<>();
         this.outputNeuronList = new ArrayList<>();
         this.synapsesynapseList = new ArrayList<>();
+
+        this.fixedHiddenLayerCount = fixedHiddenLayerCount;
 
         // create input neurons
         for (int i = 0; i < inputCount; i++) {
@@ -337,15 +344,19 @@ public class NeuralNetwork {
         
         // Möglichkeit, ein komplettes Hidden Layer hinzuzufügen
         if (this.random.nextDouble() < structuralMutationRate * 1.5) { // Erhöhte Wahrscheinlichkeit
-            int pos = this.random.nextInt(this.hiddenLayerList.size() + 1);
+            final int pos = random.nextInt((this.hiddenLayerList.size() - this.fixedHiddenLayerCount) + 1) +
+                    this.fixedHiddenLayerCount;
+            //int pos = this.random.nextInt(this.hiddenLayerList.size() + 1);
             // Zufällige Neuronenzahl zwischen 1 und 5
             int neuronCount = 1 + this.random.nextInt(5);
             addHiddenLayer(pos, neuronCount, structuralMutationRate);
         }
 
         // Wahrscheinlichkeit, ein Neuron zu einem bestehenden Layer hinzuzufügen
-        if (!this.hiddenLayerList.isEmpty() && this.random.nextDouble() < structuralMutationRate * 2) { // Verdoppelte Wahrscheinlichkeit
-            int li = this.random.nextInt(this.hiddenLayerList.size());
+        if (!this.hiddenLayerList.isEmpty() &&
+                (this.hiddenLayerList.size() >= this.fixedHiddenLayerCount) &&
+                this.random.nextDouble() < structuralMutationRate * 2) { // Verdoppelte Wahrscheinlichkeit
+            int li = this.random.nextInt(this.hiddenLayerList.size() - this.fixedHiddenLayerCount) + this.fixedHiddenLayerCount;
             addNeuronToHiddenLayer(li);
         }
 
@@ -366,9 +377,10 @@ public class NeuralNetwork {
         }
 
         // Neue Mutation: Aktivierungsfunktion eines zufälligen Neurons ändern
-        if (!this.hiddenLayerList.isEmpty() && this.random.nextDouble() < structuralMutationRate) {
+        if (!this.hiddenLayerList.isEmpty() &&
+                (this.random.nextDouble() < structuralMutationRate)) {
             // Wähle ein zufälliges Hidden Layer
-            List<Neuron> layer = this.hiddenLayerList.get(random.nextInt(this.hiddenLayerList.size())).getNeurons();
+            List<Neuron> layer = this.hiddenLayerList.get(random.nextInt(this.hiddenLayerList.size() - this.fixedHiddenLayerCount) + this.fixedHiddenLayerCount).getNeurons();
             if (!layer.isEmpty()) {
                 Neuron neuron = layer.get(random.nextInt(layer.size()));
                 // Wähle eine zufällige Aktivierungsfunktion

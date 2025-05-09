@@ -31,7 +31,8 @@ public class CellBrain {
                 outputCount
         };
 
-        this.network = new NeuralNetwork(inputCount, hiddenCountArr, outputCount, synapseConnectivity);
+        this.network = new NeuralNetwork(inputCount, hiddenCountArr, outputCount,
+                synapseConnectivity, SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT);
 
         this.network.addHiddenLayer(0, inputCount / 4, 0.1D); // State 0
         this.network.addHiddenLayer(0, inputCount / 4, 0.1D); // State 1
