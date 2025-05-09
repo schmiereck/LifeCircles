@@ -1,7 +1,9 @@
 # LifeCircles
 
+![](img/Screenshot-2025-05-09-140135.jpg)
+
 Es soll eine 2D Simulation von biologischen Entwicklungen in Java geschrieben werden.
-Die java Anwendung soll mit Maven gebaut werden.
+Die Java Anwendung soll mit Maven gebaut werden.
 
 Die Anforderungen an die Simulation sind die folgenden:
 
@@ -49,6 +51,8 @@ Das System-Design der Anwendung soll enthalten:
 * CalculationService der die Berechnungen in einem eigenen Thread ausführt.
 * SimulationView das die Darstellung in einem eigenen Thread und einer von dem Berechungen unabhängigen Framerate darstellen kann (Datenaustausch über ein Dto-Objekt).
 
+![](img/Screenshot-2025-05-09-140153-cut.jpg)
+
 # TODO
   
 * Prüfe den Grid-Paritionierungs-Algorithmus und die Berechnung der Interaktionen.
@@ -90,6 +94,7 @@ Das System-Design der Anwendung soll enthalten:
   * Es soll ein Fenster angezeigt werden in dem ich eine visualisierung des ZellBrain mit den Aktivierungen des Neuronalen-Netzes sehe.
   * Die Zelle soll nicht als Dto übertragen werden sondern als Referenz auf die Zelle um eine effiziente Anzeige sicher zu stellen.
   * Der Typ, State, age, energy und generation sollen ebenfalls angezeigt werden.
+  * ![](img/Screenshot-2025-05-09-140914.jpg)
 
 * Zeige, statt des "Specialization-Indicator", den Zell-State in der Mitte der Zelle als nicht transparente Zahl (0-7) in der Farbe des Zell-Typs an.
 
