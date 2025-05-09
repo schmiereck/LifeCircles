@@ -51,13 +51,6 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
-* Die Initalisierung des NeuralNetwork im CellBrain fügt alle Verbindungen als Synapsen hinzu.
-  * Füge einen Parameter hinzu der festlegt ob alle Synapsen angelegt werden sollen oder nur ein Prozentualer Teile zufällig.
-
-* Wenn bei einer Mutation ein neuer Layer hinzugefügt wird, werden die bestehdenen Synapsen entfernt.
-  Diese sollen bestehen bleiben und nur die neuen Synapsen werden hinzugefügt.
-  Wie beim anlegen eines Neuen Netzes sollen nicht alle Synapsen angelegt werden, sondern nur ein prozentualer Teil.
-
 * Die Sensoren sollen spüren, wenn sie einen Blocker berühren.
   * Es soll als Cell-Typ (0,5, 0,5, 0,5) und als Actor-Typ (0,5, 0,5, 0,5) gesetzt werden.
 
@@ -83,6 +76,13 @@ Das System-Design der Anwendung soll enthalten:
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
 # DONE
+
+* Die Initalisierung des NeuralNetwork im CellBrain fügt alle Verbindungen als Synapsen hinzu.
+  * Füge einen Parameter hinzu der festlegt ob alle Synapsen angelegt werden sollen oder nur ein Prozentualer Teile zufällig.
+
+* Wenn bei einer Mutation ein neuer Layer hinzugefügt wird, werden die bestehdenen Synapsen entfernt.
+  Diese sollen bestehen bleiben und nur die neuen Synapsen werden hinzugefügt.
+  Wie beim anlegen eines Neuen Netzes sollen nicht alle Synapsen angelegt werden, sondern nur ein prozentualer Teil.
 
 * Ich will eine Zelle anklicken können um sie zu Untersuchen und zu beobachten.
   * Es soll ein Fenster angezeigt werden in dem ich eine visualisierung des ZellBrain mit den Aktivierungen des Neuronalen-Netzes sehe.
