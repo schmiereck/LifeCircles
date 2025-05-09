@@ -7,6 +7,7 @@ import de.lifecircles.model.Vector2D;
 import de.lifecircles.model.neural.*;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -111,8 +112,9 @@ public class ReproductionManagerService {
 
                 // Set active layers in the child's brain based on the cell state
                 boolean[] activeLayers = child.getBrain().determineActiveHiddenLayers(child.getCellState());
-                for (int i = 0; i < childBrainNetwork.getHiddenLayerList().size(); i++) {
-                    final Layer layer = childBrainNetwork.getHiddenLayerList().get(i);
+                List<Layer> hiddenLayerList = childBrainNetwork.getHiddenLayerList();
+                for (int i = 0; i < Math.min(hiddenLayerList.size(), SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT); i++) {
+                    final Layer layer = hiddenLayerList.get(i);
                     layer.setActiveLayer(activeLayers[i]);
                 }
             } else {

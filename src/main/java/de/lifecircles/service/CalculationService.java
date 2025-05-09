@@ -144,7 +144,8 @@ public class CalculationService implements Runnable {
                         new double[]{cellType.getRed(), cellType.getGreen(), cellType.getBlue()},
                         actorStateDtos,
                         cell.getEnergy(),
-                        cell.getAge()
+                        cell.getAge(),
+                        cell.getCellState() // Zell-Zustand hinzufügen
                 ));
             }
         }
@@ -152,10 +153,10 @@ public class CalculationService implements Runnable {
         synchronized (this.stateLock) {
             this.latestState = new SimulationStateDto(
                 cellStates,
-                    this.environment.getBlockers(),
-                    this.environment.getSunRays(),
-                    this.environment.getWidth(),
-                    this.environment.getHeight()
+                this.environment.getBlockers(),
+                this.environment.getSunRays(),
+                this.environment.getWidth(),
+                this.environment.getHeight()
             );
         }
     }

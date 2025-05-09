@@ -8,6 +8,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.text.Font;
+import javafx.geometry.VPos;
 
 /**
  * Handles rendering of the simulation state.
@@ -164,15 +166,24 @@ public class Renderer {
                 );
             }
 
-            // Draw specialization indicator
+            // Draw cell state as a number in the center of the cell
             if (this.config.isShowSpecialization()) {
-                double indicatorSize = screenCellRadius * 0.2;
-                
-                // Determine specialization based on RGB values
-                // Indicator triangle
-                drawTriangle(gc, screenCellPos, indicatorSize, Color.color(rgb[0], rgb[1], rgb[2]));
+                this.drawCellState(cell, screenCellPos, rgb);
             }
         }
+    }
+
+    private void drawCellState(SimulationStateDto.CellStateDto cell, Point2D screenCellPos, double[] rgb) {
+        int cellState = cell.getCellState(); // Retrieve the cell state
+        this.gc.setFill(Color.color(rgb[0], rgb[1], rgb[2]).brighter()); // Use cell type color
+        this.gc.setFont(new Font("Arial", 14 * this.camera.getScale())); // Scale font size with zoom
+        this.gc.setTextAlign(TextAlignment.CENTER);
+        this.gc.setTextBaseline(VPos.CENTER);
+        this.gc.fillText(
+            String.valueOf(cellState), // Display the cell state as a number
+            screenCellPos.getX(),
+            screenCellPos.getY()
+        );
     }
 
     private void drawTriangle(GraphicsContext gc, Point2D center, double size, Color color) {

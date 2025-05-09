@@ -58,9 +58,10 @@ public class SimulationStateDto {
         private final List<ActorStateDto> actors;
         private final double energy;
         private final double age;
+        private final int cellState; // Zell-Zustand
 
         public CellStateDto(Vector2D position, double rotation, double radiusSize,
-                            double[] typeRGB, List<ActorStateDto> actors, double energy, double age) {
+                            double[] typeRGB, List<ActorStateDto> actors, double energy, double age, int cellState) {
 
             this.position = position;
             this.rotation = rotation;
@@ -69,6 +70,7 @@ public class SimulationStateDto {
             this.actors = new ArrayList<>(actors);
             this.energy = energy;
             this.age = age;
+            this.cellState = cellState; // Setze Zell-Zustand
         }
 
         public Vector2D getPosition() {
@@ -97,6 +99,10 @@ public class SimulationStateDto {
 
         public double getEnergy() {
             return energy;
+        }
+
+        public int getCellState() {
+            return cellState;
         }
     }
 

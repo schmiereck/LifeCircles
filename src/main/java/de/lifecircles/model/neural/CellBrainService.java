@@ -1,6 +1,7 @@
 package de.lifecircles.model.neural;
 
 import java.util.List;
+import java.util.Objects;
 
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.CellType;
@@ -53,19 +54,30 @@ public class CellBrainService {
             final double sensedCellEnergy;
             final double sensedCellAge;
             final Cell sensedCell = maActor.getSensedCell();
-            if (sensedCell != null) {
+            if (Objects.nonNull(sensedCell)) {
                 final CellType sensedCellType = sensedCell.getType();
                 sensedCellTypeR = sensedCellType.getRed();
                 sensedCellTypeG = sensedCellType.getGreen();
                 sensedCellTypeB = sensedCellType.getBlue();
                 sensedCellEnergy = sensedCell.getEnergy();
                 sensedCellAge = sensedCell.getAge();
+
+                // Sensed cell state as sensor input:
+                double[] normalizedSensedCellState = sensedCell.getNormalizedCellState();
+
+                inputs[baseGlobal + SensorInputFeature.SENSED_CELL_STATE_0.ordinal()] = normalizedSensedCellState[0];
+                inputs[baseGlobal + SensorInputFeature.SENSED_CELL_STATE_1.ordinal()] = normalizedSensedCellState[1];
+                inputs[baseGlobal + SensorInputFeature.SENSED_CELL_STATE_2.ordinal()] = normalizedSensedCellState[2];
             } else {
                 sensedCellTypeR = 0.0D;
                 sensedCellTypeG = 0.0D;
                 sensedCellTypeB = 0.0D;
                 sensedCellEnergy = 0.0D;
                 sensedCellAge = 0.0D;
+
+                inputs[baseGlobal + SensorInputFeature.SENSED_CELL_STATE_0.ordinal()] = 0.0;
+                inputs[baseGlobal + SensorInputFeature.SENSED_CELL_STATE_1.ordinal()] = 0.0;
+                inputs[baseGlobal + SensorInputFeature.SENSED_CELL_STATE_2.ordinal()] = 0.0;
             }
             inputs[baseGlobal + SensorInputFeature.SENSED_CELL_TYPE_RED.ordinal()] = sensedCellTypeR;
             inputs[baseGlobal + SensorInputFeature.SENSED_CELL_TYPE_GREEN.ordinal()] = sensedCellTypeG;
@@ -80,7 +92,7 @@ public class CellBrainService {
             inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_FORCE_STRENGTH.ordinal()] = sensedForce;
             // Sensed actor color inputs
             final SensorActor sensedActor = maActor.getSensedActor();
-            if (sensedActor != null) {
+            if (Objects.nonNull(sensedActor)) {
                 final CellType sensedActorType = sensedActor.getType();
                 inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_RED.ordinal()] = sensedActorType.getRed();
                 inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_GREEN.ordinal()] = sensedActorType.getGreen();

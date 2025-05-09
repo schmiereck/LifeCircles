@@ -77,6 +77,8 @@ Das System-Design der Anwendung soll enthalten:
 
 # DONE
 
+* Zeige, statt des "Specialization-Indicator", den Zell-State in der Mitte der Zelle als nicht transparente Zahl (0-7) in der Farbe des Zell-Typs an.
+
 * Baue einen neuen Zell-Zustand ein, der bei der Teilung einer Zelle gesetzt wird.
   * Dieser Zell-Zustand ändert sich wärend der Lebenszeit einer Zelle nicht mehr.
   * Der Zell-Zustand bestimmt, welche zusätzlichen Hidden-Layer in einer Zelle aktiv sind.
