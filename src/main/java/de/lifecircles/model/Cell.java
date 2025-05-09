@@ -29,6 +29,7 @@ public class Cell {
     private double age; // in seconds
     private int generation; // generation counter
     private boolean sunRayHit = false; // Flag to indicate if cell was hit by sun ray
+    private int cellState; // Zustand der Zelle, beeinflusst zusätzliche Hidden-Layer
 
     private int tempThinkHackCounter = SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX;
 
@@ -300,5 +301,13 @@ public class Cell {
 
     public void setIsGrowing(boolean isGrowing) {
         this.isGrowing = isGrowing;
+    }
+
+    public int getCellState() {
+        return cellState;
+    }
+
+    public void setCellState(int cellState) {
+        this.cellState = cellState;
     }
 }

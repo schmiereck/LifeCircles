@@ -70,6 +70,11 @@ public class SimulationConfig {
 
     public static final double CELL_ANGULAR_VELOCITY_DIFF = 20.0D;
 
+    /**
+     * Anzahl zusätzliche Hidden-Layer die abhängig vom Cell-State aktiv sein können.
+     */
+    public static final int CELL_STATE_ACTIVE_LAYER_COUNT = 3;
+
     private double cellMinRadiusSize = 6.0D;
     private double cellMaxRadiusSize = 20.0D;
 
@@ -83,10 +88,12 @@ public class SimulationConfig {
 
     private double reproductionEnergyThreshold = 0.4D;
     private double reproductionAgeThreshold = 4.0D; // seconds
-    private double reproductionDesireThreshold = 0.5;
+    private double reproductionDesireThreshold = 0.5D;
 
-    private double mutationRate = 0.1;
-    private double mutationStrength = 0.2;
+    private double mutationRate = 0.1D;
+    private double mutationStrength = 0.2D;
+
+    private double cellStateOutputThreshold = 0.5D; // Threshold für die Berechnung des Zell-Zustands
 
     //-------------------------------------------------------------------------
     // Singleton instance
@@ -260,4 +267,13 @@ public class SimulationConfig {
     public double getCellActorMaxFieldRadius() {
         return this.cellActorMaxFieldRadius;
     }
+
+    public double getCellStateOutputThreshold() {
+        return this.cellStateOutputThreshold;
+    }
+
+    public void setCellStateOutputThreshold(double cellStateOutputThreshold) {
+        this.cellStateOutputThreshold = cellStateOutputThreshold;
+    }
 }
+

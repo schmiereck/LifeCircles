@@ -4,9 +4,7 @@ import de.lifecircles.model.Cell;
 import de.lifecircles.model.CellType;
 import de.lifecircles.model.SensorActor;
 import de.lifecircles.model.Vector2D;
-import de.lifecircles.model.neural.CellBrain;
-import de.lifecircles.model.neural.CellBrainService;
-import de.lifecircles.model.neural.NeuralNetwork;
+import de.lifecircles.model.neural.*;
 
 import java.util.Comparator;
 import java.util.Objects;
@@ -92,6 +90,31 @@ public class ReproductionManagerService {
 
                 // Ensure child's neural network outputs are set by running think once
                 CellBrainService.think(child);
+
+                // Abrufen der Ausgaben des neuronalen Netzwerks der Elternzelle
+                double state0Output = parentBrainNetwork.getOutputValue(GlobalOutputFeature.STATE_0.ordinal());
+                double state1Output = parentBrainNetwork.getOutputValue(GlobalOutputFeature.STATE_1.ordinal());
+                double state2Output = parentBrainNetwork.getOutputValue(GlobalOutputFeature.STATE_2.ordinal());
+
+                // Berechnung des Zell-Zustands der Kind-Zelle basierend auf Thresholds
+                int childState = 0;
+                if (state0Output >= config.getCellStateOutputThreshold()) {
+                    childState |= 1; // Setze Bit 0
+                }
+                if (state1Output >= config.getCellStateOutputThreshold()) {
+                    childState |= 2; // Setze Bit 1
+                }
+                if (state2Output >= config.getCellStateOutputThreshold()) {
+                    childState |= 4; // Setze Bit 2
+                }
+                child.setCellState(childState);
+
+                // Set active layers in the child's brain based on the cell state
+                boolean[] activeLayers = child.getBrain().determineActiveHiddenLayers(child.getCellState());
+                for (int i = 0; i < childBrainNetwork.getHiddenLayerList().size(); i++) {
+                    final Layer layer = childBrainNetwork.getHiddenLayerList().get(i);
+                    layer.setActiveLayer(activeLayers[i]);
+                }
             } else {
                 child = null;
             }

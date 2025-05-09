@@ -51,17 +51,21 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
-* Baue einen neuen Zell-Zustand ein der bei der Teilung einer Zelle gesetzt wird.
+* Erstelle eine neue Klasse "Layer" mit der Neuronen-List und setze das Flag "isActiveLayer" in diesem Objekten.
+
+* Baue einen neuen Zell-Zustand ein, der bei der Teilung einer Zelle gesetzt wird.
   * Dieser Zell-Zustand ändert sich wärend der Lebenszeit einer Zelle nicht mehr.
   * Der Zell-Zustand bestimmt, welche zusätzlichen Hidden-Layer in einer Zelle aktiv sind.
     Die inaktiven Layer werden bei der Aktivierung des CellBrain nicht ausgeführt und 
     fließen auch nicht in die Berechnung den Energie Verbrauchs ein.
+  * Es gibt immer "normale" Hidden-Layer die immer aktiv sind.
   * Der Zustand der Kind-Zelle wird über drei globale Ausgänge gesteuert. 
     Diese steuern welcher Layer (0 bis 7) oder welche Kombination von Layern (0 bis 2) zusätzlich aktiv sind.
     (Flag einbauen um die zwei verschiedenen Implementierungen testen zu können.)
   * So sollen Zellen mit verschiedenem Verhalten aus dem gleichen Zelltyp hervorgehen können,
     die alle Erbinformationen des Zelltyps tragen und weiter geben.
-
+  * Der Zell-Zustand soll wie der zell-Typ auch nach außen durch Sensoren anderer Zellen sichbar sein 
+    und von der Zelle selbst als Globaler-Input wahrgenommen werden.
 * Ich will eine Zelle anklicken können um sie zu Untersuchen und zu beobachten.
   * Es soll ein Fenster angezeigt werden in dem ich eine visualisierung des ZellBrain mit den Aktivierungen des Neuronalen-Netzes sehe.
 

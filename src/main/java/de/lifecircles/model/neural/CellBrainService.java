@@ -132,8 +132,11 @@ public class CellBrainService {
 
         final double[] inputs = CellBrainService.generateInputs(cell);
         network.setInputs(inputs);
+
         final double[] outputs = network.process();
+
         CellBrainService.applyOutputs(cell, outputs);
     }
 
 }
+

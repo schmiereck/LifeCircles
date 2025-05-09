@@ -328,10 +328,11 @@ public class NeuralNetworkTest {
     
     // Hilfsmethode: Gibt die Architektur eines Netzwerks zurück
     private int[] getArchitecture(NeuralNetwork network) {
-        List<List<Neuron>> hiddenLayers = network.getHiddenLayerList();
+        List<Layer> hiddenLayers = network.getHiddenLayerList();
         int[] architecture = new int[hiddenLayers.size()];
         for (int i = 0; i < hiddenLayers.size(); i++) {
-            architecture[i] = hiddenLayers.get(i).size();
+            final Layer layer = hiddenLayers.get(i);
+            architecture[i] = layer.getNeurons().size();
         }
         return architecture;
     }

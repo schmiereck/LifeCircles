@@ -4,6 +4,7 @@ import de.lifecircles.model.Cell;
 import de.lifecircles.model.CellType;
 import de.lifecircles.model.SensorActor;
 import de.lifecircles.service.ActorSensorCellCalcService;
+import de.lifecircles.service.SimulationConfig;
 
 import java.util.List;
 
@@ -37,55 +38,12 @@ public class CellBrain {
         return this.network.getSynapseCount();
     }
 
-    private CellType findFirstSensedCell(SensorActor actor, List<Cell> neighbors) {
-        actor.setSensedCell(null);
-        actor.setSensedActor(null);
-        for (Cell otherCell : neighbors) {
-            for (SensorActor otherActor : otherCell.getSensorActors()) {
-                double intensity = ActorSensorCellCalcService.sense(actor, otherActor);
-                if (intensity != 0) {
-                    actor.setSensedCell(otherCell);
-                    actor.setSensedActor(otherActor);
-                    return otherCell.getType();
-                }
-            }
+    public boolean[] determineActiveHiddenLayers(int cellState) {
+        boolean[] layers = new boolean[SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT];
+        for (int i = 0; i < layers.length; i++) {
+            layers[i] = (cellState & (1 << i)) != 0; // Aktivierung basierend auf Bitmasken
         }
-        // No sensed cell: return default (e.g., black)
-        return new CellType(0, 0, 0);
-    }
-
-    /**
-     * Returns the force strength of the first sensed actor, or 0 if none.
-     */
-    private double findFirstSensedActorForce(SensorActor actor, List<Cell> neighbors) {
-        for (Cell otherCell : neighbors) {
-            for (SensorActor otherActor : otherCell.getSensorActors()) {
-                double intensity = ActorSensorCellCalcService.sense(actor, otherActor);
-                if (intensity != 0) {
-                    return otherActor.getForceStrength();
-                }
-            }
-        }
-        return 0.0;
-    }
-
-    /**
-     * Returns the first sensed SensorActor from neighbors, or null if none.
-     */
-    private SensorActor findFirstSensedActor(SensorActor actor, List<Cell> neighbors) {
-        actor.setSensedActor(null);
-        actor.setSensedCell(null);
-        for (Cell otherCell : neighbors) {
-            for (SensorActor otherActor : otherCell.getSensorActors()) {
-                double intensity = ActorSensorCellCalcService.sense(actor, otherActor);
-                if (intensity != 0) {
-                    actor.setSensedActor(otherActor);
-                    actor.setSensedCell(otherCell);
-                    return otherActor;
-                }
-            }
-        }
-        return null;
+        return layers;
     }
 
     public NeuralNetwork getNetwork() {
