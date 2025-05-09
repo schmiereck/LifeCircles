@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -29,7 +31,12 @@ public class CellDetailView extends Stage {
     private final Label generationLabel;
     private AnimationTimer updateTimer;
     private boolean needsRedraw = true;
-    
+    private double zoomFactor = 1.0;
+    private double panOffsetX = 0.0;
+    private double panOffsetY = 0.0;
+    private double lastMouseX;
+    private double lastMouseY;
+
     public CellDetailView() {
         setTitle("Zelldetails");
         
@@ -146,6 +153,42 @@ public class CellDetailView extends Stage {
                 updateTimer.stop();
             }
         });
+
+        // Maus-Scroll-Event für Zoom
+        brainCanvas.setOnScroll((ScrollEvent event) -> {
+            double mouseX = event.getX();
+            double mouseY = event.getY();
+            double zoomDelta = event.getDeltaY() > 0 ? 1.1 : 0.9;
+
+            // Berechne den neuen Zoomfaktor
+            double newZoomFactor = zoomFactor * zoomDelta;
+            newZoomFactor = Math.max(0.1, Math.min(newZoomFactor, 10.0)); // Begrenze Zoomfaktor
+
+            // Anpassung der Pan-Werte, um die Mausposition als Mittelpunkt zu verwenden
+            panOffsetX = (panOffsetX - mouseX) * (newZoomFactor / zoomFactor) + mouseX;
+            panOffsetY = (panOffsetY - mouseY) * (newZoomFactor / zoomFactor) + mouseY;
+
+            zoomFactor = newZoomFactor;
+            needsRedraw = true;
+            renderBrain();
+        });
+
+        // Maus-Drag-Event für Pan
+        brainCanvas.setOnMousePressed((MouseEvent event) -> {
+            lastMouseX = event.getX();
+            lastMouseY = event.getY();
+        });
+
+        brainCanvas.setOnMouseDragged((MouseEvent event) -> {
+            double deltaX = event.getX() - lastMouseX;
+            double deltaY = event.getY() - lastMouseY;
+            panOffsetX += deltaX;
+            panOffsetY += deltaY;
+            lastMouseX = event.getX();
+            lastMouseY = event.getY();
+            needsRedraw = true;
+            renderBrain();
+        });
     }
     
     /**
@@ -203,6 +246,10 @@ public class CellDetailView extends Stage {
         
         gc.clearRect(0, 0, width, height);
         
+        gc.save(); // Transformation speichern
+        gc.translate(panOffsetX, panOffsetY); // Pan anwenden
+        gc.scale(zoomFactor, zoomFactor); // Zoom anwenden
+
         CellBrain brain = currentCell.getBrain();
         if (brain == null) return;
         
@@ -320,5 +367,8 @@ public class CellDetailView extends Stage {
         }
         
         gc.fillText("Output", width - horizontalSpacing - 20, height - 10);
+
+        gc.restore(); // Transformation zurücksetzen
     }
 }
+
