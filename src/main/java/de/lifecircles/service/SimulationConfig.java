@@ -62,7 +62,7 @@ public class SimulationConfig {
     public static final double CELL_MAX_ENERGY = 1.0D;
     public static final int CELL_TEMP_THINK_HACK_COUNTER_MAX = 10;
 
-    public static final double ENERGY_DECAY_RATE = 0.015D;
+    public static final double ENERGY_DECAY_RATE = 0.022D;
     public static final double ENERGY_COST_PER_SYNAPSE = 0.00000001D;
 
     // Konstante für die Zellwachstumszeit in Sekunden
