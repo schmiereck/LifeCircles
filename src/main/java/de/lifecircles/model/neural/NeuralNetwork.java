@@ -340,7 +340,7 @@ public class NeuralNetwork {
             int pos = this.random.nextInt(this.hiddenLayerList.size() + 1);
             // Zufällige Neuronenzahl zwischen 1 und 5
             int neuronCount = 1 + this.random.nextInt(5);
-            addHiddenLayer(pos, neuronCount);
+            addHiddenLayer(pos, neuronCount, structuralMutationRate);
         }
 
         // Wahrscheinlichkeit, ein Neuron zu einem bestehenden Layer hinzuzufügen
@@ -380,26 +380,59 @@ public class NeuralNetwork {
 
     /**
      * Adds a hidden layer and ensures it is active by default.
+     * Existing connections between adjacent layers are preserved.
+     * 
+     * @param index Position, an der der neue Layer eingefügt werden soll
+     * @param neuronCount Anzahl der Neuronen im neuen Layer
+     * @param connectivity Prozentsatz der zu erstellenden Synapsen (0.0-1.0)
      */
-    public void addHiddenLayer(int index, int neuronCount) {
+    public void addHiddenLayer(int index, int neuronCount, double connectivity) {
+        // Begrenze die Konnektivität auf gültige Werte
+        connectivity = Math.max(0.0, Math.min(1.0, connectivity));
+        
         Layer newLayer = new Layer();
         newLayer.setActiveLayer(true); // Set new layer as active by default
+        
+        // Erstelle die neuen Neuronen
         for (int i = 0; i < neuronCount; i++) {
             newLayer.addNeuron(new Neuron());
         }
+        
+        // Bestimme die angrenzenden Layer
+        List<Neuron> prevLayer = index == 0 ? this.inputNeuronList : this.hiddenLayerList.get(index - 1).getNeurons();
+        List<Neuron> nextLayer = index == this.hiddenLayerList.size() ? this.outputNeuronList : this.hiddenLayerList.get(index).getNeurons();
+        
+        // Füge den neuen Layer ein
         this.hiddenLayerList.add(index, newLayer);
-        List<Neuron> prev = index == 0 ? this.inputNeuronList : this.hiddenLayerList.get(index - 1).getNeurons();
-        for (Neuron src : prev) {
+        
+        // Verbinde den vorherigen Layer mit dem neuen Layer
+        for (Neuron src : prevLayer) {
             for (Neuron tgt : newLayer.getNeurons()) {
-                synapsesynapseList.add(new Synapse(src, tgt, Math.random() * 0.002D - 0.001D));
+                // Erstelle Synapse nur mit der angegebenen Wahrscheinlichkeit
+                if (connectivity >= 1.0 || this.random.nextDouble() < connectivity) {
+                    double weight = Math.random() * 0.002D - 0.001D;
+                    synapsesynapseList.add(new Synapse(src, tgt, weight));
+                }
             }
         }
-        List<Neuron> next = index == this.hiddenLayerList.size() - 1 ? this.outputNeuronList : this.hiddenLayerList.get(index + 1).getNeurons();
+        
+        // Verbinde den neuen Layer mit dem nächsten Layer
         for (Neuron src : newLayer.getNeurons()) {
-            for (Neuron tgt : next) {
-                this.synapsesynapseList.add(new Synapse(src, tgt, Math.random() * 0.002D - 0.001D));
+            for (Neuron tgt : nextLayer) {
+                // Erstelle Synapse nur mit der angegebenen Wahrscheinlichkeit
+                if (connectivity >= 1.0 || this.random.nextDouble() < connectivity) {
+                    double weight = Math.random() * 0.002D - 0.001D;
+                    this.synapsesynapseList.add(new Synapse(src, tgt, weight));
+                }
             }
         }
+    }
+    
+    /**
+     * Overloaded method that adds a hidden layer with full connectivity.
+     */
+    public void addHiddenLayer(int index, int neuronCount) {
+        addHiddenLayer(index, neuronCount, 1.0);
     }
 
     public void addNeuronToHiddenLayer(int layerIndex) {
