@@ -14,7 +14,6 @@ public class NeuralNetwork {
     private final List<Synapse> synapsesynapseList;
     private final Random random = new Random();
     private double[] outputArr;
-    private double[] lastActivations; // Speichert die letzten Aktivierungen aller Neuronen
 
     private static final double DEFAULT_MUTATION_RATE = 0.1D;
 
@@ -115,40 +114,9 @@ public class NeuralNetwork {
             this.outputArr[outputNeuronPos] = this.getOutputValue(outputNeuronPos);
         }
         
-        // Speichern der Aktivierungen aller Neuronen für die Visualisierung
-        captureLastActivations();
-        
         return this.outputArr;
     }
-    
-    /**
-     * Sammelt die Aktivierungswerte aller Neuronen im Netzwerk
-     * und speichert sie in einem Array für die Visualisierung
-     */
-    private void captureLastActivations() {
-        int totalNeurons = getAllNeuronsSize();
-        lastActivations = new double[totalNeurons];
-        
-        int index = 0;
-        
-        // Input-Neuronen
-        for (Neuron neuron : inputNeuronList) {
-            lastActivations[index++] = neuron.getValue();
-        }
-        
-        // Hidden-Layer-Neuronen
-        for (Layer layer : hiddenLayerList) {
-            for (Neuron neuron : layer.getNeurons()) {
-                lastActivations[index++] = neuron.getValue();
-            }
-        }
-        
-        // Output-Neuronen
-        for (Neuron neuron : outputNeuronList) {
-            lastActivations[index++] = neuron.getValue();
-        }
-    }
-    
+
     /**
      * Gibt die Größen aller Layer (Input, Hidden, Output) im Netzwerk zurück
      * @return Array mit den Größen der einzelnen Layer
@@ -170,58 +138,9 @@ public class NeuralNetwork {
         
         return sizes;
     }
-    
-    /**
-     * Gibt die letzten Aktivierungswerte aller Neuronen im Netzwerk zurück
-     * @return Array mit Aktivierungswerten aller Neuronen (Input, Hidden, Output)
-     */
-    public double[] getLastActivations() {
-        if (lastActivations == null) {
-            // Falls noch kein process() durchgeführt wurde, initialisiere mit 0-Werten
-            int totalNeurons = getAllNeuronsSize();
-            lastActivations = new double[totalNeurons];
-        }
-        return lastActivations;
-    }
 
     public double getOutputValue(final int outputNeuronPos) {
         return this.outputNeuronList.get(outputNeuronPos).getValue();
-    }
-
-    /**
-     * Copies weights, biases, and active layer states from another network.
-     */
-    public void copyFrom(NeuralNetwork other) {
-        if (this.inputNeuronList.size() != other.inputNeuronList.size() ||
-                this.hiddenLayerList.size() != other.hiddenLayerList.size() ||
-                this.outputNeuronList.size() != other.outputNeuronList.size()) {
-            throw new IllegalArgumentException("Network architectures do not match");
-        }
-
-        // copy input neurons
-        this.copyNeurons(other.inputNeuronList, this.inputNeuronList);
-        // copy hidden layers
-        for (int i = 0; i < this.hiddenLayerList.size(); i++) {
-            this.copyNeurons(other.hiddenLayerList.get(i).getNeurons(), this.hiddenLayerList.get(i).getNeurons());
-        }
-        // copy output neurons
-        for (int i = 0; i < this.outputNeuronList.size(); i++) {
-            Neuron src = other.outputNeuronList.get(i);
-            Neuron dst = this.outputNeuronList.get(i);
-            dst.setBias(src.getBias());
-            dst.setOutputNeuron(true); // Stelle sicher, dass Output-Neuronen richtig markiert sind
-        }
-
-        // Copy active layer states
-        for (int i = 0; i < this.hiddenLayerList.size(); i++) {
-            this.hiddenLayerList.get(i).setActiveLayer(other.hiddenLayerList.get(i).isActiveLayer());
-        }
-    }
-
-    private void copyNeurons(List<Neuron> source, List<Neuron> target) {
-        for (int i = 0; i < source.size(); i++) {
-            target.get(i).setBias(source.get(i).getBias());
-        }
     }
 
     /**
@@ -360,38 +279,6 @@ public class NeuralNetwork {
         }
         
         return mapping;
-    }
-
-    // Die alte Methode kann entweder entfernt oder durch die optimierte Version ersetzt werden
-    private Neuron findCorrespondingNeuron(NeuralNetwork network, Neuron original) {
-        // Diese Methode wird nicht mehr benötigt, wenn die neue Mapping-Implementierung verwendet wird
-        if (this.inputNeuronList.contains(original)) {
-            return network.inputNeuronList.get(this.inputNeuronList.indexOf(original));
-        }
-        if (this.outputNeuronList.contains(original)) {
-            return network.outputNeuronList.get(outputNeuronList.indexOf(original));
-        }
-        for (int i = 0; i < this.hiddenLayerList.size(); i++) {
-            if (this.hiddenLayerList.get(i).getNeurons().contains(original)) {
-                return network.hiddenLayerList.get(i).getNeurons().get(this.hiddenLayerList.get(i).getNeurons().indexOf(original));
-            }
-        }
-        return null;
-    }
-
-    private void copyAndMutateNeurons(List<Neuron> source, List<Neuron> target,
-                                    double mutationRate, double mutationStrength) {
-        for (int i = 0; i < source.size(); i++) {
-            Neuron original = source.get(i);
-            Neuron copy = target.get(i);
-            
-            if (Math.random() < mutationRate) {
-                double mutation = (Math.random() * 2 - 1) * mutationStrength;
-                copy.setBias(original.getBias() + mutation);
-            } else {
-                copy.setBias(original.getBias());
-            }
-        }
     }
 
     // Structural mutation helpers
@@ -538,13 +425,6 @@ public class NeuralNetwork {
         this.synapsesynapseList.remove(rem);
     }
 
-    private boolean isInHiddenLayer(Neuron n) {
-        for (Layer layer : this.hiddenLayerList) {
-            if (layer.getNeurons().contains(n)) return true;
-        }
-        return false;
-    }
-
     // Expose the number of synapses for energy cost calculation
     public int getSynapseCount() {
         return this.synapsesynapseList.size();
@@ -557,16 +437,16 @@ public class NeuralNetwork {
     /**
      * Returns the total count of all neurons in the network.
      * This is more efficient than creating a list of all neurons first.
-     * 
+     *
      * @return the total number of neurons in the network
      */
     public int getAllNeuronsSize() {
         int count = this.inputNeuronList.size() + this.outputNeuronList.size();
-        
+
         for (Layer layer : this.hiddenLayerList) {
             count += layer.getNeurons().size();
         }
-        
+
         return count;
     }
 
