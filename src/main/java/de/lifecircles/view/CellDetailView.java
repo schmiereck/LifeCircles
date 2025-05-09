@@ -4,6 +4,7 @@ import de.lifecircles.model.Cell;
 import de.lifecircles.model.neural.CellBrain;
 import de.lifecircles.model.neural.NeuralNetwork;
 import de.lifecircles.model.neural.Neuron;
+import de.lifecircles.model.neural.Synapse;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -18,7 +19,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Ein Fenster, das detaillierte Informationen zu einer ausgewählten Zelle anzeigt.
@@ -288,48 +291,90 @@ public class CellDetailView extends Stage {
         gc.setFill(Color.rgb(30, 30, 30));
         gc.fillRect(0, 0, width, height);
         
-        // Verbindungen zeichnen
-        gc.setStroke(Color.GRAY);
-        gc.setLineWidth(0.01D * screenSizeFactor);
+        // Synapse-Liste vom Netzwerk holen
+        List<Synapse> synapseList = network.getSynapsesynapseList();
         
-        for (int layerIdx = 0; layerIdx < layers.length - 1; layerIdx++) {
-            int currentLayerSize = layers[layerIdx];
-            int nextLayerSize = layers[layerIdx + 1];
-            
-            double currentLayerX = horizontalSpacing * (layerIdx + 1);
-            double nextLayerX = horizontalSpacing * (layerIdx + 2);
-            
-            // Vertikale Abstände für aktuelle und nächste Schicht
-            double currentLayerVSpacing = Math.max(minVerticalSpacing, 
-                    Math.min(maxVerticalSpacing, height / (currentLayerSize + 1)));
-            double nextLayerVSpacing = Math.max(minVerticalSpacing, 
-                    Math.min(maxVerticalSpacing, height / (nextLayerSize + 1)));
-            
-            // Offset berechnen, um die Neuronen zu zentrieren
-            double currentLayerYOffset = (height - currentLayerSize * currentLayerVSpacing) / 2;
-            double nextLayerYOffset = (height - nextLayerSize * nextLayerVSpacing) / 2;
-            
-            // Draw connections between layers
-            for (int i = 0; i < currentLayerSize; i++) {
-                double y1 = currentLayerYOffset + currentLayerVSpacing * (i + 0.5);
-                
-                for (int j = 0; j < nextLayerSize; j++) {
-                    double y2 = nextLayerYOffset + nextLayerVSpacing * (j + 0.5);
-                    gc.strokeLine(currentLayerX, y1, nextLayerX, y2);
-                }
-            }
-        }
+        // Positions-Map für Neuronen erstellen: Speichert die X,Y-Position für jedes Neuron
+        Map<Neuron, double[]> neuronPositions = new HashMap<>();
         
-        // Neuronen mit Aktivierungen zeichnen
-        // Direkt auf Neuronen-Struktur zugreifen (Input, Hidden, Output)
-        
-        // Input-Neuronen zeichnen
+        // Input-Neuronen-Positionen
         int layerIdx = 0;
         int layerSize = layers[layerIdx];
         double layerX = horizontalSpacing * (layerIdx + 1);
         double vSpacing = Math.max(minVerticalSpacing, 
                 Math.min(maxVerticalSpacing, height / (layerSize + 1)));
         double layerYOffset = (height - layerSize * vSpacing) / 2;
+        
+        for (int i = 0; i < layerSize; i++) {
+            double nodeY = layerYOffset + vSpacing * (i + 0.5);
+            if (i < network.getInputNeuronList().size()) {
+                neuronPositions.put(network.getInputNeuronList().get(i), new double[] {layerX, nodeY});
+            }
+        }
+        
+        // Hidden-Layer-Neuronen-Positionen
+        for (int li = 0; li < network.getHiddenLayerList().size(); li++) {
+            layerIdx = li + 1; 
+            layerSize = layers[layerIdx];
+            layerX = horizontalSpacing * (layerIdx + 1);
+            vSpacing = Math.max(minVerticalSpacing, 
+                    Math.min(maxVerticalSpacing, height / (layerSize + 1)));
+            layerYOffset = (height - layerSize * vSpacing) / 2;
+            
+            List<Neuron> neurons = network.getHiddenLayerList().get(li).getNeurons();
+            
+            for (int i = 0; i < layerSize; i++) {
+                double nodeY = layerYOffset + vSpacing * (i + 0.5);
+                if (i < neurons.size()) {
+                    neuronPositions.put(neurons.get(i), new double[] {layerX, nodeY});
+                }
+            }
+        }
+        
+        // Output-Neuronen-Positionen
+        layerIdx = layers.length - 1;
+        layerSize = layers[layerIdx];
+        layerX = horizontalSpacing * (layerIdx + 1);
+        vSpacing = Math.max(minVerticalSpacing, 
+                Math.min(maxVerticalSpacing, height / (layerSize + 1)));
+        layerYOffset = (height - layerSize * vSpacing) / 2;
+        
+        for (int i = 0; i < layerSize; i++) {
+            double nodeY = layerYOffset + vSpacing * (i + 0.5);
+            if (i < network.getOutputNeuronList().size()) {
+                neuronPositions.put(network.getOutputNeuronList().get(i), new double[] {layerX, nodeY});
+            }
+        }
+        
+        // Verbindungen zeichnen und entsprechend ihres Gewichts einfärben
+        gc.setLineWidth(0.01D * screenSizeFactor);
+        
+        for (Synapse synapse : synapseList) {
+            Neuron source = synapse.getSourceNeuron();
+            Neuron target = synapse.getTargetNeuron();
+            
+            // Positionen der Neuronen abrufen
+            double[] sourcePos = neuronPositions.get(source);
+            double[] targetPos = neuronPositions.get(target);
+            
+            if (sourcePos != null && targetPos != null) {
+                // Gewicht der Synapse holen und auf Farbe abbilden
+                double weight = synapse.getWeight();
+                Color synapseColor = weightToColor(weight);
+                
+                // Synapse mit entsprechender Farbe zeichnen
+                gc.setStroke(synapseColor);
+                gc.strokeLine(sourcePos[0], sourcePos[1], targetPos[0], targetPos[1]);
+            }
+        }
+        
+        // Input-Neuronen zeichnen
+        layerIdx = 0;
+        layerSize = layers[layerIdx];
+        layerX = horizontalSpacing * (layerIdx + 1);
+        vSpacing = Math.max(minVerticalSpacing, 
+                Math.min(maxVerticalSpacing, height / (layerSize + 1)));
+        layerYOffset = (height - layerSize * vSpacing) / 2;
         
         for (int i = 0; i < layerSize; i++) {
             double nodeY = layerYOffset + vSpacing * (i + 0.5);
@@ -439,5 +484,29 @@ public class CellDetailView extends Stage {
         gc.fillText("Output", width - horizontalSpacing - 20, height - 10);
 
         gc.restore(); // Transformation zurücksetzen
+    }
+
+    /**
+     * Konvertiert ein Synapsen-Gewicht in eine Farbe mit einer nichtlinearen Funktion.
+     * 
+     * @param weight Gewicht der Synapse
+     * @return Farbe basierend auf dem Gewicht (rot für negativ, blau für positiv)
+     */
+    private Color weightToColor(double weight) {
+        // Nichtlineare Funktion anwenden: Hyperbeltangens (tanh)
+        // Skaliert den Betrag der Gewichte nicht-linear auf [0,1]
+        double scaledMagnitude = Math.tanh(Math.abs(weight) * 1.5);
+        
+        // Farbe basierend auf Vorzeichen wählen
+        if (weight < 0) {
+            // Negatives Gewicht: Rot mit Intensität basierend auf Betrag
+            return Color.rgb((int) (255 * scaledMagnitude), 0, 0, 0.7);
+        } else if (weight > 0) {
+            // Positives Gewicht: Blau mit Intensität basierend auf Betrag
+            return Color.rgb(0, (int) (200 * scaledMagnitude), (int) (255 * scaledMagnitude), 0.7);
+        } else {
+            // Gewicht = 0: Hellgrau
+            return Color.rgb(150, 150, 150, 0.3);
+        }
     }
 }
