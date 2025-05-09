@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
  * Represents the neural network that controls cell behavior.
  */
 public class NeuralNetwork {
-    public final List<Neuron> inputNeuronList;
-    public final List<Layer> hiddenLayerList; // Verwende Layer-Objekte statt Listen von Neuronen
-    public final List<Neuron> outputNeuronList;
+    private final List<Neuron> inputNeuronList;
+    private final List<Layer> hiddenLayerList; // Verwende Layer-Objekte statt Listen von Neuronen
+    private final List<Neuron> outputNeuronList;
     private final List<Synapse> synapsesynapseList;
     private final Random random = new Random();
     private double[] outputArr;
@@ -554,10 +554,6 @@ public class NeuralNetwork {
         return this.synapsesynapseList;
     }
 
-    public List<Layer> getHiddenLayerList() {
-        return this.hiddenLayerList;
-    }
-
     /**
      * Returns the total count of all neurons in the network.
      * This is more efficient than creating a list of all neurons first.
@@ -615,6 +611,30 @@ public class NeuralNetwork {
 
     public double getOutputLayerSize() {
         return this.outputNeuronList.size();
+    }
+
+    /**
+     * Gibt die Liste der Input-Neuronen zurück
+     * @return Liste der Input-Neuronen
+     */
+    public List<Neuron> getInputNeuronList() {
+        return inputNeuronList;
+    }
+
+    /**
+     * Gibt die Liste der Hidden-Layer zurück
+     * @return Liste der Hidden-Layer
+     */
+    public List<Layer> getHiddenLayerList() {
+        return hiddenLayerList;
+    }
+
+    /**
+     * Gibt die Liste der Output-Neuronen zurück
+     * @return Liste der Output-Neuronen
+     */
+    public List<Neuron> getOutputNeuronList() {
+        return outputNeuronList;
     }
 }
 
