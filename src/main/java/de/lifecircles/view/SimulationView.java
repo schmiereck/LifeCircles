@@ -63,7 +63,50 @@ public class SimulationView extends Pane {
             }
         });
 
-        // ... existing code ...
+        // Drag handler for panning
+        canvas.setOnMouseDragged(e -> {
+            if (isDragging) {
+                double deltaX = e.getX() - lastMouseX;
+                double deltaY = e.getY() - lastMouseY;
+                
+                // Bewege die Kamera entgegengesetzt zur Mausbewegung
+                camera.moveBy(-deltaX / camera.getZoom(), -deltaY / camera.getZoom());
+                
+                lastMouseX = e.getX();
+                lastMouseY = e.getY();
+            }
+        });
+        
+        // Release handler to end dragging
+        canvas.setOnMouseReleased(e -> {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                isDragging = false;
+            }
+        });
+        
+        // Zoom with mouse wheel, centered on mouse position
+        canvas.setOnScroll(e -> {
+            // Position der Maus in Weltkoordinaten vor dem Zoom
+            double worldX = camera.screenToWorldX(e.getX());
+            double worldY = camera.screenToWorldY(e.getY());
+            
+            // Zoom-Faktor basierend auf der Scroll-Richtung
+            double zoomFactor = e.getDeltaY() > 0 ? 1.1 : 0.9;
+            double newZoom = camera.getZoom() * zoomFactor;
+            
+            // Begrenze den Zoom auf sinnvolle Werte
+            newZoom = Math.max(0.1, Math.min(newZoom, 10.0));
+            
+            // Setze neuen Zoom
+            camera.setZoom(newZoom);
+            
+            // Berechne neue Position der Maus in Weltkoordinaten nach dem Zoom
+            double newWorldX = camera.screenToWorldX(e.getX());
+            double newWorldY = camera.screenToWorldY(e.getY());
+            
+            // Verschiebe die Kamera, damit der Punkt unter der Maus gleich bleibt
+            camera.moveBy(newWorldX - worldX, newWorldY - worldY);
+        });
 
         // Toggle debug info with D key
         canvas.setOnKeyPressed(e -> {

@@ -67,6 +67,31 @@ public class Camera {
     }
 
     /**
+     * Gibt den aktuellen Zoom-Faktor zurück (Alias für getScale())
+     * @return der aktuelle Zoom-Faktor
+     */
+    public double getZoom() {
+        return scale;
+    }
+
+    /**
+     * Setzt den Zoom-Faktor der Kamera
+     * @param zoom der neue Zoom-Faktor
+     */
+    public void setZoom(double zoom) {
+        this.scale = Math.max(minScale, Math.min(maxScale, zoom));
+    }
+
+    /**
+     * Bewegt die Kamera um die angegebenen Deltas in der Welt
+     * @param deltaX die Bewegung in X-Richtung
+     * @param deltaY die Bewegung in Y-Richtung
+     */
+    public void moveBy(double deltaX, double deltaY) {
+        position = position.add(new Vector2D(deltaX, deltaY));
+    }
+
+    /**
      * Konvertiert eine X-Koordinate vom Bildschirm in die entsprechende Weltkoordinate
      * @param screenX X-Koordinate auf dem Bildschirm
      * @return X-Koordinate in der Welt
