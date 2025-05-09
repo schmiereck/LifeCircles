@@ -26,6 +26,13 @@ public class CellBrainService {
         inputs[GlobalInputFeature.MY_CELL_AGE.ordinal()] = cell.getAge();
         inputs[GlobalInputFeature.MY_CELL_SUNRAY_HIT.ordinal()] = cell.isSunRayHit() ? 1.0 : 0.0;
 
+        // Add cell state as global input
+        double[] normalizedCellState = cell.getNormalizedCellState();
+
+        inputs[GlobalInputFeature.MY_CELL_STATE_0.ordinal()] = normalizedCellState[0];
+        inputs[GlobalInputFeature.MY_CELL_STATE_1.ordinal()] = normalizedCellState[1];
+        inputs[GlobalInputFeature.MY_CELL_STATE_2.ordinal()] = normalizedCellState[2];
+
         int baseGlobal = GlobalInputFeature.values().length;
 
         final int topSensorIndex = cell.getTopSensorIndex();
@@ -139,4 +146,3 @@ public class CellBrainService {
     }
 
 }
-

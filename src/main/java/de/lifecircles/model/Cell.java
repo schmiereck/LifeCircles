@@ -310,4 +310,16 @@ public class Cell {
     public void setCellState(int cellState) {
         this.cellState = cellState;
     }
+
+    /**
+     * Returns the cell state as a normalized value for external sensors.
+     * Each bit of the cell state is treated as a separate feature.
+     */
+    public double[] getNormalizedCellState() {
+        double[] normalizedState = new double[SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT];
+        for (int i = 0; i < normalizedState.length; i++) {
+            normalizedState[i] = (this.cellState & (1 << i)) != 0 ? 1.0 : 0.0;
+        }
+        return normalizedState;
+    }
 }
