@@ -290,7 +290,7 @@ public class CellDetailView extends Stage {
         
         // Verbindungen zeichnen
         gc.setStroke(Color.GRAY);
-        gc.setLineWidth(0.5);
+        gc.setLineWidth(0.01D * screenSizeFactor);
         
         for (int layerIdx = 0; layerIdx < layers.length - 1; layerIdx++) {
             int currentLayerSize = layers[layerIdx];
