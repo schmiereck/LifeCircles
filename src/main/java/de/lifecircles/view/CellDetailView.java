@@ -42,6 +42,10 @@ public class CellDetailView extends Stage {
     private double panOffsetY = 0.0;
     private double lastMouseX;
     private double lastMouseY;
+    
+    // Timer für die Brain-Aktualisierung (in Nanosekunden)
+    private long lastBrainUpdate = 0;
+    private static final long BRAIN_UPDATE_INTERVAL = 1_000_000_000; // 1 Sekunde in Nanosekunden
 
     public CellDetailView() {
         setTitle("Zelldetails");
@@ -96,22 +100,26 @@ public class CellDetailView extends Stage {
         setScene(scene);
         setResizable(true);
         
-        // Animation-Timer für Updates der Zelleigenschaften, nicht der Netzwerkvisualisierung
+        // Animation-Timer für Updates der Zelleigenschaften und Netzwerkvisualisierung
         updateTimer = new AnimationTimer() {
             private long lastUpdate = 0;
             
             @Override
             public void handle(long now) {
-                if (currentCell != null && now - lastUpdate > 100_000_000) { // ca. 10 mal pro Sekunde aktualisieren
-                    updateCellInfo(); // Nur die Zellinformationen aktualisieren
-                    
-                    // Neuronennetz nur neu zeichnen, wenn es notwendig ist
-                    if (needsRedraw) {
-                        renderBrain();
-                        needsRedraw = false;
+                if (currentCell != null) {
+                    // Zellinformationen aktualisieren (ca. 10 mal pro Sekunde)
+                    if (now - lastUpdate > 100_000_000) { 
+                        updateCellInfo();
+                        lastUpdate = now;
                     }
                     
-                    lastUpdate = now;
+                    // Neuronales Netzwerk nur einmal pro Sekunde aktualisieren
+                    // oder wenn eine Neuzeichnung angefordert wurde
+                    if (now - lastBrainUpdate > BRAIN_UPDATE_INTERVAL || needsRedraw) {
+                        renderBrain();
+                        lastBrainUpdate = now;
+                        needsRedraw = false;
+                    }
                 }
             }
         };
@@ -205,6 +213,7 @@ public class CellDetailView extends Stage {
         needsRedraw = true;  // Erzwinge Neuzeichnung bei neuer Zelle
         updateCellInfo();    // Informationen aktualisieren
         renderBrain();       // Initialer Render des Gehirns
+        lastBrainUpdate = System.nanoTime(); // Zeit der letzten Brain-Aktualisierung setzen
         
         show();
         toFront();
@@ -510,3 +519,4 @@ public class CellDetailView extends Stage {
         }
     }
 }
+
