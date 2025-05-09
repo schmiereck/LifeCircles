@@ -1,5 +1,6 @@
 package de.lifecircles.view;
 
+import de.lifecircles.model.Cell;
 import de.lifecircles.service.CalculationService;
 import de.lifecircles.service.dto.SimulationStateDto;
 import de.lifecircles.service.SimulationConfig;
@@ -21,6 +22,7 @@ public class SimulationView extends Pane {
     private final Renderer renderer;
     private final CalculationService calculationService;
     private final ViewConfig config;
+    private CellDetailView cellDetailView;
 
     private double lastMouseX;
     private double lastMouseY;
@@ -55,30 +57,13 @@ public class SimulationView extends Pane {
                 isDragging = true;
                 lastMouseX = e.getX();
                 lastMouseY = e.getY();
+            } else if (e.getButton() == MouseButton.PRIMARY) {
+                // Linksklick - versuche, eine Zelle zu selektieren
+                checkForCellClick(e.getX(), e.getY());
             }
         });
 
-        canvas.setOnMouseDragged(e -> {
-            if (isDragging) {
-                double dx = e.getX() - lastMouseX;
-                double dy = e.getY() - lastMouseY;
-                camera.pan(-dx, -dy);
-                lastMouseX = e.getX();
-                lastMouseY = e.getY();
-            }
-        });
-
-        canvas.setOnMouseReleased(e -> {
-            if (e.getButton() == MouseButton.SECONDARY) {
-                isDragging = false;
-            }
-        });
-
-        // Zoom with mouse wheel
-        canvas.setOnScroll(e -> {
-            double zoomFactor = e.getDeltaY() > 0 ? 1.1 : 0.9;
-            camera.zoom(zoomFactor, e.getX(), e.getY());
-        });
+        // ... existing code ...
 
         // Toggle debug info with D key
         canvas.setOnKeyPressed(e -> {
@@ -94,56 +79,59 @@ public class SimulationView extends Pane {
         canvas.setFocusTraversable(true);
     }
 
-    private void startRenderLoop() {
-        long frameDelay = 1_000_000_000L / 30; // 30 FPS = 1/30 seconds = ~33.33 ms
+    private void checkForCellClick(double mouseX, double mouseY) {
+        // Umrechnung von Bildschirmkoordinaten in Weltkoordinaten
+        double worldX = camera.screenToWorldX(mouseX);
+        double worldY = camera.screenToWorldY(mouseY);
         
-        new AnimationTimer() {
-            private long lastRenderTime = System.nanoTime();
-            
-            @Override
-            public void handle(long now) {
-                if (now - lastRenderTime >= frameDelay) {
-                    render();
-                    lastRenderTime = now;
-                    
-                    // FPS tracking
-                    frameCount++;
-                    long nowFps = System.nanoTime();
-                    if (nowFps - lastFpsTime >= 1_000_000_000L) {
-                        fps = frameCount / ((nowFps - lastFpsTime) / 1_000_000_000.0);
-                        frameCount = 0;
-                        lastFpsTime = nowFps;
-                    }
-                }
-            }
-        }.start();
-    }
-
-    private void render() {
+        // Holen des aktuellen Simulationszustands
         SimulationStateDto state = calculationService.getLatestState();
-        if (state != null) {
-            GraphicsContext gc = canvas.getGraphicsContext2D();
-            renderer.render(state);
-            gc.setStroke(Color.WHITE);
-            gc.setLineWidth(2);
-            gc.strokeRoundRect(1, 1, canvas.getWidth() - 2, canvas.getHeight() - 2, 20, 20);
-            // Anzeigen von FPS und Trainingsmodus
-            gc.setFill(Color.WHITE);
-            gc.setFont(new Font(14));
-            gc.fillText("FPS: " + String.format("%.1f", getFps()) + "  Mode: " + SimulationConfig.getInstance().getTrainMode(), 10, canvas.getHeight() - 10);
+        if (state == null) return;
+        
+        // Zugriff auf die tatsächlichen Zellen aus dem CalculationService
+        Cell selectedCell = calculationService.findCellAt(worldX, worldY);
+        
+        if (selectedCell != null) {
+            // Zelle gefunden, öffne Detailansicht
+            if (cellDetailView == null || !cellDetailView.isShowing()) {
+                cellDetailView = new CellDetailView();
+            }
+            cellDetailView.showCell(selectedCell);
         }
     }
 
-    public Camera getCamera() {
-        return camera;
-    }
-
-    public ViewConfig getConfig() {
-        return config;
-    }
-
     /**
-     * Returns the current rendering frames per second.
+     * Startet den Rendering-Loop für die kontinuierliche Darstellung der Simulation
+     */
+    private void startRenderLoop() {
+        AnimationTimer timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                // Aktualisiere die Ansicht mit den neuesten Daten
+                SimulationStateDto state = calculationService.getLatestState();
+                if (state != null) {
+                    GraphicsContext gc = canvas.getGraphicsContext2D();
+                    gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+                    
+                    // Zeichne die Simulation mit dem Renderer
+                    renderer.render(state);
+                    
+                    // FPS-Zähler aktualisieren
+                    frameCount++;
+                    long currentTime = System.nanoTime();
+                    if (currentTime - lastFpsTime >= 1_000_000_000) {
+                        fps = frameCount / ((currentTime - lastFpsTime) / 1_000_000_000.0);
+                        frameCount = 0;
+                        lastFpsTime = currentTime;
+                    }
+                }
+            }
+        };
+        timer.start();
+    }
+    
+    /**
+     * Gibt die aktuelle Bildrate (FPS) des Renderloops zurück
      */
     public double getFps() {
         return fps;

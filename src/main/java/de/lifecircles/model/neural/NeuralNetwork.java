@@ -14,6 +14,7 @@ public class NeuralNetwork {
     private final List<Synapse> synapsesynapseList;
     private final Random random = new Random();
     private double[] outputArr;
+    private double[] lastActivations; // Speichert die letzten Aktivierungen aller Neuronen
 
     private static final double DEFAULT_MUTATION_RATE = 0.1D;
 
@@ -113,7 +114,74 @@ public class NeuralNetwork {
         for (int outputNeuronPos = 0; outputNeuronPos < this.outputArr.length; outputNeuronPos++) {
             this.outputArr[outputNeuronPos] = this.getOutputValue(outputNeuronPos);
         }
+        
+        // Speichern der Aktivierungen aller Neuronen für die Visualisierung
+        captureLastActivations();
+        
         return this.outputArr;
+    }
+    
+    /**
+     * Sammelt die Aktivierungswerte aller Neuronen im Netzwerk
+     * und speichert sie in einem Array für die Visualisierung
+     */
+    private void captureLastActivations() {
+        int totalNeurons = getAllNeuronsSize();
+        lastActivations = new double[totalNeurons];
+        
+        int index = 0;
+        
+        // Input-Neuronen
+        for (Neuron neuron : inputNeuronList) {
+            lastActivations[index++] = neuron.getValue();
+        }
+        
+        // Hidden-Layer-Neuronen
+        for (Layer layer : hiddenLayerList) {
+            for (Neuron neuron : layer.getNeurons()) {
+                lastActivations[index++] = neuron.getValue();
+            }
+        }
+        
+        // Output-Neuronen
+        for (Neuron neuron : outputNeuronList) {
+            lastActivations[index++] = neuron.getValue();
+        }
+    }
+    
+    /**
+     * Gibt die Größen aller Layer (Input, Hidden, Output) im Netzwerk zurück
+     * @return Array mit den Größen der einzelnen Layer
+     */
+    public int[] getLayerSizes() {
+        int totalLayers = 2 + hiddenLayerList.size(); // Input + Hidden + Output
+        int[] sizes = new int[totalLayers];
+        
+        // Input Layer
+        sizes[0] = inputNeuronList.size();
+        
+        // Hidden Layers
+        for (int i = 0; i < hiddenLayerList.size(); i++) {
+            sizes[i + 1] = hiddenLayerList.get(i).getNeurons().size();
+        }
+        
+        // Output Layer
+        sizes[totalLayers - 1] = outputNeuronList.size();
+        
+        return sizes;
+    }
+    
+    /**
+     * Gibt die letzten Aktivierungswerte aller Neuronen im Netzwerk zurück
+     * @return Array mit Aktivierungswerten aller Neuronen (Input, Hidden, Output)
+     */
+    public double[] getLastActivations() {
+        if (lastActivations == null) {
+            // Falls noch kein process() durchgeführt wurde, initialisiere mit 0-Werten
+            int totalNeurons = getAllNeuronsSize();
+            lastActivations = new double[totalNeurons];
+        }
+        return lastActivations;
     }
 
     public double getOutputValue(final int outputNeuronPos) {
@@ -549,3 +617,4 @@ public class NeuralNetwork {
         return this.outputNeuronList.size();
     }
 }
+

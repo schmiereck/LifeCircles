@@ -65,4 +65,40 @@ public class Camera {
     public Vector2D getPosition() {
         return position;
     }
+
+    /**
+     * Konvertiert eine X-Koordinate vom Bildschirm in die entsprechende Weltkoordinate
+     * @param screenX X-Koordinate auf dem Bildschirm
+     * @return X-Koordinate in der Welt
+     */
+    public double screenToWorldX(double screenX) {
+        return position.getX() + screenX / scale;
+    }
+
+    /**
+     * Konvertiert eine Y-Koordinate vom Bildschirm in die entsprechende Weltkoordinate
+     * @param screenY Y-Koordinate auf dem Bildschirm
+     * @return Y-Koordinate in der Welt
+     */
+    public double screenToWorldY(double screenY) {
+        return position.getY() + screenY / scale;
+    }
+
+    /**
+     * Konvertiert eine X-Koordinate von der Welt in die entsprechende Bildschirmkoordinate
+     * @param worldX X-Koordinate in der Welt
+     * @return X-Koordinate auf dem Bildschirm
+     */
+    public double worldToScreenX(double worldX) {
+        return (worldX - position.getX()) * scale;
+    }
+
+    /**
+     * Konvertiert eine Y-Koordinate von der Welt in die entsprechende Bildschirmkoordinate
+     * @param worldY Y-Koordinate in der Welt
+     * @return Y-Koordinate auf dem Bildschirm
+     */
+    public double worldToScreenY(double worldY) {
+        return (worldY - position.getY()) * scale;
+    }
 }

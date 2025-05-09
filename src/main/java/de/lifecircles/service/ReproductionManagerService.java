@@ -57,7 +57,7 @@ public class ReproductionManagerService {
 
                 // Create mutated brain for child
                 final CellBrain parentBrain = parent.getBrain();
-                final NeuralNetwork parentBrainNetwork = parentBrain.getNetwork();
+                final NeuralNetwork parentBrainNetwork = parentBrain.getNeuralNetwork();
                 final NeuralNetwork childBrainNetwork = parentBrainNetwork.mutate(
                         config.getMutationRate(),
                         config.getMutationStrength()

@@ -14,7 +14,7 @@ public class CellBrainService {
         final List<SensorActor> myActorList = cell.getSensorActors();
         final int actorCount = myActorList.size();
         final CellBrain cellBrain = cell.getBrain();
-        final NeuralNetwork network = cellBrain.getNetwork();
+        final NeuralNetwork network = cellBrain.getNeuralNetwork();
         final int totalInputs = network.getInputCount();
         final double[] inputs = new double[totalInputs];
 
@@ -147,7 +147,7 @@ public class CellBrainService {
      */
     public static void think(final Cell cell) {
         final CellBrain cellBrain = cell.getBrain();
-        final NeuralNetwork network = cellBrain.getNetwork();
+        final NeuralNetwork network = cellBrain.getNeuralNetwork();
 
         final double[] inputs = CellBrainService.generateInputs(cell);
         network.setInputs(inputs);

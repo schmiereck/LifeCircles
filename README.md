@@ -53,6 +53,11 @@ Das System-Design der Anwendung soll enthalten:
   
 * Ich will eine Zelle anklicken können um sie zu Untersuchen und zu beobachten.
   * Es soll ein Fenster angezeigt werden in dem ich eine visualisierung des ZellBrain mit den Aktivierungen des Neuronalen-Netzes sehe.
+  * Die Zelle soll nicht als Dto übertragen werden sondern als Referenz auf die Zelle um eine effiziente Anzeige sicher zu stellen.
+  * Der Typ, State, age, energy und generation sollen ebenfalls angezeigt werden.
+
+* Die Sensoren sollen spüren, wenn sie einen Blocker berühren.
+  * Es soll als Cell-Typ (0,5, 0,5, 0,5) und als Actor-Typ (0,5, 0,5, 0,5) gesetzt werden.
 
 * Prüfe den Grid-Paritionierungs-Algorithmus und die Berechnung der Interaktionen.
   * Die größe der Grid-Zellen sollte der maximal Zell-Radius + der maximale Focre-Field-Radius sein.

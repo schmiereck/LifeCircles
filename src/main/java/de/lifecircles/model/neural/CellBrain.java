@@ -1,12 +1,7 @@
 package de.lifecircles.model.neural;
 
 import de.lifecircles.model.Cell;
-import de.lifecircles.model.CellType;
-import de.lifecircles.model.SensorActor;
-import de.lifecircles.service.ActorSensorCellCalcService;
 import de.lifecircles.service.SimulationConfig;
-
-import java.util.List;
 
 /**
  * Manages the neural network that controls cell behavior.
@@ -46,7 +41,7 @@ public class CellBrain {
         return layers;
     }
 
-    public NeuralNetwork getNetwork() {
+    public NeuralNetwork getNeuralNetwork() {
         return this.network;
     }
 }

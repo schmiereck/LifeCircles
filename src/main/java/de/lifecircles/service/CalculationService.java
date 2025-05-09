@@ -1,9 +1,6 @@
 package de.lifecircles.service;
 
-import de.lifecircles.model.Cell;
-import de.lifecircles.model.CellType;
-import de.lifecircles.model.Environment;
-import de.lifecircles.model.SensorActor;
+import de.lifecircles.model.*;
 import de.lifecircles.service.dto.SimulationStateDto;
 import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
 import de.lifecircles.service.partitioningStrategy.PartitioningStrategyFactory;
@@ -159,6 +156,26 @@ public class CalculationService implements Runnable {
                 this.environment.getHeight()
             );
         }
+    }
+    /**
+     * Findet eine Zelle an der angegebenen Position in der Simulation.
+     * @param worldX X-Koordinate in der Simulationswelt
+     * @param worldY Y-Koordinate in der Simulationswelt
+     * @return Die gefundene Zelle oder null, wenn keine Zelle an der Position ist
+     */
+    public Cell findCellAt(double worldX, double worldY) {
+        // Zugriff auf das Environment und die Zellen
+        if (environment == null) return null;
+
+        // Durchsuche die Zellen und finde die, die an der Klickposition ist
+        for (Cell cell : environment.getCells()) {
+            double distance = new Vector2D(worldX, worldY).distance(cell.getPosition());
+            if (distance <= cell.getRadiusSize()) {
+                return cell; // Zelle gefunden
+            }
+        }
+
+        return null; // Keine Zelle gefunden
     }
 
     public SimulationStateDto getLatestState() {
