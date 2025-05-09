@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
  * Represents the neural network that controls cell behavior.
  */
 public class NeuralNetwork {
-    private final List<Neuron> inputNeuronList;
-    private final List<Layer> hiddenLayerList; // Verwende Layer-Objekte statt Listen von Neuronen
-    private final List<Neuron> outputNeuronList;
+    public final List<Neuron> inputNeuronList;
+    public final List<Layer> hiddenLayerList; // Verwende Layer-Objekte statt Listen von Neuronen
+    public final List<Neuron> outputNeuronList;
     private final List<Synapse> synapsesynapseList;
     private final Random random = new Random();
     private double[] outputArr;

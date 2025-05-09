@@ -3,6 +3,7 @@ package de.lifecircles.view;
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.neural.CellBrain;
 import de.lifecircles.model.neural.NeuralNetwork;
+import de.lifecircles.model.neural.Neuron;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -16,6 +17,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import java.util.List;
 
 /**
  * Ein Fenster, das detaillierte Informationen zu einer ausgewählten Zelle anzeigt.
@@ -258,9 +261,8 @@ public class CellDetailView extends Stage {
         
         // Netzwerkarchitektur holen
         int[] layers = network.getLayerSizes();
-        double[] activations = network.getLastActivations();
         
-        if (layers == null || activations == null) return;
+        if (layers == null) return;
         
         // Zeichenparameter berechnen
         // Knotengröße dynamisch berechnen
@@ -281,8 +283,6 @@ public class CellDetailView extends Stage {
         // Vertikale Abstände dynamisch anpassen
         double minVerticalSpacing = nodeRadius * 3; // Mindestabstand zwischen Knoten
         double maxVerticalSpacing = height / (maxLayerSize + 1);
-        
-        int activationIndex = 0;
         
         // Hintergrund
         gc.setFill(Color.rgb(30, 30, 30));
@@ -321,22 +321,59 @@ public class CellDetailView extends Stage {
         }
         
         // Neuronen mit Aktivierungen zeichnen
-        for (int layerIdx = 0; layerIdx < layers.length; layerIdx++) {
-            int layerSize = layers[layerIdx];
-            double layerX = horizontalSpacing * (layerIdx + 1);
-            double vSpacing = Math.max(minVerticalSpacing, 
-                    Math.min(maxVerticalSpacing, height / (layerSize + 1)));
+        // Direkt auf Neuronen-Struktur zugreifen (Input, Hidden, Output)
+        
+        // Input-Neuronen zeichnen
+        int layerIdx = 0;
+        int layerSize = layers[layerIdx];
+        double layerX = horizontalSpacing * (layerIdx + 1);
+        double vSpacing = Math.max(minVerticalSpacing, 
+                Math.min(maxVerticalSpacing, height / (layerSize + 1)));
+        double layerYOffset = (height - layerSize * vSpacing) / 2;
+        
+        for (int i = 0; i < layerSize; i++) {
+            double nodeY = layerYOffset + vSpacing * (i + 0.5);
             
-            // Offset berechnen, um die Neuronen zu zentrieren
-            double layerYOffset = (height - layerSize * vSpacing) / 2;
+            // Aktivierungswert direkt vom Input-Neuron holen
+            double activation = 0;
+            if (i < network.inputNeuronList.size()) {
+                activation = network.inputNeuronList.get(i).getValue();
+                // Aktivierungswert auf den Bereich [0,1] begrenzen
+                activation = Math.max(0, Math.min(1, activation));
+            }
+            
+            // Farbe basierend auf Aktivierung (blau bis rot)
+            Color nodeColor = Color.rgb(
+                (int) (255 * activation),
+                0,
+                (int) (255 * (1 - activation))
+            );
+            
+            // Neuron zeichnen
+            gc.setFill(nodeColor);
+            gc.fillOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
+            gc.setStroke(Color.BLACK);
+            gc.strokeOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
+        }
+        
+        // Hidden-Layer-Neuronen zeichnen
+        for (int li = 0; li < network.hiddenLayerList.size(); li++) {
+            layerIdx = li + 1; // +1 weil Input-Layer bereits gezeichnet wurde
+            layerSize = layers[layerIdx];
+            layerX = horizontalSpacing * (layerIdx + 1);
+            vSpacing = Math.max(minVerticalSpacing, 
+                    Math.min(maxVerticalSpacing, height / (layerSize + 1)));
+            layerYOffset = (height - layerSize * vSpacing) / 2;
+            
+            List<Neuron> neurons = network.hiddenLayerList.get(li).getNeurons();
             
             for (int i = 0; i < layerSize; i++) {
                 double nodeY = layerYOffset + vSpacing * (i + 0.5);
                 
-                // Aktivierungswert (0-1) holen, wenn verfügbar
+                // Aktivierungswert direkt vom Hidden-Neuron holen
                 double activation = 0;
-                if (activationIndex < activations.length) {
-                    activation = activations[activationIndex++];
+                if (i < neurons.size()) {
+                    activation = neurons.get(i).getValue();
                     // Aktivierungswert auf den Bereich [0,1] begrenzen
                     activation = Math.max(0, Math.min(1, activation));
                 }
@@ -356,6 +393,39 @@ public class CellDetailView extends Stage {
             }
         }
         
+        // Output-Neuronen zeichnen
+        layerIdx = layers.length - 1;
+        layerSize = layers[layerIdx];
+        layerX = horizontalSpacing * (layerIdx + 1);
+        vSpacing = Math.max(minVerticalSpacing, 
+                Math.min(maxVerticalSpacing, height / (layerSize + 1)));
+        layerYOffset = (height - layerSize * vSpacing) / 2;
+        
+        for (int i = 0; i < layerSize; i++) {
+            double nodeY = layerYOffset + vSpacing * (i + 0.5);
+            
+            // Aktivierungswert direkt vom Output-Neuron holen
+            double activation = 0;
+            if (i < network.outputNeuronList.size()) {
+                activation = network.outputNeuronList.get(i).getValue();
+                // Aktivierungswert auf den Bereich [0,1] begrenzen
+                activation = Math.max(0, Math.min(1, activation));
+            }
+            
+            // Farbe basierend auf Aktivierung (blau bis rot)
+            Color nodeColor = Color.rgb(
+                (int) (255 * activation),
+                0,
+                (int) (255 * (1 - activation))
+            );
+            
+            // Neuron zeichnen
+            gc.setFill(nodeColor);
+            gc.fillOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
+            gc.setStroke(Color.BLACK);
+            gc.strokeOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
+        }
+        
         // Beschriftungen der Schichten mit dynamischer Schriftgröße
         double fontSize = Math.min(12, Math.max(9, width / 50));
         gc.setFont(new javafx.scene.text.Font(fontSize));
@@ -371,4 +441,3 @@ public class CellDetailView extends Stage {
         gc.restore(); // Transformation zurücksetzen
     }
 }
-
