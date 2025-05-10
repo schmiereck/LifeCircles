@@ -40,8 +40,10 @@ public class CellCalcService {
             }
         }
 
-        // Verzögerte Größenänderung anwenden
-        cell.applyDelayedSizeChange();
+        // Verzögerte Größenänderung nur anwenden, wenn die Zelle nicht wächst
+        if (!cell.isGrowing()) {
+            cell.applyDelayedSizeChange();
+        }
 
         // Update physics
         cell.setPosition(cell.getPosition().add(cell.getVelocity().multiply(deltaTime)));
