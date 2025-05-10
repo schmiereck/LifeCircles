@@ -32,6 +32,15 @@ public class DefaultTrainStrategy implements TrainStrategy {
         environment.addWallBlocker(1200.0D + 150.0D * 1, 600.0D, 100.0D);
         environment.addWallBlocker(1200.0D + 150.0D * 2, 600.0D, 100.0D);
         environment.addWallBlocker(1200.0D + 150.0D * 3, 600.0D, 100.0D);
+        environment.addWallBlocker(1200.0D + 150.0D * 4, 600.0D, 100.0D);
+        environment.addWallBlocker(1200.0D + 150.0D * 5, 600.0D, 100.0D);
+        environment.addWallBlocker(1200.0D + 150.0D * 6, 600.0D, 100.0D);
+
+        environment.addWallBlocker(1200.0D + 150.0D * 10, 100.0D, 20.0D);
+        environment.addWallBlocker(1200.0D + 150.0D * 13, 200.0D, 20.0D);
+        environment.addWallBlocker(1200.0D + 150.0D * 16, 100.0D, 20.0D);
+        environment.addWallBlocker(1200.0D + 150.0D * 19, 300.0D, 20.0D);
+        environment.addWallBlocker(1200.0D + 150.0D * 22, 100.0D, 20.0D);
 
         Random random = new Random();
         for (int i = 0; i < config.getInitialCellCount(); i++) {
