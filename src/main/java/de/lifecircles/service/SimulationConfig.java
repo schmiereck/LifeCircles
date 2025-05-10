@@ -104,6 +104,9 @@ public class SimulationConfig {
      */
     public static double brainSynapseConnectivityDefault = 0.2D;
 
+    // Verzögerung für Größenänderung in Millisekunden
+    private long sizeChangeDelay = 300;
+
     //-------------------------------------------------------------------------
     // Singleton instance
     private static final SimulationConfig INSTANCE = new SimulationConfig();
@@ -283,6 +286,15 @@ public class SimulationConfig {
 
     public void setCellStateOutputThreshold(double cellStateOutputThreshold) {
         this.cellStateOutputThreshold = cellStateOutputThreshold;
+    }
+
+    // Getter und Setter für die Verzögerung
+    public long getSizeChangeDelay() {
+        return sizeChangeDelay;
+    }
+
+    public void setSizeChangeDelay(long sizeChangeDelay) {
+        this.sizeChangeDelay = sizeChangeDelay;
     }
 }
 

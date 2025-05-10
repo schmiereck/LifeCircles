@@ -36,6 +36,7 @@ public class Cell implements Sensable, Serializable {
     private int cellState; // Zustand der Zelle, beeinflusst zusätzliche Hidden-Layer
     private double mutationRateFactor; // Faktor für die Mutationsrate
     private double mutationStrengthFactor; // Faktor für die Mutationsstärke
+    private transient long sizeChangeTimestamp = -1; // Zeitstempel für verzögerte Größenänderung
 
     private int tempThinkHackCounter = SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX;
 
@@ -142,10 +143,8 @@ public class Cell implements Sensable, Serializable {
         this.targetRadiusSize = Math.max(SimulationConfig.getInstance().getCellMinRadiusSize(),
                 Math.min(SimulationConfig.getInstance().getCellMaxRadiusSize(), radiusSize));
         
-        // Wenn die Zelle nicht im Wachstumsprozess ist, wird die Größe sofort angepasst
-        if (!this.isGrowing) {
-            this.radiusSize = this.targetRadiusSize;
-        }
+        // Setze den Zeitstempel für die Verzögerung
+        this.sizeChangeTimestamp = System.currentTimeMillis();
     }
 
     public void setRealRadiusSize(double radiusSize) {
@@ -384,6 +383,17 @@ public class Cell implements Sensable, Serializable {
         if (random.nextDouble() < mutationRate) {
             double mutation = (random.nextDouble() * 2.0 - 1.0) * mutationStrength;
             this.mutationStrengthFactor = Math.max(0.1, Math.min(2.0, this.mutationStrengthFactor + mutation));
+        }
+    }
+
+    // Neue Methode, um die verzögerte Größenänderung zu prüfen und anzuwenden
+    public void applyDelayedSizeChange() {
+        if (this.sizeChangeTimestamp > 0) {
+            long elapsedTime = System.currentTimeMillis() - this.sizeChangeTimestamp;
+            if (elapsedTime >= SimulationConfig.getInstance().getSizeChangeDelay()) {
+                this.radiusSize = this.targetRadiusSize;
+                this.sizeChangeTimestamp = -1; // Zurücksetzen des Zeitstempels
+            }
         }
     }
 

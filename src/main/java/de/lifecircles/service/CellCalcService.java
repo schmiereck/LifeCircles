@@ -40,6 +40,9 @@ public class CellCalcService {
             }
         }
 
+        // Verzögerte Größenänderung anwenden
+        cell.applyDelayedSizeChange();
+
         // Update physics
         cell.setPosition(cell.getPosition().add(cell.getVelocity().multiply(deltaTime)));
         cell.setRotation(cell.getRotation() + cell.getAngularVelocity() * deltaTime);
