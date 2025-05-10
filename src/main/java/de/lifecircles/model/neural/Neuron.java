@@ -2,12 +2,15 @@ package de.lifecircles.model.neural;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * Represents a neuron in the neural network.
  * Uses a sigmoid activation function.
  */
-public class Neuron {
+public class Neuron implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     private double value;
     private double bias;
     private Synapse[] inputSynapses; // Geändert zu Array für schnellere Iteration

@@ -1,5 +1,6 @@
 package de.lifecircles.model.neural;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,9 @@ import java.util.List;
  * Represents a layer in the neural network.
  * Contains a list of neurons and an active flag.
  */
-public class Layer {
+public class Layer implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final List<Neuron> neurons;
     private boolean isActiveLayer;
 

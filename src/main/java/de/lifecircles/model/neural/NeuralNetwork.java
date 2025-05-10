@@ -5,11 +5,13 @@ import de.lifecircles.service.SimulationConfig;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.io.Serializable;
 
 /**
  * Represents the neural network that controls cell behavior.
  */
-public class NeuralNetwork {
+public class NeuralNetwork implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final List<Neuron> inputNeuronList;
     private final List<Layer> hiddenLayerList; // Verwende Layer-Objekte statt Listen von Neuronen
     private final List<Neuron> outputNeuronList;
@@ -278,6 +280,30 @@ public class NeuralNetwork {
         // Apply structural mutations
         mutated.applyStructuralMutations(mutationRate);
 
+        return mutated;
+    }
+
+    public NeuralNetwork mutate(double mutationRate, double mutationStrength, double rateFactor, double strengthFactor) {
+        NeuralNetwork mutated = new NeuralNetwork(this);
+
+        double adjustedRate = mutationRate * rateFactor;
+        double adjustedStrength = mutationStrength * strengthFactor;
+
+        mutated.applyToAllNeurons(neuron -> {
+            if (Math.random() < adjustedRate) {
+                double mutation = (Math.random() * 2.0D - 1.0D) * adjustedStrength;
+                neuron.setBias(neuron.getBias() + mutation);
+            }
+        });
+
+        for (Synapse synapse : mutated.synapsesynapseList) {
+            if (Math.random() < adjustedRate) {
+                double mutation = (Math.random() * 2.0D - 1.0D) * adjustedStrength;
+                synapse.setWeight(synapse.getWeight() + mutation);
+            }
+        }
+
+        mutated.applyStructuralMutations(adjustedRate);
         return mutated;
     }
     

@@ -15,10 +15,10 @@ public class DefaultTrainStrategy implements TrainStrategy {
 
     @Override
     public Environment initializeEnvironment() {
-        config.setWidth(1600 * 2);
+        config.setWidth(1600 * 3);
         config.setHeight(1200);
 
-        config.setScaleSimulation(3.2D);
+        config.setScaleSimulation(4.7D);
 
         return new Environment(config.getWidth(), config.getHeight());
     }

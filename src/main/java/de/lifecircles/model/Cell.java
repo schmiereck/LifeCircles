@@ -7,13 +7,17 @@ import de.lifecircles.service.EnergyCellCalcService;
 import de.lifecircles.service.SimulationConfig;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.*;
+import java.util.Random;
 
 /**
  * Represents a cell in the simulation.
  * Contains position, rotation, size, type, and sensor/actor points.
  * Behavior is controlled by a neural network brain.
  */
-public class Cell implements Sensable {
+public class Cell implements Sensable, Serializable {
+    private static final long serialVersionUID = 1L;
+
     private Vector2D position;
     private Vector2D velocity;
     private double rotation; // in radians
@@ -30,6 +34,8 @@ public class Cell implements Sensable {
     private int generation; // generation counter
     private boolean sunRayHit = false; // Flag to indicate if cell was hit by sun ray
     private int cellState; // Zustand der Zelle, beeinflusst zusätzliche Hidden-Layer
+    private double mutationRateFactor; // Faktor für die Mutationsrate
+    private double mutationStrengthFactor; // Faktor für die Mutationsstärke
 
     private int tempThinkHackCounter = SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX;
 
@@ -49,6 +55,8 @@ public class Cell implements Sensable {
         this.energy = SimulationConfig.CELL_MAX_ENERGY;
         this.age = 0.0;
         this.generation = 0; // initialize generation counter
+        this.mutationRateFactor = 1.0; // Standardwert
+        this.mutationStrengthFactor = 1.0; // Standardwert
     }
 
     public Cell(Vector2D position, final double radiusSize, final NeuralNetwork neuralNetwork) {
@@ -67,6 +75,8 @@ public class Cell implements Sensable {
         this.energy = SimulationConfig.CELL_MAX_ENERGY;
         this.age = 0.0;
         this.generation = 0; // initialize generation counter
+        this.mutationRateFactor = 1.0; // Standardwert
+        this.mutationStrengthFactor = 1.0; // Standardwert
     }
 
     private void initializeSensorActors() {
@@ -325,5 +335,55 @@ public class Cell implements Sensable {
         }
 
         return topSensorIndex;
+    }
+
+    /**
+     * Speichert die Zelle in eine Datei.
+     */
+    public void saveToFile(String filePath) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
+            oos.writeObject(this);
+        }
+    }
+
+    /**
+     * Lädt eine Zelle aus einer Datei.
+     */
+    public static Cell loadFromFile(String filePath) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
+            return (Cell) ois.readObject();
+        }
+    }
+
+    public double getMutationRateFactor() {
+        return mutationRateFactor;
+    }
+
+    public void setMutationRateFactor(double mutationRateFactor) {
+        this.mutationRateFactor = Math.max(0.1, Math.min(2.0, mutationRateFactor)); // Begrenzung auf sinnvolle Werte
+    }
+
+    public double getMutationStrengthFactor() {
+        return mutationStrengthFactor;
+    }
+
+    public void setMutationStrengthFactor(double mutationStrengthFactor) {
+        this.mutationStrengthFactor = Math.max(0.1, Math.min(2.0, mutationStrengthFactor)); // Begrenzung auf sinnvolle Werte
+    }
+
+    public void mutateMutationFactors(double mutationRate, double mutationStrength) {
+        Random random = new Random();
+
+        // Mutate mutationRateFactor
+        if (random.nextDouble() < mutationRate) {
+            double mutation = (random.nextDouble() * 2.0 - 1.0) * mutationStrength;
+            this.mutationRateFactor = Math.max(0.1, Math.min(2.0, this.mutationRateFactor + mutation));
+        }
+
+        // Mutate mutationStrengthFactor
+        if (random.nextDouble() < mutationRate) {
+            double mutation = (random.nextDouble() * 2.0 - 1.0) * mutationStrength;
+            this.mutationStrengthFactor = Math.max(0.1, Math.min(2.0, this.mutationStrengthFactor + mutation));
+        }
     }
 }

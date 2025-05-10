@@ -1,9 +1,13 @@
 package de.lifecircles.model.neural;
 
+import java.io.Serializable;
+
 /**
  * Represents a connection between two neurons in the neural network.
  */
-public class Synapse {
+public class Synapse implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     private final Neuron sourceNeuron;
     private final Neuron targetNeuron;
     private double weight;

@@ -1,5 +1,6 @@
 package de.lifecircles;
 
+import de.lifecircles.model.Environment;
 import de.lifecircles.service.CalculationService;
 import de.lifecircles.service.SimulationConfig;
 import de.lifecircles.view.ConfigPanel;
@@ -14,6 +15,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import java.io.File;
 
 /**
  * Main controller for the application.
@@ -65,6 +68,8 @@ public class MainController extends BorderPane {
         Button startButton = new Button("Start");
         Button pauseButton = new Button("Pause");
         Button resetButton = new Button("Reset");
+        Button saveButton = new Button("Save as");
+        Button loadButton = new Button("Load");
         
         startButton.setOnAction(e -> {
             calculationService.start();
@@ -84,6 +89,34 @@ public class MainController extends BorderPane {
             calculationService.start();
         });
 
+        saveButton.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Cells");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Cell Files", "*.cells"));
+            File file = fileChooser.showSaveDialog(getScene().getWindow());
+            if (file != null) {
+                try {
+                    Environment.getInstance().saveCellsToFile(file.getAbsolutePath());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        loadButton.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Load Cells");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Cell Files", "*.cells"));
+            File file = fileChooser.showOpenDialog(getScene().getWindow());
+            if (file != null) {
+                try {
+                    Environment.getInstance().loadCellsFromFile(file.getAbsolutePath());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
         // Simulation speed control
         Label speedLabel = new Label("Speed:");
         Slider speedSlider = new Slider(0.1, 2.0, 1.0);
@@ -94,6 +127,7 @@ public class MainController extends BorderPane {
 
         return new ToolBar(
             startButton, pauseButton, resetButton,
+            saveButton, loadButton,
             new Label(" | "),
             speedLabel, speedSlider
         );

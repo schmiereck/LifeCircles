@@ -13,6 +13,7 @@ import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
 import java.util.*;
 
 import de.lifecircles.service.trainStrategy.TrainMode;
+import java.io.*;
 
 /**
  * Represents the simulation environment.
@@ -199,6 +200,8 @@ public class Environment {
                 for (int i = 0; i < initialCount; i++) {
                     Cell childCell = ReproductionManagerService.reproduce(config, lastDeadCell);
                     childCell.setEnergy(1.0D);
+                    childCell.setMutationRateFactor(lastDeadCell.getMutationRateFactor());
+                    childCell.setMutationStrengthFactor(lastDeadCell.getMutationStrengthFactor());
                     cells.add(childCell);
                 }
             } else {
@@ -218,7 +221,8 @@ public class Environment {
                     if (Objects.nonNull(parentCell)) {
                         Cell childCell = ReproductionManagerService.reproduce(config, parentCell);
                         childCell.setEnergy(1.0D);
-                        parentCell.setEnergy(1.0D);
+                        childCell.setMutationRateFactor(parentCell.getMutationRateFactor());
+                        childCell.setMutationStrengthFactor(parentCell.getMutationStrengthFactor());
                         cells.add(childCell);
                     }
                 }
@@ -271,5 +275,25 @@ public class Environment {
 
     public void setHeight(double height) {
         this.height = height;
+    }
+
+    /**
+     * Speichert alle Zellen in eine Datei.
+     */
+    public void saveCellsToFile(String filePath) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
+            oos.writeObject(cells);
+        }
+    }
+
+    /**
+     * Lädt Zellen aus einer Datei und ersetzt die aktuellen Zellen.
+     */
+    @SuppressWarnings("unchecked")
+    public void loadCellsFromFile(String filePath) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
+            List<Cell> loadedCells = (List<Cell>) ois.readObject();
+            resetCells(loadedCells);
+        }
     }
 }

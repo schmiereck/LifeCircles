@@ -2,11 +2,13 @@ package de.lifecircles.model.neural;
 
 import de.lifecircles.model.Cell;
 import de.lifecircles.service.SimulationConfig;
+import java.io.Serializable;
 
 /**
  * Manages the neural network that controls cell behavior.
  */
-public class CellBrain {
+public class CellBrain implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Cell cell;
     private final NeuralNetwork network;
 

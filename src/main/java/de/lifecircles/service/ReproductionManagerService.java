@@ -117,6 +117,11 @@ public class ReproductionManagerService {
                     final Layer layer = hiddenLayerList.get(i);
                     layer.setActiveLayer(activeLayers[i]);
                 }
+
+                // Mutate mutationRateFactor and mutationStrengthFactor
+                child.setMutationRateFactor(parent.getMutationRateFactor());
+                child.setMutationStrengthFactor(parent.getMutationStrengthFactor());
+                child.mutateMutationFactors(config.getMutationRate(), config.getMutationStrength());
             } else {
                 child = null;
             }
