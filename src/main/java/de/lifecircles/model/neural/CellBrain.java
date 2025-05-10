@@ -9,7 +9,7 @@ import java.io.Serializable;
  */
 public class CellBrain implements Serializable {
     private static final long serialVersionUID = 1L;
-    private final Cell cell;
+    private final transient Cell cell;
     private final NeuralNetwork network;
 
     /**
@@ -75,5 +75,9 @@ public class CellBrain implements Serializable {
 
     public NeuralNetwork getNeuralNetwork() {
         return this.network;
+    }
+
+    public Cell getCell() {
+        return this.cell;
     }
 }

@@ -28,7 +28,7 @@ public class Cell implements Sensable, Serializable {
     private boolean isGrowing; // Flag ob die Zelle sich im Wachstumsprozess befindet
     private CellType type;
     private final List<SensorActor> sensorActors;
-    private CellBrain brain;
+    private transient CellBrain brain;
     private double energy;
     private double age; // in seconds
     private int generation; // generation counter
@@ -384,6 +384,16 @@ public class Cell implements Sensable, Serializable {
         if (random.nextDouble() < mutationRate) {
             double mutation = (random.nextDouble() * 2.0 - 1.0) * mutationStrength;
             this.mutationStrengthFactor = Math.max(0.1, Math.min(2.0, this.mutationStrengthFactor + mutation));
+        }
+    }
+
+    // Methode zur Initialisierung des Gehirns nach der Deserialisierung
+    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        this.brain = new CellBrain(this); // Initialisiere das Gehirn neu
+        // Setze parentCell in allen SensorActor-Instanzen
+        for (SensorActor sensorActor : sensorActors) {
+            sensorActor.setParentCell(this);
         }
     }
 }

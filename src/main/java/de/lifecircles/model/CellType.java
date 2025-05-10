@@ -1,10 +1,14 @@
 package de.lifecircles.model;
 
+import java.io.Serializable;
+
 /**
  * Represents a cell or sensor/actor type using RGB values.
  * Each type is defined by its red, green, and blue components.
  */
-public class CellType {
+public class CellType implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final double red;
     private final double green;
     private final double blue;

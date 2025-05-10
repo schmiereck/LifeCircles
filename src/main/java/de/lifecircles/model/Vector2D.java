@@ -1,10 +1,14 @@
 package de.lifecircles.model;
 
+import java.io.Serializable;
+
 /**
  * Represents a 2D vector with x and y components.
  * Provides basic vector operations needed for the simulation.
  */
-public class Vector2D {
+public class Vector2D implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private double x;
     private double y;
 

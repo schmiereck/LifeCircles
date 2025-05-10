@@ -1,24 +1,29 @@
 package de.lifecircles.model;
 
 import de.lifecircles.service.SimulationConfig;
+import java.io.Serializable;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.IOException;
 
 /**
  * Represents a sensor/actor point on a cell's surface.
  * Can both sense nearby actors and emit force fields.
  */
-public class SensorActor implements Sensable {
+public class SensorActor implements Sensable, Serializable {
+    private static final long serialVersionUID = 1L;
 
-    private final Cell parentCell;
+    private transient Cell parentCell; // Nicht serialisierbar
     private final double angleOnCell; // Angle position on the cell surface (in radians)
     private final double cosAngleOnCell;
     private final double sinAngleOnCell;
     private CellType type;
     private double forceStrength; // Positive for attraction, negative for repulsion
     // temporarily stores the sensed actor and its cell
-    private Sensable sensedActor;
-    private Sensable sensedCell;
+    private transient Sensable sensedActor; // Nicht serialisierbar
+    private transient Sensable sensedCell;  // Nicht serialisierbar
     // cached position for current simulation step
-    private Vector2D cachedPosition;
+    private transient Vector2D cachedPosition;
     private double reproductionDesire;
     private double energyAbsorption;
     private double energyDelivery;
@@ -141,19 +146,37 @@ public class SensorActor implements Sensable {
      */
     public void setTouchingBlocker(boolean touchingBlocker) {
         this.touchingBlocker = touchingBlocker;
-        
+
         if (touchingBlocker) {
             // Setze den Aktor-Typ auf grau (0.5, 0.5, 0.5) wenn ein Blocker berührt wird
             this.setType(new CellType(0.5, 0.5, 0.5));
-            
+
             // Setze auch den Zell-Typ auf grau
             if (this.parentCell != null) {
                 this.parentCell.setType(new CellType(0.5, 0.5, 0.5));
             }
-            
+
             // Andere Sensor-Inputs zurücksetzen
             this.sensedActor = null;
             this.sensedCell = null;
         }
+    }
+
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.defaultWriteObject();
+        // Speichere die ID des parentCell, falls nötig
+        // oos.writeObject(parentCell != null ? parentCell.getId() : null);
+    }
+
+    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        this.sensedActor = null;
+        this.sensedCell = null;
+        this.cachedPosition = null;
+        // parentCell wird nach der Deserialisierung von der Cell-Klasse gesetzt
+    }
+
+    public void setParentCell(Cell parentCell) {
+        this.parentCell = parentCell;
     }
 }

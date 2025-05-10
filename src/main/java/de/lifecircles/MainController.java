@@ -17,12 +17,15 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import java.io.File;
+import java.util.prefs.Preferences;
 
 /**
  * Main controller for the application.
  * Manages the simulation lifecycle and UI components.
  */
 public class MainController extends BorderPane {
+    private static final String LAST_FILE_PATH_KEY = "lastFilePath";
+    private final Preferences preferences = Preferences.userNodeForPackage(MainController.class);
     private final CalculationService calculationService;
     private final SimulationView simulationView;
     private final SimulationConfig simulationConfig;
@@ -93,10 +96,15 @@ public class MainController extends BorderPane {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Cells");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Cell Files", "*.cells"));
+            String lastFilePath = preferences.get(LAST_FILE_PATH_KEY, null);
+            if (lastFilePath != null) {
+                fileChooser.setInitialDirectory(new File(lastFilePath).getParentFile());
+            }
             File file = fileChooser.showSaveDialog(getScene().getWindow());
             if (file != null) {
                 try {
                     Environment.getInstance().saveCellsToFile(file.getAbsolutePath());
+                    preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -107,10 +115,15 @@ public class MainController extends BorderPane {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Load Cells");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Cell Files", "*.cells"));
+            String lastFilePath = preferences.get(LAST_FILE_PATH_KEY, null);
+            if (lastFilePath != null) {
+                fileChooser.setInitialDirectory(new File(lastFilePath).getParentFile());
+            }
             File file = fileChooser.showOpenDialog(getScene().getWindow());
             if (file != null) {
                 try {
                     Environment.getInstance().loadCellsFromFile(file.getAbsolutePath());
+                    preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }

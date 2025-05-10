@@ -1,7 +1,8 @@
 module de.lifecircles {
     requires javafx.controls;
     requires javafx.graphics;
-    
+    requires java.prefs;
+
     exports de.lifecircles;
     exports de.lifecircles.model;
     exports de.lifecircles.model.neural;
