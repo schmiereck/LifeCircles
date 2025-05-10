@@ -105,7 +105,7 @@ public class SimulationConfig {
     public static double brainSynapseConnectivityDefault = 0.2D;
 
     // Verzögerung für Größenänderung in Millisekunden
-    private long sizeChangeDelay = 300;
+    private long sizeChangeDelay = 500;
 
     //-------------------------------------------------------------------------
     // Singleton instance
