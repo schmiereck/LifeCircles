@@ -54,7 +54,15 @@ Das System-Design der Anwendung soll enthalten:
 ![](img/Screenshot-2025-05-09-140153-cut.jpg)
 
 # TODO
-  
+
+* Jede zelle hat ein Rechenzeit für ihr CellBrain. 
+  * Wenn sie länger braucht, werden die Berechnungen weniger oft ausgeführt.
+  * Alternativ kann sie auch mehr Energie verbrauchen.
+  * Oder anderer Ansatz, sie kann entscheiden, wie viel Energie sie für die Berechnungen verbraucht (wie oft diese ausgeführt werden).  
+    Wenn zu wenig Energie da ist, kann sie keine Berechnungen mehr durchführen.  
+    Dafür braucht es aber wieder ein kleines Master-Brain, das diese Entscheidung fällt.  
+    Dieses Master Brain könnte dann auch, wie usprünglich geplant, die Entscheidung treffen, wann welche Cell-Status-Lqyer aktiv werden.
+
 * Prüfe den Grid-Paritionierungs-Algorithmus und die Berechnung der Interaktionen.
   * Die größe der Grid-Zellen sollte der maximal Zell-Radius + der maximale Focre-Field-Radius sein.
 
