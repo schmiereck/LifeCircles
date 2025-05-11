@@ -64,10 +64,10 @@ public class Environment {
         blockers.add(ground);
     }
 
-    public void addSunBlocker() {
+    public void addSunBlocker(final int xStart, final int yStart, final int blockerWidth) {
         Blocker sunBlocker = new Blocker(
-            new Vector2D(width/4, this.height - height/8), // Position at bottom
-            width/6,                              // Full width
+            new Vector2D(xStart, yStart), // Position at bottom
+            blockerWidth,                              // Full width
             20,                                 // Height
             javafx.scene.paint.Color.GRAY,      // Color
             Blocker.BlockerType.PLATFORM          // Type

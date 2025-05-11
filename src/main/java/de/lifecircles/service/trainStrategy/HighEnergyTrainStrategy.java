@@ -31,7 +31,7 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
     public void initialize(Environment environment) {
         // Add ground blocker by default
         environment.addGroundBlocker();
-        environment.addSunBlocker();
+        environment.addSunBlocker(1024 * 2 / 4, (int)(environment.getHeight() - (environment.getHeight() / 8)), 1024 * 2 / 6);
 
         // Initiale Population
         Random random = new Random();

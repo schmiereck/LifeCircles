@@ -15,10 +15,12 @@ public class DefaultTrainStrategy implements TrainStrategy {
 
     @Override
     public Environment initializeEnvironment() {
-        config.setWidth(1600 * 3);
+        //config.setWidth(1600 * 3);
+        config.setWidth(1600 * 4);
         config.setHeight(1200);
 
-        config.setScaleSimulation(4.7D);
+        //config.setScaleSimulation(5.7D);
+        config.setScaleSimulation(6.5D);
 
         return new Environment(config.getWidth(), config.getHeight());
     }
@@ -27,7 +29,7 @@ public class DefaultTrainStrategy implements TrainStrategy {
     public void initialize(Environment environment) {
         // Add ground blocker by default
         environment.addGroundBlocker();
-        environment.addSunBlocker();
+        environment.addSunBlocker(1600 * 3 / 4, (int)(environment.getHeight() - (environment.getHeight() / 8)), 1600 * 3 / 6);
         environment.addWallBlocker(1200.0D, 600.0D, 100.0D);
         environment.addWallBlocker(1200.0D + 150.0D * 1, 600.0D, 100.0D);
         environment.addWallBlocker(1200.0D + 150.0D * 2, 600.0D, 100.0D);
@@ -41,6 +43,14 @@ public class DefaultTrainStrategy implements TrainStrategy {
         environment.addWallBlocker(1200.0D + 150.0D * 16, 100.0D, 20.0D);
         environment.addWallBlocker(1200.0D + 150.0D * 19, 300.0D, 20.0D);
         environment.addWallBlocker(1200.0D + 150.0D * 22, 100.0D, 20.0D);
+
+        final int xSunBlocker = 1200 + 150 * 25;
+
+        for (int xPos = 0; xPos < 1200; xPos += 50) {
+            environment.addSunBlocker(xSunBlocker + xPos, 50, 20);
+        }
+
+        environment.addSunBlocker(1600 * 3 / 4, (int)(environment.getHeight() - (environment.getHeight() / 8)), 1600 * 3 / 6);
 
         Random random = new Random();
         for (int i = 0; i < config.getInitialCellCount(); i++) {
