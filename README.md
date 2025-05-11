@@ -55,6 +55,8 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
+* Cell#readObject sieht sehr falsch aus
+
 * Jede zelle hat ein Rechenzeit für ihr CellBrain. 
   * Wenn sie länger braucht, werden die Berechnungen weniger oft ausgeführt.
   * Alternativ kann sie auch mehr Energie verbrauchen.

@@ -207,8 +207,7 @@ public class Environment {
             } else {
                 for (int i = 0; i < initialCount; i++) {
                     Vector2D pos = new Vector2D(random.nextDouble() * width, random.nextDouble() * height);
-                    Cell newCell = new Cell(pos, config.getCellMaxRadiusSize() / 2.0D,
-                            SimulationConfig.brainSynapseConnectivityDefault);
+                    Cell newCell = new Cell(pos, config.getCellMaxRadiusSize() / 2.0D);
                     cells.add(newCell);
                 }
             }

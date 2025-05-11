@@ -9,8 +9,17 @@ import java.io.Serializable;
  */
 public class CellBrain implements Serializable {
     private static final long serialVersionUID = 1L;
-    private final transient Cell cell;
     private final NeuralNetwork network;
+
+
+    /**
+     * Erstellt ein neues CellBrain mit vollständiger Synapsen-Konnektivität (100%).
+     *
+     * @param cell Die Zelle, zu der dieses Gehirn gehört
+     */
+    public CellBrain(final Cell cell) {
+        this(cell, 1.0D, 1.0D, 1.0D);
+    }
 
     /**
      * Erstellt ein neues CellBrain mit angegebener Synapsen-Konnektivität.
@@ -18,9 +27,8 @@ public class CellBrain implements Serializable {
      * @param cell Die Zelle, zu der dieses Gehirn gehört
      * @param synapseConnectivity Prozentsatz der zu erstellenden Synapsen (0.0-1.0)
      */
-    public CellBrain(final Cell cell, double synapseConnectivity) {
-        this.cell = cell;
-        
+    public CellBrain(final Cell cell, final double hiddenCountFactor,
+                     final double stateHiddenLayerSynapseConnectivity, final double synapseConnectivity) {
         int inputCount = GlobalInputFeature.values().length +
                          (SensorInputFeature.values().length * cell.getSensorActors().size());
         
@@ -29,35 +37,24 @@ public class CellBrain implements Serializable {
 
         //final int hiddenCount = (inputCount + outputCount) * 2; // Arbitrary hidden layer size
         final int[] hiddenCountArr = {
-                (int)(inputCount * 1.4D),
+                (int)(inputCount * hiddenCountFactor),
                 outputCount
         };
 
         this.network = new NeuralNetwork(inputCount, hiddenCountArr, outputCount,
                 synapseConnectivity, SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT);
 
-        this.network.addHiddenLayer(0, inputCount / 4, 0.1D); // State 0
-        this.network.addHiddenLayer(0, inputCount / 4, 0.1D); // State 1
-        this.network.addHiddenLayer(0, inputCount / 4, 0.1D); // State 2
-    }
-
-    /**
-     * Erstellt ein neues CellBrain mit vollständiger Synapsen-Konnektivität (100%).
-     * 
-     * @param cell Die Zelle, zu der dieses Gehirn gehört
-     */
-    public CellBrain(final Cell cell) {
-        this(cell, 1.0);
+        this.network.addHiddenLayer(0, inputCount / 4, stateHiddenLayerSynapseConnectivity); // State 0
+        this.network.addHiddenLayer(0, inputCount / 4, stateHiddenLayerSynapseConnectivity); // State 1
+        this.network.addHiddenLayer(0, inputCount / 4, stateHiddenLayerSynapseConnectivity); // State 2
     }
 
     /**
      * Erstellt ein CellBrain mit bestehendem neuronalen Netzwerk.
      * 
-     * @param cell Die Zelle, zu der dieses Gehirn gehört
      * @param neuralNetwork Das zu verwendende neuronale Netzwerk
      */
-    public CellBrain(final Cell cell, final NeuralNetwork neuralNetwork) {
-        this.cell = cell;
+    public CellBrain(final NeuralNetwork neuralNetwork) {
         this.network = neuralNetwork;
     }
 
@@ -75,9 +72,5 @@ public class CellBrain implements Serializable {
 
     public NeuralNetwork getNeuralNetwork() {
         return this.network;
-    }
-
-    public Cell getCell() {
-        return this.cell;
     }
 }

@@ -103,6 +103,8 @@ public class SimulationConfig {
      * Default synapse connectivity for the neural network (0 - 1.0).
      */
     public static double brainSynapseConnectivityDefault = 0.2D;
+    public static double stateHiddenLayerSynapseConnectivityDefault = 0.1D;
+    public static double hiddenCountFactorDefault = 1.4D;
 
     // Verzögerung für Größenänderung in Millisekunden
     private long sizeChangeDelay = 500;

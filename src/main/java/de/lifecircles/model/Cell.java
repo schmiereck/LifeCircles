@@ -28,7 +28,7 @@ public class Cell implements Sensable, Serializable {
     private boolean isGrowing; // Flag ob die Zelle sich im Wachstumsprozess befindet
     private CellType type;
     private final List<SensorActor> sensorActors;
-    private transient CellBrain brain;
+    private CellBrain brain;
     private double energy;
     private double age; // in seconds
     private int generation; // generation counter
@@ -40,7 +40,21 @@ public class Cell implements Sensable, Serializable {
 
     private int tempThinkHackCounter = SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX;
 
-    public Cell(Vector2D position, final double radiusSize, double synapseConnectivity) {
+    public Cell(Vector2D position, final double radiusSize) {
+        this(position, radiusSize, SimulationConfig.hiddenCountFactorDefault,
+                SimulationConfig.stateHiddenLayerSynapseConnectivityDefault,
+                SimulationConfig.brainSynapseConnectivityDefault);
+    }
+
+    public Cell(Vector2D position, final double radiusSize, final double synapseConnectivity) {
+        this(position, radiusSize, SimulationConfig.hiddenCountFactorDefault,
+                SimulationConfig.stateHiddenLayerSynapseConnectivityDefault,
+                synapseConnectivity);
+
+    }
+
+    public Cell(Vector2D position, final double radiusSize, final double hiddenCountFactor,
+                final double stateHiddenLayerSynapseConnectivity, final double synapseConnectivity) {
         this.position = position;
         this.velocity = new Vector2D(0, 0);
         this.rotation = 0;
@@ -52,7 +66,8 @@ public class Cell implements Sensable, Serializable {
         this.type = new CellType(0, 0, 0);
         this.sensorActors = new ArrayList<>();
         initializeSensorActors();
-        this.brain = new CellBrain(this, synapseConnectivity);
+        this.brain = new CellBrain(this, hiddenCountFactor,
+                stateHiddenLayerSynapseConnectivity, synapseConnectivity);
         this.energy = SimulationConfig.CELL_MAX_ENERGY;
         this.age = 0.0;
         this.generation = 0; // initialize generation counter
@@ -72,7 +87,7 @@ public class Cell implements Sensable, Serializable {
         this.type = new CellType(0, 0, 0);
         this.sensorActors = new ArrayList<>();
         initializeSensorActors();
-        this.brain = new CellBrain(this, neuralNetwork);
+        this.brain = new CellBrain(neuralNetwork);
         this.energy = SimulationConfig.CELL_MAX_ENERGY;
         this.age = 0.0;
         this.generation = 0; // initialize generation counter
@@ -400,7 +415,6 @@ public class Cell implements Sensable, Serializable {
     // Methode zur Initialisierung des Gehirns nach der Deserialisierung
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
-        this.brain = new CellBrain(this); // Initialisiere das Gehirn neu
         // Setze parentCell in allen SensorActor-Instanzen
         for (SensorActor sensorActor : sensorActors) {
             sensorActor.setParentCell(this);

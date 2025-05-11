@@ -43,8 +43,11 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         for (int i = 0; i < INITIAL_COUNT; i++) {
             double x = random.nextDouble() * config.getWidth();
             double y = config.getHeight() - (random.nextDouble() * (config.getHeight() / 4.0D));
+            final double hiddenCountFactor = SimulationConfig.hiddenCountFactorDefault;
+            final double stateHiddenLayerSynapseConnectivity = SimulationConfig.stateHiddenLayerSynapseConnectivityDefault;
+            final double brainSynapseConnectivity = SimulationConfig.brainSynapseConnectivityDefault;
             environment.addCell(new Cell(new Vector2D(x, y), config.getCellMaxRadiusSize() / 2.0,
-                    SimulationConfig.brainSynapseConnectivityDefault));
+                    hiddenCountFactor, stateHiddenLayerSynapseConnectivity, brainSynapseConnectivity));
         }
     }
 
