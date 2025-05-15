@@ -6,10 +6,7 @@ import de.lifecircles.model.Vector2D;
 import de.lifecircles.service.ReproductionManagerService;
 import de.lifecircles.service.SimulationConfig;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Training-Strategie: HighPosition.
@@ -74,8 +71,10 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         while (nextGen.size() < INITIAL_COUNT) {
             Cell parent = winners.get(random.nextInt(winnersCount));
             Cell child = ReproductionManagerService.reproduce(config, parent);
-            nextGen.add(child);
-            child.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
+            if (Objects.nonNull(child)) {
+                nextGen.add(child);
+                child.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
+            }
         }
         environment.resetCells(nextGen);
     }

@@ -28,6 +28,7 @@ public class CalculationService implements Runnable {
     private long lastFpsTime = System.nanoTime();
     private volatile double fps = 0.0;
     private final AtomicLong stepCount = new AtomicLong(0);
+    private final PartitioningStrategy partitioner;
 
     public CalculationService() {
         this.config = SimulationConfig.getInstance();
@@ -38,6 +39,14 @@ public class CalculationService implements Runnable {
                     default -> new DefaultTrainStrategy();
                 };
         this.environment = this.trainStrategy.initializeEnvironment();
+
+        final double cellRadius = this.config.getCellMaxRadiusSize();
+        final double fieldRadius = this.config.getCellActorMaxFieldRadius();
+        final double interactionRadius = cellRadius + fieldRadius;
+
+        this.partitioner = PartitioningStrategyFactory.createStrategy(
+                this.environment.getWidth(), this.environment.getHeight(), interactionRadius);
+
         this.running = new AtomicBoolean(false);
         this.paused = new AtomicBoolean(false);
         this.initializeSimulation();
@@ -62,6 +71,7 @@ public class CalculationService implements Runnable {
 
                 if (deltaTime >= targetRunTimeStep) {
                     this.update(calcTimeStep);
+
                     // FPS tracking
                     this.updateFpsCount++;
                     this.stepCount.incrementAndGet();
@@ -71,13 +81,14 @@ public class CalculationService implements Runnable {
                         this.updateFpsCount = 0;
                         this.lastFpsTime = nowFps;
                     }
+
                     lastUpdateTime = currentTime;
                 }
             }
 
-            // Small sleep to prevent excessive CPU usage
+            // Reduziere Thread.sleep auf 0, um Verzögerungen zu minimieren
             try {
-                Thread.sleep(1);
+                Thread.sleep(0, 500_000); // 0.5 ms
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;
@@ -86,36 +97,23 @@ public class CalculationService implements Runnable {
     }
 
     private void update(final double deltaTime) {
-        // Retrieve cells and process sensor/actor interactions
         final List<Cell> cells = this.environment.getCells();
 
         // Update all cells with their neighborhood information
-        // Summe aus maximalem Zellradius und Feld-Radius für Interaktionen
-        final double cellRadius = this.config.getCellMaxRadiusSize();
-        final double fieldRadius = this.config.getCellActorMaxFieldRadius();
-        final double interactionRadius = cellRadius + fieldRadius;
-        
-        final PartitioningStrategy partitioner = PartitioningStrategyFactory.createStrategy(
-                this.environment.getWidth(), this.environment.getHeight(), interactionRadius);
+        this.partitioner.build(cells);
 
-        partitioner.build(cells);
+        ActorSensorCellCalcService.processInteractions(cells, deltaTime, this.partitioner);
 
-        ActorSensorCellCalcService.processInteractions(cells, deltaTime, partitioner);
-        
         // Parallel execution of neural networks and cell updates
         cells.parallelStream().forEach(cell -> {
             CellCalcService.updateWithNeighbors(cell, deltaTime);
-        }
-        );
+        });
 
         // Update environment physics
-        this.environment.update(deltaTime, partitioner);
+        this.environment.update(deltaTime, this.partitioner);
 
         // Strategy-based selection/mutation
         this.trainStrategy.selectAndMutate(this.environment);
-
-        // Update state for visualization
-        //updateState();
     }
 
     private void updateState() {

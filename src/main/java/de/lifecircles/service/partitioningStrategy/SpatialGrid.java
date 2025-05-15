@@ -23,35 +23,35 @@ public class SpatialGrid {
     }
 
     public void clear() {
-        for (int row = 0; row < rows; row++) {
-            for (int col = 0; col < cols; col++) {
-                grid[row][col] = new ArrayList<>();
+        for (int row = 0; row < this.rows; row++) {
+            for (int col = 0; col < this.cols; col++) {
+                this.grid[row][col] = new ArrayList<>(4);
             }
         }
     }
 
     public void addCells(List<Cell> cells) {
-        clear();
+        this.clear();
         for (Cell cell : cells) {
-            int col = (int) (cell.getPosition().getX() / cellSize);
-            int row = (int) (cell.getPosition().getY() / cellSize);
+            int col = (int) (cell.getPosition().getX() / this.cellSize);
+            int row = (int) (cell.getPosition().getY() / this.cellSize);
             // wrap around boundaries
-            col = (col % cols + cols) % cols;
-            row = (row % rows + rows) % rows;
-            grid[row][col].add(cell);
+            col = (col % this.cols + this.cols) % this.cols;
+            row = (row % this.rows + this.rows) % this.rows;
+            this.grid[row][col].add(cell);
         }
     }
 
     public List<Cell> getNeighbors(Cell cell) {
         List<Cell> neighbors = new ArrayList<>();
-        int col = (int) (cell.getPosition().getX() / cellSize);
-        int row = (int) (cell.getPosition().getY() / cellSize);
+        int col = (int) (cell.getPosition().getX() / this.cellSize);
+        int row = (int) (cell.getPosition().getY() / this.cellSize);
         // check own and eight surrounding cells
         for (int dy = -1; dy <= 1; dy++) {
             for (int dx = -1; dx <= 1; dx++) {
-                int ncol = (col + dx + cols) % cols;
-                int nrow = (row + dy + rows) % rows;
-                neighbors.addAll(grid[nrow][ncol]);
+                int ncol = (col + dx + this.cols) % this.cols;
+                int nrow = (row + dy + this.rows) % this.rows;
+                neighbors.addAll(this.grid[nrow][ncol]);
             }
         }
         return neighbors;
