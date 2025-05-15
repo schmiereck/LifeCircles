@@ -56,15 +56,12 @@ Das System-Design der Anwendung soll enthalten:
 # TODO
 
 * Jede Zelle hat ein Rechenzeit für ihr CellBrain. 
-  * Wenn sie länger braucht, werden die Berechnungen weniger oft ausgeführt.
+  * Wenn sie länger braucht, da sie mehr Synapsen und Neuronen hat, werden die Berechnungen weniger oft ausgeführt.
   * Alternativ kann sie auch mehr Energie verbrauchen.
   * Oder anderer Ansatz, sie kann entscheiden, wie viel Energie sie für die Berechnungen verbraucht (wie oft diese ausgeführt werden).  
     Wenn zu wenig Energie da ist, kann sie keine Berechnungen mehr durchführen.  
     Dafür braucht es aber wieder ein kleines Master-Brain, das diese Entscheidung fällt.  
     Dieses Master Brain könnte dann auch, wie usprünglich geplant, die Entscheidung treffen, wann welche Cell-Status-Lqyer aktiv werden.
-
-* Prüfe den Grid-Paritionierungs-Algorithmus und die Berechnung der Interaktionen.
-  * Die größe der Grid-Zellen sollte der maximal Zell-Radius + der maximale Focre-Field-Radius sein.
 
 * Füge im SimulationState einen Timestamp hinzu und
   verwende diesen, um nur dann ein neues DTO-Objekt zu erzeugen, wenn sich die Simulation wirklich geändert hat.
@@ -85,6 +82,11 @@ Das System-Design der Anwendung soll enthalten:
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
 # DONE
+
+* Prüfe den Grid-Paritionierungs-Algorithmus und die Berechnung der Interaktionen.
+  * Die Größe der Grid-Zellen sollte der maximal Zell-Radius + der maximale Focre-Field-Radius sein.
+  * Um die Effizienz des SpatialGrid-Algorithmus zu verbessern, werde ich die Map-basierte Implementierung durch eine 2D-Array-basierte Struktur ersetzen. Dies ermöglicht schnelleren Zugriff auf benachbarte Zellen.
+  * SpatialGrid: Ersetze die Map-basierte Speicherung durch ein 2D-Array und passe die Methoden entsprechend an.
 
 * Eine Zelle soll bei der Teilung entscheiden können, wie viel % Energie sie der Child-Zelle mitgibt.
   Dazu wird pro Actor ein neuer Output benötigt.  

@@ -11,17 +11,23 @@ public class SpatialGrid {
     private final double cellSize;
     private final int cols;
     private final int rows;
-    private final Map<Integer, List<Cell>> grid;
+    private final List<Cell>[][] grid; // 2D array for faster access
 
+    @SuppressWarnings("unchecked")
     public SpatialGrid(double width, double height, double cellSize) {
         this.cellSize = cellSize;
         this.cols = (int) Math.ceil(width / cellSize);
         this.rows = (int) Math.ceil(height / cellSize);
-        this.grid = new HashMap<>();
+        this.grid = new ArrayList[rows][cols];
+        clear();
     }
 
     public void clear() {
-        grid.clear();
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                grid[row][col] = new ArrayList<>();
+            }
+        }
     }
 
     public void addCells(List<Cell> cells) {
@@ -32,8 +38,7 @@ public class SpatialGrid {
             // wrap around boundaries
             col = (col % cols + cols) % cols;
             row = (row % rows + rows) % rows;
-            int key = row * cols + col;
-            grid.computeIfAbsent(key, k -> new ArrayList<>()).add(cell);
+            grid[row][col].add(cell);
         }
     }
 
@@ -46,11 +51,7 @@ public class SpatialGrid {
             for (int dx = -1; dx <= 1; dx++) {
                 int ncol = (col + dx + cols) % cols;
                 int nrow = (row + dy + rows) % rows;
-                int key = nrow * cols + ncol;
-                List<Cell> bucket = grid.get(key);
-                if (bucket != null) {
-                    neighbors.addAll(bucket);
-                }
+                neighbors.addAll(grid[nrow][ncol]);
             }
         }
         return neighbors;
