@@ -52,21 +52,22 @@ public class CalculationService implements Runnable {
     public void run() {
         this.running.set(true);
         long lastUpdateTime = System.nanoTime();
-        double targetDelta = config.getTimeStep();
+        final double calcTimeStep = this.config.getCalcTimeStep();
 
         while (this.running.get()) {
             if (!this.paused.get()) {
                 long currentTime = System.nanoTime();
                 double deltaTime = (currentTime - lastUpdateTime) / 1_000_000_000.0;
+                final double targetRunTimeStep = this.config.getRunTimeStep();
 
-                if (deltaTime >= targetDelta) {
-                    update(this.config.getTimeStep());
+                if (deltaTime >= targetRunTimeStep) {
+                    this.update(calcTimeStep);
                     // FPS tracking
                     this.updateFpsCount++;
                     this.stepCount.incrementAndGet();
                     long nowFps = System.nanoTime();
                     if (nowFps - this.lastFpsTime >= 1_000_000_000L) {
-                        this.fps = this.updateFpsCount / ((nowFps - this.lastFpsTime) / 1_000_000_000.0);
+                        this.fps = this.updateFpsCount / ((nowFps - this.lastFpsTime) / 1_000_000_000.0D);
                         this.updateFpsCount = 0;
                         this.lastFpsTime = nowFps;
                     }

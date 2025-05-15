@@ -81,10 +81,11 @@ public class ReproductionManagerService {
                 );
                 child.setType(childType);
 
-                // Share energy equally between parent and child
-                final double parentEnergy = parent.getEnergy();
-                parent.setEnergy(parentEnergy / 2);
-                child.setEnergy(parentEnergy / 2);
+                // Share energy based on the actor's energy share percentage
+                final double energySharePercentage = chosenActor.getReproductionEnergyShareOutput();
+                final double energyForChild = parent.getEnergy() * energySharePercentage;
+                parent.setEnergy(parent.getEnergy() - energyForChild);
+                child.setEnergy(energyForChild);
 
                 // Inherit and increment generation counter
                 child.setGeneration(parent.getGeneration() + 1);

@@ -38,7 +38,8 @@ public class SimulationConfig {
     public double scaleSimulation = 2.0D;
     private double width = 1024 * 2;// * SCALE_SIMULATION;
     private double height = 1200;// * SCALE_SIMULATION;
-    private double timeStep = 1.0D / 60.0D; // 60 Hz simulation
+    private final double calcTimeStep = 1.0D / 60.0D; // 60 Hz simulation
+    private double runTimeStep = 1.0D / 60.0D; // 60 Hz simulation
 
     //-------------------------------------------------------------------------
     // Training:
@@ -53,7 +54,7 @@ public class SimulationConfig {
     // Sun:
 
     private double sunRayRate = 10.0;
-    private double energyPerRay = 0.020; // 0.025;
+    private double energyPerRay = 0.015; // 0.025;
     // Spacing between sun rays in pixels; average one ray per this spacing
     private double sunRaySpacingPx = 60.0;
 
@@ -135,12 +136,16 @@ public class SimulationConfig {
         this.height = height;
     }
 
-    public double getTimeStep() {
-        return this.timeStep;
+    public double getCalcTimeStep() {
+        return this.calcTimeStep;
     }
 
-    public void setTimeStep(double timeStep) {
-        this.timeStep = timeStep;
+    public double getRunTimeStep() {
+        return this.runTimeStep;
+    }
+
+    public void setRunTimeStep(double runTimeStep) {
+        this.runTimeStep = runTimeStep;
     }
 
     public double getCellMinRadiusSize() {

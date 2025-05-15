@@ -133,6 +133,7 @@ public class CellBrainService {
                     SimulationConfig.getInstance().getCellActorMaxForceStrength() * 2.0D) -
                     SimulationConfig.getInstance().getCellActorMaxForceStrength());
             actor.setReproductionDesire(outputs[index + ActorOutputFeature.REPRODUCTION_DESIRE.ordinal()]);
+            actor.setReproductionEnergyShareOutput(outputs[index + ActorOutputFeature.REPRODUCTION_ENERGY_SHARE.ordinal()]);
             actor.setEnergyAbsorption(outputs[index + ActorOutputFeature.ENERGY_ABSORPTION.ordinal()]);
             actor.setEnergyDelivery(outputs[index + ActorOutputFeature.ENERGY_DELIVERY.ordinal()]);
 

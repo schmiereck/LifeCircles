@@ -55,9 +55,7 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
-* Cell#readObject sieht sehr falsch aus
-
-* Jede zelle hat ein Rechenzeit für ihr CellBrain. 
+* Jede Zelle hat ein Rechenzeit für ihr CellBrain. 
   * Wenn sie länger braucht, werden die Berechnungen weniger oft ausgeführt.
   * Alternativ kann sie auch mehr Energie verbrauchen.
   * Oder anderer Ansatz, sie kann entscheiden, wie viel Energie sie für die Berechnungen verbraucht (wie oft diese ausgeführt werden).  
@@ -87,6 +85,12 @@ Das System-Design der Anwendung soll enthalten:
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
 # DONE
+
+* Eine Zelle soll bei der Teilung entscheiden können, wie viel % Energie sie der Child-Zelle mitgibt.
+  Dazu wird pro Actor ein neuer Output benötigt.  
+  So kann sie versuchen Strukturen um sich herum aufzubauen, ohne selbst zu viel darunter zu leiden.
+
+* Cell#readObject sieht sehr falsch aus
 
 * Die Sensoren sollen spüren, wenn sie einen Blocker berühren.
   * Es soll kein neuer Sensor-Input hinzugefügt werden,

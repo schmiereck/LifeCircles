@@ -13,7 +13,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import java.io.File;
@@ -135,7 +134,8 @@ public class MainController extends BorderPane {
         Slider speedSlider = new Slider(0.1, 2.0, 1.0);
         speedSlider.setBlockIncrement(0.1);
         speedSlider.valueProperty().addListener((obs, old, newValue) -> {
-            simulationConfig.setTimeStep(0.016666 * newValue.doubleValue());
+            // Umkehrung der Logik: Höherer Slider-Wert -> kleinerer runTimeStep
+            simulationConfig.setRunTimeStep(0.016666 / newValue.doubleValue());
         });
 
         return new ToolBar(
@@ -159,8 +159,9 @@ public class MainController extends BorderPane {
                     double calcFps = calculationService.getFps();
                     long steps = calculationService.getStepCount();
                     double renderFps = simulationView.getFps();
+                    double targetFps = 1.0 / this.simulationConfig.getRunTimeStep(); // Zielwert in FPS
                     javafx.application.Platform.runLater(() -> {
-                        calcFpsLabel.setText(String.format("Calc FPS: %.1f", calcFps));
+                        calcFpsLabel.setText(String.format("Calc FPS: %.1f / %.1f", calcFps, targetFps));
                         stepCountLabel.setText(String.format("Steps: %d", steps));
                         renderFpsLabel.setText(String.format("Render FPS: %.1f", renderFps));
                     });
@@ -185,3 +186,4 @@ public class MainController extends BorderPane {
         calculationService.stop();
     }
 }
+

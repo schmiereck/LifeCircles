@@ -1,5 +1,7 @@
 package de.lifecircles.model;
 
+import de.lifecircles.model.neural.ActorOutputFeature;
+import de.lifecircles.model.neural.GlobalOutputFeature;
 import de.lifecircles.service.SimulationConfig;
 import java.io.Serializable;
 import java.io.ObjectInputStream;
@@ -28,6 +30,11 @@ public class SensorActor implements Sensable, Serializable {
     private double energyAbsorption;
     private double energyDelivery;
     private boolean touchingBlocker = false;
+    /**
+     * Gibt den Energieanteil-Output des Actors bei einer Teilung an.
+     * Energieanteil (zwischen 0.05 und 0.5 -> 5% bis 50% der Energie).
+     */
+    private double reproductionEnergyShareOutput;
 
     public SensorActor(Cell parentCell, double angleOnCell) {
         this.parentCell = parentCell;
@@ -178,5 +185,13 @@ public class SensorActor implements Sensable, Serializable {
 
     public void setParentCell(Cell parentCell) {
         this.parentCell = parentCell;
+    }
+
+    public void setReproductionEnergyShareOutput(double reproductionEnergyShareOutput) {
+        this.reproductionEnergyShareOutput = Math.max(0.05D, Math.min(0.5D, reproductionEnergyShareOutput));
+    }
+
+    public double getReproductionEnergyShareOutput() {
+        return this.reproductionEnergyShareOutput;
     }
 }
