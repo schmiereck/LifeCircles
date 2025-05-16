@@ -218,4 +218,3 @@ public class CalculationService implements Runnable {
         return this.stepCount.get();
     }
 }
-

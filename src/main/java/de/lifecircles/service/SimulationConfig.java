@@ -11,7 +11,7 @@ public class SimulationConfig {
     //-------------------------------------------------------------------------
     // Environment:
 
-    public static final double GRAVITY = 9.81D * 2.5D;
+    public static final double GRAVITY = 9.81D * 2.0D;
     public static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
 
     // Environment-Cell:
@@ -24,9 +24,9 @@ public class SimulationConfig {
      * Viscosity coefficient for cell movement damping.
      * A higher value means less movement.
      */
-    private double viscosity = 5.75D;
+    private double viscosity = 5.75D * 0.95D;
 
-    private static final double CELL_REPULSION_STRENGTH = 175.0;
+    private static final double CELL_REPULSION_STRENGTH = 175.0 * 1.25D;
 
     // Environment-Blocker:
 
@@ -59,7 +59,12 @@ public class SimulationConfig {
     private double sunRaySpacingPx = 60.0;
 
     // Day/Night cycle duration in seconds
-    public static final double DAY_NIGHT_CYCLE_DURATION = 60.0D * 2;
+    public static final double SUN_DAY_NIGHT_CYCLE_DURATION = 60.0D * 2;
+
+    /**
+     * Intensity of sun rays during the night (0.0 to 1.0).
+     */
+    public static final double SUN_NIGHT_INTENSITY = 0.3D;
 
     //-------------------------------------------------------------------------
     // Cell:

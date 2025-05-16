@@ -9,8 +9,9 @@ import java.util.List;
 public class SpatialGridPartitioningStrategy implements PartitioningStrategy {
     private final SpatialGrid grid;
 
-    public SpatialGridPartitioningStrategy(final double width, final double height, final double cellSize) {
-        this.grid = new SpatialGrid(width, height, cellSize);
+    public SpatialGridPartitioningStrategy(final double width, final double height, final double interactionRadius) {
+        // Parameter wird jetzt als interactionRadius interpretiert
+        this.grid = new SpatialGrid(width, height, interactionRadius);
     }
 
     @Override
@@ -24,3 +25,4 @@ public class SpatialGridPartitioningStrategy implements PartitioningStrategy {
         return grid.getNeighbors(cell);
     }
 }
+

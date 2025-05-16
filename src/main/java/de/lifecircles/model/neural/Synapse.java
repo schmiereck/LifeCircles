@@ -1,6 +1,9 @@
 package de.lifecircles.model.neural;
 
 import java.io.Serializable;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * Represents a connection between two neurons in the neural network.
@@ -22,6 +25,8 @@ public class Synapse implements Serializable {
         
         sourceNeuron.addOutputSynapse(this);
         targetNeuron.addInputSynapse(this);
+
+        //System.out.println("Synapse created: " + sourceNeuron + " -> " + targetNeuron);
     }
 
     public Neuron getSourceNeuron() {
@@ -48,4 +53,37 @@ public class Synapse implements Serializable {
         copy.weight = this.weight;
         return copy;
     }
+    
+    /**
+     * Benutzerdefinierte Serialisierungsmethode.
+     * Da die Neuronen-Referenzen bei der Serialisierung zyklische Abhängigkeiten verursachen können,
+     * wird hier die Standard-Serialisierung verwendet. Die Verbindungen werden nach dem
+     * Deserialisieren durch NeuralNetwork wiederhergestellt.
+     */
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.defaultWriteObject();
+    }
+    
+    /**
+     * Benutzerdefinierte Deserialisierungsmethode.
+     * Die Verbindungen zu den Neuronen werden nach dem Deserialisieren durch diese Methode wiederhergestellt.
+     */
+    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        // Stelle die Verbindungen wieder her
+        restoreConnections();
+    }
+
+    /**
+     * Methode zur Wiederherstellung der bidirektionalen Referenzen nach der Deserialisierung.
+     */
+    public void restoreConnections() {
+        if (sourceNeuron != null) {
+            sourceNeuron.addOutputSynapse(this);
+        }
+        if (targetNeuron != null) {
+            targetNeuron.addInputSynapse(this);
+        }
+    }
 }
+

@@ -6,6 +6,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.io.Serializable;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 /**
  * Represents the neural network that controls cell behavior.
@@ -635,6 +637,17 @@ public class NeuralNetwork implements Serializable {
      */
     public List<Neuron> getOutputNeuronList() {
         return outputNeuronList;
+    }
+
+    /**
+     * Stellt nach der Deserialisierung die transiente outputSynapses-Liste in allen Neuronen wieder her.
+     */
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        // Stelle die Output-Synapsen in allen Neuronen wieder her
+        for (Synapse synapse : synapsesynapseList) {
+            synapse.restoreConnections();
+        }
     }
 }
 

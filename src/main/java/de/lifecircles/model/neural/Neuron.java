@@ -3,6 +3,9 @@ package de.lifecircles.model.neural;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.IOException;
 
 /**
  * Represents a neuron in the neural network.
@@ -13,9 +16,9 @@ public class Neuron implements Serializable {
     
     private double value;
     private double bias;
-    private Synapse[] inputSynapses; // Geändert zu Array für schnellere Iteration
+    private transient Synapse[] inputSynapses; // Als transient markiert
     private int inputSynapseCount;   // Aktuelle Anzahl von Synapsen im Array
-    private final List<Synapse> outputSynapses;
+    private transient List<Synapse> outputSynapses; // Entferne final, da es neu initialisiert werden muss
     private ActivationFunction activationFunction;
     private boolean isOutputNeuron; // Flag für Output-Neuronen
     
@@ -158,5 +161,33 @@ public class Neuron implements Serializable {
     public ActivationFunction getActivationFunction() {
         return this.activationFunction;
     }
-}
 
+    /**
+     * Benutzerdefinierte Serialisierungsmethode.
+     */
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.defaultWriteObject();
+        // Speichere die Anzahl der Output-Synapsen
+        oos.writeInt(outputSynapses.size());
+        for (Synapse synapse : outputSynapses) {
+            oos.writeObject(synapse);
+        }
+    }
+
+    /**
+     * Benutzerdefinierte Deserialisierungsmethode.
+     */
+    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        // Initialisiere die transienten Felder
+        this.inputSynapses = new Synapse[INITIAL_SYNAPSE_CAPACITY];
+        this.inputSynapseCount = 0;
+        this.outputSynapses = new ArrayList<>(); // Initialisiere die Liste der Output-Synapsen
+        // Stelle die Output-Synapsen wieder her
+        int outputSynapseCount = ois.readInt();
+        for (int i = 0; i < outputSynapseCount; i++) {
+            Synapse synapse = (Synapse) ois.readObject();
+            outputSynapses.add(synapse);
+        }
+    }
+}

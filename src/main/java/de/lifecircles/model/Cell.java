@@ -412,11 +412,11 @@ public class Cell implements Sensable, Serializable {
         }
     }
 
-    // Methode zur Initialisierung des Gehirns nach der Deserialisierung
+    // Methode zur Initialisierung des Gehirns und der SensorActor nach der Deserialisierung
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         // Setze parentCell in allen SensorActor-Instanzen
-        for (SensorActor sensorActor : sensorActors) {
+        for (SensorActor sensorActor : this.sensorActors) {
             sensorActor.setParentCell(this);
         }
     }
