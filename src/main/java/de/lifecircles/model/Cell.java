@@ -1,9 +1,7 @@
 package de.lifecircles.model;
 
 import de.lifecircles.model.neural.CellBrain;
-import de.lifecircles.model.neural.CellBrainService;
 import de.lifecircles.model.neural.NeuralNetwork;
-import de.lifecircles.service.EnergyCellCalcService;
 import de.lifecircles.service.SimulationConfig;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +13,7 @@ import java.util.Random;
  * Contains position, rotation, size, type, and sensor/actor points.
  * Behavior is controlled by a neural network brain.
  */
-public class Cell implements Sensable, Serializable {
+public class Cell implements SensableCell, Serializable {
     private static final long serialVersionUID = 1L;
 
     private Vector2D position;
@@ -232,6 +230,7 @@ public class Cell implements Sensable, Serializable {
         return this.age;
     }
 
+    @Override
     public void setEnergy(double energy) {
         this.energy = Math.max(0.0, Math.min(SimulationConfig.CELL_MAX_ENERGY, energy));
     }

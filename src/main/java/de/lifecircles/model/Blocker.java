@@ -7,7 +7,7 @@ import javafx.scene.paint.Color;
  * Blockers can be used to create terrain, walls, and other static elements
  * that cells can interact with.
  */
-public class Blocker implements Sensable {
+public class Blocker implements SensableActor, SensableCell {
     private final Vector2D position;
     private final double width;
     private final double height;
@@ -56,6 +56,10 @@ public class Blocker implements Sensable {
     @Override
     public CellType getType() {
         return blockCellType;
+    }
+
+    @Override
+    public void setEnergy(double energy) {
     }
 
     /**

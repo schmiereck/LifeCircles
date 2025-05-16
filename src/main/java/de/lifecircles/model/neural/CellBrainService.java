@@ -3,10 +3,7 @@ package de.lifecircles.model.neural;
 import java.util.List;
 import java.util.Objects;
 
-import de.lifecircles.model.Cell;
-import de.lifecircles.model.CellType;
-import de.lifecircles.model.Sensable;
-import de.lifecircles.model.SensorActor;
+import de.lifecircles.model.*;
 import de.lifecircles.service.SimulationConfig;
 
 public class CellBrainService {
@@ -55,7 +52,7 @@ public class CellBrainService {
             final double sensedCellTypeB;
             final double sensedCellEnergy;
             final double sensedCellAge;
-            final Sensable sensedCell = maActor.getSensedCell();
+            final SensableCell sensedCell = maActor.getSensedCell();
             if (Objects.nonNull(sensedCell)) {
                 final CellType sensedCellType = sensedCell.getType();
                 sensedCellTypeR = sensedCellType.getRed();
@@ -88,7 +85,7 @@ public class CellBrainService {
             inputs[baseGlobal + SensorInputFeature.SENSED_CELL_ENERGY.ordinal()] = sensedCellEnergy;
             inputs[baseGlobal + SensorInputFeature.SENSED_CELL_AGE.ordinal()] = sensedCellAge;
 
-            final Sensable sensedActor = maActor.getSensedActor();
+            final SensableActor sensedActor = maActor.getSensedActor();
             if (Objects.nonNull(sensedActor)) {
                 final CellType sensedActorType = sensedActor.getType();
                 inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_RED.ordinal()] = sensedActorType.getRed();

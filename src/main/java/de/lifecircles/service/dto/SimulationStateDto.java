@@ -7,6 +7,7 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -25,7 +26,7 @@ public class SimulationStateDto {
         this.blockers = blockers.stream()
             .map(BlockerStateDto::new)
             .collect(Collectors.toList());
-        this.sunRays = sunRays.stream().map(SunRayStateDto::new).collect(Collectors.toList());
+        this.sunRays = sunRays.stream().filter(Objects::nonNull).map(SunRayStateDto::new).collect(Collectors.toList());
         this.width = width;
         this.height = height;
     }

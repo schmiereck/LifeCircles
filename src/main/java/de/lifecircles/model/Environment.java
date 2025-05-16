@@ -109,7 +109,7 @@ public class Environment {
      * @param deltaTime Time step in seconds
      * @param partitioner Pre-built partitioning strategy for interactions
      */
-    public void update(double deltaTime, PartitioningStrategy partitioner) {
+    public void update(final double deltaTime, final PartitioningStrategy partitioner) {
         // Calculate sun energy rays
         sunRays.clear();
         sunRays.addAll(
@@ -126,15 +126,15 @@ public class Environment {
         RepulsionCellCalcService.processRepulsiveForces(cells, deltaTime, partitioner);
 
         // Update cells and handle reproduction
-        List<Cell> newCells = new ArrayList<>();
-        Iterator<Cell> iterator = cells.iterator();
+        final List<Cell> newCells = new ArrayList<>();
+        final Iterator<Cell> iterator = cells.iterator();
 
         while (iterator.hasNext()) {
-            Cell cell = iterator.next();
+            final Cell cell = iterator.next();
 
             // Apply viscosity
             //Vector2D viscousForce = cell.getVelocity().multiply(-VISCOSITY);
-            Vector2D viscousForce = cell.getVelocity().multiply(-SimulationConfig.getInstance().getViscosity());
+            final Vector2D viscousForce = cell.getVelocity().multiply(-SimulationConfig.getInstance().getViscosity());
             cell.applyForce(viscousForce, cell.getPosition(), deltaTime);
 
             // Apply gravity
@@ -159,7 +159,7 @@ public class Environment {
 
             // Handle reproduction (skip in HIGH_ENERGY mode)
             if (ReproductionManagerService.canReproduce(this.config, cell)) {
-                Cell childCell = ReproductionManagerService.reproduce(this.config, cell);
+                final Cell childCell = ReproductionManagerService.reproduce(this.config, cell);
                 if (Objects.nonNull(childCell)) {
                     newCells.add(childCell);
                 }
@@ -173,15 +173,15 @@ public class Environment {
         }
 
         // Process energy transfers between cells
-        EnergyTransferCellCalcService.processEnergyTransfers(partitioner, cells, deltaTime);
+        EnergyTransferCellCalcService.processEnergyTransfers(cells, deltaTime);
 
         // Add new cells from reproduction (skip in HIGH_ENERGY mode)
         cells.addAll(newCells);
 
         // Repopulation (skip in HIGH_ENERGY mode)
-        if (config.getTrainMode() == TrainMode.NONE) {
+        //if (config.getTrainMode() == TrainMode.NONE) {
             calcRepopulationIfNeeded();
-        }
+        //}
 
         // Update statistics
         StatisticsManagerService.getInstance().update(cells);
@@ -219,10 +219,12 @@ public class Environment {
                     Cell parentCell = cells.get(random.nextInt(cells.size()));
                     if (Objects.nonNull(parentCell)) {
                         Cell childCell = ReproductionManagerService.reproduce(config, parentCell);
-                        childCell.setEnergy(1.0D);
-                        childCell.setMutationRateFactor(parentCell.getMutationRateFactor());
-                        childCell.setMutationStrengthFactor(parentCell.getMutationStrengthFactor());
-                        cells.add(childCell);
+                        if (Objects.nonNull(childCell)) {
+                            childCell.setEnergy(1.0D);
+                            childCell.setMutationRateFactor(parentCell.getMutationRateFactor());
+                            childCell.setMutationStrengthFactor(parentCell.getMutationStrengthFactor());
+                            cells.add(childCell);
+                        }
                     }
                 }
             }

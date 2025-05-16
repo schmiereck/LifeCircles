@@ -1,7 +1,5 @@
 package de.lifecircles.model;
 
-import de.lifecircles.model.neural.ActorOutputFeature;
-import de.lifecircles.model.neural.GlobalOutputFeature;
 import de.lifecircles.service.SimulationConfig;
 import java.io.Serializable;
 import java.io.ObjectInputStream;
@@ -12,7 +10,7 @@ import java.io.IOException;
  * Represents a sensor/actor point on a cell's surface.
  * Can both sense nearby actors and emit force fields.
  */
-public class SensorActor implements Sensable, Serializable {
+public class SensorActor implements SensableActor, Serializable {
     private static final long serialVersionUID = 1L;
 
     private transient Cell parentCell; // Nicht serialisierbar
@@ -22,8 +20,8 @@ public class SensorActor implements Sensable, Serializable {
     private CellType type;
     private double forceStrength; // Positive for attraction, negative for repulsion
     // temporarily stores the sensed actor and its cell
-    private transient Sensable sensedActor; // Nicht serialisierbar
-    private transient Sensable sensedCell;  // Nicht serialisierbar
+    private transient SensableActor sensedActor; // Nicht serialisierbar
+    private transient SensableCell sensedCell;  // Nicht serialisierbar
     // cached position for current simulation step
     private transient Vector2D cachedPosition;
     private double reproductionDesire;
@@ -97,11 +95,11 @@ public class SensorActor implements Sensable, Serializable {
     }
 
     /** Temporarily stores the sensed actor */
-    public Sensable getSensedActor() { return sensedActor; }
-    public void setSensedActor(Sensable sensedActor) { this.sensedActor = sensedActor; }
+    public SensableActor getSensedActor() { return sensedActor; }
+    public void setSensedActor(SensableActor sensedActor) { this.sensedActor = sensedActor; }
     /** References the cell of the sensed actor */
-    public Sensable getSensedCell() { return sensedCell; }
-    public void setSensedCell(Sensable sensedCell) { this.sensedCell = sensedCell; }
+    public SensableCell getSensedCell() { return sensedCell; }
+    public void setSensedCell(SensableCell sensedCell) { this.sensedCell = sensedCell; }
 
     /**
      * Computes and stores the current position of this sensor actor.

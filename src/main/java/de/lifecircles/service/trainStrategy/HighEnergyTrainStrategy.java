@@ -53,7 +53,9 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
             return;
         }
         List<Cell> cells = environment.getCells();
-        if (cells.isEmpty()) return;
+        if (cells.isEmpty()) {
+            return;
+        }
         int winnersCount = Math.max(1, (int) (cells.size() * SELECTION_PERCENT));
         cells.sort((c1, c2) -> Double.compare(c2.getEnergy(), c1.getEnergy()));
         List<Cell> winners = new ArrayList<>(cells.subList(0, winnersCount));

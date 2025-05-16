@@ -55,6 +55,16 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
+* ConstantBrain das konstante Ausgänge hat.
+  * Testszenario für Zellabstoßung.
+  * Testszenario für AktorSensor anziehend und abstoßend.
+
+* Sexuelle Vermehrung.
+  * Es müssen zwei Zellen verschiedenen Geschlechts zusammen kommen und beide signalisieren, dass sie sich teilen wollen.
+  * Es wird ein Crossover der Netzte gemacht (siehe NeuralNetworkTest).
+  * Das geschlecht wird nur als interne Eigenschaft abgelegt und nicht als Outut nach außen getragen. 
+    Sie müssen sich also Anhand anderer Merkmale erkennen.
+
 * Jede Zelle hat ein Rechenzeit für ihr CellBrain. 
   * Wenn sie länger braucht, da sie mehr Synapsen und Neuronen hat, werden die Berechnungen weniger oft ausgeführt.
   * Alternativ kann sie auch mehr Energie verbrauchen.
