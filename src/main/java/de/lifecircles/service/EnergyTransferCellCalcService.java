@@ -14,7 +14,7 @@ import java.util.Objects;
  */
 public class EnergyTransferCellCalcService {
     // Maximum energy transfer per interaction
-    private static final double MAX_ENERGY_TRANSFER = 0.05;
+    private static final double MAX_ENERGY_TRANSFER = 0.075;
     // Minimum energy threshold for transfer
     private static final double MIN_ENERGY_FOR_TRANSFER = 0.1;
     // Threshold for energy absorption (output value)

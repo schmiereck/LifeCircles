@@ -517,7 +517,8 @@ public class NeuralNetwork implements Serializable {
         allLayers.add(this.outputNeuronList);
         
         int sourceLayerIndex = this.random.nextInt(allLayers.size());
-        int targetLayerIndex = this.random.nextInt(allLayers.size());
+        // Exclude the input layer for the target.
+        int targetLayerIndex = this.random.nextInt(allLayers.size() - 1) + 1;
         
         // Make sure we're not connecting within the same layer
         if (sourceLayerIndex == targetLayerIndex) {

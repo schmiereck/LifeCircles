@@ -198,16 +198,16 @@ public class Environment {
             if (lastDeadCell != null) {
                 // Repopulate by mutating the last dead cell
                 for (int i = 0; i < initialCount; i++) {
-                    Cell childCell = ReproductionManagerService.reproduce(config, lastDeadCell);
+                    Cell childCell = ReproductionManagerService.reproduce(this.config, this.lastDeadCell);
                     childCell.setEnergy(1.0D);
-                    childCell.setMutationRateFactor(lastDeadCell.getMutationRateFactor());
-                    childCell.setMutationStrengthFactor(lastDeadCell.getMutationStrengthFactor());
+                    childCell.setMutationRateFactor(this.lastDeadCell.getMutationRateFactor());
+                    childCell.setMutationStrengthFactor(this.lastDeadCell.getMutationStrengthFactor());
                     cells.add(childCell);
                 }
             } else {
                 for (int i = 0; i < initialCount; i++) {
-                    Vector2D pos = new Vector2D(random.nextDouble() * width, random.nextDouble() * height);
-                    Cell newCell = new Cell(pos, config.getCellMaxRadiusSize() / 2.0D);
+                    Vector2D pos = new Vector2D(this.random.nextDouble() * this.width, random.nextDouble() * this.height);
+                    Cell newCell = new Cell(pos, this.config.getCellMaxRadiusSize() / 2.0D);
                     cells.add(newCell);
                 }
             }
