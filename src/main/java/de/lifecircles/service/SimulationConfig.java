@@ -64,7 +64,7 @@ public class SimulationConfig {
     /**
      * Intensity of sun rays during the night (0.0 to 1.0).
      */
-    public static final double SUN_NIGHT_INTENSITY = 0.3D;
+    public static final double SUN_NIGHT_INTENSITY = 0.4D;
 
     //-------------------------------------------------------------------------
     // Cell:

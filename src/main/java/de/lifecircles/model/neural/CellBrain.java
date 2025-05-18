@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * Manages the neural network that controls cell behavior.
  */
-public class CellBrain implements Serializable {
+public class CellBrain implements CellBrainInterface, Serializable {
     private static final long serialVersionUID = 1L;
     private final NeuralNetwork network;
 
@@ -68,6 +68,34 @@ public class CellBrain implements Serializable {
             layers[i] = (cellState & (1 << i)) != 0; // Aktivierung basierend auf Bitmasken
         }
         return layers;
+    }
+
+    @Override
+    public void setInputs(final double[] inputs) {
+        this.network.setInputs(inputs);
+    }
+
+    @Override
+    public double[] process() {
+        return this.network.process();
+    }
+
+    @Override
+    public int getInputCount() {
+        return this.network.getInputCount();
+    }
+
+    @Override
+    public NeuralNetwork mutate(double mutationRate, double mutationStrength) {
+        return this.network.mutate(
+                mutationRate,
+                mutationStrength
+            );
+    }
+
+    @Override
+    public double getOutputValue(int outputNeuronPos) {
+        return  this.network.getOutputValue(outputNeuronPos);
     }
 
     public NeuralNetwork getNeuralNetwork() {

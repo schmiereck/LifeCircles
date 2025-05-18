@@ -14,9 +14,10 @@ import java.util.Objects;
  */
 public class EnergyTransferCellCalcService {
     // Maximum energy transfer per interaction
-    private static final double MAX_ENERGY_TRANSFER = 0.075;
+    private static final double MAX_ENERGY_DELIVERY_TRANSFER = 0.075D;
+    private static final double MAX_ENERGY_ABSORBTION_TRANSFER = 0.09D;
     // Minimum energy threshold for transfer
-    private static final double MIN_ENERGY_FOR_TRANSFER = 0.1;
+    private static final double MIN_ENERGY_FOR_TRANSFER = 0.1D;
     // Threshold for energy absorption (output value)
 
     /**
@@ -42,12 +43,14 @@ public class EnergyTransferCellCalcService {
                             // Check if this is an absorption attempt
                             //double absorptionOutput = cell.getBrain().getNetwork().getOutputValue(SensorInputFeature.ENERGY_ABSORPTION.ordinal());
                             final double absorptionOutput = sensor.getEnergyAbsorption();
-                            if ((absorptionOutput > 0.0D) && (otherCell.getEnergy() > MIN_ENERGY_FOR_TRANSFER)) {
+                            if ((absorptionOutput > 0.0D)) { // && (otherCell.getEnergy() > MIN_ENERGY_FOR_TRANSFER))
                                 // Calculate energy absorption amount
-                                final double absorptionAmount = Math.min(
-                                        MAX_ENERGY_TRANSFER,
-                                        otherCell.getEnergy() * deltaTime * absorptionOutput
-                                );
+                                final double absorptionAmount =
+                                        Math.min(otherCell.getEnergy(),
+                                            Math.min(
+                                            MAX_ENERGY_ABSORBTION_TRANSFER,
+                                            otherCell.getEnergy() * deltaTime * absorptionOutput
+                                        ));
 
                                 // Absorb energy from other cell
                                 cell.setEnergy(cell.getEnergy() + absorptionAmount);
@@ -58,7 +61,7 @@ public class EnergyTransferCellCalcService {
                             if ((deliveryOutput > 0.0D) && (cell.getEnergy() > MIN_ENERGY_FOR_TRANSFER)) {
                                 // Regular energy transfer
                                 final double transferAmount = Math.min(
-                                        MAX_ENERGY_TRANSFER,
+                                        MAX_ENERGY_DELIVERY_TRANSFER,
                                         cell.getEnergy() * deltaTime * deliveryOutput
                                 );
 

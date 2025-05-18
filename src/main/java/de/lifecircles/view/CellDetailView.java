@@ -1,10 +1,7 @@
 package de.lifecircles.view;
 
 import de.lifecircles.model.Cell;
-import de.lifecircles.model.neural.CellBrain;
-import de.lifecircles.model.neural.NeuralNetwork;
-import de.lifecircles.model.neural.Neuron;
-import de.lifecircles.model.neural.Synapse;
+import de.lifecircles.model.neural.*;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -265,9 +262,17 @@ public class CellDetailView extends Stage {
         gc.translate(panOffsetX, panOffsetY); // Pan anwenden
         gc.scale(zoomFactor, zoomFactor); // Zoom anwenden
 
-        CellBrain brain = currentCell.getBrain();
-        if (brain == null) return;
-        
+        CellBrainInterface brainInterface = currentCell.getBrain();
+        if (brainInterface == null) {
+            return;
+        }
+
+        if (!(brainInterface instanceof CellBrain)) {
+            return;
+        }
+
+        CellBrain brain = (CellBrain) brainInterface;
+
         NeuralNetwork network = brain.getNeuralNetwork();
         if (network == null) return;
         

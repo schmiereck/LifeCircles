@@ -36,6 +36,26 @@ public class NeuralNetworkTest {
         {0},
         {1}
     };
+    private static final double[][] XXX_INPUTS = {
+        {0, 0, 0},
+        {0, 0, 1},
+        {0, 1, 0},
+        {0, 1, 1},
+        {1, 0, 0},
+        {1, 0, 1},
+        {1, 1, 0},
+        {1, 1, 1}
+    };
+    private static final double[][] XXX_OUTPUTS = {
+        {0, 0},
+        {0, 1},
+        {0, 1},
+        {1, 0},
+        {0, 1},
+        {1, 0},
+        {1, 0},
+        {1, 1}
+    };
 
     @Test
     public void testXORProblem() {
@@ -47,9 +67,16 @@ public class NeuralNetworkTest {
         this.testProblem(AND_INPUTS, AND_OUTPUTS);
     }
 
+    @Test
+    public void testBitcountProblem() {
+        this.testProblem(XXX_INPUTS, XXX_OUTPUTS);
+    }
+
     public void testProblem(final double[][] inputs, final double[][] outputs) {
         // Verschiedene Netzwerkarchitekturen für mehr Diversität
-        final int hiddenCount = 4;
+        final int inputCount = inputs[0].length;
+        final int outputCount = outputs[0].length;
+        final int hiddenCount = inputCount * 2;
         final int[][] architectureVariants = {
             {hiddenCount},
             {hiddenCount, hiddenCount},
@@ -65,7 +92,7 @@ public class NeuralNetworkTest {
         List<NeuralNetwork> population = new ArrayList<>();
         for (int i = 0; i < populationSize; i++) {
             int[] architecture = architectureVariants[i % architectureVariants.length];
-            population.add(new NeuralNetwork(2, architecture, 1,
+            population.add(new NeuralNetwork(inputCount, architecture, outputCount,
                     0.2D, 0));
         }
 
@@ -101,8 +128,11 @@ public class NeuralNetworkTest {
                 for (int trainPos = 0; trainPos < inputs.length; trainPos++) {
                     network.setInputs(inputs[trainPos]);
                     double[] output = network.process();
-                    double error = outputs[trainPos][0] - output[0];
-                    totalError += error * error;
+                    for (int outPos = 0; outPos < output.length; outPos++) {
+                        // Berechne den Fehler für jedes Ausgabe-Neuron
+                        double error = outputs[trainPos][outPos] - output[outPos];
+                        totalError += error * error;
+                    }
                 }
                 scores.add(new NetworkScore(network, totalError));
             }
@@ -186,7 +216,7 @@ public class NeuralNetworkTest {
                 }
                 else { // 10% Kompletter Neustart (neue zufällige Netzwerke)
                     int[] architecture = architectureVariants[random.nextInt(architectureVariants.length)];
-                    NeuralNetwork freshNetwork = new NeuralNetwork(2, architecture, 1,
+                    NeuralNetwork freshNetwork = new NeuralNetwork(inputCount, architecture, outputCount,
                             0.2D, 0);
                     
                     // Gewichte initialisieren
@@ -212,7 +242,7 @@ public class NeuralNetworkTest {
                 // Ersetze den Rest mit neuen zufälligen Netzwerken
                 for (int i = keepCount; i < populationSize; i++) {
                     int[] architecture = architectureVariants[random.nextInt(architectureVariants.length)];
-                    NeuralNetwork freshNetwork = new NeuralNetwork(2, architecture, 1,
+                    NeuralNetwork freshNetwork = new NeuralNetwork(inputCount, architecture, outputCount,
                             0.2D, 0);
                     
                     // Gewichte initialisieren

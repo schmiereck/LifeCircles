@@ -28,6 +28,8 @@ public class BlockerCellCalcService {
             double radius = cell.getRadiusSize();
             if (distance < radius) {
                 double penetration = radius - distance;
+                //Vector2D direction = deltaVec.divide(distance);
+                // Move to top, if direction is Zero.
                 Vector2D direction = distance > 0 ? deltaVec.divide(distance) : new Vector2D(0, -1);
                 double strength = SimulationConfig.getInstance().getBlockerRepulsionStrength();
                 Vector2D repulsion = direction.multiply(strength * penetration);

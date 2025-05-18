@@ -56,9 +56,8 @@ public class ReproductionManagerService {
                 final double parentSize = parent.getRadiusSize();
 
                 // Create mutated brain for child
-                final CellBrain parentBrain = parent.getBrain();
-                final NeuralNetwork parentBrainNetwork = parentBrain.getNeuralNetwork();
-                final NeuralNetwork childBrainNetwork = parentBrainNetwork.mutate(
+                final CellBrainInterface parentBrain = parent.getBrain();
+                final NeuralNetwork childBrainNetwork = parentBrain.mutate(
                         config.getMutationRate(),
                         config.getMutationStrength()
                 );
@@ -94,9 +93,9 @@ public class ReproductionManagerService {
                 CellBrainService.think(child);
 
                 // Abrufen der Ausgaben des neuronalen Netzwerks der Elternzelle
-                double state0Output = parentBrainNetwork.getOutputValue(GlobalOutputFeature.STATE_0.ordinal());
-                double state1Output = parentBrainNetwork.getOutputValue(GlobalOutputFeature.STATE_1.ordinal());
-                double state2Output = parentBrainNetwork.getOutputValue(GlobalOutputFeature.STATE_2.ordinal());
+                double state0Output = parentBrain.getOutputValue(GlobalOutputFeature.STATE_0.ordinal());
+                double state1Output = parentBrain.getOutputValue(GlobalOutputFeature.STATE_1.ordinal());
+                double state2Output = parentBrain.getOutputValue(GlobalOutputFeature.STATE_2.ordinal());
 
                 // Berechnung des Zell-Zustands der Kind-Zelle basierend auf Thresholds
                 int childState = 0;

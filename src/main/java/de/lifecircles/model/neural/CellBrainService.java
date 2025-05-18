@@ -11,9 +11,8 @@ public class CellBrainService {
     public static double[] generateInputs(final Cell cell) {
         final List<SensorActor> myActorList = cell.getSensorActors();
         final int actorCount = myActorList.size();
-        final CellBrain cellBrain = cell.getBrain();
-        final NeuralNetwork network = cellBrain.getNeuralNetwork();
-        final int totalInputs = network.getInputCount();
+        final CellBrainInterface cellBrain = cell.getBrain();
+        final int totalInputs = cellBrain.getInputCount();
         final double[] inputs = new double[totalInputs];
 
         // Global inputs (cell type and energy)
@@ -142,13 +141,12 @@ public class CellBrainService {
      * Updates the cell's behavior based on its current state and environment.
      */
     public static void think(final Cell cell) {
-        final CellBrain cellBrain = cell.getBrain();
-        final NeuralNetwork network = cellBrain.getNeuralNetwork();
+        final CellBrainInterface cellBrain = cell.getBrain();
 
         final double[] inputs = CellBrainService.generateInputs(cell);
-        network.setInputs(inputs);
+        cellBrain.setInputs(inputs);
 
-        final double[] outputs = network.process();
+        final double[] outputs = cellBrain.process();
 
         CellBrainService.applyOutputs(cell, outputs);
     }

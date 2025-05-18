@@ -1,6 +1,7 @@
 package de.lifecircles.model;
 
 import de.lifecircles.model.neural.CellBrain;
+import de.lifecircles.model.neural.CellBrainInterface;
 import de.lifecircles.model.neural.NeuralNetwork;
 import de.lifecircles.service.SimulationConfig;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class Cell implements SensableCell, Serializable {
     private boolean isGrowing; // Flag ob die Zelle sich im Wachstumsprozess befindet
     private CellType type;
     private final List<SensorActor> sensorActors;
-    private CellBrain brain;
+    private CellBrainInterface brain;
     private double energy;
     private double age; // in seconds
     private int generation; // generation counter
@@ -239,7 +240,7 @@ public class Cell implements SensableCell, Serializable {
         this.brain = brain;
     }
 
-    public CellBrain getBrain() {
+    public CellBrainInterface getBrain() {
         return this.brain;
     }
 

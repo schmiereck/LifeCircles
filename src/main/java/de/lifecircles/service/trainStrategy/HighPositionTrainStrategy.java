@@ -15,17 +15,18 @@ import java.util.*;
  */
 public class HighPositionTrainStrategy implements TrainStrategy {
     private static final int INITIAL_COUNT = 20;
-    private static final int GENERATION_STEP = 2500;
+    private static final int GENERATION_STEP = 2500 * 2;
     private static final double SELECTION_PERCENT = 0.2;
     private final SimulationConfig config = SimulationConfig.getInstance();
     private long stepCounter = 0;
 
     @Override
     public Environment initializeEnvironment() {
-        config.setWidth(1600);
-        config.setHeight(1200);
+        this.config.setWidth(1600);
+        this.config.setHeight(1200);
 
-        config.setScaleSimulation(1.6D);
+        this.config.setScaleSimulation(1.6D);
+        this.config.setViscosity(5.75D * 2.0D);
 
         return new Environment(config.getWidth(), config.getHeight());
     }

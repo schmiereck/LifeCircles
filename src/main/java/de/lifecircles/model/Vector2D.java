@@ -46,7 +46,7 @@ public class Vector2D implements Serializable {
     }
 
     public Vector2D divide(double scalar) {
-        return new Vector2D(x / scalar, y / scalar);
+        return scalar != 0 ? new Vector2D(x / scalar, y / scalar) : new Vector2D(0, 0);
     }
 
     public double length() {
