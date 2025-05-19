@@ -222,7 +222,6 @@ public class Renderer {
     private void drawForceFields(SimulationStateDto.CellStateDto cell) {
         for (SimulationStateDto.ActorStateDto actor : cell.getActors()) {
             Point2D screenPos = camera.worldToScreen(actor.getPosition());
-            double[] rgb = actor.getTypeRGB();
 
             // Dynamic force field radius based on actor spacing
             int actorCount = cell.getActors().size();
@@ -233,16 +232,16 @@ public class Renderer {
             if (actor.getForceStrength() > 0.0D) {
                 // Attractive force - inward gradient
                 baseColor = Color.color(
-                        0, 1.0D, 0,
+                        1.0D, 0, 0,
                         config.getForceFieldOpacity() * Math.abs(actor.getForceStrength() /
-                                SimulationConfig.getInstance().getCellActorMaxForceStrength())
+                                (SimulationConfig.getInstance().getCellActorMaxForceStrength() * 4.0D))
                 );
             } else {
                 // Repulsive force - outward gradient
                 baseColor = Color.color(
-                        1.0D, 0, 0,
+                        0, 1.0D, 0,
                         config.getForceFieldOpacity() * Math.abs(actor.getForceStrength() /
-                                SimulationConfig.getInstance().getCellActorMaxForceStrength())
+                                (SimulationConfig.getInstance().getCellActorMaxForceStrength() * 4.0D))
                 );
             }
             gc.setFill(baseColor);

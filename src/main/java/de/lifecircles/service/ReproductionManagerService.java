@@ -50,7 +50,9 @@ public class ReproductionManagerService {
         if (Objects.nonNull(chosenActor)) {
             Vector2D direction = chosenActorDirection(parent, chosenActor);
             if (Objects.nonNull(direction)) {
-                Vector2D childPosition = parent.getPosition().add(direction.multiply(parent.getRadiusSize()));
+                Vector2D childPosition = parent.getPosition().
+                        add(direction.multiply(parent.getRadiusSize() +
+                                (SimulationConfig.getInstance().getCellMinRadiusSize() * 0.5D)));
 
                 // Set initial size (slightly mutated from parent's initial size)
                 final double parentSize = parent.getRadiusSize();
@@ -62,8 +64,10 @@ public class ReproductionManagerService {
                         config.getMutationStrength()
                 );
 
+                final CellBrain childCellBrain = new CellBrain(childBrainNetwork);
+
                 // Create child cell
-                child = new Cell(childPosition, parentSize, childBrainNetwork);
+                child = new Cell(childPosition, parentSize, childCellBrain);
                 
                 // Starte den Wachstumsprozess der neuen Zelle
                 child.startGrowthProcess();

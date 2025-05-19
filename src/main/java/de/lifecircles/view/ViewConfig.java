@@ -1,5 +1,6 @@
 package de.lifecircles.view;
 
+import de.lifecircles.service.SimulationConfig;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
@@ -28,8 +29,10 @@ public class ViewConfig {
     // Debug visualization
     private boolean showDebugInfo = false;
     private boolean showGrid = false;
-    private double gridSpacing = 50.0;
-    private Color gridColor = Color.GRAY.deriveColor(0, 1, 1, 0.2);
+    private double gridSpacing =
+            (SimulationConfig.getInstance().getCellMaxRadiusSize() +
+             SimulationConfig.getInstance().getCellActorMaxFieldRadius()) * 2.0D;
+    private Color gridColor = Color.GRAY.deriveColor(0, 1, 1, 0.4);
 
     // Cell state visualization
     private boolean showEnergy = true;

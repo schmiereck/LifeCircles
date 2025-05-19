@@ -32,7 +32,7 @@ public class CellBrain implements CellBrainInterface, Serializable {
         int inputCount = GlobalInputFeature.values().length +
                          (SensorInputFeature.values().length * cell.getSensorActors().size());
         
-        int outputCount = GlobalInputFeature.values().length +
+        int outputCount = GlobalOutputFeature.values().length +
                          (ActorOutputFeature.values().length * cell.getSensorActors().size());
 
         //final int hiddenCount = (inputCount + outputCount) * 2; // Arbitrary hidden layer size

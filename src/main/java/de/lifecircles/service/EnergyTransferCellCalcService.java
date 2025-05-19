@@ -14,8 +14,8 @@ import java.util.Objects;
  */
 public class EnergyTransferCellCalcService {
     // Maximum energy transfer per interaction
-    private static final double MAX_ENERGY_DELIVERY_TRANSFER = 0.075D;
-    private static final double MAX_ENERGY_ABSORBTION_TRANSFER = 0.09D;
+    private static final double MAX_ENERGY_DELIVERY_TRANSFER = 0.05D;
+    private static final double MAX_ENERGY_ABSORBTION_TRANSFER = 0.06D;
     // Minimum energy threshold for transfer
     private static final double MIN_ENERGY_FOR_TRANSFER = 0.1D;
     // Threshold for energy absorption (output value)
@@ -49,7 +49,7 @@ public class EnergyTransferCellCalcService {
                                         Math.min(otherCell.getEnergy(),
                                             Math.min(
                                             MAX_ENERGY_ABSORBTION_TRANSFER,
-                                            otherCell.getEnergy() * deltaTime * absorptionOutput
+                                            otherCell.getEnergy() * absorptionOutput
                                         ));
 
                                 // Absorb energy from other cell
@@ -62,7 +62,7 @@ public class EnergyTransferCellCalcService {
                                 // Regular energy transfer
                                 final double transferAmount = Math.min(
                                         MAX_ENERGY_DELIVERY_TRANSFER,
-                                        cell.getEnergy() * deltaTime * deliveryOutput
+                                        cell.getEnergy() * deliveryOutput
                                 );
 
                                 // Transfer energy

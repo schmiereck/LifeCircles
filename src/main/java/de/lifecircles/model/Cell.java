@@ -74,7 +74,7 @@ public class Cell implements SensableCell, Serializable {
         this.mutationStrengthFactor = 1.0; // Standardwert
     }
 
-    public Cell(Vector2D position, final double radiusSize, final NeuralNetwork neuralNetwork) {
+    public Cell(Vector2D position, final double radiusSize, final CellBrainInterface cellBrain) {
         this.position = position;
         this.velocity = new Vector2D(0, 0);
         this.rotation = 0;
@@ -86,7 +86,7 @@ public class Cell implements SensableCell, Serializable {
         this.type = new CellType(0, 0, 0);
         this.sensorActors = new ArrayList<>();
         initializeSensorActors();
-        this.brain = new CellBrain(neuralNetwork);
+        this.brain = cellBrain;
         this.energy = SimulationConfig.CELL_MAX_ENERGY;
         this.age = 0.0;
         this.generation = 0; // initialize generation counter
@@ -183,6 +183,17 @@ public class Cell implements SensableCell, Serializable {
         return this.isGrowing;
     }
 
+    // Neue Methode, um die verzögerte Größenänderung zu prüfen und anzuwenden
+    public void applyDelayedSizeChange() {
+        if (this.sizeChangeTimestamp > 0) {
+            long elapsedTime = System.currentTimeMillis() - this.sizeChangeTimestamp;
+            if (elapsedTime >= SimulationConfig.getInstance().getSizeChangeDelay()) {
+                this.radiusSize = this.targetRadiusSize;
+                this.sizeChangeTimestamp = -1; // Zurücksetzen des Zeitstempels
+            }
+        }
+    }
+
     @Override
     public CellType getType() {
         return type;
@@ -204,7 +215,9 @@ public class Cell implements SensableCell, Serializable {
      */
     public void applyForce(Vector2D force, Vector2D applicationPoint, double deltaTime) {
         // Linear acceleration
-        this.velocity = this.velocity.add(force.multiply(1.0D / this.radiusSize)); // Larger cells are affected less
+        //this.velocity = this.velocity.add(force.multiply(1.0D / this.radiusSize)); // Larger cells are affected less
+        this.velocity = this.velocity.add(force.multiply(0.08D)); // Larger cells are affected less
+        //this.velocity = this.velocity.add(force); // Larger cells are affected less
 
         // Calculate torque and angular acceleration
         //Vector2D radiusVector = applicationPoint.subtract(position);
@@ -223,7 +236,7 @@ public class Cell implements SensableCell, Serializable {
     public double getMaxReproductionDesire() {
         return sensorActors.stream()
                 .mapToDouble(SensorActor::getReproductionDesire)
-                .max().orElse(0.0);
+                .max().orElse(0.0D);
     }
 
     @Override
@@ -398,17 +411,6 @@ public class Cell implements SensableCell, Serializable {
         if (random.nextDouble() < mutationRate) {
             double mutation = (random.nextDouble() * 2.0 - 1.0) * mutationStrength;
             this.mutationStrengthFactor = Math.max(0.1, Math.min(2.0, this.mutationStrengthFactor + mutation));
-        }
-    }
-
-    // Neue Methode, um die verzögerte Größenänderung zu prüfen und anzuwenden
-    public void applyDelayedSizeChange() {
-        if (this.sizeChangeTimestamp > 0) {
-            long elapsedTime = System.currentTimeMillis() - this.sizeChangeTimestamp;
-            if (elapsedTime >= SimulationConfig.getInstance().getSizeChangeDelay()) {
-                this.radiusSize = this.targetRadiusSize;
-                this.sizeChangeTimestamp = -1; // Zurücksetzen des Zeitstempels
-            }
         }
     }
 

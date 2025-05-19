@@ -120,10 +120,10 @@ public class Environment {
 
         // Using provided partitioner for interactions
         partitioner.build(cells);
-        // Process sensor/actor interactions
-        ActorSensorCellCalcService.processInteractions(cells, deltaTime, partitioner);
         // Process repulsive forces
         RepulsionCellCalcService.processRepulsiveForces(cells, deltaTime, partitioner);
+        // Process sensor/actor interactions
+        ActorSensorCellCalcService.processInteractions(cells, deltaTime, partitioner);
 
         // Update cells and handle reproduction
         final List<Cell> newCells = new ArrayList<>();
@@ -138,7 +138,8 @@ public class Environment {
             cell.applyForce(viscousForce, cell.getPosition(), deltaTime);
 
             // Apply gravity
-            cell.applyForce(SimulationConfig.GRAVITY_VECTOR.multiply(cell.getRadiusSize()), cell.getPosition(), deltaTime);
+            //cell.applyForce(SimulationConfig.GRAVITY_VECTOR.multiply(cell.getRadiusSize()), cell.getPosition(), deltaTime);
+            cell.applyForce(SimulationConfig.GRAVITY_VECTOR, cell.getPosition(), deltaTime);
 
             // Handle blocker collisions after force application
             BlockerCellCalcService.handleBlockerCollisions(cell, blockers, deltaTime);
@@ -157,7 +158,7 @@ public class Environment {
             // Wrap position around environment boundaries
             wrapPosition(cell);
 
-            // Handle reproduction (skip in HIGH_ENERGY mode)
+            // Handle reproduction.
             if (ReproductionManagerService.canReproduce(this.config, cell)) {
                 final Cell childCell = ReproductionManagerService.reproduce(this.config, cell);
                 if (Objects.nonNull(childCell)) {

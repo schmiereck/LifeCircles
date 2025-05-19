@@ -55,7 +55,7 @@ public class SensorActor implements SensableActor, Serializable {
     //    // Rotate by cell's rotation and add to cell's position
     //    return offset.rotate(parentCell.getRotation()).add(parentCell.getPosition());
     //}
-    public Vector2D getPosition() {
+    public Vector2D calcPosition() {
         // Inline optimized: use precomputed angle unit vector and inline rotation
         double halfSize = parentCell.getRadiusSize();
         double rotation = parentCell.getRotation();
@@ -105,7 +105,7 @@ public class SensorActor implements SensableActor, Serializable {
      * Computes and stores the current position of this sensor actor.
      */
     public void updateCachedPosition() {
-        this.cachedPosition = getPosition();
+        this.cachedPosition = this.calcPosition();
     }
 
     /**

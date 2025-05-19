@@ -4,10 +4,7 @@ import de.lifecircles.model.*;
 import de.lifecircles.service.dto.SimulationStateDto;
 import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
 import de.lifecircles.service.partitioningStrategy.PartitioningStrategyFactory;
-import de.lifecircles.service.trainStrategy.DefaultTrainStrategy;
-import de.lifecircles.service.trainStrategy.HighEnergyTrainStrategy;
-import de.lifecircles.service.trainStrategy.HighPositionTrainStrategy;
-import de.lifecircles.service.trainStrategy.TrainStrategy;
+import de.lifecircles.service.trainStrategy.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,13 +33,14 @@ public class CalculationService implements Runnable {
                 switch (config.getTrainMode()) {
                     case HIGH_ENERGY -> new HighEnergyTrainStrategy();
                     case HIGH_POSITION -> new HighPositionTrainStrategy();
+                    case TEST_A -> new TestATrainStrategy();
                     default -> new DefaultTrainStrategy();
                 };
         this.environment = this.trainStrategy.initializeEnvironment();
 
         final double cellRadius = this.config.getCellMaxRadiusSize();
         final double fieldRadius = this.config.getCellActorMaxFieldRadius();
-        final double interactionRadius = cellRadius + fieldRadius;
+        final double interactionRadius = (cellRadius + fieldRadius) * 2.0D;
 
         this.partitioner = PartitioningStrategyFactory.createStrategy(
                 this.environment.getWidth(), this.environment.getHeight(), interactionRadius);
@@ -126,7 +124,7 @@ public class CalculationService implements Runnable {
                 for (SensorActor actor : cell.getSensorActors()) {
                     CellType actorType = actor.getType();
                     actorStateDtos.add(new SimulationStateDto.ActorStateDto(
-                            actor.getPosition(),
+                            actor.calcPosition(),
                             new double[]{actorType.getRed(), actorType.getGreen(), actorType.getBlue()},
                             actor.getForceStrength()
                     ));

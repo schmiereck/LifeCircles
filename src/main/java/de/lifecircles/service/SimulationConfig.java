@@ -11,7 +11,7 @@ public class SimulationConfig {
     //-------------------------------------------------------------------------
     // Environment:
 
-    public static final double GRAVITY = 9.81D * 2.0D;
+    public static final double GRAVITY = 9.81D * 18.0D;
     public static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
 
     // Environment-Cell:
@@ -94,7 +94,8 @@ public class SimulationConfig {
     // Age in Seconds after which a cell is considered dead.
     private int cellDeathAge = 100;
 
-    private double cellActorMaxForceStrength = 16.0D * 8.0D * 4.0D * 1.5D;
+    //private double cellActorMaxForceStrength = 16.0D * 8.0D * 4.0D * 1.5D;
+    private double cellActorMaxForceStrength = 16.0D * 7.0D;
 
     private double reproductionEnergyThreshold = 0.4D;
     private double reproductionAgeThreshold = 4.0D; // seconds

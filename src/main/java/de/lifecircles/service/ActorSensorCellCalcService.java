@@ -38,8 +38,8 @@ public class ActorSensorCellCalcService {
      */
     public static void processInteractions(final List<Cell> cells, final double deltaTime, final PartitioningStrategy partitioner) {
         // cache positions for all sensorActors in this simulation step
-        for (Cell cell : cells) {
-            for (SensorActor actor : cell.getSensorActors()) {
+        for (final Cell cell : cells) {
+            for (final SensorActor actor : cell.getSensorActors()) {
                 actor.updateCachedPosition();
                 actor.setSensedActor(null);
                 actor.setSensedCell(null);
@@ -50,7 +50,7 @@ public class ActorSensorCellCalcService {
         checkBlockerCollisions(cells);
         
         cells.parallelStream().forEach(calcCell -> {
-            for (Cell otherCell : partitioner.getNeighbors(calcCell)) {
+            for (final Cell otherCell : partitioner.getNeighbors(calcCell)) {
                 if (calcCell != otherCell) {
                     processInteraction(calcCell, otherCell, deltaTime);
                 }
@@ -88,44 +88,50 @@ public class ActorSensorCellCalcService {
     }
 
     private static void processInteraction(final Cell calcCell, final Cell otherCell, final double deltaTime) {
-        double foundForceStrength = 0.0D;
-        SensorActor foundOtherCellActor = null;
-        SensorActor foundCalcCellActor = null;
-        Vector2D foundDirection = null;
+        final Vector2D delta = calcCell.getPosition().subtract(otherCell.getPosition());
+        final double cellDistance = delta.length();
+        final double combinedRadius = Math.max(otherCell.getRadiusSize(), calcCell.getRadiusSize());
+        // Nur ausführen, wenn die Zellen sich nicht inneinander befinden.
+        if (cellDistance > combinedRadius) {
+            double foundForceStrength = 0.0D;
+            SensorActor foundOtherCellActor = null;
+            SensorActor foundCalcCellActor = null;
+            Vector2D foundDirection = null;
 
-        // Process interactions in one direction only
-        for (SensorActor calcCellActor : calcCell.getSensorActors()) {
-            // Wenn der Sensor bereits etwas wahrnimmt (z.B. einen Blocker), überspringen
-            if (calcCellActor.getSensedCell() != null) {
-                continue;
-            }
-            
-            for (SensorActor otherCellActor : otherCell.getSensorActors()) {
-                // Berechne die Kraft, die der otherCellActor auf calcCellActor ausübt
-                Vector2D direction = calcCellActor.getCachedPosition().subtract(otherCellActor.getCachedPosition());
-                double distance = direction.length();
-                
-                if (distance > 0.0D) {
-                    // Kraft von otherCellActor auf calcCellActor
-                    double forceStrength = otherCellActor.getForceStrength(); // Kraftstärke (positiv/negativ)
-                    double senseForceValue = sense(otherCellActor, calcCellActor);
-                    double totalForceStrength = senseForceValue * forceStrength; // Berücksichtige Richtung und Stärke
-                    
-                    if ((senseForceValue != 0.0D) && (Math.abs(totalForceStrength) > Math.abs(foundForceStrength))) {
-                        foundForceStrength = totalForceStrength;
-                        foundCalcCellActor = calcCellActor;
-                        foundOtherCellActor = otherCellActor;
-                        foundDirection = direction;
+            // Process interactions in one direction only
+            for (SensorActor calcCellActor : calcCell.getSensorActors()) {
+                // Wenn der Sensor bereits etwas wahrnimmt (z.B. einen Blocker), überspringen
+                if (calcCellActor.getSensedCell() != null) {
+                    continue;
+                }
+
+                for (SensorActor otherCellActor : otherCell.getSensorActors()) {
+                    // Berechne die Kraft, die der otherCellActor auf calcCellActor ausübt
+                    Vector2D direction = calcCellActor.getCachedPosition().subtract(otherCellActor.getCachedPosition());
+                    double distance = direction.length();
+
+                    if (distance > 0.0D) {
+                        // Kraft von otherCellActor auf calcCellActor
+                        double forceStrength = otherCellActor.getForceStrength(); // Kraftstärke (positiv/negativ)
+                        double senseForceValue = sense(otherCellActor, calcCellActor);
+                        double totalForceStrength = senseForceValue * forceStrength; // Berücksichtige Richtung und Stärke
+
+                        if ((senseForceValue != 0.0D) && (Math.abs(totalForceStrength) > Math.abs(foundForceStrength))) {
+                            foundForceStrength = totalForceStrength;
+                            foundCalcCellActor = calcCellActor;
+                            foundOtherCellActor = otherCellActor;
+                            foundDirection = direction;
+                        }
                     }
                 }
             }
-        }
-        if (Objects.nonNull(foundOtherCellActor)) {
-            foundCalcCellActor.setSensedActor(foundOtherCellActor);
-            foundCalcCellActor.setSensedCell(otherCell);
+            if (Objects.nonNull(foundOtherCellActor)) {
+                foundCalcCellActor.setSensedActor(foundOtherCellActor);
+                foundCalcCellActor.setSensedCell(otherCell);
 
-            Vector2D forceOnCalcCell = foundDirection.normalize().multiply(foundForceStrength);
-            calcCell.applyForce(forceOnCalcCell, foundCalcCellActor.getCachedPosition(), deltaTime);
+                Vector2D forceOnCalcCell = foundDirection.normalize().multiply(foundForceStrength);
+                calcCell.applyForce(forceOnCalcCell, foundCalcCellActor.getCachedPosition(), deltaTime);
+            }
         }
     }
 

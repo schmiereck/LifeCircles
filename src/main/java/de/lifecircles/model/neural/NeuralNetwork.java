@@ -190,8 +190,8 @@ public class NeuralNetwork implements Serializable {
         if (inputs.length != this.inputNeuronList.size()) {
             throw new IllegalArgumentException("Input size mismatch");
         }
-        for (int i = 0; i < inputs.length; i++) {
-            this.inputNeuronList.get(i).setValue(inputs[i]);
+        for (int inputPos = 0; inputPos < inputs.length; inputPos++) {
+            this.inputNeuronList.get(inputPos).setValue(inputs[inputPos]);
         }
     }
 
@@ -380,6 +380,13 @@ public class NeuralNetwork implements Serializable {
             addHiddenLayer(pos, neuronCount, structuralMutationRate);
         }
 
+        // Möglichkeit, ein Hidden Layer zu entfernen
+        if (this.random.nextDouble() < structuralMutationRate * 1.5) { // Erhöhte Wahrscheinlichkeit
+            final int pos = random.nextInt((this.hiddenLayerList.size() - this.fixedHiddenLayerCount)) +
+                    this.fixedHiddenLayerCount;
+            removeHiddenLayer(pos);
+        }
+
         // Wahrscheinlichkeit, ein Neuron zu einem bestehenden Layer hinzuzufügen
         if (!this.hiddenLayerList.isEmpty() &&
                 (this.hiddenLayerList.size() >= this.fixedHiddenLayerCount) &&
@@ -488,18 +495,31 @@ public class NeuralNetwork implements Serializable {
         }
     }
 
-    public void removeNeuronFromHiddenLayer(int layerIndex) {
-        List<Neuron> layer = this.hiddenLayerList.get(layerIndex).getNeurons();
-        if (layer.isEmpty()) return;
-        int idx = this.random.nextInt(layer.size());
-        Neuron rem = layer.remove(idx);
-        Iterator<Synapse> it = this.synapsesynapseList.iterator();
+    private void removeHiddenLayer(final int pos) {
+        final Layer layer = this.hiddenLayerList.get(pos);
+        if (layer.getNeurons().size() == 1) {
+            this.removeNeuron(layer, 0);
+        }
+    }
+
+    public void removeNeuronFromHiddenLayer(final int layerIndex) {
+        final Layer layer = this.hiddenLayerList.get(layerIndex);
+        final List<Neuron> layerNeuronList = layer.getNeurons();
+        if (layerNeuronList.isEmpty()) return;
+        final int idx = this.random.nextInt(layerNeuronList.size());
+        this.removeNeuron(layer, idx);
+    }
+
+    private void removeNeuron(final Layer layer, final int idx) {
+        final List<Neuron> layerNeuronList = layer.getNeurons();
+        final Neuron removedNeuron = layerNeuronList.remove(idx);
+        final Iterator<Synapse> it = this.synapsesynapseList.iterator();
         while (it.hasNext()) {
-            Synapse s = it.next();
-            if (s.getSourceNeuron() == rem || s.getTargetNeuron() == rem) {
+            final Synapse s = it.next();
+            if (s.getSourceNeuron() == removedNeuron || s.getTargetNeuron() == removedNeuron) {
                 s.getSourceNeuron().getOutputSynapses().remove(s);
                 // Für Input-Synapsen die neue Methode verwenden
-                if (s.getTargetNeuron() == rem) {
+                if (s.getTargetNeuron() == removedNeuron) {
                     it.remove();
                     continue;
                 }
