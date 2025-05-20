@@ -89,7 +89,7 @@ public class SimulationConfig {
     private double cellMaxRadiusSize = 20.0D;
 
     private double cellActorMaxFieldRadius =
-            ActorSensorCellCalcService.calcSensorRadius(this.cellMaxRadiusSize, CELL_SENSOR_ACTOR_COUNT);
+            SensorActorForceCellCalcService.calcSensorRadius(this.cellMaxRadiusSize, CELL_SENSOR_ACTOR_COUNT);
 
     // Age in Seconds after which a cell is considered dead.
     private int cellDeathAge = 1000;
@@ -98,11 +98,11 @@ public class SimulationConfig {
     /**
      * Maximum attractive force strength for cell actors (< 0).
      */
-    private double cellActorMaxAttractiveForceStrength = 16.0D * 8.0D;
+    private double cellActorMaxAttractiveForceStrength = 280.0D;
     /**
      * Maximum attractive force strength for cell actors (> 0).
      */
-    private double cellActorMaxRepulsiveForceStrength = 16.0D * 12.0D;
+    private double cellActorMaxRepulsiveForceStrength = 580.0D;
 
     private double reproductionEnergyThreshold = 0.4D;
     private double reproductionAgeThreshold = 4.0D; // seconds

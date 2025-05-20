@@ -1,6 +1,7 @@
 package de.lifecircles.model.neural;
 
 import de.lifecircles.model.Cell;
+import de.lifecircles.model.CellFactory;
 import de.lifecircles.model.SensorActor;
 import de.lifecircles.model.Vector2D;
 import org.junit.jupiter.api.Assertions;
@@ -12,7 +13,7 @@ public class SerialTest {
 
     @Test
     void testCyclicReferences() throws IOException, ClassNotFoundException {
-        Cell cell = new Cell(new Vector2D(10, 20), 5.0);
+        Cell cell = CellFactory.createCell(new Vector2D(10, 20), 5.0);
 
         GenerelCycleDetector generelCycleDetector = new GenerelCycleDetector();
         System.out.println("Teste direkte Cell-SensorActor Zyklen:");
@@ -79,7 +80,7 @@ public class SerialTest {
 
     @Test
     void testNoProblematicCycles() throws IOException, ClassNotFoundException {
-        Cell cell = new Cell(new Vector2D(10, 20), 5.0);
+        Cell cell = CellFactory.createCell(new Vector2D(10, 20), 5.0);
         GenerelCycleDetector generelCycleDetector = new GenerelCycleDetector();
 
         // Teste allgemeine Zyklen

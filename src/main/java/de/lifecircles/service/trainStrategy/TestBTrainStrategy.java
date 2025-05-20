@@ -6,7 +6,7 @@ import de.lifecircles.model.Vector2D;
 import de.lifecircles.model.neural.*;
 import de.lifecircles.service.SimulationConfig;
 
-public class TestATrainStrategy implements TrainStrategy {
+public class TestBTrainStrategy implements TrainStrategy {
     private final SimulationConfig config = SimulationConfig.getInstance();
 
     @Override
@@ -36,72 +36,69 @@ public class TestATrainStrategy implements TrainStrategy {
 
         // Anziehung:
         {
-            final double x = this.config.getWidth() / 2.0D - radiusSize * 21.0D;
-            final double y = yTop;
-
-            this.createAndAddCell(environment, x, y - radiusSize * 4.0D, radiusSize, true);
-
-            this.createAndAddCell(environment, x - radiusSize * 1.25D, y - radiusSize * 2.0D, radiusSize, true);
-            this.createAndAddCell(environment, x + radiusSize * 1.25D, y - radiusSize * 2.0D, radiusSize, true);
-
-            this.createAndAddCell(environment, x - radiusSize * 2.4D, y, radiusSize, true);
-            this.createAndAddCell(environment, x, y, radiusSize, true);
-            this.createAndAddCell(environment, x + radiusSize * 2.4D, y, radiusSize, true);
-
-            //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
-        }
-        {
             final double x = this.config.getWidth() / 2.0D - radiusSize * 14.0D;
             final double y = yTop;
 
-            this.createAndAddCell(environment, x, y, radiusSize, true);
-            this.createAndAddCell(environment, x + radiusSize * 2.5D, y, radiusSize, true);
-            this.createAndAddCell(environment, x + radiusSize * 1.25D, y - radiusSize * 2.0D, radiusSize, true);
+            this.createAndAddCell(environment, x, y, radiusSize, true, true);
+            this.createAndAddCell(environment, x + radiusSize * 2.5D, y, radiusSize, true, true);
+            this.createAndAddCell(environment, x + radiusSize * 1.25D, y - radiusSize * 1.25D, radiusSize, true, true);
             //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
         }
-        // Abstoßung:
+        {
+            final double x = this.config.getWidth() / 2.0D - radiusSize * 21.0D;
+            final double y = yTop;
+
+            this.createAndAddCell(environment, x, y - radiusSize * 2.5D, radiusSize, true, true);
+
+            this.createAndAddCell(environment, x - radiusSize * 1.25D, y - radiusSize * 1.25D, radiusSize, true, true);
+            this.createAndAddCell(environment, x + radiusSize * 1.25D, y - radiusSize * 1.25D, radiusSize, true, true);
+
+            this.createAndAddCell(environment, x - radiusSize * 2.4D, y, radiusSize, true, false);
+            this.createAndAddCell(environment, x, y, radiusSize, true, false);
+            this.createAndAddCell(environment, x + radiusSize * 2.4D, y, radiusSize, true, false);
+
+            //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
+        }
         {
             final double x = this.config.getWidth() / 2.0D - radiusSize * 7.0D;
             final double y = yTop;
 
-            this.createAndAddCell(environment, x, y, radiusSize, false);
-            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, false);
+            this.createAndAddCell(environment, x, y, radiusSize, true, true);
+            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, true, true);
             //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
         }
         {
             final double x = this.config.getWidth() / 2.0D; //  + radiusSize geht
             final double y = yTop;
 
-            this.createAndAddCell(environment, x, y, radiusSize, false);
-            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, false);
+            this.createAndAddCell(environment, x, y, radiusSize, true);
+            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, true, true);
             //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
         }
         {
             final double x = this.config.getWidth() / 2.0D + radiusSize * 7.0D;
             final double y = yTop;
 
-            this.createAndAddCell(environment, x, y, radiusSize, false);
-            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, false);
+            this.createAndAddCell(environment, x, y, radiusSize, true, true);
+            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, true, true);
             //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
         }
         {
             final double x = this.config.getWidth() / 2.0D + radiusSize * 15.0D;
             final double y = yTop;
 
-            this.createAndAddCell(environment, x, y, radiusSize, false);
-            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, false);
-            this.createAndAddCell(environment, x + radiusSize * 1.125D, y - radiusSize * 2.0D, radiusSize, false);
+            this.createAndAddCell(environment, x, y, radiusSize, true, true);
+            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, true, true);
+            this.createAndAddCell(environment, x + radiusSize * 1.125D, y - radiusSize * 2.25D, radiusSize, true, true);
             //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
         }
-
-        // Anziehung & Abstoßung:
         {
             final double x = this.config.getWidth() / 2.0D + radiusSize * 21.0D;
             final double y = yTop;
 
             this.createAndAddCell(environment, x, y, radiusSize, true);
-            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, true);
-            this.createAndAddCell(environment, x + radiusSize * 1.125D, y - radiusSize * 2.0D, radiusSize, false);
+            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, true, true);
+            this.createAndAddCell(environment, x + radiusSize * 1.125D, y - radiusSize * 2.25D, radiusSize, false, true);
             //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
         }
     }
@@ -110,7 +107,7 @@ public class TestATrainStrategy implements TrainStrategy {
                                   final boolean isAttraction) {
         final boolean isDelivery = false;
         createAndAddCell(environment, x, y, radiusSize,
-                         isAttraction, isDelivery);
+                isAttraction, isDelivery);
     }
 
     private void createAndAddCell(Environment environment, double x, double y, final double radiusSize,

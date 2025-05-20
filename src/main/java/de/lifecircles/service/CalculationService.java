@@ -34,6 +34,7 @@ public class CalculationService implements Runnable {
                     case HIGH_ENERGY -> new HighEnergyTrainStrategy();
                     case HIGH_POSITION -> new HighPositionTrainStrategy();
                     case TEST_A -> new TestATrainStrategy();
+                    case TEST_B -> new TestBTrainStrategy();
                     default -> new DefaultTrainStrategy();
                 };
         this.environment = this.trainStrategy.initializeEnvironment();
@@ -99,13 +100,6 @@ public class CalculationService implements Runnable {
 
         // Update all cells with their neighborhood information
         this.partitioner.build(cells);
-
-        ActorSensorCellCalcService.processInteractions(cells, deltaTime, this.partitioner);
-
-        // Parallel execution of neural networks and cell updates
-        cells.parallelStream().forEach(cell -> {
-            CellCalcService.updateWithNeighbors(cell, deltaTime);
-        });
 
         // Update environment physics
         this.environment.update(deltaTime, this.partitioner);

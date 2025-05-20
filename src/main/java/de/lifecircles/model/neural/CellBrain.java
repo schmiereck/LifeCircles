@@ -11,29 +11,13 @@ public class CellBrain implements CellBrainInterface, Serializable {
     private static final long serialVersionUID = 1L;
     private final NeuralNetwork network;
 
-
-    /**
-     * Erstellt ein neues CellBrain mit vollständiger Synapsen-Konnektivität (100%).
-     *
-     * @param cell Die Zelle, zu der dieses Gehirn gehört
-     */
-    public CellBrain(final Cell cell) {
-        this(cell, 1.0D, 1.0D, 1.0D);
-    }
-
     /**
      * Erstellt ein neues CellBrain mit angegebener Synapsen-Konnektivität.
-     * 
-     * @param cell Die Zelle, zu der dieses Gehirn gehört
+     *
      * @param synapseConnectivity Prozentsatz der zu erstellenden Synapsen (0.0-1.0)
      */
-    public CellBrain(final Cell cell, final double hiddenCountFactor,
+    public CellBrain(final int inputCount, final int outputCount, final double hiddenCountFactor,
                      final double stateHiddenLayerSynapseConnectivity, final double synapseConnectivity) {
-        int inputCount = GlobalInputFeature.values().length +
-                         (SensorInputFeature.values().length * cell.getSensorActors().size());
-        
-        int outputCount = GlobalOutputFeature.values().length +
-                         (ActorOutputFeature.values().length * cell.getSensorActors().size());
 
         //final int hiddenCount = (inputCount + outputCount) * 2; // Arbitrary hidden layer size
         final int[] hiddenCountArr = {

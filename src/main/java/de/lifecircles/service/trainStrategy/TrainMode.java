@@ -9,5 +9,6 @@ public enum TrainMode {
     HIGH_ENERGY,
     HIGH_POSITION,
 
-    TEST_A
+    TEST_A,
+    TEST_B
 }

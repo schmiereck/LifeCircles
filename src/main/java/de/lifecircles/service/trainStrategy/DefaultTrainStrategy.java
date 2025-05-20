@@ -1,6 +1,7 @@
 package de.lifecircles.service.trainStrategy;
 
 import de.lifecircles.model.Cell;
+import de.lifecircles.model.CellFactory;
 import de.lifecircles.model.Environment;
 import de.lifecircles.model.Vector2D;
 import de.lifecircles.service.SimulationConfig;
@@ -64,7 +65,7 @@ public class DefaultTrainStrategy implements TrainStrategy {
             final double stateHiddenLayerSynapseConnectivity = 0.001D;
             //final double brainSynapseConnectivity = SimulationConfig.brainSynapseConnectivityDefault;
             final double brainSynapseConnectivity = 0.002D;
-            environment.addCell(new Cell(new Vector2D(x, y), config.getCellMaxRadiusSize() / 2.0,
+            environment.addCell(CellFactory.createCell(new Vector2D(x, y), config.getCellMaxRadiusSize() / 2.0,
                     hiddenCountFactor, stateHiddenLayerSynapseConnectivity, brainSynapseConnectivity));
         }
     }

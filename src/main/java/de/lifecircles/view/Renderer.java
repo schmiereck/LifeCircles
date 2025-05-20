@@ -1,7 +1,7 @@
 package de.lifecircles.view;
 
 import de.lifecircles.model.Vector2D;
-import de.lifecircles.service.ActorSensorCellCalcService;
+import de.lifecircles.service.SensorActorForceCellCalcService;
 import de.lifecircles.service.dto.SimulationStateDto;
 import de.lifecircles.service.SimulationConfig;
 import javafx.geometry.Point2D;
@@ -225,7 +225,7 @@ public class Renderer {
 
             // Dynamic force field radius based on actor spacing
             int actorCount = cell.getActors().size();
-            double chord = ActorSensorCellCalcService.calcSensorRadius(cell.getRadiusSize(), actorCount);
+            double chord = SensorActorForceCellCalcService.calcSensorRadius(cell.getRadiusSize(), actorCount);
             double radius = chord * camera.getScale();
 
             final Color baseColor;

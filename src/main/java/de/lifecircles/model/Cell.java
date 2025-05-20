@@ -1,8 +1,6 @@
 package de.lifecircles.model;
 
-import de.lifecircles.model.neural.CellBrain;
-import de.lifecircles.model.neural.CellBrainInterface;
-import de.lifecircles.model.neural.NeuralNetwork;
+import de.lifecircles.model.neural.*;
 import de.lifecircles.service.SimulationConfig;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +17,10 @@ public class Cell implements SensableCell, Serializable {
 
     private Vector2D position;
     private Vector2D velocity;
+    private Vector2D velocityForce;
     private double rotation; // in radians
     private double angularVelocity;
+    private double angularVelocityForce;
     private double radiusSize;
     private double targetRadiusSize; // Zielgröße nach dem Wachstum
     private double growthAge; // Alter seit der Zellteilung für das Wachstum
@@ -39,53 +39,19 @@ public class Cell implements SensableCell, Serializable {
 
     private int tempThinkHackCounter = SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX;
 
-    public Cell(Vector2D position, final double radiusSize) {
-        this(position, radiusSize, SimulationConfig.hiddenCountFactorDefault,
-                SimulationConfig.stateHiddenLayerSynapseConnectivityDefault,
-                SimulationConfig.brainSynapseConnectivityDefault);
-    }
-
-    public Cell(Vector2D position, final double radiusSize, final double synapseConnectivity) {
-        this(position, radiusSize, SimulationConfig.hiddenCountFactorDefault,
-                SimulationConfig.stateHiddenLayerSynapseConnectivityDefault,
-                synapseConnectivity);
-
-    }
-
-    public Cell(Vector2D position, final double radiusSize, final double hiddenCountFactor,
-                final double stateHiddenLayerSynapseConnectivity, final double synapseConnectivity) {
+    public Cell(final Vector2D position, final double radiusSize, final CellBrainInterface cellBrain) {
         this.position = position;
         this.velocity = new Vector2D(0, 0);
-        this.rotation = 0;
-        this.angularVelocity = 0;
+        this.velocityForce = new Vector2D(0, 0);
+        this.rotation = 0.0D;
+        this.angularVelocity = 0.0D;
+        this.angularVelocityForce = 0.0D;
         this.radiusSize = radiusSize;
         this.targetRadiusSize = radiusSize;
         this.isGrowing = false;
         this.growthAge = 0;
         this.type = new CellType(0, 0, 0);
-        this.sensorActors = new ArrayList<>();
-        initializeSensorActors();
-        this.brain = new CellBrain(this, hiddenCountFactor,
-                stateHiddenLayerSynapseConnectivity, synapseConnectivity);
-        this.energy = SimulationConfig.CELL_MAX_ENERGY;
-        this.age = 0.0;
-        this.generation = 0; // initialize generation counter
-        this.mutationRateFactor = 1.0; // Standardwert
-        this.mutationStrengthFactor = 1.0; // Standardwert
-    }
-
-    public Cell(Vector2D position, final double radiusSize, final CellBrainInterface cellBrain) {
-        this.position = position;
-        this.velocity = new Vector2D(0, 0);
-        this.rotation = 0;
-        this.angularVelocity = 0;
-        this.radiusSize = radiusSize;
-        this.targetRadiusSize = radiusSize;
-        this.isGrowing = false;
-        this.growthAge = 0;
-        this.type = new CellType(0, 0, 0);
-        this.sensorActors = new ArrayList<>();
-        initializeSensorActors();
+        this.sensorActors = this.createSensorActors(this);
         this.brain = cellBrain;
         this.energy = SimulationConfig.CELL_MAX_ENERGY;
         this.age = 0.0;
@@ -94,11 +60,13 @@ public class Cell implements SensableCell, Serializable {
         this.mutationStrengthFactor = 1.0; // Standardwert
     }
 
-    private void initializeSensorActors() {
+    private static ArrayList<SensorActor> createSensorActors(final Cell cell) {
+        final ArrayList<SensorActor> sensorActors = new ArrayList<>();
         double angleStep = 2 * Math.PI / SimulationConfig.CELL_SENSOR_ACTOR_COUNT;
         for (int i = 0; i < SimulationConfig.CELL_SENSOR_ACTOR_COUNT; i++) {
-            sensorActors.add(new SensorActor(this, i * angleStep));
+            sensorActors.add(new SensorActor(cell, i * angleStep));
         }
+        return sensorActors;
     }
 
     public Vector2D getPosition() {
@@ -216,7 +184,7 @@ public class Cell implements SensableCell, Serializable {
     public void applyForce(Vector2D force, Vector2D applicationPoint, double deltaTime) {
         // Linear acceleration
         //this.velocity = this.velocity.add(force.multiply(1.0D / this.radiusSize)); // Larger cells are affected less
-        this.velocity = this.velocity.add(force.multiply(0.08D)); // Larger cells are affected less
+        this.velocityForce = this.velocityForce.add(force.multiply(0.08D)); // Larger cells are affected less
         //this.velocity = this.velocity.add(force); // Larger cells are affected less
 
         // Calculate torque and angular acceleration
@@ -225,7 +193,15 @@ public class Cell implements SensableCell, Serializable {
         final double yRadius = applicationPoint.getY() - this.position.getY();
         //double torque = radiusVector.getX() * force.getY() - radiusVector.getY() * force.getX();
         double torque = (xRadius * force.getY() - yRadius * force.getX()) / SimulationConfig.CELL_ANGULAR_VELOCITY_DIFF; // Scale down torque for stability
-        this.angularVelocity += torque / (this.radiusSize * this.radiusSize); // Moment of inertia approximated as size²
+        this.angularVelocityForce += torque / (this.radiusSize * this.radiusSize); // Moment of inertia approximated as size²
+    }
+
+    public void updateForce() {
+        this.velocity = this.velocity.add(this.velocityForce);
+        this.angularVelocity += this.angularVelocityForce;
+
+        this.velocityForce = new Vector2D(0, 0);
+        this.angularVelocityForce = 0.0D;
     }
 
     public double getMaxReproductionDesire() {

@@ -1,18 +1,10 @@
 package de.lifecircles.model;
 
-import de.lifecircles.service.ReproductionManagerService;
-import de.lifecircles.service.StatisticsManagerService;
-import de.lifecircles.service.ActorSensorCellCalcService;
-import de.lifecircles.service.BlockerCellCalcService;
-import de.lifecircles.service.RepulsionCellCalcService;
-import de.lifecircles.service.SimulationConfig;
-import de.lifecircles.service.EnergySunCalcService;
-import de.lifecircles.service.EnergyTransferCellCalcService;
+import de.lifecircles.service.*;
 import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
 
 import java.util.*;
 
-import de.lifecircles.service.trainStrategy.TrainMode;
 import java.io.*;
 
 /**
@@ -111,27 +103,19 @@ public class Environment {
      */
     public void update(final double deltaTime, final PartitioningStrategy partitioner) {
         // Calculate sun energy rays
-        sunRays.clear();
-        sunRays.addAll(
-            energySunCalcService.calculateSunEnergy(
-                cells, blockers, width, height, config, deltaTime
-            )
+        this.sunRays.clear();
+        this.sunRays.addAll(
+                this.energySunCalcService.calculateSunEnergy(
+                        this.cells, this.blockers, this.width, this.height, this.config, deltaTime
+                )
         );
 
-        // Using provided partitioner for interactions
-        partitioner.build(cells);
         // Process repulsive forces
         RepulsionCellCalcService.processRepulsiveForces(cells, deltaTime, partitioner);
         // Process sensor/actor interactions
-        ActorSensorCellCalcService.processInteractions(cells, deltaTime, partitioner);
+        SensorActorForceCellCalcService.processInteractions(cells, deltaTime, partitioner);
 
-        // Update cells and handle reproduction
-        final List<Cell> newCells = new ArrayList<>();
-        final Iterator<Cell> iterator = cells.iterator();
-
-        while (iterator.hasNext()) {
-            final Cell cell = iterator.next();
-
+        this.cells.parallelStream().forEach(cell -> {
             // Apply viscosity
             //Vector2D viscousForce = cell.getVelocity().multiply(-VISCOSITY);
             final Vector2D viscousForce = cell.getVelocity().multiply(-SimulationConfig.getInstance().getViscosity());
@@ -142,7 +126,26 @@ public class Environment {
             cell.applyForce(SimulationConfig.GRAVITY_VECTOR, cell.getPosition(), deltaTime);
 
             // Handle blocker collisions after force application
-            BlockerCellCalcService.handleBlockerCollisions(cell, blockers, deltaTime);
+            BlockerCellCalcService.handleBlockerCollisions(cell, this.blockers, deltaTime);
+        });
+
+        this.cells.parallelStream().forEach(cell -> {
+            CellCalcService.updateForces(cell);
+        });
+
+        // Parallel execution of neural networks and cell updates
+        this.cells.parallelStream().forEach(cell -> {
+            CellCalcService.updateCell(cell, deltaTime);
+            // Wrap position around environment boundaries
+            this.wrapPosition(cell);
+        });
+
+        // Update cells and handle reproduction
+        final List<Cell> newCells = new ArrayList<>();
+        final Iterator<Cell> iterator = this.cells.iterator();
+
+        while (iterator.hasNext()) {
+            final Cell cell = iterator.next();
 
             // Get nearby cell types for the neural network via partitioner
             //List<Cell> neighborCells = partitioner.getNeighbors(cell);
@@ -154,9 +157,6 @@ public class Environment {
 
             // Update position, rotation, and neural network
             //cell.updateWithNeighbors(deltaTime, nearbyTypes);
-
-            // Wrap position around environment boundaries
-            wrapPosition(cell);
 
             // Handle reproduction.
             if (ReproductionManagerService.canReproduce(this.config, cell)) {
@@ -181,7 +181,7 @@ public class Environment {
 
         // Repopulation (skip in HIGH_ENERGY mode)
         //if (config.getTrainMode() == TrainMode.NONE) {
-            calcRepopulationIfNeeded();
+        this.calcRepopulationIfNeeded();
         //}
 
         // Update statistics
@@ -208,7 +208,7 @@ public class Environment {
             } else {
                 for (int i = 0; i < initialCount; i++) {
                     Vector2D pos = new Vector2D(this.random.nextDouble() * this.width, random.nextDouble() * this.height);
-                    Cell newCell = new Cell(pos, this.config.getCellMaxRadiusSize() / 2.0D);
+                    Cell newCell = CellFactory.createCell(pos, this.config.getCellMaxRadiusSize() / 2.0D);
                     cells.add(newCell);
                 }
             }

@@ -13,7 +13,7 @@ public class CellCalcService {
      * @param cell The cell to update
      * @param deltaTime Time step in seconds
      */
-    public static void updateWithNeighbors(final Cell cell, final double deltaTime) {
+    public static void updateCell(final Cell cell, final double deltaTime) {
         // Update neural network
         final boolean useSynapseEnergyCost;
         if (cell.getTempThinkHackCounter() >= SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX) {
@@ -66,5 +66,9 @@ public class CellCalcService {
             cell.setEnergy(0.0D);
         }
         cell.incAge(deltaTime);
+    }
+
+    public static void updateForces(final Cell cell) {
+        cell.updateForce();
     }
 }

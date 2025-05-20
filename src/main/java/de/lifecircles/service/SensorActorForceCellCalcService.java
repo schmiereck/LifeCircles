@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * Service responsible for processing sensor-actor interactions between cells.
  */
-public class ActorSensorCellCalcService {
+public class SensorActorForceCellCalcService {
 
     /**
      * Processes interactions between sensor/actor points of all cells.
@@ -123,8 +123,8 @@ public class ActorSensorCellCalcService {
                             foundDirection = direction;
 
                             if (Objects.nonNull(foundOtherCellActor)) {
-                                foundCalcCellActor.setSensedActor(foundOtherCellActor);
                                 foundCalcCellActor.setSensedCell(otherCell);
+                                foundCalcCellActor.setSensedActor(foundOtherCellActor);
 
                                 final Vector2D forceOnCalcCell = foundDirection.normalize().multiply(foundForceStrength);
                                 calcCell.applyForce(forceOnCalcCell, foundCalcCellActor.getCachedPosition(), deltaTime);
