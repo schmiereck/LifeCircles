@@ -23,9 +23,8 @@ public class EnergyTransferCellCalcService {
     /**
      * Processes energy transfer and absorption between cells based on sensor-actor interactions.
      * @param cells list of cells in the environment
-     * @param deltaTime time step in seconds
      */
-    public static void processEnergyTransfers(final List<Cell> cells, final double deltaTime) {
+    public static void processEnergyTransfers(final List<Cell> cells) {
         for (final Cell cell : cells) {
             for (final SensorActor sensor : cell.getSensorActors()) {
                 // Find nearby cells that can deliver/receive energy
@@ -50,7 +49,7 @@ public class EnergyTransferCellCalcService {
                                                 otherCell.getEnergy(),
                                                 Math.min(
                                                         MAX_ENERGY_ABSORBTION_TRANSFER,
-                                                        otherCell.getEnergy() * absorptionOutput
+                                                        absorptionOutput
                                                 ));
 
                                 // Absorb energy from other cell
@@ -66,19 +65,19 @@ public class EnergyTransferCellCalcService {
                                                     cell.getEnergy(),
                                                     Math.min(
                                                             MAX_ENERGY_DELIVERY_TRANSFER,
-                                                            cell.getEnergy() * deliveryOutput
+                                                            deliveryOutput
                                             ));
 
-                                final double otherCellTransferAmountLimit;
+                                final double otherCellTransferAmountLimited;
                                 if ((otherCell.getEnergy() + cellTransferAmountLimit) > otherCell.getMaxEnergy()) {
-                                    otherCellTransferAmountLimit = otherCell.getMaxEnergy() - otherCell.getEnergy();
+                                    otherCellTransferAmountLimited = otherCell.getMaxEnergy() - otherCell.getEnergy();
                                 } else {
-                                    otherCellTransferAmountLimit = cellTransferAmountLimit;
+                                    otherCellTransferAmountLimited = cellTransferAmountLimit;
                                 }
 
                                         // Transfer energy
-                                cell.setEnergy(cell.getEnergy() - otherCellTransferAmountLimit);
-                                otherCell.setEnergy(otherCell.getEnergy() + otherCellTransferAmountLimit);
+                                cell.setEnergy(cell.getEnergy() - otherCellTransferAmountLimited);
+                                otherCell.setEnergy(otherCell.getEnergy() + otherCellTransferAmountLimited);
                             }
                          }
                     }

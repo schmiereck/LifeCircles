@@ -377,45 +377,45 @@ public class NeuralNetwork implements Serializable {
             //int pos = this.random.nextInt(this.hiddenLayerList.size() + 1);
             // Zufällige Neuronenzahl zwischen 1 und 5
             int neuronCount = 1 + this.random.nextInt(5);
-            addHiddenLayer(pos, neuronCount, structuralMutationRate);
+            this.addHiddenLayer(pos, neuronCount, structuralMutationRate);
         }
 
         // Möglichkeit, ein Hidden Layer zu entfernen
         if (this.random.nextDouble() < structuralMutationRate * 1.5) { // Erhöhte Wahrscheinlichkeit
             final int pos = random.nextInt((this.hiddenLayerList.size() - this.fixedHiddenLayerCount)) +
                     this.fixedHiddenLayerCount;
-            removeHiddenLayer(pos);
+            this.removeHiddenLayer(pos);
         }
 
         // Wahrscheinlichkeit, ein Neuron zu einem bestehenden Layer hinzuzufügen
         if (!this.hiddenLayerList.isEmpty() &&
                 (this.hiddenLayerList.size() >= this.fixedHiddenLayerCount) &&
-                this.random.nextDouble() < structuralMutationRate * 2) { // Verdoppelte Wahrscheinlichkeit
+                this.random.nextDouble() < structuralMutationRate * 2.0D) { // Verdoppelte Wahrscheinlichkeit
             int li = this.random.nextInt(this.hiddenLayerList.size() - this.fixedHiddenLayerCount) + this.fixedHiddenLayerCount;
-            addNeuronToHiddenLayer(li);
+            this.addNeuronToHiddenLayer(li, structuralMutationRate);
         }
 
         // Wahrscheinlichkeit, ein Neuron zu entfernen
         if (!this.hiddenLayerList.isEmpty() && this.random.nextDouble() < structuralMutationRate) {
             int li = random.nextInt(this.hiddenLayerList.size());
-            removeNeuronFromHiddenLayer(li);
+            this.removeNeuronFromHiddenLayer(li);
         }
 
         // Wahrscheinlichkeit, eine zufällige Synapse hinzuzufügen
-        if (this.random.nextDouble() < structuralMutationRate * 3) { // Deutlich erhöhte Wahrscheinlichkeit
-            addRandomSynapse();
+        if (this.random.nextDouble() < (structuralMutationRate * 3.0D)) { // erhöhte Wahrscheinlichkeit
+            this.addRandomSynapse();
         }
 
         // Wahrscheinlichkeit, eine zufällige Synapse zu entfernen
         if (this.random.nextDouble() < structuralMutationRate) {
-            removeRandomSynapse();
+            this.removeRandomSynapse();
         }
 
         // Neue Mutation: Aktivierungsfunktion eines zufälligen Neurons ändern
         if (!this.hiddenLayerList.isEmpty() &&
                 (this.random.nextDouble() < structuralMutationRate)) {
             // Wähle ein zufälliges Hidden Layer
-            List<Neuron> layer = this.hiddenLayerList.get(random.nextInt(this.hiddenLayerList.size() - this.fixedHiddenLayerCount) + this.fixedHiddenLayerCount).getNeurons();
+            List<Neuron> layer = this.hiddenLayerList.get(random.nextInt(this.hiddenLayerList.size())).getNeurons();
             if (!layer.isEmpty()) {
                 Neuron neuron = layer.get(random.nextInt(layer.size()));
                 // Wähle eine zufällige Aktivierungsfunktion
@@ -453,23 +453,23 @@ public class NeuralNetwork implements Serializable {
         this.hiddenLayerList.add(index, newLayer);
         
         // Verbinde den vorherigen Layer mit dem neuen Layer
-        for (Neuron src : prevLayer) {
-            for (Neuron tgt : newLayer.getNeurons()) {
+        for (Neuron srcNeuron : prevLayer) {
+            for (Neuron tgtNeuron : newLayer.getNeurons()) {
                 // Erstelle Synapse nur mit der angegebenen Wahrscheinlichkeit
-                if (connectivity >= 1.0 || this.random.nextDouble() < connectivity) {
-                    double weight = Math.random() * 0.002D - 0.001D;
-                    synapsesynapseList.add(new Synapse(src, tgt, weight));
+                if (connectivity >= 1.0D || this.random.nextDouble() < connectivity) {
+                    double weight = this.random.nextDouble() * 0.002D - 0.001D;
+                    synapsesynapseList.add(new Synapse(srcNeuron, tgtNeuron, weight));
                 }
             }
         }
         
         // Verbinde den neuen Layer mit dem nächsten Layer
-        for (Neuron src : newLayer.getNeurons()) {
-            for (Neuron tgt : nextLayer) {
+        for (Neuron srcNeuron : newLayer.getNeurons()) {
+            for (Neuron tgtNeuron : nextLayer) {
                 // Erstelle Synapse nur mit der angegebenen Wahrscheinlichkeit
-                if (connectivity >= 1.0 || this.random.nextDouble() < connectivity) {
-                    double weight = Math.random() * 0.002D - 0.001D;
-                    this.synapsesynapseList.add(new Synapse(src, tgt, weight));
+                if (connectivity >= 1.0D || this.random.nextDouble() < connectivity) {
+                    double weight = this.random.nextDouble() * 0.002D - 0.001D;
+                    this.synapsesynapseList.add(new Synapse(srcNeuron, tgtNeuron, weight));
                 }
             }
         }
@@ -482,16 +482,24 @@ public class NeuralNetwork implements Serializable {
         addHiddenLayer(index, neuronCount, 1.0);
     }
 
-    public void addNeuronToHiddenLayer(int layerIndex) {
+    public void addNeuronToHiddenLayer(final int layerIndex, final double connectivity) {
         Neuron newN = new Neuron();
         this.hiddenLayerList.get(layerIndex).addNeuron(newN);
         List<Neuron> prev = layerIndex == 0 ? this.inputNeuronList : this.hiddenLayerList.get(layerIndex - 1).getNeurons();
-        for (Neuron src : prev) {
-            synapsesynapseList.add(new Synapse(src, newN, Math.random() * 0.002D - 0.001D));
+        for (Neuron srcNeuron : prev) {
+            // Erstelle Synapse nur mit der angegebenen Wahrscheinlichkeit
+            if (connectivity >= 1.0 || this.random.nextDouble() < connectivity) {
+                double weight = this.random.nextDouble() * 0.002D - 0.001D;
+                this.synapsesynapseList.add(new Synapse(srcNeuron, newN, weight));
+            }
         }
         List<Neuron> next = layerIndex == this.hiddenLayerList.size() - 1 ? this.outputNeuronList : this.hiddenLayerList.get(layerIndex + 1).getNeurons();
-        for (Neuron tgt : next) {
-            this.synapsesynapseList.add(new Synapse(newN, tgt, Math.random() * 0.002D - 0.001D));
+        for (Neuron tgtNeuron : next) {
+            // Erstelle Synapse nur mit der angegebenen Wahrscheinlichkeit
+            if (connectivity >= 1.0 || this.random.nextDouble() < connectivity) {
+                double weight = this.random.nextDouble() * 0.002D - 0.001D;
+                this.synapsesynapseList.add(new Synapse(newN, tgtNeuron, weight));
+            }
         }
     }
 
@@ -513,18 +521,18 @@ public class NeuralNetwork implements Serializable {
     private void removeNeuron(final Layer layer, final int idx) {
         final List<Neuron> layerNeuronList = layer.getNeurons();
         final Neuron removedNeuron = layerNeuronList.remove(idx);
-        final Iterator<Synapse> it = this.synapsesynapseList.iterator();
-        while (it.hasNext()) {
-            final Synapse s = it.next();
-            if (s.getSourceNeuron() == removedNeuron || s.getTargetNeuron() == removedNeuron) {
-                s.getSourceNeuron().getOutputSynapses().remove(s);
+        final Iterator<Synapse> synapseIterator = this.synapsesynapseList.iterator();
+        while (synapseIterator.hasNext()) {
+            final Synapse synapse = synapseIterator.next();
+            if (synapse.getSourceNeuron() == removedNeuron || synapse.getTargetNeuron() == removedNeuron) {
+                synapse.getSourceNeuron().getOutputSynapses().remove(synapse);
                 // Für Input-Synapsen die neue Methode verwenden
-                if (s.getTargetNeuron() == removedNeuron) {
-                    it.remove();
+                if (synapse.getTargetNeuron() == removedNeuron) {
+                    synapseIterator.remove();
                     continue;
                 }
-                s.getTargetNeuron().removeInputSynapse(s);
-                it.remove();
+                synapse.getTargetNeuron().removeInputSynapse(synapse);
+                synapseIterator.remove();
             }
         }
     }
@@ -555,8 +563,8 @@ public class NeuralNetwork implements Serializable {
         Neuron targetNeuron = targetLayer.get(this.random.nextInt(targetLayer.size()));
         
         // Erstellen Sie die Synapse
-        Synapse s = new Synapse(sourceNeuron, targetNeuron, Math.random() * 0.002D - 0.001D);
-        this.synapsesynapseList.add(s);
+        Synapse synapse = new Synapse(sourceNeuron, targetNeuron, Math.random() * 0.002D - 0.001D);
+        this.synapsesynapseList.add(synapse);
     }
 
     public void removeRandomSynapse() {
@@ -613,7 +621,7 @@ public class NeuralNetwork implements Serializable {
             int count = 1 + this.random.nextInt(3); // 1-3 neue Neuronen
             for (int i = 0; i < count; i++) {
                 int layer = this.random.nextInt(mutated.hiddenLayerList.size());
-                mutated.addNeuronToHiddenLayer(layer);
+                mutated.addNeuronToHiddenLayer(layer, mutationStrength);
             }
         }
 

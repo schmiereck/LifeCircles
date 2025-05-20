@@ -78,11 +78,11 @@ public class Synapse implements Serializable {
      * Methode zur Wiederherstellung der bidirektionalen Referenzen nach der Deserialisierung.
      */
     public void restoreConnections() {
-        if (sourceNeuron != null) {
-            sourceNeuron.addOutputSynapse(this);
+        if (this.sourceNeuron != null) {
+            this.sourceNeuron.addOutputSynapse(this);
         }
-        if (targetNeuron != null) {
-            targetNeuron.addInputSynapse(this);
+        if (this.targetNeuron != null) {
+            this.targetNeuron.addInputSynapse(this);
         }
     }
 }

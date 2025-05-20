@@ -18,7 +18,7 @@ import java.util.Random;
  */
 public class HighEnergyTrainStrategy implements TrainStrategy {
     private static final int INITIAL_COUNT = 20;
-    private static final int GENERATION_STEP = 800;
+    private static final int GENERATION_STEP = 2500 * 4;
     private static final double SELECTION_PERCENT = 0.2;
     private final SimulationConfig config = SimulationConfig.getInstance();
     private long stepCounter = 0;
@@ -33,6 +33,8 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
         // Add ground blocker by default
         environment.addGroundBlocker();
         environment.addSunBlocker(1024 * 2 / 4, (int)(environment.getHeight() - (environment.getHeight() / 8)), 1024 * 2 / 6);
+
+        this.config.setEnergyPerRay(0.02D); // 0.005; //0.015; // 0.025;
 
         // Initiale Population
         Random random = new Random();

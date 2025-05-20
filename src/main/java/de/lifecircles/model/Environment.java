@@ -47,9 +47,9 @@ public class Environment {
 
     public void addGroundBlocker() {
         Blocker ground = new Blocker(
-            new Vector2D(width/2, height - 10), // Position at bottom
+            new Vector2D(width/2, height - 15), // Position at bottom
             width,                              // Full width
-            20,                                 // Height
+            30,                                 // Height
             javafx.scene.paint.Color.GRAY,      // Color
             Blocker.BlockerType.GROUND          // Type
         );
@@ -60,7 +60,7 @@ public class Environment {
         Blocker sunBlocker = new Blocker(
             new Vector2D(xStart, yStart), // Position at bottom
             blockerWidth,                              // Full width
-            20,                                 // Height
+            25,                                 // Height
             javafx.scene.paint.Color.GRAY,      // Color
             Blocker.BlockerType.PLATFORM          // Type
         );
@@ -69,7 +69,7 @@ public class Environment {
 
     public void addWallBlocker(double x, double yTop, double yBottom) {
         final double wallHeight = yTop - yBottom;
-        final double wallWidth = 20;
+        final double wallWidth = 25;
         Blocker wallBlocker = new Blocker(
             new Vector2D(x + wallWidth/2, (this.height - yBottom) - wallHeight/2), // Position at bottom
             wallWidth,                              // Full width
@@ -111,19 +111,21 @@ public class Environment {
         );
 
         // Process repulsive forces
-        RepulsionCellCalcService.processRepulsiveForces(cells, deltaTime, partitioner);
+        RepulsionCellCalcService.processRepulsiveForces(cells, partitioner);
         // Process sensor/actor interactions
-        SensorActorForceCellCalcService.processInteractions(cells, deltaTime, partitioner);
+        SensorActorForceCellCalcService.processInteractions(cells, partitioner);
+        // Process energy transfers between cells
+        EnergyTransferCellCalcService.processEnergyTransfers(cells);
 
         this.cells.parallelStream().forEach(cell -> {
             // Apply viscosity
             //Vector2D viscousForce = cell.getVelocity().multiply(-VISCOSITY);
             final Vector2D viscousForce = cell.getVelocity().multiply(-SimulationConfig.getInstance().getViscosity());
-            cell.applyForce(viscousForce, cell.getPosition(), deltaTime);
+            cell.applyForce(viscousForce, cell.getPosition());
 
             // Apply gravity
             //cell.applyForce(SimulationConfig.GRAVITY_VECTOR.multiply(cell.getRadiusSize()), cell.getPosition(), deltaTime);
-            cell.applyForce(SimulationConfig.GRAVITY_VECTOR, cell.getPosition(), deltaTime);
+            cell.applyForce(SimulationConfig.GRAVITY_VECTOR, cell.getPosition());
 
             // Handle blocker collisions after force application
             BlockerCellCalcService.handleBlockerCollisions(cell, this.blockers, deltaTime);
@@ -172,9 +174,6 @@ public class Environment {
                 iterator.remove();
             }
         }
-
-        // Process energy transfers between cells
-        EnergyTransferCellCalcService.processEnergyTransfers(cells, deltaTime);
 
         // Add new cells from reproduction (skip in HIGH_ENERGY mode)
         cells.addAll(newCells);

@@ -13,7 +13,7 @@ public class RepulsionCellCalcService {
     /**
      * Optimized repulsion using partitioning strategy.
      */
-    public static void processRepulsiveForces(final List<Cell> cells, final double deltaTime, final PartitioningStrategy partitioner) {
+    public static void processRepulsiveForces(final List<Cell> cells, final PartitioningStrategy partitioner) {
         for (final Cell cell1 : cells) {
             final List<Cell> neighbors = partitioner.getNeighbors(cell1);
             for (final Cell cell2 : neighbors) {
@@ -26,8 +26,8 @@ public class RepulsionCellCalcService {
                     final double forceMagnitude = SimulationConfig.getInstance().getCellRepulsionStrength() * overlap;
                     final Vector2D direction = delta.divide(distance);
                     final Vector2D force = direction.multiply(forceMagnitude);
-                    cell1.applyForce(force.multiply(-2.0D), cell1.getPosition(), deltaTime);
-                    cell2.applyForce(force.multiply(2.0D), cell2.getPosition(), deltaTime);
+                    cell1.applyForce(force.multiply(-2.0D), cell1.getPosition());
+                    cell2.applyForce(force.multiply(2.0D), cell2.getPosition());
                 }
             }
         }
@@ -49,8 +49,8 @@ public class RepulsionCellCalcService {
                     final double forceMagnitude = SimulationConfig.getInstance().getCellRepulsionStrength() * overlap;
                     final Vector2D direction = delta.divide(distance);
                     final Vector2D force = direction.multiply(forceMagnitude);
-                    cell1.applyForce(force.multiply(-1), cell1.getPosition(), deltaTime);
-                    cell2.applyForce(force, cell2.getPosition(), deltaTime);
+                    cell1.applyForce(force.multiply(-1), cell1.getPosition());
+                    cell2.applyForce(force, cell2.getPosition());
                 }
             }
         }
@@ -73,8 +73,8 @@ public class RepulsionCellCalcService {
 
                     final Vector2D direction = delta.divide(distance);
                     final Vector2D force = direction.multiply(forceMagnitude);
-                    cell1.applyForce(force.multiply(-1), cell1.getPosition(), deltaTime);
-                    cell2.applyForce(force, cell2.getPosition(), deltaTime);
+                    cell1.applyForce(force.multiply(-1), cell1.getPosition());
+                    cell2.applyForce(force, cell2.getPosition());
                 }
             }
         }

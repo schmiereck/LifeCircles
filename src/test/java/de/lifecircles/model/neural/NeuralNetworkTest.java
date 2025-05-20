@@ -72,6 +72,8 @@ public class NeuralNetworkTest {
         this.testProblem(XXX_INPUTS, XXX_OUTPUTS);
     }
 
+    private static double synapseConnectivity = 0.4D;
+
     public void testProblem(final double[][] inputs, final double[][] outputs) {
         // Verschiedene Netzwerkarchitekturen für mehr Diversität
         final int inputCount = inputs[0].length;
@@ -93,7 +95,7 @@ public class NeuralNetworkTest {
         for (int i = 0; i < populationSize; i++) {
             int[] architecture = architectureVariants[i % architectureVariants.length];
             population.add(new NeuralNetwork(inputCount, architecture, outputCount,
-                    0.2D, 0));
+                    synapseConnectivity, 0));
         }
 
         // Initialisiere Synapse-Gewichte für die erste Generation
@@ -217,7 +219,7 @@ public class NeuralNetworkTest {
                 else { // 10% Kompletter Neustart (neue zufällige Netzwerke)
                     int[] architecture = architectureVariants[random.nextInt(architectureVariants.length)];
                     NeuralNetwork freshNetwork = new NeuralNetwork(inputCount, architecture, outputCount,
-                            0.2D, 0);
+                            synapseConnectivity, 0);
                     
                     // Gewichte initialisieren
                     for (Synapse synapse : freshNetwork.getSynapsesynapseList()) {
@@ -243,7 +245,7 @@ public class NeuralNetworkTest {
                 for (int i = keepCount; i < populationSize; i++) {
                     int[] architecture = architectureVariants[random.nextInt(architectureVariants.length)];
                     NeuralNetwork freshNetwork = new NeuralNetwork(inputCount, architecture, outputCount,
-                            0.2D, 0);
+                            synapseConnectivity, 0);
                     
                     // Gewichte initialisieren
                     for (Synapse synapse : freshNetwork.getSynapsesynapseList()) {
@@ -292,15 +294,31 @@ public class NeuralNetworkTest {
             double[] output = finalNetwork.process();
             
             System.out.printf("Input %s: \tErwartet: %s \tAusgabe: %s%n",
-                    Arrays.toString(inputs[i]),
-                    Arrays.toString(outputs[i]),
-                    Arrays.toString(output));
+                    formatArrayToString(inputs[i]),
+                    formatArrayToString(outputs[i]),
+                    formatArrayToString(output));
 
             // Überprüfe Ergebnis
             assertArrayEquals(outputs[i], output, THRESHOLD);
         }
     }
-    
+
+    public static String formatArrayToString(double[] arr) {
+        if (arr == null) {
+            return "null";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < arr.length; i++) {
+            if (i > 0) {
+                sb.append(", ");
+            }
+            sb.append(String.format("%.4f", arr[i]));
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
     // Tournament Selection: Wählt das beste Netzwerk aus einer zufälligen Gruppe
     private NeuralNetwork tournamentSelect(List<NetworkScore> scores, int tournamentSize, Random random) {
         NetworkScore best = null;
@@ -380,8 +398,8 @@ public class NeuralNetworkTest {
             double error = Math.abs(outputs[i][0] - output[0]);
             totalError += error * error;
             System.out.printf("  Input: %s | Erwartet: %s | Ausgabe: %s | Fehler: %.4f%n", 
-                Arrays.toString(inputs[i]), Arrays.toString(outputs[i]), 
-                Arrays.toString(output), error);
+                formatArrayToString(inputs[i]), formatArrayToString(outputs[i]),
+                formatArrayToString(output), error);
         }
         System.out.printf("  Gesamt-MSE: %.6f%n\n", totalError / inputs.length);
     }

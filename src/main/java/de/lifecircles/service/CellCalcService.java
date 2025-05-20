@@ -61,13 +61,14 @@ public class CellCalcService {
 
         // Update energy and age
         EnergyCellCalcService.decayEnergy(cell, deltaTime, useSynapseEnergyCost);
-        // Mark cell death if energy below threshold
-        if (cell.getEnergy() < 0.0D) {
-            cell.setEnergy(0.0D);
-        }
+
         cell.incAge(deltaTime);
     }
 
+    /**
+     * velocityForce to velocity.
+     * angularVelocityForce to angularVelocity
+     */
     public static void updateForces(final Cell cell) {
         cell.updateForce();
     }

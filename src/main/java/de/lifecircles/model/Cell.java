@@ -17,10 +17,10 @@ public class Cell implements SensableCell, Serializable {
 
     private Vector2D position;
     private Vector2D velocity;
-    private Vector2D velocityForce;
+    private transient Vector2D velocityForce;
     private double rotation; // in radians
     private double angularVelocity;
-    private double angularVelocityForce;
+    private transient double angularVelocityForce;
     private double radiusSize;
     private double targetRadiusSize; // Zielgröße nach dem Wachstum
     private double growthAge; // Alter seit der Zellteilung für das Wachstum
@@ -31,7 +31,7 @@ public class Cell implements SensableCell, Serializable {
     private double energy;
     private double age; // in seconds
     private int generation; // generation counter
-    private boolean sunRayHit = false; // Flag to indicate if cell was hit by sun ray
+    private transient boolean sunRayHit = false; // Flag to indicate if cell was hit by sun ray
     private int cellState; // Zustand der Zelle, beeinflusst zusätzliche Hidden-Layer
     private double mutationRateFactor; // Faktor für die Mutationsrate
     private double mutationStrengthFactor; // Faktor für die Mutationsstärke
@@ -178,10 +178,11 @@ public class Cell implements SensableCell, Serializable {
     /**
      * Applies a force to the cell at a specific point.
      * This will affect both linear and angular velocity.
-     * @param force Force vector
+     *
+     * @param force            Force vector
      * @param applicationPoint Point where the force is applied
      */
-    public void applyForce(Vector2D force, Vector2D applicationPoint, double deltaTime) {
+    public void applyForce(Vector2D force, Vector2D applicationPoint) {
         // Linear acceleration
         //this.velocity = this.velocity.add(force.multiply(1.0D / this.radiusSize)); // Larger cells are affected less
         this.velocityForce = this.velocityForce.add(force.multiply(0.08D)); // Larger cells are affected less
@@ -196,6 +197,10 @@ public class Cell implements SensableCell, Serializable {
         this.angularVelocityForce += torque / (this.radiusSize * this.radiusSize); // Moment of inertia approximated as size²
     }
 
+    /**
+     * velocityForce to velocity.
+     * angularVelocityForce to angularVelocity
+     */
     public void updateForce() {
         this.velocity = this.velocity.add(this.velocityForce);
         this.angularVelocity += this.angularVelocityForce;
@@ -394,6 +399,8 @@ public class Cell implements SensableCell, Serializable {
     // Methode zur Initialisierung des Gehirns und der SensorActor nach der Deserialisierung
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
+        this.velocityForce = new Vector2D(0, 0);
+        this.angularVelocityForce = 0.0D;
         // Setze parentCell in allen SensorActor-Instanzen
         for (SensorActor sensorActor : this.sensorActors) {
             sensorActor.setParentCell(this);

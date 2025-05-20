@@ -12,37 +12,15 @@ import java.util.Objects;
 public class SensorActorForceCellCalcService {
 
     /**
-     * Processes interactions between sensor/actor points of all cells.
-     *
-     * @param cells     the list of cells to process
-     * @param deltaTime the time elapsed since last update
-     */
-    public static void processInteractions(final List<Cell> cells, final double deltaTime) {
-        // cache positions for all sensorActors in this simulation step
-        for (Cell cell : cells) {
-            for (SensorActor actor : cell.getSensorActors()) {
-                actor.updateCachedPosition();
-            }
-        }
-        for (int i = 0; i < cells.size(); i++) {
-            Cell cell1 = cells.get(i);
-            for (int j = i + 1; j < cells.size(); j++) {
-                Cell cell2 = cells.get(j);
-                processInteraction(cell1, cell2, deltaTime);
-            }
-        }
-    }
-
-    /**
      * Optimized processing of sensor/actor interactions using a partitioning strategy.
      */
-    public static void processInteractions(final List<Cell> cells, final double deltaTime, final PartitioningStrategy partitioner) {
+    public static void processInteractions(final List<Cell> cells, final PartitioningStrategy partitioner) {
         // cache positions for all sensorActors in this simulation step
         for (final Cell cell : cells) {
             for (final SensorActor actor : cell.getSensorActors()) {
                 actor.updateCachedPosition();
-                actor.setSensedActor(null);
                 actor.setSensedCell(null);
+                actor.setSensedActor(null);
             }
         }
         
@@ -52,7 +30,7 @@ public class SensorActorForceCellCalcService {
         cells.parallelStream().forEach(calcCell -> {
             for (final Cell otherCell : partitioner.getNeighbors(calcCell)) {
                 if (calcCell != otherCell) {
-                    processInteraction(calcCell, otherCell, deltaTime);
+                    processInteraction(calcCell, otherCell);
                 }
             }
         });
@@ -70,24 +48,28 @@ public class SensorActorForceCellCalcService {
         if (blockers == null || blockers.isEmpty()) return;
         
         // Prüfe für jeden Sensor, ob er einen Blocker berührt
-        for (Cell cell : cells) {
-            for (SensorActor sensor : cell.getSensorActors()) {
-                Vector2D sensorPos = sensor.getCachedPosition();
+        cells.parallelStream().forEach(cell -> {
+            for (final SensorActor sensor : cell.getSensorActors()) {
+                final Vector2D sensorPos = sensor.getCachedPosition();
                 if (sensorPos != null) {
                     for (Blocker blocker : blockers) {
                         if (blocker.containsPoint(sensorPos)) {
                             // Setze den Blocker als wahrgenommenes Objekt
-                            sensor.setSensedCell(blocker);
                             // Der SensorActor nimmt Blocker als Zelle wahr
+                            sensor.setSensedCell(blocker);
+                            sensor.setSensedActor(blocker);
                             break;
                         }
                     }
                 }
             }
-        }
+        });
     }
 
-    private static void processInteraction(final Cell calcCell, final Cell otherCell, final double deltaTime) {
+    /**
+     * Berechne die Kraft, die der otherCellActor auf calcCellActor ausübt.
+     */
+    private static void processInteraction(final Cell calcCell, final Cell otherCell) {
         final Vector2D delta = calcCell.getPosition().subtract(otherCell.getPosition());
         final double cellDistance = delta.length();
         final double combinedRadius = Math.max(otherCell.getRadiusSize(), calcCell.getRadiusSize());
@@ -127,7 +109,7 @@ public class SensorActorForceCellCalcService {
                                 foundCalcCellActor.setSensedActor(foundOtherCellActor);
 
                                 final Vector2D forceOnCalcCell = foundDirection.normalize().multiply(foundForceStrength);
-                                calcCell.applyForce(forceOnCalcCell, foundCalcCellActor.getCachedPosition(), deltaTime);
+                                calcCell.applyForce(forceOnCalcCell, foundCalcCellActor.getCachedPosition());
                             }
 
                         }
