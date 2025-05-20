@@ -99,7 +99,7 @@ public class ActorSensorCellCalcService {
             Vector2D foundDirection = null;
 
             // Process interactions in one direction only
-            for (SensorActor calcCellActor : calcCell.getSensorActors()) {
+            for (final SensorActor calcCellActor : calcCell.getSensorActors()) {
                 // Wenn der Sensor bereits etwas wahrnimmt (z.B. einen Blocker), überspringen
                 if (calcCellActor.getSensedCell() != null) {
                     continue;
@@ -107,31 +107,47 @@ public class ActorSensorCellCalcService {
 
                 for (SensorActor otherCellActor : otherCell.getSensorActors()) {
                     // Berechne die Kraft, die der otherCellActor auf calcCellActor ausübt
-                    Vector2D direction = calcCellActor.getCachedPosition().subtract(otherCellActor.getCachedPosition());
-                    double distance = direction.length();
+                    final Vector2D direction = calcCellActor.getCachedPosition().subtract(otherCellActor.getCachedPosition());
+                    final double distance = direction.length();
 
                     if (distance > 0.0D) {
                         // Kraft von otherCellActor auf calcCellActor
-                        double forceStrength = otherCellActor.getForceStrength(); // Kraftstärke (positiv/negativ)
-                        double senseForceValue = sense(otherCellActor, calcCellActor);
-                        double totalForceStrength = senseForceValue * forceStrength; // Berücksichtige Richtung und Stärke
+                        final double forceStrength = otherCellActor.getForceStrength(); // Kraftstärke (positiv/negativ)
+                        final double senseForceValue = sense(otherCellActor, calcCellActor);
+                        final double totalForceStrength = senseForceValue * forceStrength; // Berücksichtige Richtung und Stärke
 
                         if ((senseForceValue != 0.0D) && (Math.abs(totalForceStrength) > Math.abs(foundForceStrength))) {
                             foundForceStrength = totalForceStrength;
                             foundCalcCellActor = calcCellActor;
                             foundOtherCellActor = otherCellActor;
                             foundDirection = direction;
+
+                            if (Objects.nonNull(foundOtherCellActor)) {
+                                foundCalcCellActor.setSensedActor(foundOtherCellActor);
+                                foundCalcCellActor.setSensedCell(otherCell);
+
+                                final Vector2D forceOnCalcCell = foundDirection.normalize().multiply(foundForceStrength);
+                                calcCell.applyForce(forceOnCalcCell, foundCalcCellActor.getCachedPosition(), deltaTime);
+                            }
+
                         }
                     }
                 }
             }
-            if (Objects.nonNull(foundOtherCellActor)) {
-                foundCalcCellActor.setSensedActor(foundOtherCellActor);
-                foundCalcCellActor.setSensedCell(otherCell);
-
-                Vector2D forceOnCalcCell = foundDirection.normalize().multiply(foundForceStrength);
-                calcCell.applyForce(forceOnCalcCell, foundCalcCellActor.getCachedPosition(), deltaTime);
-            }
+//            if (Objects.nonNull(foundOtherCellActor)) {
+//                foundCalcCellActor.setSensedActor(foundOtherCellActor);
+//                foundCalcCellActor.setSensedCell(otherCell);
+//
+//                final double usedForceStrength;
+//                //// Abstoßung?
+//                //if (foundForceStrength > 0.0D) {
+//                //    usedForceStrength = foundForceStrength * 1.75D;
+//                //} else {
+//                    usedForceStrength = foundForceStrength;
+//                //}
+//                Vector2D forceOnCalcCell = foundDirection.normalize().multiply(usedForceStrength);
+//                calcCell.applyForce(forceOnCalcCell, foundCalcCellActor.getCachedPosition(), deltaTime);
+//            }
         }
     }
 

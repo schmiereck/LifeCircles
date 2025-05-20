@@ -83,9 +83,9 @@ public class SensorActor implements SensableActor, Serializable {
 
     public void setForceStrength(double forceStrength) {
         if (forceStrength >= 0) {
-            this.forceStrength = Math.min(SimulationConfig.getInstance().getCellActorMaxForceStrength(), forceStrength);
+            this.forceStrength = Math.min(SimulationConfig.getInstance().getCellActorMaxAttractiveForceStrength(), forceStrength);
         } else {
-            this.forceStrength = Math.max(-SimulationConfig.getInstance().getCellActorMaxForceStrength(), forceStrength);
+            this.forceStrength = Math.max(-SimulationConfig.getInstance().getCellActorMaxAttractiveForceStrength(), forceStrength);
         }
     }
 

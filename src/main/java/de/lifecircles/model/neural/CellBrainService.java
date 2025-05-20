@@ -125,9 +125,21 @@ public class CellBrainService {
 
             // Set force strength (range -1 to 1)
             //actor.setForceStrength(outputs[index + ActorOutputFeature.FORCE.ordinal()] * 2.0D - 1.0D);
-            actor.setForceStrength((outputs[index + ActorOutputFeature.FORCE.ordinal()] *
-                    SimulationConfig.getInstance().getCellActorMaxForceStrength() * 2.0D) -
-                    SimulationConfig.getInstance().getCellActorMaxForceStrength());
+            //actor.setForceStrength((outputs[index + ActorOutputFeature.FORCE.ordinal()] *
+            //        SimulationConfig.getInstance().getCellActorMaxForceStrength() * 2.0D) -
+            //        SimulationConfig.getInstance().getCellActorMaxForceStrength());
+
+            final double force = outputs[index + ActorOutputFeature.FORCE.ordinal()] * 2.0D - 1.0D;
+            final double forceStrength;
+            if (force < 0.0D) {
+                // attractive
+                forceStrength = force * SimulationConfig.getInstance().getCellActorMaxAttractiveForceStrength();
+            } else {
+                // repulsive
+                forceStrength = force * SimulationConfig.getInstance().getCellActorMaxRepulsiveForceStrength();
+            }
+            actor.setForceStrength(forceStrength);
+
             actor.setReproductionDesire(outputs[index + ActorOutputFeature.REPRODUCTION_DESIRE.ordinal()]);
             actor.setReproductionEnergyShareOutput(outputs[index + ActorOutputFeature.REPRODUCTION_ENERGY_SHARE.ordinal()]);
             actor.setEnergyAbsorption(outputs[index + ActorOutputFeature.ENERGY_ABSORPTION.ordinal()]);

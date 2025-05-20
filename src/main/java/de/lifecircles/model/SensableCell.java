@@ -12,9 +12,7 @@ public interface SensableCell {
      * Gibt die Energie des Objekts zurück.
      * @return Die Energie des Objekts oder 0.0 wenn nicht anwendbar
      */
-    default double getEnergy() {
-        return 0.0D;
-    }
+    double getEnergy();
 
     /**
      * Gibt das Alter des Objekts zurück.
@@ -33,4 +31,6 @@ public interface SensableCell {
     }
 
     void setEnergy(double energy);
+
+    double getMaxEnergy();
 }

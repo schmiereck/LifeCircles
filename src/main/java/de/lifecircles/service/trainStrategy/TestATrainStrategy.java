@@ -18,6 +18,8 @@ public class TestATrainStrategy implements TrainStrategy {
         //config.setScaleSimulation(5.7D);
         this.config.setScaleSimulation(1.2D);
 
+        config.setEnergyPerRay(0.01D); // 0.005; //0.015; // 0.025;
+
         this.config.setInitialCellCount(1);
 
         return new Environment(config.getWidth(), config.getHeight());
@@ -30,10 +32,12 @@ public class TestATrainStrategy implements TrainStrategy {
 
         final double radiusSize = this.config.getCellMaxRadiusSize();
 
+        final double yTop = this.config.getHeight() - this.config.getHeight() / 4.0D;
+
         // Anziehung:
         {
-            final double x = this.config.getWidth() / 2.0D - radiusSize * 15.0D;
-            final double y = this.config.getHeight() / 2.0D;
+            final double x = this.config.getWidth() / 2.0D - radiusSize * 14.0D;
+            final double y = yTop;
 
             this.createAndAddCell(environment, x, y, radiusSize, true);
             this.createAndAddCell(environment, x + radiusSize * 2.5D, y, radiusSize, true);
@@ -42,20 +46,23 @@ public class TestATrainStrategy implements TrainStrategy {
         }
         {
             final double x = this.config.getWidth() / 2.0D - radiusSize * 21.0D;
-            final double y = this.config.getHeight() / 2.0D;
+            final double y = yTop;
 
-            this.createAndAddCell(environment, x, y, radiusSize, true);
-            this.createAndAddCell(environment, x + radiusSize * 2.5D, y, radiusSize, true);
-            this.createAndAddCell(environment, x - radiusSize * 2.5D, y, radiusSize, true);
-            this.createAndAddCell(environment, x + radiusSize * 1.25D, y - radiusSize * 1.25D, radiusSize, true);
-            this.createAndAddCell(environment, x - radiusSize * 1.25D, y - radiusSize * 1.25D, radiusSize, true);
-            this.createAndAddCell(environment, x, y - radiusSize * 2.5D, radiusSize, true);
+            this.createAndAddCell(environment, x, y - radiusSize * 2.5D, radiusSize, true, true);
+
+            this.createAndAddCell(environment, x - radiusSize * 1.25D, y - radiusSize * 1.25D, radiusSize, true, true);
+            this.createAndAddCell(environment, x + radiusSize * 1.25D, y - radiusSize * 1.25D, radiusSize, true, true);
+
+            this.createAndAddCell(environment, x - radiusSize * 2.4D, y, radiusSize, true, false);
+            this.createAndAddCell(environment, x, y, radiusSize, true, false);
+            this.createAndAddCell(environment, x + radiusSize * 2.4D, y, radiusSize, true, false);
+
             //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
         }
         // Abstoßung:
         {
             final double x = this.config.getWidth() / 2.0D - radiusSize * 7.0D;
-            final double y = this.config.getHeight() / 2.0D;
+            final double y = yTop;
 
             this.createAndAddCell(environment, x, y, radiusSize, false);
             this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, false);
@@ -63,7 +70,7 @@ public class TestATrainStrategy implements TrainStrategy {
         }
         {
             final double x = this.config.getWidth() / 2.0D; //  + radiusSize geht
-            final double y = this.config.getHeight() / 2.0D;
+            final double y = yTop;
 
             this.createAndAddCell(environment, x, y, radiusSize, false);
             this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, false);
@@ -71,7 +78,7 @@ public class TestATrainStrategy implements TrainStrategy {
         }
         {
             final double x = this.config.getWidth() / 2.0D + radiusSize * 7.0D;
-            final double y = this.config.getHeight() / 2.0D;
+            final double y = yTop;
 
             this.createAndAddCell(environment, x, y, radiusSize, false);
             this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, false);
@@ -79,16 +86,35 @@ public class TestATrainStrategy implements TrainStrategy {
         }
         {
             final double x = this.config.getWidth() / 2.0D + radiusSize * 15.0D;
-            final double y = this.config.getHeight() / 2.0D;
+            final double y = yTop;
 
             this.createAndAddCell(environment, x, y, radiusSize, false);
             this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, false);
             this.createAndAddCell(environment, x + radiusSize * 1.125D, y - radiusSize * 2.25D, radiusSize, false);
             //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
         }
+
+        // Anziehung & Abstoßung:
+        {
+            final double x = this.config.getWidth() / 2.0D + radiusSize * 21.0D;
+            final double y = yTop;
+
+            this.createAndAddCell(environment, x, y, radiusSize, true);
+            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, true);
+            this.createAndAddCell(environment, x + radiusSize * 1.125D, y - radiusSize * 2.25D, radiusSize, false);
+            //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
+        }
     }
 
-    private void createAndAddCell(Environment environment, double x, double y, final double radiusSize, final boolean isAttraction) {
+    private void createAndAddCell(Environment environment, double x, double y, final double radiusSize,
+                                  final boolean isAttraction) {
+        final boolean isDelivery = false;
+        createAndAddCell(environment, x, y, radiusSize,
+                         isAttraction, isDelivery);
+    }
+
+    private void createAndAddCell(Environment environment, double x, double y, final double radiusSize,
+                                  final boolean isAttraction, final boolean isDelivery) {
         final CellBrainInterface cellBrain = new CellBrainInterface() {
 
             final double[] output;
@@ -117,6 +143,12 @@ public class TestATrainStrategy implements TrainStrategy {
                     this.output[actorOffset + ActorOutputFeature.TYPE_BLUE.ordinal()] = 0.0D;
 
                     this.output[actorOffset + ActorOutputFeature.REPRODUCTION_DESIRE.ordinal()] = 0.0D;
+
+                    if (isDelivery) {
+                        this.output[actorOffset + ActorOutputFeature.ENERGY_DELIVERY.ordinal()] = 0.75D;
+                    } else {
+                        this.output[actorOffset + ActorOutputFeature.ENERGY_DELIVERY.ordinal()] = 0.0D;
+                    }
 
                     if (isAttraction) {
                         this.output[actorOffset + ActorOutputFeature.FORCE.ordinal()] = -1.0D;

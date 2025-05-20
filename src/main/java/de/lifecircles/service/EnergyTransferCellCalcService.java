@@ -14,8 +14,8 @@ import java.util.Objects;
  */
 public class EnergyTransferCellCalcService {
     // Maximum energy transfer per interaction
-    private static final double MAX_ENERGY_DELIVERY_TRANSFER = 0.05D;
-    private static final double MAX_ENERGY_ABSORBTION_TRANSFER = 0.06D;
+    private static final double MAX_ENERGY_DELIVERY_TRANSFER = 0.06D;
+    private static final double MAX_ENERGY_ABSORBTION_TRANSFER = 0.07D;
     // Minimum energy threshold for transfer
     private static final double MIN_ENERGY_FOR_TRANSFER = 0.1D;
     // Threshold for energy absorption (output value)
@@ -46,11 +46,12 @@ public class EnergyTransferCellCalcService {
                             if ((absorptionOutput > 0.0D)) { // && (otherCell.getEnergy() > MIN_ENERGY_FOR_TRANSFER))
                                 // Calculate energy absorption amount
                                 final double absorptionAmount =
-                                        Math.min(otherCell.getEnergy(),
-                                            Math.min(
-                                            MAX_ENERGY_ABSORBTION_TRANSFER,
-                                            otherCell.getEnergy() * absorptionOutput
-                                        ));
+                                        Math.min(
+                                                otherCell.getEnergy(),
+                                                Math.min(
+                                                        MAX_ENERGY_ABSORBTION_TRANSFER,
+                                                        otherCell.getEnergy() * absorptionOutput
+                                                ));
 
                                 // Absorb energy from other cell
                                 cell.setEnergy(cell.getEnergy() + absorptionAmount);
@@ -60,14 +61,24 @@ public class EnergyTransferCellCalcService {
                             final double deliveryOutput = sensor.getEnergyDelivery();
                             if ((deliveryOutput > 0.0D) && (cell.getEnergy() > MIN_ENERGY_FOR_TRANSFER)) {
                                 // Regular energy transfer
-                                final double transferAmount = Math.min(
-                                        MAX_ENERGY_DELIVERY_TRANSFER,
-                                        cell.getEnergy() * deliveryOutput
-                                );
+                                final double cellTransferAmountLimit =
+                                            Math.min(
+                                                    cell.getEnergy(),
+                                                    Math.min(
+                                                            MAX_ENERGY_DELIVERY_TRANSFER,
+                                                            cell.getEnergy() * deliveryOutput
+                                            ));
 
-                                // Transfer energy
-                                cell.setEnergy(cell.getEnergy() - transferAmount);
-                                otherCell.setEnergy(otherCell.getEnergy() + transferAmount);
+                                final double otherCellTransferAmountLimit;
+                                if ((otherCell.getEnergy() + cellTransferAmountLimit) > otherCell.getMaxEnergy()) {
+                                    otherCellTransferAmountLimit = otherCell.getMaxEnergy() - otherCell.getEnergy();
+                                } else {
+                                    otherCellTransferAmountLimit = cellTransferAmountLimit;
+                                }
+
+                                        // Transfer energy
+                                cell.setEnergy(cell.getEnergy() - otherCellTransferAmountLimit);
+                                otherCell.setEnergy(otherCell.getEnergy() + otherCellTransferAmountLimit);
                             }
                          }
                     }

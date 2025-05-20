@@ -228,11 +228,6 @@ public class Cell implements SensableCell, Serializable {
         this.angularVelocity += torque / (this.radiusSize * this.radiusSize); // Moment of inertia approximated as size²
     }
 
-    @Override
-    public double getEnergy() {
-        return energy;
-    }
-
     public double getMaxReproductionDesire() {
         return sensorActors.stream()
                 .mapToDouble(SensorActor::getReproductionDesire)
@@ -249,8 +244,14 @@ public class Cell implements SensableCell, Serializable {
         this.energy = Math.max(0.0, Math.min(SimulationConfig.CELL_MAX_ENERGY, energy));
     }
 
-    public void setBrain(CellBrain brain) {
-        this.brain = brain;
+    @Override
+    public double getEnergy() {
+        return this.energy;
+    }
+
+    @Override
+    public double getMaxEnergy() {
+        return SimulationConfig.CELL_MAX_ENERGY;
     }
 
     public CellBrainInterface getBrain() {

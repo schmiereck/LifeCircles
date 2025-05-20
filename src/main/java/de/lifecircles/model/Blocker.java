@@ -62,6 +62,16 @@ public class Blocker implements SensableActor, SensableCell {
     public void setEnergy(double energy) {
     }
 
+    @Override
+    public double getEnergy() {
+        return 0.0D;
+    }
+
+    @Override
+    public double getMaxEnergy() {
+        return 0.0D;
+    }
+
     /**
      * Checks if a point intersects with this blocker
      */
