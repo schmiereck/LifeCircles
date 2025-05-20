@@ -40,9 +40,8 @@ public class BlockerCellCalcService {
                 if (distance > 0.001) {
                     direction = deltaVec.divide(distance);
                 } else {
-                    // Wenn Zellmittelpunkt im Blocker ist, berechne Richtung basierend auf kürzestem Weg zur Oberfläche
-                    Vector2D nearestEdgePoint = blocker.getNearestPoint(cellPos);
-                    direction = nearestEdgePoint.subtract(cellPos).normalize();
+                    // Richtung immer von der Oberfläche zum Zellmittelpunkt
+                    direction = cellPos.subtract(nearestPoint).normalize();
                 }
                 
                 // Abstoßungskraft anwenden
