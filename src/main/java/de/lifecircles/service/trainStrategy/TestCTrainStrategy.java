@@ -32,21 +32,21 @@ public class TestCTrainStrategy implements TrainStrategy {
         environment.addGroundBlocker();
 
         final double radiusSize = this.config.getCellMaxRadiusSize();
-        /*
+
         {
-            final double yTop = this.config.getHeight() - 38.0;
+            final double yTop = this.config.getHeight() - (Environment.GroundBlockerHeight + 8.0D);
             this.createAndAddCell(environment, 40.0D, yTop, radiusSize, false, false);
         }
         {
-            final double yTop = this.config.getHeight() - 30.0;
+            final double yTop = this.config.getHeight() - (Environment.GroundBlockerHeight + 0.0D);
             this.createAndAddCell(environment, 100.0D, yTop, radiusSize, false, false);
         }
         {
-            final double yTop = this.config.getHeight() - 22.0;
+            final double yTop = this.config.getHeight() - (Environment.GroundBlockerHeight - 8.0D);
             this.createAndAddCell(environment, 160.0D, yTop, radiusSize, false, false);
         }
         {
-            final double yTop = this.config.getHeight() - 15.0;
+            final double yTop = this.config.getHeight() - (Environment.GroundBlockerHeight / 2.0D);
             this.createAndAddCell(environment, 220.0D, yTop, radiusSize, false, false);
         }
         {
@@ -57,47 +57,48 @@ public class TestCTrainStrategy implements TrainStrategy {
             final double yTop = this.config.getHeight() - 8.0;
             this.createAndAddCell(environment, 340.0D, yTop, radiusSize, false, false);
         }
-        */
-        /*
-        {
-            final double x = 500.0D;
-            environment.addWallBlocker(x, 600.0D, 30.0D);
-            this.createAndAddCell(environment, x - 20, 400.0D, radiusSize, false, false);
-        }
-        {
-            final double x = 600.0D;
-            environment.addWallBlocker(x, 600.0D, 30.0D);
-            this.createAndAddCell(environment, x - 15, 400.0D, radiusSize, false, false);
-        }
-        */
 
+        final double xStart = 450.0D;
+        final double yStart = 600.0D;
+        final double xStep = 100.0D;
+        final double wallWidth = 50.0D;
         {
-            final double x = 700.0D;
-            environment.addWallBlocker(x, 600.0D, 30.0D);
-            this.createAndAddCell(environment, x, 400.0D, radiusSize, false, false);
-        }
-        /*
-        {
-            final double x = 800.0D;
-            environment.addWallBlocker(x, 600.0D, 30.0D);
-            this.createAndAddCell(environment, x + 5, 400.0D, radiusSize, false, false);
+            final double x = xStart + xStep * 0;
+            environment.addWallBlocker(x, 600.0D, Environment.GroundBlockerHeight, wallWidth);
+            this.createAndAddCell(environment, x - 20, yStart, radiusSize, false, false);
         }
         {
-            final double x = 900.0D;
-            environment.addWallBlocker(x, 600.0D, 30.0D);
-            this.createAndAddCell(environment, x + 15, 400.0D, radiusSize, false, false);
+            final double x = xStart + xStep * 1;
+            environment.addWallBlocker(x, 600.0D, Environment.GroundBlockerHeight, wallWidth);
+            this.createAndAddCell(environment, x - 15, yStart, radiusSize, false, false);
         }
         {
-            final double x = 1000.0D;
-            environment.addWallBlocker(x, 600.0D, 30.0D);
-            this.createAndAddCell(environment, x + 20, 400.0D, radiusSize, false, false);
+            final double x = xStart + xStep * 2;
+            environment.addWallBlocker(x, 600.0D, Environment.GroundBlockerHeight, wallWidth);
+            this.createAndAddCell(environment, x, yStart, radiusSize, false, false);
         }
         {
-            final double x = 1100.0D;
-            environment.addWallBlocker(x, 600.0D, 30.0D);
-            this.createAndAddCell(environment, x + 25, 400.0D, radiusSize, false, false);
+            final double x = xStart + xStep * 3;
+            environment.addWallBlocker(x, 600.0D, Environment.GroundBlockerHeight, wallWidth);
+            this.createAndAddCell(environment, x + 5, yStart, radiusSize, false, false);
         }
-        */
+        {
+            final double x = xStart + xStep * 4;
+            environment.addWallBlocker(x, 600.0D, Environment.GroundBlockerHeight, wallWidth);
+            this.createAndAddCell(environment, x + 15, yStart, radiusSize, false, false);
+        }
+        {
+            final double x = xStart + xStep * 5;
+            environment.addWallBlocker(x, 600.0D, Environment.GroundBlockerHeight, wallWidth);
+            this.createAndAddCell(environment, x + wallWidth / 2.0D - 2.0D, 300.0D, radiusSize, false, false);
+            this.createAndAddCell(environment, x + wallWidth / 2.0D, 400.0D, radiusSize, false, false);
+            this.createAndAddCell(environment, x + wallWidth / 2.0D + 2.0D, 500.0D, radiusSize, false, false);
+        }
+        {
+            final double x = xStart + xStep * 6;
+            environment.addWallBlocker(x, 600.0D, Environment.GroundBlockerHeight, wallWidth);
+            this.createAndAddCell(environment, x + (wallWidth - 5.0D), yStart, radiusSize, false, false);
+        }
     }
 
     private void createAndAddCell(Environment environment, double x, double y, final double radiusSize,

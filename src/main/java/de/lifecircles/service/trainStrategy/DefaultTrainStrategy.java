@@ -41,11 +41,11 @@ public class DefaultTrainStrategy implements TrainStrategy {
         environment.addWallBlocker(1200.0D + 150.0D * 5, 600.0D, 165.0D);
         environment.addWallBlocker(1200.0D + 150.0D * 6, 600.0D, 165.0D);
 
-        environment.addWallBlocker(1200.0D + 150.0D * 10, 100.0D, 30.0D);
-        environment.addWallBlocker(1200.0D + 150.0D * 13, 200.0D, 30.0D);
-        environment.addWallBlocker(1200.0D + 150.0D * 16, 100.0D, 30.0D);
-        environment.addWallBlocker(1200.0D + 150.0D * 19, 300.0D, 30.0D);
-        environment.addWallBlocker(1200.0D + 150.0D * 22, 100.0D, 30.0D);
+        environment.addWallBlocker(1200.0D + 150.0D * 10, 100.0D, Environment.GroundBlockerHeight);
+        environment.addWallBlocker(1200.0D + 150.0D * 13, 200.0D, Environment.GroundBlockerHeight);
+        environment.addWallBlocker(1200.0D + 150.0D * 16, 100.0D, Environment.GroundBlockerHeight);
+        environment.addWallBlocker(1200.0D + 150.0D * 19, 300.0D, Environment.GroundBlockerHeight);
+        environment.addWallBlocker(1200.0D + 150.0D * 22, 100.0D, Environment.GroundBlockerHeight);
 
         final int xSunBlocker = 1200 + 150 * 25;
 

@@ -369,7 +369,7 @@ public class Cell implements SensableCell, Serializable {
     }
 
     public void setMutationRateFactor(double mutationRateFactor) {
-        this.mutationRateFactor = Math.max(0.1, Math.min(2.0, mutationRateFactor)); // Begrenzung auf sinnvolle Werte
+        this.mutationRateFactor = Math.max(0.1D, Math.min(2.0D, mutationRateFactor)); // Begrenzung auf sinnvolle Werte
     }
 
     public double getMutationStrengthFactor() {
@@ -377,7 +377,7 @@ public class Cell implements SensableCell, Serializable {
     }
 
     public void setMutationStrengthFactor(double mutationStrengthFactor) {
-        this.mutationStrengthFactor = Math.max(0.1, Math.min(2.0, mutationStrengthFactor)); // Begrenzung auf sinnvolle Werte
+        this.mutationStrengthFactor = Math.max(0.1D, Math.min(2.0D, mutationStrengthFactor)); // Begrenzung auf sinnvolle Werte
     }
 
     public void mutateMutationFactors(double mutationRate, double mutationStrength) {
@@ -385,14 +385,14 @@ public class Cell implements SensableCell, Serializable {
 
         // Mutate mutationRateFactor
         if (random.nextDouble() < mutationRate) {
-            double mutation = (random.nextDouble() * 2.0 - 1.0) * mutationStrength;
-            this.mutationRateFactor = Math.max(0.1, Math.min(2.0, this.mutationRateFactor + mutation));
+            double mutation = (random.nextDouble() * 2.0D - 1.0D) * mutationStrength;
+            this.setMutationRateFactor(this.mutationRateFactor + mutation);
         }
 
         // Mutate mutationStrengthFactor
         if (random.nextDouble() < mutationRate) {
-            double mutation = (random.nextDouble() * 2.0 - 1.0) * mutationStrength;
-            this.mutationStrengthFactor = Math.max(0.1, Math.min(2.0, this.mutationStrengthFactor + mutation));
+            double mutation = (random.nextDouble() * 2.0D - 1.0D) * mutationStrength;
+            this.setMutationStrengthFactor(this.mutationStrengthFactor + mutation);
         }
     }
 

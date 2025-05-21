@@ -186,7 +186,7 @@ public class SensorActor implements SensableActor, Serializable {
     }
 
     public void setReproductionEnergyShareOutput(double reproductionEnergyShareOutput) {
-        this.reproductionEnergyShareOutput = Math.max(0.05D, Math.min(0.5D, reproductionEnergyShareOutput));
+        this.reproductionEnergyShareOutput = Math.max(0.1D, Math.min(0.5D, reproductionEnergyShareOutput));
     }
 
     public double getReproductionEnergyShareOutput() {

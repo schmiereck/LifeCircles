@@ -12,6 +12,8 @@ import java.io.*;
  * Manages physics simulation and cell interactions.
  */
 public class Environment {
+    public static double GroundBlockerHeight = 40.0D;
+
     private static final Random random = new Random();
     private final SimulationConfig config;
     private final EnergySunCalcService energySunCalcService;
@@ -47,9 +49,9 @@ public class Environment {
 
     public void addGroundBlocker() {
         Blocker ground = new Blocker(
-            new Vector2D(width/2, height - 15), // Position at bottom
+            new Vector2D(width/2, height - (GroundBlockerHeight / 2.0D)), // Position at bottom
             width,                              // Full width
-            30,                                 // Height
+                GroundBlockerHeight,                                 // Height
             javafx.scene.paint.Color.GRAY,      // Color
             Blocker.BlockerType.GROUND          // Type
         );
@@ -68,8 +70,12 @@ public class Environment {
     }
 
     public void addWallBlocker(double x, double yTop, double yBottom) {
-        final double wallHeight = yTop - yBottom;
         final double wallWidth = 25;
+        addWallBlocker(x, yTop, yBottom, wallWidth);
+    }
+
+    public void addWallBlocker(double x, double yTop, double yBottom, final double wallWidth) {
+        final double wallHeight = yTop - yBottom;
         Blocker wallBlocker = new Blocker(
             new Vector2D(x + wallWidth/2, (this.height - yBottom) - wallHeight/2), // Position at bottom
             wallWidth,                              // Full width
@@ -117,8 +123,8 @@ public class Environment {
         // Process energy transfers between cells
         EnergyTransferCellCalcService.processEnergyTransfers(cells);
 
-        //for (final Cell cell : this.cells) {
-        this.cells.parallelStream().forEach(cell -> {
+        for (final Cell cell : this.cells) {
+        //this.cells.parallelStream().forEach(cell -> {
             // Apply viscosity
             //Vector2D viscousForce = cell.getVelocity().multiply(-VISCOSITY);
             final Vector2D viscousForce = cell.getVelocity().multiply(-SimulationConfig.getInstance().getViscosity());
@@ -131,7 +137,7 @@ public class Environment {
             // Handle blocker collisions after force application
             BlockerCellCalcService.handleBlockerCollisions(cell, this.blockers);
         }
-        );
+        //);
 
         this.cells.parallelStream().forEach(cell -> {
             CellCalcService.updateForces(cell);

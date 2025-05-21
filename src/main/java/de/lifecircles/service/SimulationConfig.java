@@ -31,7 +31,7 @@ public class SimulationConfig {
     // Environment-Blocker:
 
     // Blocker repulsion strength for cell-blocker interactions
-    private double blockerRepulsionStrength = 200.0;
+    private double blockerRepulsionStrength = 400.0;
 
     // Environment-Mode:
 

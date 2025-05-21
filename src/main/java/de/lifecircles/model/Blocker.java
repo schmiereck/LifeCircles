@@ -117,6 +117,134 @@ public class Blocker implements SensableActor, SensableCell {
     }
 
     /**
+     * Returns the new position of the cell's center when it is moved outside the blocker along the shortest path.
+     * This ensures the cell is positioned just outside the blocker's surface.
+     *
+     * @param cellPos The current position of the cell's center.
+     * @param radius The radius of the cell.
+     * @return The new position of the cell's center outside the blocker.
+     */
+    public Vector2D getCellCenterOutside(final Vector2D cellPos, final double radius) {
+        final double halfWidth = width / 2.0;
+        final double halfHeight = height / 2.0;
+
+        final Vector2D nearestSurfacePoint;
+
+        // Finde den nächsten Punkt auf dem Blocker zur Zellposition
+        //final double x = Math.max(position.getX() - halfWidth - radius, Math.min(cellPos.getX(), position.getX() + halfWidth + radius));
+        //final double y = Math.max(position.getY() - halfHeight - radius, Math.min(cellPos.getY(), position.getY() + halfHeight + radius));
+        //if (Math.abs(x) < Math.abs(y)) {
+        //    nearestSurfacePoint = new Vector2D(x, cellPos.getY());
+        //} else {
+        //    nearestSurfacePoint = new Vector2D(cellPos.getX(), y);
+        //}
+
+        double distToLeft = (cellPos.getX() - (position.getX() - halfWidth - radius));
+        double distToRight = (cellPos.getX() - (position.getX() + halfWidth + radius));
+        double distToTop = (cellPos.getY() - (position.getY() - halfHeight - radius));
+        double distToBottom = (cellPos.getY() - (position.getY() + halfHeight + radius));
+
+        double absDistToLeft = Math.abs(distToLeft);
+        double absDistToRight = Math.abs(distToRight);
+        double absDistToTop = Math.abs(distToTop);
+        double absDistToBottom = Math.abs(distToBottom);
+
+        // Bestimme die kürzeste Distanz zum Rand
+        if (absDistToLeft <= absDistToRight && absDistToLeft <= absDistToTop && absDistToLeft <= absDistToBottom) {
+            // Links ist am nächsten
+            nearestSurfacePoint = new Vector2D(cellPos.getX() - distToLeft, cellPos.getY());
+        } else {
+            if (absDistToRight <= absDistToTop && absDistToRight <= absDistToBottom) {
+                // Rechts ist am nächsten
+                nearestSurfacePoint = new Vector2D(cellPos.getX() - distToRight, cellPos.getY());
+            } else {
+                if (absDistToTop <= absDistToBottom) {
+                    // Oben ist am nächsten
+                    nearestSurfacePoint = new Vector2D(cellPos.getX(), cellPos.getY() - (distToTop));
+                } else {
+                    // Unten ist am nächsten
+                    nearestSurfacePoint = new Vector2D(cellPos.getX(), cellPos.getY() - (distToBottom));
+                }
+            }
+        }
+
+        return nearestSurfacePoint;
+    }
+
+    /**
+     * Returns the new position of the cell's center when it is moved outside the blocker along the shortest path.
+     * This ensures the cell is positioned just outside the blocker's surface.
+     *
+     * @param cellPos The current position of the cell's center.
+     * @param radius The radius of the cell.
+     * @return The new position of the cell's center outside the blocker.
+     */
+    public Vector2D getCellCenterOutside_x(Vector2D cellPos, double radius) {
+        double halfWidth = width / 2.0;
+        double halfHeight = height / 2.0;
+
+        // Wenn die Zelle innerhalb des Blockers ist, bestimme die kürzeste Richtung zum Rand
+        if (containsPoint(cellPos)) {
+            double distToLeft = Math.abs(cellPos.getX() - (position.getX() - halfWidth));
+            double distToRight = Math.abs(cellPos.getX() - (position.getX() + halfWidth));
+            double distToTop = Math.abs(cellPos.getY() - (position.getY() - halfHeight));
+            double distToBottom = Math.abs(cellPos.getY() - (position.getY() + halfHeight));
+
+            // Bestimme die kürzeste Distanz zum Rand
+            if (distToLeft <= distToRight && distToLeft <= distToTop && distToLeft <= distToBottom) {
+                // Links ist am nächsten
+                return new Vector2D(position.getX() - halfWidth - radius, cellPos.getY());
+            } else if (distToRight <= distToTop && distToRight <= distToBottom) {
+                // Rechts ist am nächsten
+                return new Vector2D(position.getX() + halfWidth + radius, cellPos.getY());
+            } else if (distToTop <= distToBottom) {
+                // Oben ist am nächsten
+                return new Vector2D(cellPos.getX(), position.getY() - halfHeight - radius);
+            } else {
+                // Unten ist am nächsten
+                return new Vector2D(cellPos.getX(), position.getY() + halfHeight + radius);
+            }
+        }
+
+        // Finde den nächsten Punkt auf dem Blocker zur Zellposition
+        double x = Math.max(position.getX() - halfWidth, Math.min(cellPos.getX(), position.getX() + halfWidth));
+        double y = Math.max(position.getY() - halfHeight, Math.min(cellPos.getY(), position.getY() + halfHeight));
+        Vector2D nearestSurfacePoint = new Vector2D(x, y);
+
+        // Vektor vom nächsten Punkt auf der Oberfläche zum Zellmittelpunkt
+        Vector2D toCellCenter = cellPos.subtract(nearestSurfacePoint);
+        double dist = toCellCenter.length();
+        
+        // Wenn die Zelle zu nahe am Blocker ist oder sich darin befindet
+        if (dist < radius) {
+            // Falls genau auf dem Blocker-Rand liegt oder Nullvektor vorliegt, spezielle Behandlung
+            if (dist == 0 || (toCellCenter.getX() == 0 && toCellCenter.getY() == 0)) {
+                // Ermittle welcher Rand am nächsten ist
+                if (Math.abs(x - (position.getX() - halfWidth)) < 0.001) {
+                    // Links
+                    return new Vector2D(x - radius, y);
+                } else if (Math.abs(x - (position.getX() + halfWidth)) < 0.001) {
+                    // Rechts
+                    return new Vector2D(x + radius, y);
+                } else if (Math.abs(y - (position.getY() - halfHeight)) < 0.001) {
+                    // Oben
+                    return new Vector2D(x, y - radius);
+                } else {
+                    // Unten
+                    return new Vector2D(x, y + radius);
+                }
+            }
+            
+            // Normalisiere den Vektor und verschiebe die Zelle entsprechend ihres Radius
+            Vector2D direction = toCellCenter.normalize();
+            return nearestSurfacePoint.add(direction.multiply(radius));
+        }
+        
+        // Wenn die Zelle bereits weit genug entfernt ist, behalte die Position bei
+        return cellPos;
+    }
+
+    /**
      * Überprüft, ob ein gegebener Punkt innerhalb des Blockers liegt
      * @param point Der zu prüfende Punkt
      * @return true, wenn der Punkt im Blocker liegt, sonst false
