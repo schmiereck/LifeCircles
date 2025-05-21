@@ -117,6 +117,7 @@ public class Environment {
         // Process energy transfers between cells
         EnergyTransferCellCalcService.processEnergyTransfers(cells);
 
+        //for (final Cell cell : this.cells) {
         this.cells.parallelStream().forEach(cell -> {
             // Apply viscosity
             //Vector2D viscousForce = cell.getVelocity().multiply(-VISCOSITY);
@@ -128,8 +129,9 @@ public class Environment {
             cell.applyForce(SimulationConfig.GRAVITY_VECTOR, cell.getPosition());
 
             // Handle blocker collisions after force application
-            BlockerCellCalcService.handleBlockerCollisions(cell, this.blockers, deltaTime);
-        });
+            BlockerCellCalcService.handleBlockerCollisions(cell, this.blockers);
+        }
+        );
 
         this.cells.parallelStream().forEach(cell -> {
             CellCalcService.updateForces(cell);

@@ -10,5 +10,6 @@ public enum TrainMode {
     HIGH_POSITION,
 
     TEST_A,
-    TEST_B
+    TEST_B,
+    TEST_C
 }

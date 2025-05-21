@@ -55,6 +55,11 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
+* handleBlockerCollisions() und Blocker.getNearestPoint():
+  Die Zellen bleiben weiter innerhalb des Blockers gefangen und werden an den Innenseiten reflektiert. 
+  Irgend etwas an der Berechnung muss grundlegend falsch sein. Prüfe nochmal alles genau nach.
+  Für mich sieht es so aus, als ob die Logik genau das Gegenteil das gewünschten Verhaltens implementiert, wenn sich der Mittelpunkt der Zelle innerhalb des Blockers befindet.
+
 * ConstantBrain das konstante Ausgänge hat.
   * Testszenario für Zellabstoßung.
   * Testszenario für AktorSensor anziehend und abstoßend.

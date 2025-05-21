@@ -77,6 +77,14 @@ public class Vector2D implements Serializable {
     }
 
     /**
+     * Returns a vector perpendicular to this vector.
+     * The result is a 90-degree counterclockwise rotation of this vector.
+     */
+    public Vector2D perpendicular() {
+        return new Vector2D(-y, x);
+    }
+
+    /**
      * Dot product of this vector with another.
      */
     public double dot(Vector2D other) {
@@ -88,5 +96,25 @@ public class Vector2D implements Serializable {
      */
     public double lengthSquared() {
         return x * x + y * y;
+    }
+
+    /**
+     * Projects this vector onto another vector.
+     * @param other The vector to project onto.
+     * @return The projection of this vector onto the other vector.
+     */
+    public Vector2D projectOnto(Vector2D other) {
+        double dotProduct = this.dot(other);
+        double otherLengthSquared = other.lengthSquared();
+        if (otherLengthSquared == 0) {
+            return new Vector2D(0, 0);
+        }
+        double scalar = dotProduct / otherLengthSquared;
+        return other.multiply(scalar);
+    }
+
+    @Override
+    public String toString() {
+        return "Vector2D{" + "x=" + x + ", y=" + y + '}';
     }
 }

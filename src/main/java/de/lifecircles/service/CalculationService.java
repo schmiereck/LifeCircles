@@ -35,6 +35,7 @@ public class CalculationService implements Runnable {
                     case HIGH_POSITION -> new HighPositionTrainStrategy();
                     case TEST_A -> new TestATrainStrategy();
                     case TEST_B -> new TestBTrainStrategy();
+                    case TEST_C -> new TestCTrainStrategy();
                     default -> new DefaultTrainStrategy();
                 };
         this.environment = this.trainStrategy.initializeEnvironment();

@@ -83,35 +83,37 @@ public class Blocker implements SensableActor, SensableCell {
     }
 
     /**
-     * Returns the nearest point on the blocker's surface to the given point
+     * Returns the nearest point on the blocker's surface to the given point.
+     * Ensures that the point is always pushed outside the blocker.
      */
     public Vector2D getNearestPoint(Vector2D point) {
         double halfWidth = width / 2.0;
         double halfHeight = height / 2.0;
 
         // Wenn der Punkt außerhalb liegt, finde den nächsten Punkt auf der Oberfläche
-        if (!containsPoint(point)) {
-            double x = Math.max(position.getX() - halfWidth, Math.min(point.getX(), position.getX() + halfWidth));
-            double y = Math.max(position.getY() - halfHeight, Math.min(point.getY(), position.getY() + halfHeight));
-            return new Vector2D(x, y);
-        } 
-        
-        // Wenn der Punkt innerhalb liegt, berechne den kürzesten Weg nach außen
-        double distToLeft = point.getX() - (position.getX() - halfWidth);
-        double distToRight = (position.getX() + halfWidth) - point.getX();
-        double distToTop = point.getY() - (position.getY() - halfHeight);
-        double distToBottom = (position.getY() + halfHeight) - point.getY();
+        double x = Math.max(position.getX() - halfWidth, Math.min(point.getX(), position.getX() + halfWidth));
+        double y = Math.max(position.getY() - halfHeight, Math.min(point.getY(), position.getY() + halfHeight));
+        Vector2D nearestPoint = new Vector2D(x, y);
 
-        // Finde die kürzeste Distanz und bewege den Punkt zur nächsten Kante
-        if (distToLeft <= distToRight && distToLeft <= distToTop && distToLeft <= distToBottom) {
-            return new Vector2D(position.getX() - halfWidth, point.getY());
-        } else if (distToRight <= distToTop && distToRight <= distToBottom) {
-            return new Vector2D(position.getX() + halfWidth, point.getY());
-        } else if (distToTop <= distToBottom) {
-            return new Vector2D(point.getX(), position.getY() - halfHeight);
-        } else {
-            return new Vector2D(point.getX(), position.getY() + halfHeight);
+        // Wenn der Punkt innerhalb liegt, bewege ihn zur nächsten Kante
+        if (containsPoint(point)) {
+            double distToLeft = Math.abs(point.getX() - (position.getX() - halfWidth));
+            double distToRight = Math.abs((position.getX() + halfWidth) - point.getX());
+            double distToTop = Math.abs(point.getY() - (position.getY() - halfHeight));
+            double distToBottom = Math.abs((position.getY() + halfHeight) - point.getY());
+
+            if (distToLeft <= distToRight && distToLeft <= distToTop && distToLeft <= distToBottom) {
+                nearestPoint = new Vector2D(position.getX() - halfWidth, point.getY());
+            } else if (distToRight <= distToTop && distToRight <= distToBottom) {
+                nearestPoint = new Vector2D(position.getX() + halfWidth, point.getY());
+            } else if (distToTop <= distToBottom) {
+                nearestPoint = new Vector2D(point.getX(), position.getY() - halfHeight);
+            } else {
+                nearestPoint = new Vector2D(point.getX(), position.getY() + halfHeight);
+            }
         }
+
+        return nearestPoint;
     }
 
     /**
@@ -126,7 +128,7 @@ public class Blocker implements SensableActor, SensableCell {
         double halfHeight = height / 2.0;
 
         // Kleine Toleranz hinzufügen, um Randpunkte besser zu erkennen
-        double tolerance = 0.001;
+        double tolerance = 0.0;
 
         // Prüfe, ob der Punkt innerhalb des Rechtecks liegt
         return point.getX() >= (position.getX() - halfWidth - tolerance) &&
