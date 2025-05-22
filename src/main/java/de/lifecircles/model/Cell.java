@@ -134,11 +134,16 @@ public class Cell implements SensableCell, Serializable {
                 Math.min(SimulationConfig.getInstance().getCellMaxRadiusSize(), radiusSize));
     }
 
+    public void setRealGrowRadiusSize(double radiusSize) {
+        this.radiusSize = Math.max(SimulationConfig.getInstance().getCellMinGrowRadiusSize(),
+                Math.min(SimulationConfig.getInstance().getCellMaxRadiusSize(), radiusSize));
+    }
+
     /**
      * Setzt die Zelle in den Wachstumsmodus und startet mit der Minimalgröße
      */
     public void startGrowthProcess() {
-        this.radiusSize = SimulationConfig.getInstance().getCellMinRadiusSize();
+        this.radiusSize = SimulationConfig.getInstance().getCellMinGrowRadiusSize();
         this.isGrowing = true;
         this.growthAge = 0;
     }

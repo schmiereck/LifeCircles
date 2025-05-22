@@ -79,7 +79,7 @@ public class SimulationConfig {
     public static final double ENERGY_COST_PER_SYNAPSE = 0.00000001D;
 
     // Konstante für die Zellwachstumszeit in Sekunden
-    public static final double CELL_GROWTH_DURATION = 2.0;
+    public static final double CELL_GROWTH_DURATION = 2.0D;
 
     public static final double CELL_ANGULAR_VELOCITY_DIFF = 20.0D;
 
@@ -89,6 +89,7 @@ public class SimulationConfig {
     public static final int CELL_STATE_ACTIVE_LAYER_COUNT = 3;
 
     private double cellMinRadiusSize = 6.0D;
+    private double cellMinGrowRadiusSize = 2.0D;
     private double cellMaxRadiusSize = 20.0D;
 
     private double cellActorMaxFieldRadius =
@@ -170,6 +171,14 @@ public class SimulationConfig {
 
     public void setCellMinRadiusSize(double cellMinRadiusSize) {
         this.cellMinRadiusSize = cellMinRadiusSize;
+    }
+
+    public void setCellMinGrowRadiusSize(double cellMinGrowRadiusSize) {
+        this.cellMinGrowRadiusSize = cellMinGrowRadiusSize;
+    }
+
+    public double getCellMinGrowRadiusSize() {
+        return this.cellMinGrowRadiusSize;
     }
 
     public double getCellMaxRadiusSize() {

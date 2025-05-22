@@ -25,24 +25,24 @@ public class Renderer {
         this.config = ViewConfig.getInstance();
     }
 
-    public void render(SimulationStateDto state) {
+    public void render(SimulationStateDto simulationStateDto) {
         this.clear();
         if (config.isShowGrid()) {
             this.drawGrid();
         }
 
         // Render blockers first (background)
-        for (SimulationStateDto.BlockerStateDto blocker : state.getBlockers()) {
+        for (SimulationStateDto.BlockerStateDto blocker : simulationStateDto.getBlockers()) {
             this.renderBlocker(blocker);
         }
         
-        for (SimulationStateDto.CellStateDto cell : state.getCells()) {
+        for (SimulationStateDto.CellStateDto cell : simulationStateDto.getCells()) {
             if (config.isShowForceFields()) {
                 this.drawForceFields(cell);
             }
         }
 
-        for (SimulationStateDto.CellStateDto cell : state.getCells()) {
+        for (SimulationStateDto.CellStateDto cell : simulationStateDto.getCells()) {
             this.renderCell(cell);
         }
 
@@ -50,7 +50,7 @@ public class Renderer {
         if (config.isShowSunRays()) {
             gc.setStroke(config.SUN_COLOR);
             gc.setLineWidth(1.5);
-            for (SimulationStateDto.SunRayStateDto ray : state.getSunRays()) {
+            for (SimulationStateDto.SunRayStateDto ray : simulationStateDto.getSunRays()) {
                 Point2D start = camera.worldToScreen(new Vector2D(ray.getStartX(), ray.getStartY()));
                 Point2D end = camera.worldToScreen(new Vector2D(ray.getEndX(), ray.getEndY()));
                 gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
@@ -58,7 +58,7 @@ public class Renderer {
         }
 
         if (config.isShowDebugInfo()) {
-            this.drawDebugInfo(state);
+            this.drawDebugInfo(simulationStateDto);
         }
         // Draw light-gray rounded border for simulation bounds (follows zoom/pan)
         SimulationConfig simConfig = SimulationConfig.getInstance();

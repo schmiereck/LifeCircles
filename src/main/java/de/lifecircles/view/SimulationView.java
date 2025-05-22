@@ -12,6 +12,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+import java.util.Objects;
+
 /**
  * JavaFX component for visualizing the simulation.
  * Supports zoom and pan interactions.
@@ -31,7 +33,18 @@ public class SimulationView extends Pane {
     private int frameCount = 0;
     private long lastFpsTime = System.nanoTime();
     private volatile double fps = 0.0;
-
+    
+    // Für FPS-Begrenzung
+    private static final long NANOS_PER_SECOND = 1_000_000_000;
+    private final int TARGET_FPS = 30;
+    private final long FRAME_TIME_NANOS = NANOS_PER_SECOND / TARGET_FPS; // Zeit pro Frame in Nanosekunden
+    private long lastFrameTime = 0;
+    
+    // Für FPS-Glättung
+    private final int FPS_SAMPLE_SIZE = 10;
+    private final double[] fpsHistory = new double[FPS_SAMPLE_SIZE];
+    private int fpsHistoryIndex = 0;
+    
     public SimulationView(CalculationService calculationService) {
         this.calculationService = calculationService;
         this.config = ViewConfig.getInstance();
@@ -147,31 +160,70 @@ public class SimulationView extends Pane {
 
     /**
      * Startet den Rendering-Loop für die kontinuierliche Darstellung der Simulation
+     * mit einer Begrenzung auf 30 FPS
      */
     private void startRenderLoop() {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                // Aktualisiere die Ansicht mit den neuesten Daten
-                SimulationStateDto state = calculationService.getLatestState();
-                if (state != null) {
-                    GraphicsContext gc = canvas.getGraphicsContext2D();
-                    gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-                    
-                    // Zeichne die Simulation mit dem Renderer
-                    renderer.render(state);
-                    
-                    // FPS-Zähler aktualisieren
-                    frameCount++;
-                    long currentTime = System.nanoTime();
-                    if (currentTime - lastFpsTime >= 1_000_000_000) {
-                        fps = frameCount / ((currentTime - lastFpsTime) / 1_000_000_000.0);
-                        frameCount = 0;
-                        lastFpsTime = currentTime;
+                // Prüfen, ob genügend Zeit seit dem letzten Frame vergangen ist
+                if (now - lastFrameTime >= FRAME_TIME_NANOS) {
+                    // Aktualisiere die Ansicht mit den neuesten Daten
+                    SimulationStateDto simulationStateDto = calculationService.getLatestState();
+                    if (Objects.nonNull(simulationStateDto)) {
+                        GraphicsContext gc = canvas.getGraphicsContext2D();
+                        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+                        
+                        // Zeichne die Simulation mit dem Renderer
+                        renderer.render(simulationStateDto);
+                        
+                        // Nur bei tatsächlich gerenderten Frames den Counter erhöhen
+                        frameCount++;
+
+                        // Zeit des letzten Frames nur um die exakte Frame-Zeit erhöhen
+                        // Dies verhindert, dass wir mehr oder weniger als die Ziel-FPS bekommen
+                        lastFrameTime += FRAME_TIME_NANOS;
                     }
+                }
+                
+                // FPS-Zähler jede Sekunde aktualisieren (unabhängig vom Rendern)
+                if (now - lastFpsTime >= NANOS_PER_SECOND) {
+                    // Exakte Berechnung der FPS basierend auf der tatsächlich verstrichenen Zeit
+                    double elapsedSeconds = (now - lastFpsTime) / (double)NANOS_PER_SECOND;
+                    double currentFps = frameCount / elapsedSeconds;
+                    
+                    // In FPS-Historie speichern
+                    fpsHistory[fpsHistoryIndex] = currentFps;
+                    fpsHistoryIndex = (fpsHistoryIndex + 1) % FPS_SAMPLE_SIZE;
+                    
+                    // Durchschnitt über alle gespeicherten FPS-Werte berechnen
+                    double totalFps = 0;
+                    int validSamples = 0;
+                    for (double fpsSample : fpsHistory) {
+                        if (fpsSample > 0) {
+                            totalFps += fpsSample;
+                            validSamples++;
+                        }
+                    }
+                    
+                    // Durchschnittliche FPS setzen
+                    if (validSamples > 0) {
+                        fps = totalFps / validSamples;
+                    } else {
+                        fps = currentFps;
+                    }
+                    
+                    // Zurücksetzen für die nächste Sekunde
+                    frameCount = 0;
+                    lastFpsTime = now;
                 }
             }
         };
+        
+        // Initialisierung direkt vor dem Start des Timers
+        lastFrameTime = System.nanoTime();
+        lastFpsTime = lastFrameTime;
+        
         timer.start();
     }
     
@@ -182,4 +234,3 @@ public class SimulationView extends Pane {
         return fps;
     }
 }
-
