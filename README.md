@@ -70,6 +70,10 @@ Das System-Design der Anwendung soll enthalten:
   * Das geschlecht wird nur als interne Eigenschaft abgelegt und nicht als Outut nach außen getragen. 
     Sie müssen sich also Anhand anderer Merkmale erkennen.
 
+* Jeder Layer kann duch den Wert seines ersten Neurons Aktiv/Inactiv gesetzt werden.
+  * Wenn der Layer aktiv ist, wird er auch bei der Berechnung des Energieverbrauchs berücksichtigt.
+  * Wenn der Layer inaktiv ist, wird er nicht bei der Berechnung des Energieverbrauchs berücksichtigt.
+
 * Jede Zelle hat ein Rechenzeit für ihr CellBrain. 
   * Wenn sie länger braucht, da sie mehr Synapsen und Neuronen hat, werden die Berechnungen weniger oft ausgeführt.
   * Alternativ kann sie auch mehr Energie verbrauchen.

@@ -38,8 +38,11 @@ public class SimulationConfig {
     public double scaleSimulation = 2.0D;
     private double width = 1024 * 2;// * SCALE_SIMULATION;
     private double height = 1200;// * SCALE_SIMULATION;
-    private final double calcTimeStep = 1.0D / 60.0D; // 60 Hz simulation
-    private double runTimeStep = 1.0D / 60.0D; // 60 Hz simulation
+    public static final double FPS = 60.0D;
+    public static final double initialCalcFps = 60.0D; // 60 Hz simulation
+    private final double calcTimeStep = 1.0D / initialCalcFps; // 60 Hz simulation
+    public static final double initialRunFps = 60.0D; // 60 Hz simulation
+    private double runTimeStep = 1.0D / initialRunFps; // 60 Hz simulation
 
     //-------------------------------------------------------------------------
     // Training:
@@ -59,7 +62,7 @@ public class SimulationConfig {
     private double sunRaySpacingPx = 60.0;
 
     // Day/Night cycle duration in seconds
-    public static final double SUN_DAY_NIGHT_CYCLE_DURATION = 60.0D * 2;
+    public static final double SUN_DAY_NIGHT_CYCLE_DURATION = 60.0D * 2.0D;
 
     /**
      * Intensity of sun rays during the night (0.0 to 1.0).

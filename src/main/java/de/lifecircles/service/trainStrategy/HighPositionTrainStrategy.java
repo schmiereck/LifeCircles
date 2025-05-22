@@ -77,10 +77,10 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         // Fülle bis INITIAL_COUNT mit mutierten Nachkommen auf
         while (nextGen.size() < INITIAL_COUNT) {
             Cell parent = winners.get(random.nextInt(winnersCount));
-            Cell child = ReproductionManagerService.reproduce(config, parent);
-            if (Objects.nonNull(child)) {
-                nextGen.add(child);
-                child.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
+            Cell childCell = ReproductionManagerService.reproduce(config, environment, parent);
+            if (Objects.nonNull(childCell)) {
+                nextGen.add(childCell);
+                childCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
             }
         }
         environment.resetCells(nextGen);

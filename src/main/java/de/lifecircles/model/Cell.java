@@ -70,7 +70,7 @@ public class Cell implements SensableCell, Serializable {
     }
 
     public Vector2D getPosition() {
-        return position;
+        return this.position;
     }
 
     public void setPosition(Vector2D position) {
@@ -78,7 +78,7 @@ public class Cell implements SensableCell, Serializable {
     }
 
     public Vector2D getVelocity() {
-        return velocity;
+        return this.velocity;
     }
 
     public void setVelocity(Vector2D velocity) {
@@ -86,7 +86,7 @@ public class Cell implements SensableCell, Serializable {
     }
 
     public double getRotation() {
-        return rotation;
+        return this.rotation;
     }
 
     public void setRotation(double rotation) {
@@ -98,19 +98,19 @@ public class Cell implements SensableCell, Serializable {
      * This method can be used to trigger cell behavior changes when hit by sunlight.
      */
     public void notifySunRayHit() {
-        sunRayHit = true;
+        this.sunRayHit = true;
     }
 
     public void resetSunRayHit() {
-        sunRayHit = false;
+        this.sunRayHit = false;
     }
 
     public boolean isSunRayHit() {
-        return sunRayHit;
+        return this.sunRayHit;
     }
 
     public double getAngularVelocity() {
-        return angularVelocity;
+        return this.angularVelocity;
     }
 
     public void setAngularVelocity(double angularVelocity) {
@@ -164,7 +164,7 @@ public class Cell implements SensableCell, Serializable {
 
     @Override
     public CellType getType() {
-        return type;
+        return this.type;
     }
 
     public void setType(CellType type) {
@@ -243,7 +243,7 @@ public class Cell implements SensableCell, Serializable {
      * Returns the generation counter of this cell.
      */
     public int getGeneration() {
-        return generation;
+        return this.generation;
     }
 
     /**
@@ -254,7 +254,7 @@ public class Cell implements SensableCell, Serializable {
     }
 
     public int getTempThinkHackCounter() {
-        return tempThinkHackCounter;
+        return this.tempThinkHackCounter;
     }
 
     public void setTempThinkHackCounter(int tempThinkHackCounter) {
@@ -274,11 +274,11 @@ public class Cell implements SensableCell, Serializable {
     }
 
     public void setGrowing(boolean growing) {
-        isGrowing = growing;
+        this.isGrowing = growing;
     }
 
     public double getGrowthAge() {
-        return growthAge;
+        return this.growthAge;
     }
 
     public void setGrowthAge(double growthAge) {
@@ -302,7 +302,7 @@ public class Cell implements SensableCell, Serializable {
     }
 
     public int getCellState() {
-        return cellState;
+        return this.cellState;
     }
 
     public void setCellState(int cellState) {
@@ -330,8 +330,8 @@ public class Cell implements SensableCell, Serializable {
         double maxY = Double.NEGATIVE_INFINITY;
         int topSensorIndex = 0; // Default to first sensor if positions aren't calculated yet
 
-        for (int i = 0; i < sensorActors.size(); i++) {
-            SensorActor sensor = sensorActors.get(i);
+        for (int i = 0; i < this.sensorActors.size(); i++) {
+            SensorActor sensor = this.sensorActors.get(i);
             Vector2D cachedPosition = sensor.getCachedPosition();
 
             if (cachedPosition != null) {
@@ -365,7 +365,7 @@ public class Cell implements SensableCell, Serializable {
     }
 
     public double getMutationRateFactor() {
-        return mutationRateFactor;
+        return this.mutationRateFactor;
     }
 
     public void setMutationRateFactor(double mutationRateFactor) {
@@ -373,7 +373,7 @@ public class Cell implements SensableCell, Serializable {
     }
 
     public double getMutationStrengthFactor() {
-        return mutationStrengthFactor;
+        return this.mutationStrengthFactor;
     }
 
     public void setMutationStrengthFactor(double mutationStrengthFactor) {

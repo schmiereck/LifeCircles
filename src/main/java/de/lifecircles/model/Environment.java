@@ -48,9 +48,10 @@ public class Environment {
     }
 
     public void addGroundBlocker() {
-        Blocker ground = new Blocker(
-            new Vector2D(width/2, height - (GroundBlockerHeight / 2.0D)), // Position at bottom
-            width,                              // Full width
+        final double extraWidth = this.config.getCellMaxRadiusSize();
+        final Blocker ground = new Blocker(
+            new Vector2D((width / 2.0D), height - (GroundBlockerHeight / 2.0D)), // Position at bottom
+            width + (extraWidth * 2.0D),                              // Full width
                 GroundBlockerHeight,                                 // Height
             javafx.scene.paint.Color.GRAY,      // Color
             Blocker.BlockerType.GROUND          // Type
@@ -170,7 +171,7 @@ public class Environment {
 
             // Handle reproduction.
             if (ReproductionManagerService.canReproduce(this.config, cell)) {
-                final Cell childCell = ReproductionManagerService.reproduce(this.config, cell);
+                final Cell childCell = ReproductionManagerService.reproduce(this.config, this, cell);
                 if (Objects.nonNull(childCell)) {
                     newCells.add(childCell);
                 }
@@ -206,11 +207,13 @@ public class Environment {
             if (lastDeadCell != null) {
                 // Repopulate by mutating the last dead cell
                 for (int i = 0; i < initialCount; i++) {
-                    Cell childCell = ReproductionManagerService.reproduce(this.config, this.lastDeadCell);
-                    childCell.setEnergy(1.0D);
-                    childCell.setMutationRateFactor(this.lastDeadCell.getMutationRateFactor());
-                    childCell.setMutationStrengthFactor(this.lastDeadCell.getMutationStrengthFactor());
-                    cells.add(childCell);
+                    final Cell childCell = ReproductionManagerService.reproduce(this.config, this, this.lastDeadCell);
+                    if (Objects.nonNull(childCell)) {
+                        childCell.setEnergy(1.0D);
+                        childCell.setMutationRateFactor(this.lastDeadCell.getMutationRateFactor());
+                        childCell.setMutationStrengthFactor(this.lastDeadCell.getMutationStrengthFactor());
+                        cells.add(childCell);
+                    }
                 }
             } else {
                 for (int i = 0; i < initialCount; i++) {
@@ -226,7 +229,7 @@ public class Environment {
                 for (int i = 0; i < toSpawn; i++) {
                     Cell parentCell = cells.get(random.nextInt(cells.size()));
                     if (Objects.nonNull(parentCell)) {
-                        Cell childCell = ReproductionManagerService.reproduce(config, parentCell);
+                        Cell childCell = ReproductionManagerService.reproduce(config, this, parentCell);
                         if (Objects.nonNull(childCell)) {
                             childCell.setEnergy(1.0D);
                             childCell.setMutationRateFactor(parentCell.getMutationRateFactor());

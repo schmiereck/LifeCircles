@@ -1,9 +1,6 @@
 package de.lifecircles.service;
 
-import de.lifecircles.model.Cell;
-import de.lifecircles.model.CellType;
-import de.lifecircles.model.SensorActor;
-import de.lifecircles.model.Vector2D;
+import de.lifecircles.model.*;
 import de.lifecircles.model.neural.*;
 
 import java.util.Comparator;
@@ -29,103 +26,107 @@ public class ReproductionManagerService {
 
     /**
      * Creates a child cell through reproduction.
-     * The child inherits traits from the parent with mutations.
+     * The child inherits traits from the parentCell with mutations.
      */
-    public static Cell reproduce(SimulationConfig config, Cell parent) {
+    public static Cell reproduce(final SimulationConfig config, final Environment environment, final Cell parentCell) {
         final Cell child;
 
-        // Calculate child position slightly offset from parent
+        // Calculate child position slightly offset from parentCell
         //double angle = random.nextDouble() * 2 * Math.PI;
         //Vector2D offset = new Vector2D(
-        //    Math.cos(angle) * (parent.getRadiusSize() * 0.3D),
-        //    Math.sin(angle) * (parent.getRadiusSize() * 0.3D)
+        //    Math.cos(angle) * (parentCell.getRadiusSize() * 0.3D),
+        //    Math.sin(angle) * (parentCell.getRadiusSize() * 0.3D)
         //);
-        //Vector2D childPosition = parent.getPosition().add(offset);
+        //Vector2D childPosition = parentCell.getPosition().add(offset);
 
-        SensorActor chosenActor = parent.getSensorActors().stream()
+        SensorActor chosenActor = parentCell.getSensorActors().stream()
                 .filter(sensorActor -> sensorActor.getReproductionDesire() >= config.getReproductionDesireThreshold())
                 .max(Comparator.comparingDouble(SensorActor::getReproductionDesire))
                 .orElse(null);
 
         if (Objects.nonNull(chosenActor)) {
-            Vector2D direction = chosenActorDirection(parent, chosenActor);
+            Vector2D direction = chosenActorDirection(parentCell, chosenActor);
             if (Objects.nonNull(direction)) {
-                Vector2D childPosition = parent.getPosition().
-                        add(direction.multiply(parent.getRadiusSize() +
-                                (SimulationConfig.getInstance().getCellMinRadiusSize() * 0.5D)));
+                Vector2D childPosition = parentCell.getPosition().
+                        add(direction.multiply(parentCell.getRadiusSize() +
+                                (SimulationConfig.getInstance().getCellMinRadiusSize() * 0.75D)));
 
-                // Set initial size (slightly mutated from parent's initial size)
-                final double parentSize = parent.getRadiusSize();
+                if (!BlockerCellCalcService.checkCellIsInsideBlocker(childPosition, environment.getBlockers())) {
+                    // Set initial size (slightly mutated from parentCell's initial size)
+                    final double parentSize = parentCell.getRadiusSize();
 
-                // Create mutated brain for child
-                final CellBrainInterface parentBrain = parent.getBrain();
-                final NeuralNetwork childBrainNetwork = parentBrain.mutate(
-                        config.getMutationRate(),
-                        config.getMutationStrength()
-                );
+                    // Create mutated brain for child
+                    final CellBrainInterface parentBrain = parentCell.getBrain();
+                    final NeuralNetwork childBrainNetwork = parentBrain.mutate(
+                            config.getMutationRate(),
+                            config.getMutationStrength()
+                    );
 
-                final CellBrain childCellBrain = new CellBrain(childBrainNetwork);
+                    final CellBrain childCellBrain = new CellBrain(childBrainNetwork);
 
-                // Create child cell
-                child = new Cell(childPosition, parentSize, childCellBrain);
-                
-                // Starte den Wachstumsprozess der neuen Zelle
-                child.startGrowthProcess();
+                    // Create child cell
+                    child = new Cell(childPosition, parentSize, childCellBrain);
 
-                // Übernehme die Rotation der Mutter-Zelle
-                child.setRotation(parent.getRotation());
+                    // Starte den Wachstumsprozess der neuen Zelle
+                    child.startGrowthProcess();
 
-                // Inherit and mutate type
-                final CellType parentType = parent.getType();
-                final CellType childType = new CellType(
-                        mutateValue(parentType.getRed(), typeMutationStrength),
-                        mutateValue(parentType.getGreen(), typeMutationStrength),
-                        mutateValue(parentType.getBlue(), typeMutationStrength)
-                );
-                child.setType(childType);
+                    // Übernehme die Rotation der Mutter-Zelle
+                    child.setRotation(parentCell.getRotation());
 
-                // Share energy based on the actor's energy share percentage
-                final double energySharePercentage = chosenActor.getReproductionEnergyShareOutput();
-                final double energyForChild = parent.getEnergy() * energySharePercentage;
-                parent.setEnergy(parent.getEnergy() - energyForChild);
-                child.setEnergy(energyForChild);
+                    // Inherit and mutate type
+                    final CellType parentType = parentCell.getType();
+                    final CellType childType = new CellType(
+                            mutateValue(parentType.getRed(), typeMutationStrength),
+                            mutateValue(parentType.getGreen(), typeMutationStrength),
+                            mutateValue(parentType.getBlue(), typeMutationStrength)
+                    );
+                    child.setType(childType);
 
-                // Inherit and increment generation counter
-                child.setGeneration(parent.getGeneration() + 1);
+                    // Share energy based on the actor's energy share percentage
+                    final double energySharePercentage = chosenActor.getReproductionEnergyShareOutput();
+                    final double energyForChild = parentCell.getEnergy() * energySharePercentage;
+                    parentCell.setEnergy(parentCell.getEnergy() - energyForChild);
+                    child.setEnergy(energyForChild);
 
-                // Ensure child's neural network outputs are set by running think once
-                CellBrainService.think(child);
+                    // Inherit and increment generation counter
+                    child.setGeneration(parentCell.getGeneration() + 1);
 
-                // Abrufen der Ausgaben des neuronalen Netzwerks der Elternzelle
-                double state0Output = parentBrain.getOutputValue(GlobalOutputFeature.STATE_0.ordinal());
-                double state1Output = parentBrain.getOutputValue(GlobalOutputFeature.STATE_1.ordinal());
-                double state2Output = parentBrain.getOutputValue(GlobalOutputFeature.STATE_2.ordinal());
+                    // Ensure child's neural network outputs are set by running think once
+                    CellBrainService.think(child);
 
-                // Berechnung des Zell-Zustands der Kind-Zelle basierend auf Thresholds
-                int childState = 0;
-                if (state0Output >= config.getCellStateOutputThreshold()) {
-                    childState |= 1; // Setze Bit 0
+                    // Abrufen der Ausgaben des neuronalen Netzwerks der Elternzelle
+                    double state0Output = parentBrain.getOutputValue(GlobalOutputFeature.STATE_0.ordinal());
+                    double state1Output = parentBrain.getOutputValue(GlobalOutputFeature.STATE_1.ordinal());
+                    double state2Output = parentBrain.getOutputValue(GlobalOutputFeature.STATE_2.ordinal());
+
+                    // Berechnung des Zell-Zustands der Kind-Zelle basierend auf Thresholds
+                    int childState = 0;
+                    if (state0Output >= config.getCellStateOutputThreshold()) {
+                        childState |= 1; // Setze Bit 0
+                    }
+                    if (state1Output >= config.getCellStateOutputThreshold()) {
+                        childState |= 2; // Setze Bit 1
+                    }
+                    if (state2Output >= config.getCellStateOutputThreshold()) {
+                        childState |= 4; // Setze Bit 2
+                    }
+                    child.setCellState(childState);
+
+                    // Set active layers in the child's brain based on the cell state
+                    boolean[] activeLayers = child.getBrain().determineActiveHiddenLayers(child.getCellState());
+                    List<Layer> hiddenLayerList = childBrainNetwork.getHiddenLayerList();
+                    for (int i = 0; i < Math.min(hiddenLayerList.size(), SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT); i++) {
+                        final Layer layer = hiddenLayerList.get(i);
+                        layer.setActiveLayer(activeLayers[i]);
+                    }
+
+                    // Mutate mutationRateFactor and mutationStrengthFactor
+                    child.setMutationRateFactor(parentCell.getMutationRateFactor());
+                    child.setMutationStrengthFactor(parentCell.getMutationStrengthFactor());
+                    child.mutateMutationFactors(config.getMutationRate(), config.getMutationStrength());
+                } else {
+                    child = null;
                 }
-                if (state1Output >= config.getCellStateOutputThreshold()) {
-                    childState |= 2; // Setze Bit 1
-                }
-                if (state2Output >= config.getCellStateOutputThreshold()) {
-                    childState |= 4; // Setze Bit 2
-                }
-                child.setCellState(childState);
-
-                // Set active layers in the child's brain based on the cell state
-                boolean[] activeLayers = child.getBrain().determineActiveHiddenLayers(child.getCellState());
-                List<Layer> hiddenLayerList = childBrainNetwork.getHiddenLayerList();
-                for (int i = 0; i < Math.min(hiddenLayerList.size(), SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT); i++) {
-                    final Layer layer = hiddenLayerList.get(i);
-                    layer.setActiveLayer(activeLayers[i]);
-                }
-
-                // Mutate mutationRateFactor and mutationStrengthFactor
-                child.setMutationRateFactor(parent.getMutationRateFactor());
-                child.setMutationStrengthFactor(parent.getMutationStrengthFactor());
-                child.mutateMutationFactors(config.getMutationRate(), config.getMutationStrength());
             } else {
                 child = null;
             }

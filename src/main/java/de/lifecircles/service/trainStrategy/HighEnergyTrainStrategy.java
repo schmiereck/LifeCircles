@@ -9,6 +9,7 @@ import de.lifecircles.service.SimulationConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -70,9 +71,11 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
         // Fülle Population bis INITIAL_COUNT mit mutierten Nachkommen auf
         while (nextGen.size() < INITIAL_COUNT) {
             Cell parent = winners.get(random.nextInt(winnersCount));
-            Cell child = ReproductionManagerService.reproduce(this.config, parent);
-            child.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
-            nextGen.add(child);
+            Cell childCell = ReproductionManagerService.reproduce(this.config, environment, parent);
+            if (Objects.nonNull(childCell)) {
+                childCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
+                nextGen.add(childCell);
+            }
         }
         environment.resetCells(nextGen);
     }

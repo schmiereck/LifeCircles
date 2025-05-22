@@ -131,13 +131,13 @@ public class MainController extends BorderPane {
 
         // Simulation speed control
         Label speedLabel = new Label("Speed:");
-        Slider speedSlider = new Slider(0.1, 4.0, 1.0);
-        Label sliderValueLabel = new Label(String.format("%.1f", speedSlider.getValue()));
+        Slider speedSlider = new Slider(0.1, 4.0, 1.0D);
+        Label sliderValueLabel = new Label(String.format("%.1f", speedSlider.getValue() * SimulationConfig.FPS));
         speedSlider.setBlockIncrement(0.1);
         speedSlider.valueProperty().addListener((obs, old, newValue) -> {
             final double value = newValue.doubleValue();
             simulationConfig.setRunTimeStep(0.016666 / value);
-            sliderValueLabel.setText(String.format("%.1f", value * 60.0D));
+            sliderValueLabel.setText(String.format("%.1f", value * SimulationConfig.FPS));
         });
         HBox speedLayout = new HBox(10, speedSlider, sliderValueLabel);
 

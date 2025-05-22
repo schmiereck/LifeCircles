@@ -15,6 +15,16 @@ public class BlockerCellCalcService {
     private BlockerCellCalcService() {
         throw new UnsupportedOperationException("Utility class");
     }
+    public static boolean checkCellIsInsideBlocker(final Vector2D cellPos, final List<Blocker> blockers) {
+        boolean cellIsInsideBlocker = false;
+        for (final Blocker blocker : blockers) {
+            if (blocker.containsPoint(cellPos)) {
+                cellIsInsideBlocker = true;
+                break;
+            }
+        }
+        return cellIsInsideBlocker;
+    }
 
     /**
      * Handles collisions between the given cell and the specified blockers.
@@ -23,19 +33,19 @@ public class BlockerCellCalcService {
      * @param cell     the cell to process
      * @param blockers the list of blockers to check
      */
-    public static void handleBlockerCollisions(Cell cell, List<Blocker> blockers) {
-        for (Blocker blocker : blockers) {
-            Vector2D cellPos = cell.getPosition();
-            double radius = cell.getRadiusSize();
+    public static void handleBlockerCollisions(final Cell cell, final List<Blocker> blockers) {
+        final Vector2D cellPos = cell.getPosition();
+        for (final Blocker blocker : blockers) {
+            final double radius = cell.getRadiusSize();
 
             // Ersetze die Verwendung von getNearestPoint durch getCellCenterOutside
-            Vector2D newCellPos = blocker.getCellCenterOutside(cellPos, radius);
-            Vector2D deltaVec = cellPos.subtract(newCellPos);
-            double distance = deltaVec.length();
+            final Vector2D newCellPos = blocker.getCellCenterOutside(cellPos, radius);
+            final Vector2D deltaVec = cellPos.subtract(newCellPos);
+            final double distance = deltaVec.length();
 
-            Vector2D nearestPoint = blocker.getNearestPoint(cellPos);
-            Vector2D nearestDeltaVec = cellPos.subtract(nearestPoint);
-            double nearestDistance = nearestDeltaVec.length();
+            final Vector2D nearestPoint = blocker.getNearestPoint(cellPos);
+            final Vector2D nearestDeltaVec = cellPos.subtract(nearestPoint);
+            final double nearestDistance = nearestDeltaVec.length();
 
             // Debugging: Logge die relevanten Werte zur Überprüfung
             //System.out.println("----------------------------------");
@@ -101,6 +111,10 @@ public class BlockerCellCalcService {
                     double strength = SimulationConfig.getInstance().getBlockerRepulsionStrength();
                     Vector2D repulsion = direction.multiply(strength);
                     cell.applyForce(repulsion, cellPos);
+
+                    // Zelle auf dem Rand des Blockers positionieren.
+                    Vector2D pushOut = newCellPos.add(deltaVec.normalize().multiply(nearestDistance));
+                    cell.setPosition(pushOut);
                 } else {
                     //System.out.println("No collision detected: Cell is outside the blocker.");
                 }
