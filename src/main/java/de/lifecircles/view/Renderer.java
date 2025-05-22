@@ -123,12 +123,12 @@ public class Renderer {
                 screenCellRadius * 2.0D
             );
 
-            if (config.isShowActors()) {
+            if (config.isShowActors() && (this.camera.getScale() > 0.5D)) {
                 this.drawActors(cell);
             }
 
             // Draw energy bar
-            if (this.config.isShowEnergy()) {
+            if (this.config.isShowEnergy() && (this.camera.getScale() > 0.5D)) {
                 double energyBarWidth = screenCellRadius * 0.8;
                 double energyBarHeight = screenCellRadius * 0.1;
                 double energyLevel = cell.getEnergy();
@@ -151,7 +151,7 @@ public class Renderer {
             }
 
             // Draw age indicator
-            if (this.config.isShowAge()) {
+            if (this.config.isShowAge() && (this.camera.getScale() > 0.5D)) {
                 double maxAge = 60.0; // 1 minute
                 double normalizedAge = Math.min(cell.getAge() / maxAge, 1.0);
                 double ageBarWidth = screenCellRadius * 0.8;
@@ -167,7 +167,7 @@ public class Renderer {
             }
 
             // Draw cell state as a number in the center of the cell
-            if (this.config.isShowSpecialization()) {
+            if (this.config.isShowSpecialization() && (this.camera.getScale() > 0.5D)) {
                 this.drawCellState(cell, screenCellPos, rgb);
             }
         }

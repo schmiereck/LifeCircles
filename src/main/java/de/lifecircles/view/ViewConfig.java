@@ -22,8 +22,8 @@ public class ViewConfig {
 
     // Actor rendering
     private boolean showActors = true;
-    private double actorSize = 4.0;
-    private boolean showForceFields = true;
+    private double actorSize = 3.0;
+    private boolean showForceFields = false;
     private double forceFieldOpacity = 0.3;
 
     // Debug visualization
@@ -35,9 +35,9 @@ public class ViewConfig {
     private Color gridColor = Color.GRAY.deriveColor(0, 1, 1, 0.4);
 
     // Cell state visualization
-    private boolean showEnergy = true;
+    private boolean showEnergy = false;
     private boolean showAge = false;
-    private boolean showSpecialization = true;
+    private boolean showSpecialization = false;
     // Sun ray visualization
     public static final Paint SUN_COLOR = Color.YELLOW.deriveColor(0, 1, 0.5D, 0.5);
     private boolean showSunRays = true;
