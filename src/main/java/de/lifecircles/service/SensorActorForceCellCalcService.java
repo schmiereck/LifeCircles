@@ -95,7 +95,17 @@ public class SensorActorForceCellCalcService {
                     if (distance > 0.0D) {
                         // Kraft von otherCellActor auf calcCellActor
                         final double forceStrength = otherCellActor.getForceStrength(); // Kraftstärke (positiv/negativ)
-                        final double senseForceValue = sense(otherCellActor, calcCellActor);
+                        final double senseForceValue; //= sense(otherCellActor, calcCellActor);
+                        // sense(SensorActor sensorActor, SensorActor otherSensorActor)
+                        //double distance = otherCellActor.getCachedPosition().distance(calcCellActor.getCachedPosition());
+                        int totalSensors = otherCellActor.getParentCell().getSensorActors().size();
+                        double maxSensorRadius = calcSensorRadius(otherCellActor.getParentCell().getRadiusSize(), totalSensors);
+                        if (distance > maxSensorRadius) {
+                            senseForceValue = 0.0D;
+                        } else {
+                            senseForceValue = (distance / maxSensorRadius);
+                        }
+
                         final double totalForceStrength = senseForceValue * forceStrength; // Berücksichtige Richtung und Stärke
 
                         if ((senseForceValue != 0.0D) && (Math.abs(totalForceStrength) > Math.abs(foundForceStrength))) {
@@ -137,7 +147,7 @@ public class SensorActorForceCellCalcService {
      * Senses the force of given other Actor to the given Actor.
      * @param sensorActor is the Actor the force applies to.
      * @param otherSensorActor is the Actor the force applies from.
-     * @return The sensed force intensity between -1 and 1, or 0 if out of range
+     * @return The sensed force intensity between >0 and 1, or 0 if out of range
      */
     public static double sense(SensorActor sensorActor, SensorActor otherSensorActor) {
         double distance = sensorActor.getCachedPosition().distance(otherSensorActor.getCachedPosition());
