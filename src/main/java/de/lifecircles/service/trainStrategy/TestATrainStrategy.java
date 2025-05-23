@@ -118,6 +118,16 @@ public class TestATrainStrategy implements TrainStrategy {
             createAndAddCell(environment, x + radiusSize * 1.125D, y - radiusSize * 2.0D, radiusSize, false);
             //createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
         }
+
+        // Pusher:
+        {
+            final double x = radiusSize * 26.0D;
+            final double y = 300.0;
+
+            createAndAddCell(environment, x, y, radiusSize, true, false, false, false);
+            createAndAddCell(environment, x, y + radiusSize * 2.1D, radiusSize, false, false, false, false);
+            //createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
+        }
     }
 
     @Override

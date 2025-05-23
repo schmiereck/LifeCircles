@@ -104,11 +104,11 @@ public class SimulationConfig {
     /**
      * Maximum attractive force strength for cell actors (< 0).
      */
-    private double cellActorMaxAttractiveForceStrength = 360.0D;
+    private double cellActorMaxAttractiveForceStrength = 360.0D/2.0;
     /**
      * Maximum attractive force strength for cell actors (> 0).
      */
-    private double cellActorMaxRepulsiveForceStrength = 580.0D;
+    private double cellActorMaxRepulsiveForceStrength = 580.0D/2.0;
 
     private double reproductionEnergyThreshold = 0.4D;
     private double reproductionAgeThreshold = 8.0D; // seconds

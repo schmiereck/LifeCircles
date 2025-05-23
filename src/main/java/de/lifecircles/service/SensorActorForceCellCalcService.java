@@ -75,7 +75,9 @@ public class SensorActorForceCellCalcService {
                                 calcCellActor.setSensedActor(otherCellActor);
 
                                 final Vector2D forceOnCalcCell = direction.normalize().multiply(totalForceStrength);
+                                final Vector2D forceOnOtherCell = direction.normalize().multiply(-totalForceStrength);
                                 calcCell.applyForce(forceOnCalcCell, calcCellActor.getCachedPosition());
+                                otherCell.applyForce(forceOnOtherCell, calcCellActor.getCachedPosition());
                             }
                         }
                     }

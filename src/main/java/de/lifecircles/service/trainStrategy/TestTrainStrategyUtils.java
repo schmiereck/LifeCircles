@@ -10,21 +10,30 @@ public abstract class TestTrainStrategyUtils {
 
     public static void createAndAddCell(Environment environment, double x, double y, final double radiusSize,
                                          final boolean isAttraction) {
+        final boolean isRepulsion = !isAttraction;
         final boolean isDelivery = false;
         final boolean isAbsorbtion = false;
         createAndAddCell(environment, x, y, radiusSize,
-                isAttraction, isDelivery, isAbsorbtion);
+                isAttraction, isRepulsion, isDelivery, isAbsorbtion);
     }
 
     public static void createAndAddCell(Environment environment, double x, double y, final double radiusSize,
                                          final boolean isAttraction, final boolean isDelivery) {
+        final boolean isRepulsion = !isAttraction;
         final boolean isAbsorbtion = false;
         createAndAddCell(environment, x, y, radiusSize,
-                isAttraction, isDelivery, isAbsorbtion);
+                isAttraction, isRepulsion, isDelivery, isAbsorbtion);
     }
 
     public static void createAndAddCell(Environment environment, double x, double y, final double radiusSize,
                                          final boolean isAttraction, final boolean isDelivery, final boolean isAbsorbtion) {
+        final boolean isRepulsion = !isAttraction;
+        createAndAddCell(environment, x, y, radiusSize,
+                isAttraction, isRepulsion, isDelivery, isAbsorbtion);
+    }
+
+    public static void createAndAddCell(Environment environment, double x, double y, final double radiusSize,
+                                         final boolean isAttraction, final boolean isRepulsion, final boolean isDelivery, final boolean isAbsorbtion) {
         final CellBrainInterface cellBrain = new CellBrainInterface() {
 
             final double[] output;
@@ -66,10 +75,16 @@ public abstract class TestTrainStrategyUtils {
                         this.output[actorOffset + ActorOutputFeature.ENERGY_ABSORPTION.ordinal()] = 0.0D;
                     }
 
+
                     if (isAttraction) {
-                        this.output[actorOffset + ActorOutputFeature.FORCE.ordinal()] = -1.0D;
+                        this.output[actorOffset + ActorOutputFeature.FORCE.ordinal()] = 0.0D;
                     } else {
-                        this.output[actorOffset + ActorOutputFeature.FORCE.ordinal()] = 1.0D;
+                        if (isRepulsion) {
+                            this.output[actorOffset + ActorOutputFeature.FORCE.ordinal()] = 1.0D;
+                        } else {
+                            this.output[actorOffset + ActorOutputFeature.FORCE.ordinal()] = 0.5D;
+                        }
+
                     }
                 }
             }
