@@ -14,8 +14,8 @@ import java.util.Objects;
  */
 public class EnergyTransferCellCalcService {
     // Maximum energy transfer per interaction
-    private static final double MAX_ENERGY_DELIVERY_TRANSFER = 0.06D;
-    private static final double MAX_ENERGY_ABSORBTION_TRANSFER = 0.07D;
+    private static final double MAX_ENERGY_DELIVERY_TRANSFER = 0.005D;
+    private static final double MAX_ENERGY_ABSORBTION_TRANSFER = 0.01D;
     // Minimum energy threshold for transfer
     private static final double MIN_ENERGY_FOR_TRANSFER = 0.1D;
     // Threshold for energy absorption (output value)
@@ -25,6 +25,7 @@ public class EnergyTransferCellCalcService {
      * @param cells list of cells in the environment
      */
     public static void processEnergyTransfers(final List<Cell> cells) {
+        //cells.parallelStream().forEach(cell -> {
         for (final Cell cell : cells) {
             for (final SensorActor sensor : cell.getSensorActors()) {
                 // Find nearby cells that can deliver/receive energy
@@ -44,7 +45,7 @@ public class EnergyTransferCellCalcService {
                             final double absorptionOutput = sensor.getEnergyAbsorption();
                             if ((absorptionOutput > 0.0D)) { // && (otherCell.getEnergy() > MIN_ENERGY_FOR_TRANSFER))
                                 // Calculate energy absorption amount
-                                final double absorptionAmount =
+                                final double otherCellTransferAmountLimit =
                                         Math.min(
                                                 otherCell.getEnergy(),
                                                 Math.min(
@@ -52,9 +53,16 @@ public class EnergyTransferCellCalcService {
                                                         absorptionOutput
                                                 ));
 
+                                final double cellTransferAmountLimited;
+                                if ((cell.getEnergy() + otherCellTransferAmountLimit) > cell.getMaxEnergy()) {
+                                    cellTransferAmountLimited = cell.getMaxEnergy() - cell.getEnergy();
+                                } else {
+                                    cellTransferAmountLimited = otherCellTransferAmountLimit;
+                                }
+
                                 // Absorb energy from other cell
-                                cell.setEnergy(cell.getEnergy() + absorptionAmount);
-                                otherCell.setEnergy(otherCell.getEnergy() - absorptionAmount);
+                                cell.setEnergy(cell.getEnergy() + cellTransferAmountLimited);
+                                otherCell.setEnergy(otherCell.getEnergy() - cellTransferAmountLimited);
                             }
                             // Check if this is a delivery attempt
                             final double deliveryOutput = sensor.getEnergyDelivery();

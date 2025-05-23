@@ -14,23 +14,29 @@ public class RepulsionCellCalcService {
      * Optimized repulsion using partitioning strategy.
      */
     public static void processRepulsiveForces(final List<Cell> cells, final PartitioningStrategy partitioner) {
-        for (final Cell cell1 : cells) {
+        //for (final Cell cell1 : cells) {
+        cells.parallelStream().forEach(cell1 -> {
             final List<Cell> neighbors = partitioner.getNeighbors(cell1);
             for (final Cell cell2 : neighbors) {
-                if (cell2 == cell1) continue;
-                final Vector2D delta = cell2.getPosition().subtract(cell1.getPosition());
-                final double distance = delta.length();
-                final double combinedRadius = cell1.getRadiusSize() + cell2.getRadiusSize();
-                if (distance < combinedRadius) {
-                    final double overlap = combinedRadius - distance;
-                    final double forceMagnitude = SimulationConfig.getInstance().getCellRepulsionStrength() * overlap;
-                    final Vector2D direction = delta.divide(distance);
-                    final Vector2D force = direction.multiply(forceMagnitude);
-                    cell1.applyForce(force.multiply(-2.0D), cell1.getPosition());
-                    cell2.applyForce(force.multiply(2.0D), cell2.getPosition());
+                if (cell2 != cell1) {
+                    final Vector2D delta = cell2.getPosition().subtract(cell1.getPosition());
+                    final double distance = delta.length();
+                    final double combinedRadius = cell1.getRadiusSize() + cell2.getRadiusSize();
+                    if (distance < combinedRadius) {
+                        final double overlap = combinedRadius - distance;
+                        final double forceMagnitude = SimulationConfig.getInstance().getCellRepulsionStrength() * overlap;
+                        //final Vector2D direction = delta.divide(distance);
+                        //final Vector2D force = direction.multiply(forceMagnitude);
+                        final Vector2D force1 = delta.multiply(-forceMagnitude / distance);
+                        //final Vector2D force2 = delta.multiply(forceMagnitude / distance);
+                        //cell1.applyForce(force1, cell1.getPosition());
+                        cell1.applyForce(force1);
+                        //cell2.applyForce(force2, cell2.getPosition());
+                        //cell2.applyForce(force2);
+                    }
                 }
             }
-        }
+        });
     }
 
     public static void processRepulsiveForces_x(final List<Cell> cells, final double deltaTime, final PartitioningStrategy partitioner) {

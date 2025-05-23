@@ -55,6 +55,9 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
+* Interaktionsradius der Aktor-Forces auf 1.5 oder 2.0 erweitern.
+  * Testen ob damit höhere Buildings möglich sind.
+
 * handleBlockerCollisions() und Blocker.getNearestPoint():
   Die Zellen bleiben weiter innerhalb des Blockers gefangen und werden an den Innenseiten reflektiert. 
   Irgend etwas an der Berechnung muss grundlegend falsch sein. Prüfe nochmal alles genau nach.
@@ -101,6 +104,8 @@ Das System-Design der Anwendung soll enthalten:
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
 # DONE
+
+* Die Values der inaktiven Layer die vom Zell-State gesteuert werden sollen auf 0 gesetzt werden, wenn diese nicht aktiv sind.
 
 * Prüfe den Grid-Paritionierungs-Algorithmus und die Berechnung der Interaktionen.
   * Die Größe der Grid-Zellen sollte der maximal Zell-Radius + der maximale Focre-Field-Radius sein.

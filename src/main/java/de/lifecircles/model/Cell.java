@@ -182,6 +182,19 @@ public class Cell implements SensableCell, Serializable {
 
     /**
      * Applies a force to the cell at a specific point.
+     * This will affect linear.
+     *
+     * @param force            Force vector
+     */
+    public void applyForce(Vector2D force) {
+        // Linear acceleration
+        //this.velocity = this.velocity.add(force.multiply(1.0D / this.radiusSize)); // Larger cells are affected less
+        this.velocityForce = this.velocityForce.add(force.multiply(0.08D)); // Larger cells are affected less
+        //this.velocity = this.velocity.add(force); // Larger cells are affected less
+    }
+
+    /**
+     * Applies a force to the cell at a specific point.
      * This will affect both linear and angular velocity.
      *
      * @param force            Force vector

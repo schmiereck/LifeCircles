@@ -59,7 +59,11 @@ public class NeuralNetwork implements Serializable {
                 Neuron newNeuron = new Neuron();
                 newNeuron.setBias(originalNeuron.getBias());
                 newNeuron.setActivationFunction(originalNeuron.getActivationFunction());
-                newNeuron.setValue(originalNeuron.getValue());
+                if (newLayer.isActiveLayer()) {
+                    newNeuron.setValue(originalNeuron.getValue());
+                } else {
+                    newNeuron.setValue(0.0D);
+                }
                 newLayer.addNeuron(newNeuron);
                 neuronMap.put(originalNeuron, newNeuron);
             }
@@ -217,7 +221,7 @@ public class NeuralNetwork implements Serializable {
         for (int outputNeuronPos = 0; outputNeuronPos < this.outputArr.length; outputNeuronPos++) {
             this.outputArr[outputNeuronPos] = this.getOutputValue(outputNeuronPos);
         }
-        
+
         return this.outputArr;
     }
 
@@ -679,4 +683,5 @@ public class NeuralNetwork implements Serializable {
         }
     }
 }
+
 

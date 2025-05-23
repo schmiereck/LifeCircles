@@ -51,7 +51,7 @@ public class Environment {
         final double extraWidth = this.config.getCellMaxRadiusSize();
         final Blocker ground = new Blocker(
             new Vector2D((width / 2.0D), height - (GroundBlockerHeight / 2.0D)), // Position at bottom
-            width + (extraWidth * 2.0D),                              // Full width
+            width + (extraWidth * 4.0D),                              // Full width
                 GroundBlockerHeight,                                 // Height
             javafx.scene.paint.Color.GRAY,      // Color
             Blocker.BlockerType.GROUND          // Type

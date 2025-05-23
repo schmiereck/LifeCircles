@@ -6,6 +6,11 @@ import de.lifecircles.model.Vector2D;
 import de.lifecircles.model.neural.*;
 import de.lifecircles.service.SimulationConfig;
 
+import static de.lifecircles.service.trainStrategy.TestTrainStrategyUtils.createAndAddCell;
+
+/**
+ * Tests Energie-Transfer interactions.
+ */
 public class TestBTrainStrategy implements TrainStrategy {
     private final SimulationConfig config = SimulationConfig.getInstance();
 
@@ -34,166 +39,55 @@ public class TestBTrainStrategy implements TrainStrategy {
 
         final double yTop = this.config.getHeight() - this.config.getHeight() / 4.0D;
 
-        // Anziehung:
+        // Delivery:
         {
-            final double x = this.config.getWidth() / 2.0D - radiusSize * 21.0D;
+            final double x = radiusSize * 8.0D;
             final double y = yTop;
 
-            this.createAndAddCell(environment, x, y - radiusSize * 4.0D, radiusSize, true, true);
+            createAndAddCell(environment, x, y - radiusSize * 4.0D, radiusSize, true, true, false);
 
-            this.createAndAddCell(environment, x - radiusSize * 1.25D, y - radiusSize * 2.0D, radiusSize, true, true);
-            this.createAndAddCell(environment, x + radiusSize * 1.25D, y - radiusSize * 2.0D, radiusSize, true, true);
+            createAndAddCell(environment, x - radiusSize * 1.25D, y - radiusSize * 2.0D, radiusSize, true, true, false);
+            createAndAddCell(environment, x + radiusSize * 1.25D, y - radiusSize * 2.0D, radiusSize, true, true, false);
 
-            this.createAndAddCell(environment, x - radiusSize * 2.4D, y, radiusSize, true, false);
-            this.createAndAddCell(environment, x, y, radiusSize, true, false);
-            this.createAndAddCell(environment, x + radiusSize * 2.4D, y, radiusSize, true, false);
+            createAndAddCell(environment, x - radiusSize * 2.4D, y, radiusSize, true, true, false);
+            createAndAddCell(environment, x + radiusSize * 0.0D, y, radiusSize, true, true, false);
+            createAndAddCell(environment, x + radiusSize * 2.4D, y, radiusSize, true, true, false);
 
-            //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
+            //createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
         }
         {
-            final double x = this.config.getWidth() / 2.0D - radiusSize * 14.0D;
+            final double x = radiusSize * 14.0D;
             final double y = yTop;
 
-            this.createAndAddCell(environment, x, y, radiusSize, true, true);
-            this.createAndAddCell(environment, x + radiusSize * 2.5D, y, radiusSize, true, true);
-            this.createAndAddCell(environment, x + radiusSize * 1.25D, y - radiusSize * 2.0D, radiusSize, true, true);
-            //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
+            createAndAddCell(environment, x, y, radiusSize, true, true);
+            createAndAddCell(environment, x + radiusSize * 2.5D, y, radiusSize, true, true);
+            createAndAddCell(environment, x + radiusSize * 1.25D, y - radiusSize * 2.0D, radiusSize, true, true);
+            //createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
         }
         {
-            final double x = this.config.getWidth() / 2.0D - radiusSize * 7.0D;
+            final double x = radiusSize * 22.0D;
             final double y = yTop;
 
-            this.createAndAddCell(environment, x, y, radiusSize, true, true);
-            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, true, true);
-            //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
+            createAndAddCell(environment, x, y, radiusSize, true, true);
+            createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, true, true);
+            //createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
         }
+        // Absorbtion:
         {
-            final double x = this.config.getWidth() / 2.0D; //  + radiusSize geht
+            final double x = radiusSize * 32.0D;
             final double y = yTop;
 
-            this.createAndAddCell(environment, x, y, radiusSize, true);
-            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, true, true);
-            //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
+            createAndAddCell(environment, x, y - radiusSize * 4.0D, radiusSize, true, false, true);
+
+            createAndAddCell(environment, x - radiusSize * 1.25D, y - radiusSize * 2.0D, radiusSize, true, false, true);
+            createAndAddCell(environment, x + radiusSize * 1.25D, y - radiusSize * 2.0D, radiusSize, true, false, true);
+
+            createAndAddCell(environment, x - radiusSize * 2.4D, y, radiusSize, true, false, true);
+            createAndAddCell(environment, x + radiusSize * 0.0D, y, radiusSize, true, false, true);
+            createAndAddCell(environment, x + radiusSize * 2.4D, y, radiusSize, true, false, true);
+
+            //createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
         }
-        {
-            final double x = this.config.getWidth() / 2.0D + radiusSize * 7.0D;
-            final double y = yTop;
-
-            this.createAndAddCell(environment, x, y, radiusSize, true, true);
-            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, true, true);
-            //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
-        }
-        {
-            final double x = this.config.getWidth() / 2.0D + radiusSize * 15.0D;
-            final double y = yTop;
-
-            this.createAndAddCell(environment, x, y, radiusSize, true, true);
-            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, true, true);
-            this.createAndAddCell(environment, x + radiusSize * 1.125D, y - radiusSize * 2.0D, radiusSize, true, true);
-            //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
-        }
-        {
-            final double x = this.config.getWidth() / 2.0D + radiusSize * 21.0D;
-            final double y = yTop;
-
-            this.createAndAddCell(environment, x, y, radiusSize, true);
-            this.createAndAddCell(environment, x + radiusSize * 2.25D, y, radiusSize, true, true);
-            this.createAndAddCell(environment, x + radiusSize * 1.125D, y - radiusSize * 2.0D, radiusSize, true, true);
-            //this.createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
-        }
-    }
-
-    private void createAndAddCell(Environment environment, double x, double y, final double radiusSize,
-                                  final boolean isAttraction) {
-        final boolean isDelivery = false;
-        createAndAddCell(environment, x, y, radiusSize,
-                isAttraction, isDelivery);
-    }
-
-    private void createAndAddCell(Environment environment, double x, double y, final double radiusSize,
-                                  final boolean isAttraction, final boolean isDelivery) {
-        final CellBrainInterface cellBrain = new CellBrainInterface() {
-
-            final double[] output;
-            final double[] inputs;
-
-            {
-                int inputCount = GlobalInputFeature.values().length +
-                        (SensorInputFeature.values().length * SimulationConfig.CELL_SENSOR_ACTOR_COUNT);
-                this.inputs = new double[inputCount];
-
-                // Initialize the output array with the desired size
-                int outputCount = GlobalOutputFeature.values().length +
-                        (ActorOutputFeature.values().length * SimulationConfig.CELL_SENSOR_ACTOR_COUNT);
-
-                this.output = new double[outputCount];
-
-                this.output[GlobalOutputFeature.SIZE.ordinal()] = radiusSize;
-
-                final int offset = GlobalOutputFeature.values().length;
-
-                for (int actorPos = 0; actorPos < SimulationConfig.CELL_SENSOR_ACTOR_COUNT; actorPos++) {
-                    final int actorOffset = offset + (actorPos * ActorOutputFeature.values().length);
-
-                    this.output[actorOffset + ActorOutputFeature.TYPE_RED.ordinal()] = 0.0D;
-                    this.output[actorOffset + ActorOutputFeature.TYPE_GREEN.ordinal()] = 1.0D;
-                    this.output[actorOffset + ActorOutputFeature.TYPE_BLUE.ordinal()] = 0.0D;
-
-                    this.output[actorOffset + ActorOutputFeature.REPRODUCTION_DESIRE.ordinal()] = 0.0D;
-
-                    if (isDelivery) {
-                        this.output[actorOffset + ActorOutputFeature.ENERGY_DELIVERY.ordinal()] = 0.75D;
-                    } else {
-                        this.output[actorOffset + ActorOutputFeature.ENERGY_DELIVERY.ordinal()] = 0.0D;
-                    }
-
-                    if (isAttraction) {
-                        this.output[actorOffset + ActorOutputFeature.FORCE.ordinal()] = -1.0D;
-                    } else {
-                        this.output[actorOffset + ActorOutputFeature.FORCE.ordinal()] = 1.0D;
-                    }
-                }
-            }
-
-            @Override
-            public double getOutputValue(int outputNeuronPos) {
-                return this.output[outputNeuronPos];
-            }
-
-            @Override
-            public int getInputCount() {
-                return this.inputs.length;
-            }
-
-            @Override
-            public int getSynapseCount() {
-                return 0;
-            }
-
-            @Override
-            public boolean[] determineActiveHiddenLayers(int cellState) {
-                return new boolean[0];
-            }
-
-            @Override
-            public void setInputs(double[] inputs) {
-
-            }
-
-            @Override
-            public double[] process() {
-                return this.output;
-            }
-
-            @Override
-            public NeuralNetwork mutate(double mutationRate, double mutationStrength) {
-                return null;
-            }
-        };
-
-        final Cell cell = new Cell(new Vector2D(x, y), radiusSize, cellBrain);
-
-        environment.addCell(cell);
     }
 
     @Override

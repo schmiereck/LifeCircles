@@ -11,10 +11,11 @@ public class SimulationConfig {
     //-------------------------------------------------------------------------
     // Environment:
 
-    public static final double GRAVITY = 9.81D * 18.0D;
+    public static final double GRAVITY = 9.81D * 22.0D;
     public static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
 
     // Environment-Cell:
+
     /**
      * Friction coefficient for cell rotation (damping)
      * A higher value means less rotation (0.0D to 1.0D).
@@ -92,6 +93,7 @@ public class SimulationConfig {
     private double cellMinGrowRadiusSize = 2.0D;
     private double cellMaxRadiusSize = 20.0D;
 
+    public static double cellActorMaxFieldRadiusFactor = 0.9D;
     private double cellActorMaxFieldRadius =
             SensorActorForceCellCalcService.calcSensorRadius(this.cellMaxRadiusSize, CELL_SENSOR_ACTOR_COUNT);
 
