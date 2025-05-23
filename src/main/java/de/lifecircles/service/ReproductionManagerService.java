@@ -94,22 +94,8 @@ public class ReproductionManagerService {
                     // Ensure child's neural network outputs are set by running think once
                     CellBrainService.think(child);
 
-                    // Abrufen der Ausgaben des neuronalen Netzwerks der Elternzelle
-                    double state0Output = parentBrain.getOutputValue(GlobalOutputFeature.STATE_0.ordinal());
-                    double state1Output = parentBrain.getOutputValue(GlobalOutputFeature.STATE_1.ordinal());
-                    double state2Output = parentBrain.getOutputValue(GlobalOutputFeature.STATE_2.ordinal());
+                    final int childState = chosenActor.getReproductionState();
 
-                    // Berechnung des Zell-Zustands der Kind-Zelle basierend auf Thresholds
-                    int childState = 0;
-                    if (state0Output >= config.getCellStateOutputThreshold()) {
-                        childState |= 1; // Setze Bit 0
-                    }
-                    if (state1Output >= config.getCellStateOutputThreshold()) {
-                        childState |= 2; // Setze Bit 1
-                    }
-                    if (state2Output >= config.getCellStateOutputThreshold()) {
-                        childState |= 4; // Setze Bit 2
-                    }
                     child.setCellState(childState);
 
                     // Set active layers in the child's brain based on the cell state

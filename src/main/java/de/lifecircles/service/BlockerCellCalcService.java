@@ -35,9 +35,8 @@ public class BlockerCellCalcService {
      */
     public static void handleBlockerCollisions(final Cell cell, final List<Blocker> blockers) {
         final Vector2D cellPos = cell.getPosition();
+        final double radius = cell.getRadiusSize();
         for (final Blocker blocker : blockers) {
-            final double radius = cell.getRadiusSize();
-
             // Ersetze die Verwendung von getNearestPoint durch getCellCenterOutside
             final Vector2D newCellPos = blocker.getCellCenterOutside(cellPos, radius);
             final Vector2D deltaVec = cellPos.subtract(newCellPos);

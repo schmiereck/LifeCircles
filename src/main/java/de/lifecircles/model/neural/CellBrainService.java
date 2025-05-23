@@ -104,19 +104,20 @@ public class CellBrainService {
         return inputs;
     }
 
-    public static void applyOutputs(final Cell cell, double[] outputs) {
+    public static void applyOutputs(final Cell cell, final double[] outputs) {
         // Apply size output
+        final SimulationConfig config = SimulationConfig.getInstance();
         cell.setRadiusSize((outputs[GlobalOutputFeature.SIZE.ordinal()] *
-                (SimulationConfig.getInstance().getCellMaxRadiusSize() - SimulationConfig.getInstance().getCellMinRadiusSize())) +
-                SimulationConfig.getInstance().getCellMinRadiusSize());
+                (config.getCellMaxRadiusSize() - config.getCellMinRadiusSize())) +
+                config.getCellMinRadiusSize());
 
         int index = GlobalOutputFeature.values().length;
 
         // Apply actor outputs
-        List<SensorActor> actors = cell.getSensorActors();
-        for (SensorActor actor : actors) {
+        final List<SensorActor> actorList = cell.getSensorActors();
+        for (final SensorActor actor : actorList) {
             // Set actor type
-            CellType newType = new CellType(
+            final CellType newType = new CellType(
                     outputs[index + ActorOutputFeature.TYPE_RED.ordinal()],
                     outputs[index + ActorOutputFeature.TYPE_GREEN.ordinal()],
                     outputs[index + ActorOutputFeature.TYPE_BLUE.ordinal()]
@@ -133,17 +134,32 @@ public class CellBrainService {
             final double forceStrength;
             if (force < 0.0D) {
                 // attractive
-                forceStrength = force * SimulationConfig.getInstance().getCellActorMaxAttractiveForceStrength();
+                forceStrength = force * config.getCellActorMaxAttractiveForceStrength();
             } else {
                 // repulsive
-                forceStrength = force * SimulationConfig.getInstance().getCellActorMaxRepulsiveForceStrength();
+                forceStrength = force * config.getCellActorMaxRepulsiveForceStrength();
             }
             actor.setForceStrength(forceStrength);
 
-            actor.setReproductionDesire(outputs[index + ActorOutputFeature.REPRODUCTION_DESIRE.ordinal()]);
-            actor.setReproductionEnergyShareOutput(outputs[index + ActorOutputFeature.REPRODUCTION_ENERGY_SHARE.ordinal()]);
             actor.setEnergyAbsorption(outputs[index + ActorOutputFeature.ENERGY_ABSORPTION.ordinal()]);
             actor.setEnergyDelivery(outputs[index + ActorOutputFeature.ENERGY_DELIVERY.ordinal()]);
+            actor.setReproductionEnergyShareOutput(outputs[index + ActorOutputFeature.REPRODUCTION_ENERGY_SHARE.ordinal()]);
+            actor.setReproductionDesire(outputs[index + ActorOutputFeature.REPRODUCTION_DESIRE.ordinal()]);
+            final double state0Output = (outputs[index + ActorOutputFeature.STATE_0.ordinal()]);
+            final double state1Output = (outputs[index + ActorOutputFeature.STATE_1.ordinal()]);
+            final double state2Output = (outputs[index + ActorOutputFeature.STATE_2.ordinal()]);
+            // Berechnung des Zell-Zustands der Kind-Zelle basierend auf Thresholds
+            int childState = 0;
+            if (state0Output >= config.getCellStateOutputThreshold()) {
+                childState |= 1; // Setze Bit 0
+            }
+            if (state1Output >= config.getCellStateOutputThreshold()) {
+                childState |= 2; // Setze Bit 1
+            }
+            if (state2Output >= config.getCellStateOutputThreshold()) {
+                childState |= 4; // Setze Bit 2
+            }
+            actor.setReproductionState(childState);
 
             index += ActorOutputFeature.values().length;
         }

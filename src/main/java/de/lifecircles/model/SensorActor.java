@@ -33,6 +33,7 @@ public class SensorActor implements SensableActor, Serializable {
      * Energieanteil (zwischen 0.05 und 0.5 -> 5% bis 50% der Energie).
      */
     private double reproductionEnergyShareOutput;
+    private int reproductionState;
 
     public SensorActor(Cell parentCell, double angleOnCell) {
         this.parentCell = parentCell;
@@ -192,4 +193,13 @@ public class SensorActor implements SensableActor, Serializable {
     public double getReproductionEnergyShareOutput() {
         return this.reproductionEnergyShareOutput;
     }
+
+    public void setReproductionState(final int reproductionState) {
+        this.reproductionState = reproductionState;
+    }
+
+    public int getReproductionState() {
+        return this.reproductionState;
+    }
+
 }
