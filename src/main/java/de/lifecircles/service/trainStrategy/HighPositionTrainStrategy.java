@@ -84,8 +84,8 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         List<Cell> nextGen = new ArrayList<>();
         nextGen.addAll(winners);
         while (nextGen.size() < (SeperatorCount - 1)) {
-            Cell parent = winners.get(random.nextInt(winnersCount));
-            Cell childCell = ReproductionManagerService.reproduce(config, environment, parent);
+            final Cell parent = winners.get(random.nextInt(winnersCount));
+            final Cell childCell = ReproductionManagerService.reproduce(config, environment, parent);
             if (Objects.nonNull(childCell)) {
                 nextGen.add(childCell);
                 childCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
@@ -97,6 +97,7 @@ public class HighPositionTrainStrategy implements TrainStrategy {
             final double x = xSpace * posX + xSpace / 2.0D;
             final double y = config.getHeight() - Environment.GroundBlockerHeight - config.getCellMaxRadiusSize();
             cell.setCellState(0);
+            cell.setAge(0.0D);
             cell.setPosition(new Vector2D(x, y));
         }
 

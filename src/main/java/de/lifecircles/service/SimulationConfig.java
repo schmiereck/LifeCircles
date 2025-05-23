@@ -98,7 +98,7 @@ public class SimulationConfig {
             SensorActorForceCellCalcService.calcSensorRadius(this.cellMaxRadiusSize, CELL_SENSOR_ACTOR_COUNT);
 
     // Age in Seconds after which a cell is considered dead.
-    private int cellDeathAge = 1000;
+    private double cellDeathAge = 10000;
 
     //private double cellActorMaxForceStrength = 16.0D * 8.0D * 4.0D * 1.5D;
     /**
@@ -191,11 +191,11 @@ public class SimulationConfig {
         this.cellMaxRadiusSize = cellMaxRadiusSize;
     }
 
-    public int getCellDeathAge() {
+    public double getCellDeathAge() {
         return this.cellDeathAge;
     }
 
-    public void setCellDeathAge(int cellDeathAge) {
+    public void setCellDeathAge(double cellDeathAge) {
         this.cellDeathAge = cellDeathAge;
     }
 

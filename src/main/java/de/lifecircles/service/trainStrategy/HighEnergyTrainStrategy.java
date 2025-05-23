@@ -75,6 +75,7 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
             if (Objects.nonNull(childCell)) {
                 childCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
                 childCell.setCellState(0);
+                childCell.setAge(0.0D);
                 nextGen.add(childCell);
             }
         }
