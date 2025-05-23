@@ -70,7 +70,7 @@ public class Environment {
         blockers.add(sunBlocker);
     }
 
-    public void addWallBlocker(double x, double yTop, double yBottom) {
+    public void addWallBlocker(final double x, final double yTop, final double yBottom) {
         final double wallWidth = 25;
         addWallBlocker(x, yTop, yBottom, wallWidth);
     }

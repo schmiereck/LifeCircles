@@ -15,10 +15,9 @@ import java.util.*;
  * erzeugt mutierte Nachkommen und ersetzt die Population.
  */
 public class HighPositionTrainStrategy implements TrainStrategy {
-    private static final int INITIAL_COUNT = 20;
     private static final int GENERATION_STEP = 2500 * 2;
-    private static final double SELECTION_PERCENT = 0.2;
     private final SimulationConfig config = SimulationConfig.getInstance();
+    private final Random random = new Random();
     private long stepCounter = 0;
 
     @Override
@@ -27,23 +26,32 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         this.config.setHeight(1200);
 
         this.config.setScaleSimulation(1.6D);
-        this.config.setViscosity(5.75D * 2.0D);
+        //this.config.setViscosity(5.75D * 2.0D);
 
         this.config.setEnergyPerRay(0.015D); // 0.005; //0.015; // 0.025;
 
         return new Environment(config.getWidth(), config.getHeight());
     }
 
+    private final static int SeperatorCount = 8;
+
     @Override
     public void initialize(Environment environment) {
         // Add ground blocker by default
         environment.addGroundBlocker();
         //environment.addSunBlocker();
+        for (int posX = 0; posX <= SeperatorCount; posX++) {
+            final double x = (config.getWidth() / SeperatorCount) * posX;
+            final double yTop = config.getHeight() - (config.getHeight() / 2.0D);
+            final double yBottom = Environment.GroundBlockerHeight;
+            environment.addWallBlocker(x, yTop, yBottom);
+        }
 
-        Random random = new Random();
-        for (int i = 0; i < INITIAL_COUNT; i++) {
-            double x = random.nextDouble() * config.getWidth();
-            double y = config.getHeight() - (random.nextDouble() * (config.getHeight() / 4.0D));
+        for (int posX = 0; posX < SeperatorCount; posX++) {
+            final double xSpace = (config.getWidth() / SeperatorCount);
+            final double x = xSpace * posX + xSpace / 2.0D;
+            final double y = config.getHeight() - Environment.GroundBlockerHeight - config.getCellMaxRadiusSize();
+
             //final double hiddenCountFactor = SimulationConfig.hiddenCountFactorDefault;
             final double hiddenCountFactor = 0.5D;
             //final double stateHiddenLayerSynapseConnectivity = SimulationConfig.stateHiddenLayerSynapseConnectivityDefault;
@@ -65,17 +73,17 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         if (cells.isEmpty()) {
             return;
         }
-        int winnersCount = Math.max(1, (int) (cells.size() * SELECTION_PERCENT));
         // Sortiere nach Y-Koordinate aufsteigend (höhere Zellen oben)
         //cells.sort(Comparator.comparingDouble((Cell c) -> c.getPosition().getY()).reversed());
         cells.sort(Comparator.comparingDouble((Cell c) -> c.getPosition().getY()));
+
+        int winnersCount = Math.min(SeperatorCount, cells.size());
         List<Cell> winners = new ArrayList<>(cells.subList(0, winnersCount));
         winners.forEach(cell -> cell.setEnergy(SimulationConfig.CELL_MAX_ENERGY));
+
         List<Cell> nextGen = new ArrayList<>();
         nextGen.addAll(winners);
-        Random random = new Random();
-        // Fülle bis INITIAL_COUNT mit mutierten Nachkommen auf
-        while (nextGen.size() < INITIAL_COUNT) {
+        while (nextGen.size() < (SeperatorCount - 1)) {
             Cell parent = winners.get(random.nextInt(winnersCount));
             Cell childCell = ReproductionManagerService.reproduce(config, environment, parent);
             if (Objects.nonNull(childCell)) {
@@ -83,6 +91,15 @@ public class HighPositionTrainStrategy implements TrainStrategy {
                 childCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
             }
         }
+        for (int posX = 0; posX < SeperatorCount; posX++) {
+            final Cell cell = nextGen.get(posX);
+            final double xSpace = (config.getWidth() / SeperatorCount);
+            final double x = xSpace * posX + xSpace / 2.0D;
+            final double y = config.getHeight() - Environment.GroundBlockerHeight - config.getCellMaxRadiusSize();
+            cell.setCellState(0);
+            cell.setPosition(new Vector2D(x, y));
+        }
+
         environment.resetCells(nextGen);
     }
 }

@@ -11,7 +11,7 @@ public class SimulationConfig {
     //-------------------------------------------------------------------------
     // Environment:
 
-    public static final double GRAVITY = 9.81D * 22.0D;
+    public static final double GRAVITY = 9.81D * 28.0D;
     public static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
 
     // Environment-Cell:
@@ -25,7 +25,7 @@ public class SimulationConfig {
      * Viscosity coefficient for cell movement damping.
      * A higher value means less movement.
      */
-    private double viscosity = 5.75D * 0.95D;
+    private double viscosity = 5.5D;
 
     private static final double CELL_REPULSION_STRENGTH = 175.0 * 1.25D;
 
@@ -104,14 +104,14 @@ public class SimulationConfig {
     /**
      * Maximum attractive force strength for cell actors (< 0).
      */
-    private double cellActorMaxAttractiveForceStrength = 280.0D;
+    private double cellActorMaxAttractiveForceStrength = 360.0D;
     /**
      * Maximum attractive force strength for cell actors (> 0).
      */
     private double cellActorMaxRepulsiveForceStrength = 580.0D;
 
     private double reproductionEnergyThreshold = 0.4D;
-    private double reproductionAgeThreshold = 4.0D; // seconds
+    private double reproductionAgeThreshold = 8.0D; // seconds
     private double reproductionDesireThreshold = 0.5D;
 
     private double mutationRate = 0.1D;
@@ -127,7 +127,7 @@ public class SimulationConfig {
     public static double hiddenCountFactorDefault = 1.4D;
 
     // Verzögerung für Größenänderung in Millisekunden
-    private long sizeChangeDelay = 500;
+    private long sizeChangeDelay = 300;
 
     //-------------------------------------------------------------------------
     // Singleton instance

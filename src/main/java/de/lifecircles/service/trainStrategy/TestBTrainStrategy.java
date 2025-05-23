@@ -37,7 +37,7 @@ public class TestBTrainStrategy implements TrainStrategy {
 
         final double radiusSize = this.config.getCellMaxRadiusSize();
 
-        final double yTop = this.config.getHeight() - this.config.getHeight() / 4.0D;
+        final double yTop = this.config.getHeight() - 75.0D;
 
         // Delivery:
         {

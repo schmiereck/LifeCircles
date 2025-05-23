@@ -22,6 +22,7 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
     private static final int GENERATION_STEP = 2500 * 4;
     private static final double SELECTION_PERCENT = 0.2;
     private final SimulationConfig config = SimulationConfig.getInstance();
+    private final Random random = new Random();
     private long stepCounter = 0;
 
     @Override
@@ -38,7 +39,6 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
         this.config.setEnergyPerRay(0.02D); // 0.005; //0.015; // 0.025;
 
         // Initiale Population
-        Random random = new Random();
         for (int i = 0; i < INITIAL_COUNT; i++) {
             double x = random.nextDouble() * this.config.getWidth();
             double y = random.nextDouble() * this.config.getHeight();
@@ -74,6 +74,7 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
             Cell childCell = ReproductionManagerService.reproduce(this.config, environment, parent);
             if (Objects.nonNull(childCell)) {
                 childCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
+                childCell.setCellState(0);
                 nextGen.add(childCell);
             }
         }
