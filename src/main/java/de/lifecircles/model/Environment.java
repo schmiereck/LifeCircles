@@ -12,7 +12,7 @@ import java.io.*;
  * Manages physics simulation and cell interactions.
  */
 public class Environment {
-    public static double GroundBlockerHeight = 40.0D;
+    public static double GroundBlockerHeight = 50.0D;
 
     private static final Random random = new Random();
     private final SimulationConfig config;
