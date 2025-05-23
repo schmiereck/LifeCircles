@@ -79,15 +79,15 @@ public class SimulationConfig {
     public static final double ENERGY_DECAY_RATE = 0.015D;
     public static final double ENERGY_COST_PER_SYNAPSE = 0.00000001D;
 
-    // Konstante für die Zellwachstumszeit in Sekunden
-    public static final double CELL_GROWTH_DURATION = 2.0D;
-
     public static final double CELL_ANGULAR_VELOCITY_DIFF = 20.0D;
 
     /**
      * Anzahl zusätzliche Hidden-Layer die abhängig vom Cell-State aktiv sein können.
      */
     public static final int CELL_STATE_ACTIVE_LAYER_COUNT = 3;
+
+    // Konstante für die Zellwachstumszeit in Sekunden
+    public static final double CELL_GROWTH_DURATION = 2.0D;
 
     private double cellMinRadiusSize = 6.0D;
     private double cellMinGrowRadiusSize = 2.0D;
