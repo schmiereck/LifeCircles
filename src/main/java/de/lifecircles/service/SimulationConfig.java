@@ -58,7 +58,7 @@ public class SimulationConfig {
     // Sun:
 
     private double sunRayRate = 10.0;
-    private double energyPerRay = 0.005; //0.015; // 0.025;
+    private double energyPerRay = 0.01D; //0.005; //0.015; // 0.025;
     // Spacing between sun rays in pixels; average one ray per this spacing
     private double sunRaySpacingPx = 60.0;
 

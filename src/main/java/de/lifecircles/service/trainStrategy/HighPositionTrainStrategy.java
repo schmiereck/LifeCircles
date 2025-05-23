@@ -15,7 +15,7 @@ import java.util.*;
  * erzeugt mutierte Nachkommen und ersetzt die Population.
  */
 public class HighPositionTrainStrategy implements TrainStrategy {
-    private static final int GENERATION_STEP = 2500 * 2;
+    private static final int GENERATION_STEP = 2500 * 4;
     private final SimulationConfig config = SimulationConfig.getInstance();
     private final Random random = new Random();
     private long stepCounter = 0;
