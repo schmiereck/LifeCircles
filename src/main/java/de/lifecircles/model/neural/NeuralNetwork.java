@@ -226,6 +226,25 @@ public class NeuralNetwork implements Serializable {
             this.outputArr[outputNeuronPos] = this.getOutputValue(outputNeuronPos);
         }
 
+        // process hidden layer activation counters (without fixed layers).
+        for (int layerPos = this.fixedHiddenLayerCount; layerPos < hiddenLayerList.size(); layerPos++) {
+            final Layer layer = this.hiddenLayerList.get(layerPos);
+
+            final List<Neuron> neuronList = layer.getNeurons();
+            if (neuronList.size() > 0) {
+                final Neuron neuron = neuronList.get(0);
+                final double actValue = Math.max(1.0D / 1000,
+                        layer.getActivationCounter() + neuron.getValue());
+                if (actValue >= 1.0D) {
+                    layer.setActivationCounter(0.0D);
+                    layer.setActiveLayer(true);
+                } else {
+                    layer.setActivationCounter(actValue);
+                    layer.setActiveLayer(false);
+                }
+            }
+        }
+
         return this.outputArr;
     }
 
@@ -445,7 +464,7 @@ public class NeuralNetwork implements Serializable {
         // Begrenze die Konnektivität auf gültige Werte
         connectivity = Math.max(0.0, Math.min(1.0, connectivity));
         
-        Layer newLayer = new Layer();
+        final Layer newLayer = new Layer();
         newLayer.setActiveLayer(true); // Set new layer as active by default
         
         // Erstelle die neuen Neuronen
