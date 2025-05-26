@@ -121,7 +121,7 @@ public class TestATrainStrategy implements TrainStrategy {
 
         // Pusher:
         {
-            final double x = radiusSize * 26.0D;
+            final double x = radiusSize * 29.25D;
             final double y = 300.0;
 
             createAndAddCell(environment, x, y, radiusSize, true, false, false, false);

@@ -24,6 +24,8 @@ public class NeuralNetwork implements Serializable {
     private static final double DEFAULT_MUTATION_RATE = 0.1D;
     private int fixedHiddenLayerCount = SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT;
 
+    private long proccessedSynapses = 0L;
+
     /**
      * Copy-Konstruktor: Erstellt eine exakte Kopie des übergebenen neuronalen Netzwerks
      * 
@@ -203,18 +205,20 @@ public class NeuralNetwork implements Serializable {
      * Processes the inputs through the network and returns the outputs.
      */
     public double[] process() {
+        this.proccessedSynapses = 0L;
+
         // process hidden layers
-        for (Layer layer : this.hiddenLayerList) {
+        for (final Layer layer : this.hiddenLayerList) {
             if (layer.isActiveLayer()) {
-                for (Neuron neuron : layer.getNeurons()) {
-                    neuron.activate();
+                for (final Neuron neuron : layer.getNeurons()) {
+                    this.proccessedSynapses += neuron.activate();
                 }
             }
         }
 
         // process output layer
         for (Neuron neuron : this.outputNeuronList) {
-            neuron.activate();
+            this.proccessedSynapses += neuron.activate();
         }
 
         // Collect outputs
@@ -670,6 +674,10 @@ public class NeuralNetwork implements Serializable {
      */
     public List<Neuron> getOutputNeuronList() {
         return outputNeuronList;
+    }
+
+    public long getProccessedSynapses() {
+        return this.proccessedSynapses;
     }
 
     /**

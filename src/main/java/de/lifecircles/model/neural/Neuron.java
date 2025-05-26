@@ -108,7 +108,7 @@ public class Neuron implements Serializable {
      * Optimized version using array iteration instead of ArrayList.
      * For output neurons, no activation function is applied.
      */
-    public void activate() {
+    public long activate() {
         double sum = this.bias;
         // Direkte Array-Iteration für bessere Performance
         for (int i = 0; i < this.inputSynapseCount; i++) {
@@ -122,6 +122,7 @@ public class Neuron implements Serializable {
         //} else {
             this.value = this.activationFunction.apply(sum);
         //}
+        return this.inputSynapseCount;
     }
 
     public void setActivationFunction(ActivationFunction activationFunction) {

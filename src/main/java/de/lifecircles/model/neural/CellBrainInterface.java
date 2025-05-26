@@ -11,6 +11,8 @@ public interface CellBrainInterface {
 
     int getInputCount();
 
+    long getProccessedSynapses();
+
     NeuralNetwork mutate(double mutationRate, double mutationStrength);
 
     double getOutputValue(int outputNeuronPos);

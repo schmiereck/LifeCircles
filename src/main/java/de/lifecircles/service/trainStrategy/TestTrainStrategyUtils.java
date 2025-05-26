@@ -100,6 +100,11 @@ public abstract class TestTrainStrategyUtils {
             }
 
             @Override
+            public long getProccessedSynapses() {
+                return 0L;
+            }
+
+            @Override
             public int getSynapseCount() {
                 return 0;
             }

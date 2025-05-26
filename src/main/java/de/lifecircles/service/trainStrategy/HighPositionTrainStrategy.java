@@ -22,10 +22,10 @@ public class HighPositionTrainStrategy implements TrainStrategy {
 
     @Override
     public Environment initializeEnvironment() {
-        this.config.setWidth(1600);
+        this.config.setWidth(1600 * 4.0D);
         this.config.setHeight(1200);
 
-        this.config.setScaleSimulation(1.6D);
+        this.config.setScaleSimulation(1.6D * 4.0D);
         //this.config.setViscosity(5.75D * 2.0D);
 
         this.config.setEnergyPerRay(0.015D); // 0.005; //0.015; // 0.025;
@@ -33,7 +33,7 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         return new Environment(config.getWidth(), config.getHeight());
     }
 
-    private final static int SeperatorCount = 8;
+    private final static int SeperatorCount = 8 * 2;
 
     @Override
     public void initialize(Environment environment) {
@@ -98,6 +98,7 @@ public class HighPositionTrainStrategy implements TrainStrategy {
             final double y = config.getHeight() - Environment.GroundBlockerHeight - config.getCellMaxRadiusSize();
             cell.setCellState(0);
             cell.setAge(0.0D);
+            cell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
             cell.setPosition(new Vector2D(x, y));
         }
 
