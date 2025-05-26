@@ -312,30 +312,6 @@ public class NeuralNetwork implements Serializable {
         return mutated;
     }
 
-    public NeuralNetwork mutate(double mutationRate, double mutationStrength, double rateFactor, double strengthFactor) {
-        NeuralNetwork mutated = new NeuralNetwork(this);
-
-        double adjustedRate = mutationRate * rateFactor;
-        double adjustedStrength = mutationStrength * strengthFactor;
-
-        mutated.applyToAllNeurons(neuron -> {
-            if (Math.random() < adjustedRate) {
-                double mutation = (Math.random() * 2.0D - 1.0D) * adjustedStrength;
-                neuron.setBias(neuron.getBias() + mutation);
-            }
-        });
-
-        for (Synapse synapse : mutated.synapsesynapseList) {
-            if (Math.random() < adjustedRate) {
-                double mutation = (Math.random() * 2.0D - 1.0D) * adjustedStrength;
-                synapse.setWeight(synapse.getWeight() + mutation);
-            }
-        }
-
-        mutated.applyStructuralMutations(adjustedRate);
-        return mutated;
-    }
-    
     /**
      * Wendet eine Funktion auf alle Neuronen des Netzwerks an.
      * Dies ist effizienter als eine neue Liste aller Neuronen zu erstellen.
@@ -540,9 +516,11 @@ public class NeuralNetwork implements Serializable {
     public void removeNeuronFromHiddenLayer(final int layerIndex) {
         final Layer layer = this.hiddenLayerList.get(layerIndex);
         final List<Neuron> layerNeuronList = layer.getNeurons();
-        if (layerNeuronList.isEmpty()) return;
-        final int idx = this.random.nextInt(layerNeuronList.size());
-        this.removeNeuron(layer, idx);
+        if (layerNeuronList.size() > 1) {
+            // Skip the first neuron to avoid removing activation neurons
+            final int idx = this.random.nextInt(layerNeuronList.size() - 1) + 1;
+            this.removeNeuron(layer, idx);
+        }
     }
 
     private void removeNeuron(final Layer layer, final int idx) {
