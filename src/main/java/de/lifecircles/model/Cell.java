@@ -37,7 +37,7 @@ public class Cell implements SensableCell, Serializable {
     private double mutationStrengthFactor; // Faktor für die Mutationsstärke
     private transient long sizeChangeTimestamp = -1; // Zeitstempel für verzögerte Größenänderung
 
-    private int tempThinkHackCounter = SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX;
+    //private int tempThinkHackCounter = SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX;
 
     public Cell(final Vector2D position, final double radiusSize, final CellBrainInterface cellBrain) {
         this.position = position;
@@ -271,13 +271,13 @@ public class Cell implements SensableCell, Serializable {
         this.generation = generation;
     }
 
-    public int getTempThinkHackCounter() {
-        return this.tempThinkHackCounter;
-    }
-
-    public void setTempThinkHackCounter(int tempThinkHackCounter) {
-        this.tempThinkHackCounter = tempThinkHackCounter;
-    }
+    //public int getTempThinkHackCounter() {
+    //    return this.tempThinkHackCounter;
+    //}
+//
+    //public void setTempThinkHackCounter(int tempThinkHackCounter) {
+    //    this.tempThinkHackCounter = tempThinkHackCounter;
+    //}
 
     public void setSunRayHit(boolean sunRayHit) {
         this.sunRayHit = sunRayHit;
@@ -311,9 +311,9 @@ public class Cell implements SensableCell, Serializable {
         this.targetRadiusSize = targetRadiusSize;
     }
 
-    public void incTempThinkHackCounter() {
-        this.tempThinkHackCounter++;
-    }
+    //public void incTempThinkHackCounter() {
+    //    this.tempThinkHackCounter++;
+    //}
 
     public void setIsGrowing(boolean isGrowing) {
         this.isGrowing = isGrowing;

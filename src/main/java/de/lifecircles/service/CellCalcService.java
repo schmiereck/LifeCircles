@@ -16,14 +16,14 @@ public class CellCalcService {
     public static void updateCell(final Cell cell, final double deltaTime) {
         // Update neural network
         final boolean useSynapseEnergyCost;
-        if (cell.getTempThinkHackCounter() >= SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX) {
+        //if (cell.getTempThinkHackCounter() >= SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX) {
             CellBrainService.think(cell);
             useSynapseEnergyCost = true;
-            cell.setTempThinkHackCounter(0);
-        } else {
-            useSynapseEnergyCost = false;
-            cell.incTempThinkHackCounter();
-        }
+        //    cell.setTempThinkHackCounter(0);
+        //} else {
+        //    useSynapseEnergyCost = false;
+        //    cell.incTempThinkHackCounter();
+        //}
 
         // Update size if cell is growing
         if (cell.isGrowing()) {
