@@ -70,6 +70,10 @@ public class SimulationConfig {
      */
     public static final double SUN_NIGHT_INTENSITY = 0.4D;
 
+    // Sonnenwinkel in Grad (konfigurierbar)
+    public static final double SUN_ANGLE_MORNING_DEG = 360.0D + 35.0D; // von links
+    public static final double SUN_ANGLE_EVENING_DEG = 360.0D - 35.0D; // von rechts (180-35)
+
     //-------------------------------------------------------------------------
     // Cell:
     public static final int CELL_SENSOR_ACTOR_COUNT = 12;
