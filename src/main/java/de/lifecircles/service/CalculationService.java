@@ -52,9 +52,15 @@ public class CalculationService implements Runnable {
         this.initializeSimulation();
     }
 
-    private void initializeSimulation() {
-        trainStrategy.initialize(environment);
-        updateState();
+    public void resetSimulation() {
+        this.environment.resetCells();
+        this.trainStrategy.initialize(environment);
+        this.updateState();
+    }
+
+    public void initializeSimulation() {
+        this.trainStrategy.initialize(this.environment);
+        this.updateState();
     }
 
     @Override

@@ -71,8 +71,10 @@ public class MainController extends BorderPane {
         Button pauseButton = new Button("Pause");
         Button resetButton = new Button("Reset");
         Button saveButton = new Button("Save as");
+        Button saveBestButton = new Button("Save best as");
         Button loadButton = new Button("Load");
-        
+        Button loadMergeButton = new Button("Load & Merge");
+
         startButton.setOnAction(e -> {
             calculationService.start();
             startButton.setDisable(true);
@@ -87,8 +89,9 @@ public class MainController extends BorderPane {
         pauseButton.setDisable(true);
 
         resetButton.setOnAction(e -> {
-            calculationService.stop();
-            calculationService.start();
+            this.calculationService.stop();
+            this.calculationService.resetSimulation();
+            this.calculationService.start();
         });
 
         saveButton.setOnAction(e -> {
@@ -103,6 +106,25 @@ public class MainController extends BorderPane {
             if (file != null) {
                 try {
                     Environment.getInstance().saveCellsToFile(file.getAbsolutePath());
+                    preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        saveBestButton.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Best Cells");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Cell Files", "*.cells"));
+            String lastFilePath = preferences.get(LAST_FILE_PATH_KEY, null);
+            if (lastFilePath != null) {
+                fileChooser.setInitialDirectory(new File(lastFilePath).getParentFile());
+            }
+            File file = fileChooser.showSaveDialog(getScene().getWindow());
+            if (file != null) {
+                try {
+                    Environment.getInstance().saveBestCellsToFile(file.getAbsolutePath());
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -129,6 +151,25 @@ public class MainController extends BorderPane {
             }
         });
 
+        loadMergeButton.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Load & Merge Cells");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Cell Files", "*.cells"));
+            String lastFilePath = preferences.get(LAST_FILE_PATH_KEY, null);
+            if (lastFilePath != null) {
+                fileChooser.setInitialDirectory(new File(lastFilePath).getParentFile());
+            }
+            File file = fileChooser.showOpenDialog(getScene().getWindow());
+            if (file != null) {
+                try {
+                    Environment.getInstance().loadAndMergeCellsFromFile(file.getAbsolutePath());
+                    preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
         // Simulation speed control
         Label speedLabel = new Label("Speed:");
         Slider speedSlider = new Slider(0.1, 4.0, 1.0D);
@@ -143,7 +184,7 @@ public class MainController extends BorderPane {
 
         return new ToolBar(
             startButton, pauseButton, resetButton,
-            saveButton, loadButton,
+            saveButton, saveBestButton, loadButton, loadMergeButton,
             new Label(" | "),
             speedLabel, speedLayout //speedSlider
         );
