@@ -23,7 +23,7 @@ public class DefaultTrainStrategy implements TrainStrategy {
         //config.setScaleSimulation(5.7D);
         config.setScaleSimulation(6.5D);
 
-        config.setEnergyPerRay(0.025D); // 0.005; //0.015; // 0.025;
+        //config.setEnergyPerRay(0.025D); // 0.005; //0.015; // 0.025;
 
         return new Environment(config.getWidth(), config.getHeight());
     }

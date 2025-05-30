@@ -11,7 +11,7 @@ public class SimulationConfig {
     //-------------------------------------------------------------------------
     // Environment:
 
-    public static final double GRAVITY = 9.81D * 28.0D;
+    public static final double GRAVITY = 9.81D * 3.0D;
     public static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
 
     // Environment-Cell:
@@ -20,14 +20,14 @@ public class SimulationConfig {
      * Friction coefficient for cell rotation (damping)
      * A higher value means less rotation (0.0D to 1.0D).
      */
-    private double rotationalFriction = 0.9D;
+    private double rotationalFriction = 0.8D;
     /**
      * Viscosity coefficient for cell movement damping.
      * A higher value means less movement.
      */
-    private double viscosity = 5.5D;
+    private double viscosity = 0.8D;
 
-    private static final double CELL_REPULSION_STRENGTH = 175.0 * 1.25D;
+    private static final double CELL_REPULSION_STRENGTH = 125.0;
 
     // Environment-Blocker:
 
@@ -80,9 +80,9 @@ public class SimulationConfig {
     public static final double CELL_MAX_ENERGY = 1.0D;
     public static final int CELL_TEMP_THINK_HACK_COUNTER_MAX = 10;
 
-    public static final double ENERGY_DECAY_RATE = 0.015D;
+    public static final double ENERGY_DECAY_RATE = 0.0015D;
     public static final double ENERGY_COST_PER_SYNAPSE           = 0.000000001D;
-    public static final double ENERGY_COST_PER_PROCESSED_SYNAPSE = 0.00000001D;
+    public static final double ENERGY_COST_PER_PROCESSED_SYNAPSE = 0.0000001D;
 
     public static final double CELL_ANGULAR_VELOCITY_DIFF = 20.0D;
 
@@ -109,11 +109,11 @@ public class SimulationConfig {
     /**
      * Maximum attractive force strength for cell actors (< 0).
      */
-    private double cellActorMaxAttractiveForceStrength = 360.0D/2.0;
+    private double cellActorMaxAttractiveForceStrength = 70.0D;
     /**
      * Maximum attractive force strength for cell actors (> 0).
      */
-    private double cellActorMaxRepulsiveForceStrength = 580.0D/2.0;
+    private double cellActorMaxRepulsiveForceStrength = 150.0D;
 
     private double reproductionEnergyThreshold = 0.4D;
     private double reproductionAgeThreshold = 8.0D; // seconds

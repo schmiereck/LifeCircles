@@ -234,14 +234,14 @@ public class Renderer {
                 baseColor = Color.color(
                         1.0D, 0, 0,
                         config.getForceFieldOpacity() * Math.abs(actor.getForceStrength() /
-                                (SimulationConfig.getInstance().getCellActorMaxAttractiveForceStrength() * 2.0D))
+                                (SimulationConfig.getInstance().getCellActorMaxAttractiveForceStrength()))
                 );
             } else {
                 // Repulsive force - outward gradient
                 baseColor = Color.color(
                         0, 1.0D, 0,
                         config.getForceFieldOpacity() * Math.abs(actor.getForceStrength() /
-                                (SimulationConfig.getInstance().getCellActorMaxAttractiveForceStrength() * 2.0D))
+                                (SimulationConfig.getInstance().getCellActorMaxRepulsiveForceStrength()))
                 );
             }
             gc.setFill(baseColor);

@@ -240,7 +240,7 @@ public class Cell implements SensableCell, Serializable {
 
     @Override
     public void setEnergy(double energy) {
-        this.energy = Math.max(0.0, Math.min(SimulationConfig.CELL_MAX_ENERGY, energy));
+        this.energy = Math.max(0.0D, Math.min(SimulationConfig.CELL_MAX_ENERGY, energy));
     }
 
     @Override

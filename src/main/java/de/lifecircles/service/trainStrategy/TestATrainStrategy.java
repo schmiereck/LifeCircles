@@ -17,11 +17,11 @@ public class TestATrainStrategy implements TrainStrategy {
     @Override
     public Environment initializeEnvironment() {
         //config.setWidth(1600 * 3);
-        this.config.setWidth(1200);
+        this.config.setWidth(1000 * 1.4D);
         this.config.setHeight(800);
 
         //config.setScaleSimulation(5.7D);
-        this.config.setScaleSimulation(1.2D);
+        this.config.setScaleSimulation(1.0D * 1.4D);
 
         config.setEnergyPerRay(0.01D); // 0.005; //0.015; // 0.025;
 
@@ -37,7 +37,8 @@ public class TestATrainStrategy implements TrainStrategy {
 
         final double radiusSize = this.config.getCellMaxRadiusSize();
 
-        final double yTop = this.config.getHeight() - 100.0D;
+        final double yTopTop = this.config.getHeight() - (Environment.GroundBlockerHeight);
+        final double yTop = yTopTop - 80.0D;
 
         // Anziehung:
         {
@@ -64,6 +65,13 @@ public class TestATrainStrategy implements TrainStrategy {
             createAndAddCell(environment, x - radiusSize * 1.25D, y + radiusSize * 2.0D, radiusSize, true);
             createAndAddCell(environment, x + radiusSize * 1.25D, y + radiusSize * 2.0D, radiusSize, true);
             createAndAddCell(environment, x + radiusSize * 3.5D, y + radiusSize * 2.0D, radiusSize, true);
+
+            // Drop from Top:
+            createAndAddCell(environment, x + radiusSize * 3.5D, y - radiusSize * 16.0D, radiusSize, true);
+            createAndAddCell(environment, x - radiusSize * 3.0D, y - radiusSize * 16.0D, radiusSize, true);
+
+            createAndAddCell(environment, x + radiusSize * 4.5D, y - radiusSize * 19.0D, radiusSize, true);
+            createAndAddCell(environment, x - radiusSize * 4.0D, y - radiusSize * 19.0D, radiusSize, true);
         }
         {
             final double x = radiusSize * 20.0D;
@@ -126,6 +134,15 @@ public class TestATrainStrategy implements TrainStrategy {
 
             createAndAddCell(environment, x, y, radiusSize, true, false, false, false);
             createAndAddCell(environment, x, y + radiusSize * 2.1D, radiusSize, false, false, false, false);
+            //createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
+        }
+        // Born to be Wild:
+        {
+            final double x = radiusSize * 62.0D;
+            final double y = yTopTop;
+
+            createAndAddCell(environment, x, y - radiusSize * 2.0D, radiusSize, false, false, false, false);
+            createAndAddCell(environment, x, y - radiusSize * 2.75D, radiusSize, false, false, false, false);
             //createAndAddCell(environment, x - radiusSize * 2.25D, y, radiusSize);
         }
     }
