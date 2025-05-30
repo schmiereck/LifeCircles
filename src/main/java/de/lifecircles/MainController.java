@@ -82,16 +82,20 @@ public class MainController extends BorderPane {
         });
 
         pauseButton.setOnAction(e -> {
-            calculationService.pause();
+            this.calculationService.pause();
             startButton.setDisable(false);
             pauseButton.setDisable(true);
         });
         pauseButton.setDisable(true);
 
         resetButton.setOnAction(e -> {
+            this.calculationService.pause();
+            startButton.setDisable(false);
+            pauseButton.setDisable(true);
+
             this.calculationService.stop();
+
             this.calculationService.resetSimulation();
-            this.calculationService.start();
         });
 
         saveButton.setOnAction(e -> {

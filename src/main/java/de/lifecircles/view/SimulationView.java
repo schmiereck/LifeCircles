@@ -182,7 +182,8 @@ public class SimulationView extends Pane {
 
                         // Zeit des letzten Frames nur um die exakte Frame-Zeit erhöhen
                         // Dies verhindert, dass wir mehr oder weniger als die Ziel-FPS bekommen
-                        lastFrameTime += FRAME_TIME_NANOS;
+                        //lastFrameTime += FRAME_TIME_NANOS;
+                        lastFrameTime = now;
                     }
                 }
                 

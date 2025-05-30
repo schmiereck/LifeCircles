@@ -199,7 +199,7 @@ public class CalculationService implements Runnable {
     }
 
     public void stop() {
-        running.set(false);
+        this.running.set(false);
     }
 
     public boolean isPaused() {
