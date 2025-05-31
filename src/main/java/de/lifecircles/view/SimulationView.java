@@ -124,6 +124,7 @@ public class SimulationView extends Pane {
         });
 
         // Toggle debug info with D key
+
         canvas.setOnKeyPressed(e -> {
             switch (e.getCode()) {
                 case D -> config.setShowDebugInfo(!config.isShowDebugInfo());
