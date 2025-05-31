@@ -24,6 +24,9 @@ public class NeuralNetwork implements Serializable {
     private static final double DEFAULT_MUTATION_RATE = 0.1D;
     private int fixedHiddenLayerCount = SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT;
 
+    // Flag zum Deaktivieren der Layer-Deaktivierung (z.B. für Tests)
+    private transient boolean disableLayerDeactivation = false;
+
     private long proccessedSynapses = 0L;
 
     /**
@@ -226,22 +229,28 @@ public class NeuralNetwork implements Serializable {
             this.outputArr[outputNeuronPos] = this.getOutputValue(outputNeuronPos);
         }
 
-        // process hidden layer activation counters (without fixed layers).
-        for (int layerPos = this.fixedHiddenLayerCount; layerPos < hiddenLayerList.size(); layerPos++) {
-            final Layer layer = this.hiddenLayerList.get(layerPos);
-
-            final List<Neuron> neuronList = layer.getNeurons();
-            if (neuronList.size() > 0) {
-                final Neuron neuron = neuronList.get(0);
-                final double actValue = Math.max(1.0D / 1000,
-                        layer.getActivationCounter() + neuron.getValue());
-                if (actValue >= 1.0D) {
-                    layer.setActivationCounter(0.0D);
-                    layer.setActiveLayer(true);
-                } else {
-                    layer.setActivationCounter(actValue);
-                    layer.setActiveLayer(false);
+        // process hidden layer activation counters (ohne fixed layers)
+        if (!disableLayerDeactivation) {
+            for (int layerPos = this.fixedHiddenLayerCount; layerPos < hiddenLayerList.size(); layerPos++) {
+                final Layer layer = this.hiddenLayerList.get(layerPos);
+                final List<Neuron> neuronList = layer.getNeurons();
+                if (neuronList.size() > 0) {
+                    final Neuron neuron = neuronList.get(0);
+                    final double actValue = Math.max(1.0D / 1000,
+                            layer.getActivationCounter() + neuron.getValue());
+                    if (actValue >= 1.0D) {
+                        layer.setActivationCounter(0.0D);
+                        layer.setActiveLayer(true);
+                    } else {
+                        layer.setActivationCounter(actValue);
+                        layer.setActiveLayer(false);
+                    }
                 }
+            }
+        } else {
+            // Wenn deaktiviert: alle Layer aktiv lassen
+            for (Layer layer : this.hiddenLayerList) {
+                layer.setActiveLayer(true);
             }
         }
 
@@ -678,6 +687,17 @@ public class NeuralNetwork implements Serializable {
     }
 
     /**
+     * Aktiviert oder deaktiviert die Layer-Deaktivierung (z.B. für Tests)
+     */
+    public void setDisableLayerDeactivation(boolean disable) {
+        this.disableLayerDeactivation = disable;
+    }
+
+    public boolean isDisableLayerDeactivation() {
+        return this.disableLayerDeactivation;
+    }
+
+    /**
      * Stellt nach der Deserialisierung die transiente outputSynapses-Liste in allen Neuronen wieder her.
      */
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -688,5 +708,4 @@ public class NeuralNetwork implements Serializable {
         }
     }
 }
-
 

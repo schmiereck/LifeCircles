@@ -94,8 +94,10 @@ public class NeuralNetworkTest {
         List<NeuralNetwork> population = new ArrayList<>();
         for (int i = 0; i < populationSize; i++) {
             int[] architecture = architectureVariants[i % architectureVariants.length];
-            population.add(new NeuralNetwork(inputCount, architecture, outputCount,
-                    synapseConnectivity, 0));
+            NeuralNetwork nn = new NeuralNetwork(inputCount, architecture, outputCount,
+                    synapseConnectivity, 0);
+            nn.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+            population.add(nn);
         }
 
         // Initialisiere Synapse-Gewichte für die erste Generation
@@ -105,6 +107,7 @@ public class NeuralNetworkTest {
                 double limit = Math.sqrt(6.0 / (network.getInputLayerSize() + network.getOutputLayerSize()));
                 synapse.setWeight(random.nextDouble() * 2 * limit - limit);
             }
+            network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
         }
 
         // Parameter für adaptives Training
@@ -178,7 +181,9 @@ public class NeuralNetworkTest {
             // Elitismus: Behalte beste Netzwerke unverändert
             int eliteCount = (int) (populationSize * eliteRate);
             for (int i = 0; i < eliteCount; i++) {
-                nextGeneration.add(cloneNetwork(scores.get(i).getNetwork()));
+                NeuralNetwork elite = cloneNetwork(scores.get(i).getNetwork());
+                elite.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+                nextGeneration.add(elite);
             }
             
             // Fülle die restliche Population
@@ -200,6 +205,7 @@ public class NeuralNetworkTest {
                     
                     // Kind mutieren
                     child = mutateNetwork(child, mutationRate, mutationStrength, random);
+                    child.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
                     nextGeneration.add(child);
                 } 
                 else if (operationChance < 0.9) { // 20% Nur Mutation
@@ -214,6 +220,7 @@ public class NeuralNetworkTest {
                     
                     // Mutiere Kind
                     child = mutateNetwork(child, mutationRate, mutationStrength, random);
+                    child.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
                     nextGeneration.add(child);
                 }
                 else { // 10% Kompletter Neustart (neue zufällige Netzwerke)
@@ -226,7 +233,7 @@ public class NeuralNetworkTest {
                         double limit = Math.sqrt(6.0 / (freshNetwork.getInputLayerSize() + freshNetwork.getOutputLayerSize()));
                         synapse.setWeight(random.nextDouble() * 2 * limit - limit);
                     }
-                    
+                    freshNetwork.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
                     nextGeneration.add(freshNetwork);
                 }
             }
@@ -252,7 +259,7 @@ public class NeuralNetworkTest {
                         double limit = Math.sqrt(6.0 / (freshNetwork.getInputLayerSize() + freshNetwork.getOutputLayerSize()));
                         synapse.setWeight(random.nextDouble() * 2 * limit - limit);
                     }
-                    
+                    freshNetwork.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
                     population.set(i, freshNetwork);
                 }
                 
@@ -287,7 +294,8 @@ public class NeuralNetworkTest {
 
         // Verwende das global beste Netzwerk für Tests
         NeuralNetwork finalNetwork = globalBestNetwork != null ? globalBestNetwork : population.get(0);
-        
+        finalNetwork.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+
         // Teste das finale Netzwerk
         for (int i = 0; i < inputs.length; i++) {
             finalNetwork.setInputs(inputs[i]);
