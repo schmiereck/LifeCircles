@@ -16,9 +16,10 @@ public class BlockerCellCalcService {
         throw new UnsupportedOperationException("Utility class");
     }
     public static boolean checkCellIsInsideBlocker(final Vector2D cellPos, final List<Blocker> blockers) {
+        if (cellPos == null || blockers == null) return false;
         boolean cellIsInsideBlocker = false;
         for (final Blocker blocker : blockers) {
-            if (blocker.containsPoint(cellPos)) {
+            if (blocker != null && blocker.containsPoint(cellPos)) {
                 cellIsInsideBlocker = true;
                 break;
             }
@@ -34,9 +35,12 @@ public class BlockerCellCalcService {
      * @param blockers the list of blockers to check
      */
     public static void handleBlockerCollisions(final Cell cell, final List<Blocker> blockers) {
+        if (cell == null || blockers == null) return;
         final Vector2D cellPos = cell.getPosition();
+        if (cellPos == null) return;
         final double radius = cell.getRadiusSize();
         for (final Blocker blocker : blockers) {
+            if (blocker == null) continue;
             // Ersetze die Verwendung von getNearestPoint durch getCellCenterOutside
             final Vector2D newCellPos = blocker.getCellCenterOutside(cellPos, radius);
             final Vector2D deltaVec = cellPos.subtract(newCellPos);

@@ -29,6 +29,16 @@ public class SimulationConfig {
 
     private static final double CELL_REPULSION_STRENGTH = 125.0;
 
+    // --- Neue Konstanten für Distanzfaktoren bei Energieübertragung ---
+    /**
+     * Am fernsten Punkt (max. Sensorreichweite) ist die Delivery-Effizienz 80%.
+     */
+    public static final double CELL_ENERGY_DELIVERY_FACTOR_FAR = 0.8D;
+    /**
+     * Am fernsten Punkt (max. Sensorreichweite) ist die Absorptions-Effizienz 70%.
+     */
+    public static final double CELL_ENERGY_ABSORPTION_FACTOR_FAR = 0.7D;
+
     // Environment-Blocker:
 
     // Blocker repulsion strength for cell-blocker interactions

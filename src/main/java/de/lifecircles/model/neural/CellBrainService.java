@@ -54,9 +54,21 @@ public class CellBrainService {
             final SensableCell sensedCell = maActor.getSensedCell();
             if (Objects.nonNull(sensedCell)) {
                 final CellType sensedCellType = sensedCell.getType();
-                sensedCellTypeR = sensedCellType.getRed();
-                sensedCellTypeG = sensedCellType.getGreen();
-                sensedCellTypeB = sensedCellType.getBlue();
+
+                // --- Entfernung berechnen (0.0 = fern, 1.0 = nah) ---
+                double dist = 0.0;
+                double maxDist = 1.0;
+                if (maActor.getCachedPosition() != null && maActor.getSensedActor() != null && maActor.getSensedActor().getCachedPosition() != null) {
+                    dist = maActor.getCachedPosition().distance(maActor.getSensedActor().getCachedPosition());
+                    int totalSensors = maActor.getParentCell().getSensorActors().size();
+                    maxDist = de.lifecircles.service.SensorActorForceCellCalcService.calcSensorRadius(maActor.getParentCell().getRadiusSize(), totalSensors);
+                }
+                double distanceFactor = 1.0 - Math.min(dist / maxDist, 1.0); // 1.0 = nah, 0.0 = fern
+                // Werte mit Distanzfaktor multiplizieren
+                sensedCellTypeR = sensedCellType.getRed() * distanceFactor;
+                sensedCellTypeG = sensedCellType.getGreen() * distanceFactor;
+                sensedCellTypeB = sensedCellType.getBlue() * distanceFactor;
+
                 sensedCellEnergy = sensedCell.getEnergy();
                 sensedCellAge = sensedCell.getAge();
 
@@ -81,6 +93,7 @@ public class CellBrainService {
             inputs[baseGlobal + SensorInputFeature.SENSED_CELL_TYPE_RED.ordinal()] = sensedCellTypeR;
             inputs[baseGlobal + SensorInputFeature.SENSED_CELL_TYPE_GREEN.ordinal()] = sensedCellTypeG;
             inputs[baseGlobal + SensorInputFeature.SENSED_CELL_TYPE_BLUE.ordinal()] = sensedCellTypeB;
+
             inputs[baseGlobal + SensorInputFeature.SENSED_CELL_ENERGY.ordinal()] = sensedCellEnergy;
             inputs[baseGlobal + SensorInputFeature.SENSED_CELL_AGE.ordinal()] = sensedCellAge;
 

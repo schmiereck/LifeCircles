@@ -19,4 +19,12 @@ public interface SensableActor {
     default double getForceStrength() {
         return 0.0;
     }
+
+    /**
+     * Gibt die aktuelle (ggf. gecachte) Position des Objekts zurück, falls vorhanden.
+     * Default: null (nicht unterstützt)
+     */
+    default Vector2D getCachedPosition() {
+        return null;
+    }
 }
