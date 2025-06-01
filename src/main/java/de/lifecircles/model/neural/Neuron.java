@@ -116,12 +116,8 @@ public class Neuron implements Serializable {
             sum += synapse.getSourceNeuron().getValue() * synapse.getWeight();
         }
         
-        // Für Output-Neuronen wird keine Aktivierungsfunktion angewendet
-        //if (this.isOutputNeuron) {
-        //    this.value = sum;
-        //} else {
-            this.value = this.activationFunction.apply(sum);
-        //}
+         this.value = this.activationFunction.apply(sum);
+
         return this.inputSynapseCount;
     }
 

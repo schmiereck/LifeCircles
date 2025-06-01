@@ -100,9 +100,9 @@ public class ReproductionManagerService {
 
                     // Set active layers in the child's brain based on the cell state
                     boolean[] activeLayers = child.getBrain().determineActiveHiddenLayers(child.getCellState());
-                    List<Layer> hiddenLayerList = childBrainNetwork.getHiddenLayerList();
-                    for (int i = 0; i < Math.min(hiddenLayerList.size(), SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT); i++) {
-                        final Layer layer = hiddenLayerList.get(i);
+                    Layer[] hiddenLayerList = childBrainNetwork.getHiddenLayerList();
+                    for (int i = 0; i < Math.min(hiddenLayerList.length, SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT); i++) {
+                        final Layer layer = hiddenLayerList[i];
                         layer.setActiveLayer(activeLayers[i]);
                     }
 

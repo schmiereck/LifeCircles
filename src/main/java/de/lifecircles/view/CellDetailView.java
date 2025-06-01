@@ -327,21 +327,39 @@ public class CellDetailView extends Stage {
         }
         
         // Hidden-Layer-Neuronen-Positionen
-        for (int li = 0; li < network.getHiddenLayerList().size(); li++) {
-            layerIdx = li + 1; 
+        for (int li = 0; li < network.getHiddenLayerList().length; li++) {
+            layerIdx = li + 1;
             layerSize = layers[layerIdx];
             layerX = horizontalSpacing * (layerIdx + 1);
             vSpacing = Math.max(minVerticalSpacing, 
                     Math.min(maxVerticalSpacing, height / (layerSize + 1)));
             layerYOffset = (height - layerSize * vSpacing) / 2;
             
-            List<Neuron> neurons = network.getHiddenLayerList().get(li).getNeurons();
-            
+            List<Neuron> neurons = network.getHiddenLayerList()[li].getNeurons();
+
             for (int i = 0; i < layerSize; i++) {
                 double nodeY = layerYOffset + vSpacing * (i + 0.5);
+
+                // Aktivierungswert direkt vom Hidden-Neuron holen
+                double activation = 0;
                 if (i < neurons.size()) {
-                    neuronPositions.put(neurons.get(i), new double[] {layerX, nodeY});
+                    activation = neurons.get(i).getValue();
+                    // Aktivierungswert auf den Bereich [0,1] begrenzen
+                    activation = Math.max(0, Math.min(1, activation));
                 }
+
+                // Farbe basierend auf Aktivierung (blau bis rot)
+                Color nodeColor = Color.rgb(
+                    (int) (255 * activation),
+                    0,
+                    (int) (255 * (1 - activation))
+                );
+
+                // Neuron zeichnen
+                gc.setFill(nodeColor);
+                gc.fillOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
+                gc.setStroke(Color.BLACK);
+                gc.strokeOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
             }
         }
         
@@ -355,8 +373,8 @@ public class CellDetailView extends Stage {
         
         for (int i = 0; i < layerSize; i++) {
             double nodeY = layerYOffset + vSpacing * (i + 0.5);
-            if (i < network.getOutputNeuronList().size()) {
-                neuronPositions.put(network.getOutputNeuronList().get(i), new double[] {layerX, nodeY});
+            if (i < network.getOutputNeuronList().length) {
+                neuronPositions.put(network.getOutputNeuronList()[i], new double[] {layerX, nodeY});
             }
         }
         
@@ -416,7 +434,7 @@ public class CellDetailView extends Stage {
         }
         
         // Hidden-Layer-Neuronen zeichnen
-        for (int li = 0; li < network.getHiddenLayerList().size(); li++) {
+        for (int li = 0; li < network.getHiddenLayerList().length; li++) {
             layerIdx = li + 1; // +1 weil Input-Layer bereits gezeichnet wurde
             layerSize = layers[layerIdx];
             layerX = horizontalSpacing * (layerIdx + 1);
@@ -424,8 +442,8 @@ public class CellDetailView extends Stage {
                     Math.min(maxVerticalSpacing, height / (layerSize + 1)));
             layerYOffset = (height - layerSize * vSpacing) / 2;
             
-            List<Neuron> neurons = network.getHiddenLayerList().get(li).getNeurons();
-            
+            List<Neuron> neurons = network.getHiddenLayerList()[li].getNeurons();
+
             for (int i = 0; i < layerSize; i++) {
                 double nodeY = layerYOffset + vSpacing * (i + 0.5);
                 
@@ -465,8 +483,8 @@ public class CellDetailView extends Stage {
             
             // Aktivierungswert direkt vom Output-Neuron holen
             double activation = 0;
-            if (i < network.getOutputNeuronList().size()) {
-                activation = network.getOutputNeuronList().get(i).getValue();
+            if (i < network.getOutputNeuronList().length) {
+                activation = network.getOutputNeuronList()[i].getValue();
                 // Aktivierungswert auf den Bereich [0,1] begrenzen
                 activation = Math.max(0, Math.min(1, activation));
             }
