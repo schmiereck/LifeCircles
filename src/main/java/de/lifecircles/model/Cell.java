@@ -415,6 +415,7 @@ public class Cell implements SensableCell, Serializable {
     }
 
     // Methode zur Initialisierung des Gehirns und der SensorActor nach der Deserialisierung
+    @Serial
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         this.velocityForce = new Vector2D(0, 0);

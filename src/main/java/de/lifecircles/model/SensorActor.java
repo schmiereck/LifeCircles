@@ -1,10 +1,8 @@
 package de.lifecircles.model;
 
 import de.lifecircles.service.SimulationConfig;
-import java.io.Serializable;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.IOException;
+
+import java.io.*;
 
 /**
  * Represents a sensor/actor point on a cell's surface.
@@ -168,12 +166,14 @@ public class SensorActor implements SensableActor, Serializable {
         }
     }
 
+    @Serial
     private void writeObject(ObjectOutputStream oos) throws IOException {
         oos.defaultWriteObject();
         // Speichere die ID des parentCell, falls nötig
         // oos.writeObject(parentCell != null ? parentCell.getId() : null);
     }
 
+    @Serial
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         this.sensedActor = null;

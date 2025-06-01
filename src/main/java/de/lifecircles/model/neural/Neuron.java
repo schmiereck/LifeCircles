@@ -1,11 +1,8 @@
 package de.lifecircles.model.neural;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.Serializable;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.IOException;
 
 /**
  * Represents a neuron in the neural network.
@@ -174,6 +171,7 @@ public class Neuron implements Serializable {
     /**
      * Benutzerdefinierte Deserialisierungsmethode.
      */
+    @Serial
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         // Initialisiere die transienten Felder

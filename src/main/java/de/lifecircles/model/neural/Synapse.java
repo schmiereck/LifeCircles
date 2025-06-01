@@ -1,9 +1,6 @@
 package de.lifecircles.model.neural;
 
-import java.io.Serializable;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 
 /**
  * Represents a connection between two neurons in the neural network.
@@ -60,6 +57,7 @@ public class Synapse implements Serializable {
      * wird hier die Standard-Serialisierung verwendet. Die Verbindungen werden nach dem
      * Deserialisieren durch NeuralNetwork wiederhergestellt.
      */
+    @Serial
     private void writeObject(ObjectOutputStream oos) throws IOException {
         oos.defaultWriteObject();
     }
@@ -68,6 +66,7 @@ public class Synapse implements Serializable {
      * Benutzerdefinierte Deserialisierungsmethode.
      * Die Verbindungen zu den Neuronen werden nach dem Deserialisieren durch diese Methode wiederhergestellt.
      */
+    @Serial
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         // Stelle die Verbindungen wieder her

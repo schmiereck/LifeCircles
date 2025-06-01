@@ -2,6 +2,7 @@ package de.lifecircles.model.neural;
 
 import de.lifecircles.service.SimulationConfig;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -17,10 +18,13 @@ public class NeuralNetwork implements Serializable {
     private final Neuron[] inputNeuronList;
     private Layer[] hiddenLayerList; // Array statt List
     private final Neuron[] outputNeuronList;
-    private final List<Synapse> synapsesynapseList;
+    // Synapsen als Array statt List
+    private Synapse[] synapseArray;
+    private int synapseCount;
     private final Random random = new Random();
     private double[] outputArr;
 
+    private static final int INITIAL_SYNAPSE_CAPACITY = 64;
     private static final double DEFAULT_MUTATION_RATE = 0.1D;
     private int fixedHiddenLayerCount = SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT;
 
@@ -37,7 +41,9 @@ public class NeuralNetwork implements Serializable {
     public NeuralNetwork(NeuralNetwork original) {
         this.inputNeuronList = new Neuron[original.inputNeuronList.length];
         this.outputNeuronList = new Neuron[original.outputNeuronList.length];
-        this.synapsesynapseList = new ArrayList<>();
+        // Synapsen-Array initialisieren
+        this.synapseArray = new Synapse[original.synapseCount + 8];
+        this.synapseCount = 0;
 
         this.fixedHiddenLayerCount = original.fixedHiddenLayerCount;
         
@@ -93,13 +99,14 @@ public class NeuralNetwork implements Serializable {
         this.outputArr = new double[this.outputNeuronList.length];
 
         // Kopiere alle Synapsen mit den korrekten Verbindungen zwischen den neuen Neuronen
-        for (Synapse originalSynapse : original.synapsesynapseList) {
+        for (int i = 0; i < original.synapseCount; i++) {
+            Synapse originalSynapse = original.synapseArray[i];
             Neuron sourceNeuron = neuronMap.get(originalSynapse.getSourceNeuron());
             Neuron targetNeuron = neuronMap.get(originalSynapse.getTargetNeuron());
             
             if (sourceNeuron != null && targetNeuron != null) {
                 Synapse newSynapse = new Synapse(sourceNeuron, targetNeuron, originalSynapse.getWeight());
-                this.synapsesynapseList.add(newSynapse);
+                addSynapse(newSynapse);
             }
         }
     }
@@ -134,7 +141,9 @@ public class NeuralNetwork implements Serializable {
     public NeuralNetwork(int inputCount, int[] hiddenCounts, int outputCount, double synapseConnectivity, final int fixedHiddenLayerCount) {
         this.inputNeuronList = new Neuron[inputCount];
         this.outputNeuronList = new Neuron[outputCount];
-        this.synapsesynapseList = new ArrayList<>();
+        // Synapsen-Array initialisieren
+        this.synapseArray = new Synapse[INITIAL_SYNAPSE_CAPACITY];
+        this.synapseCount = 0;
 
         this.fixedHiddenLayerCount = fixedHiddenLayerCount;
 
@@ -171,13 +180,6 @@ public class NeuralNetwork implements Serializable {
         this.connectLayers(prev, Arrays.asList(this.outputNeuronList), synapseConnectivity);
     }
 
-//    /**
-//     * Constructs a network with multiple hidden layers with full connectivity.
-//     */
-//    public NeuralNetwork(int inputCount, int[] hiddenCounts, int outputCount) {
-//        this(inputCount, hiddenCounts, outputCount, 1.0);
-//    }
-
     private void connectLayers(Collection<Neuron> sourceLayer, Collection<Neuron> targetLayer, double connectivity) {
         connectivity = Math.max(0.0, Math.min(1.0, connectivity));
         for (Neuron source : sourceLayer) {
@@ -185,10 +187,20 @@ public class NeuralNetwork implements Serializable {
                 if (connectivity >= 1.0 || this.random.nextDouble() < connectivity) {
                     double limit = Math.sqrt(6.0 / (this.getInputLayerSize() + this.getOutputLayerSize()));
                     final double weight = this.random.nextDouble() * 2.0D * limit - limit;
-                    this.synapsesynapseList.add(new Synapse(source, target, weight));
+                    addSynapse(new Synapse(source, target, weight));
                 }
             }
         }
+    }
+
+    // Hilfsmethode zum Hinzufügen einer Synapse zum Array
+    private void addSynapse(Synapse synapse) {
+        if (synapseCount >= synapseArray.length) {
+            Synapse[] newArr = new Synapse[synapseArray.length * 2];
+            System.arraycopy(synapseArray, 0, newArr, 0, synapseArray.length);
+            synapseArray = newArr;
+        }
+        synapseArray[synapseCount++] = synapse;
     }
 
     /**
@@ -307,7 +319,8 @@ public class NeuralNetwork implements Serializable {
             }
         });
         
-        for (Synapse synapse : mutated.synapsesynapseList) {
+        for (int i = 0; i < mutated.synapseCount; i++) {
+            Synapse synapse = mutated.synapseArray[i];
             if (Math.random() < mutationRate) {
                 double mutation = (Math.random() * 2.0D - 1.0D) * mutationStrength;
                 synapse.setWeight(synapse.getWeight() + mutation);
@@ -465,10 +478,9 @@ public class NeuralNetwork implements Serializable {
         // Verbinde den vorherigen Layer mit dem neuen Layer
         for (Neuron srcNeuron : prevLayer) {
             for (Neuron tgtNeuron : newLayer.getNeuronsArray()) {
-                // Erstelle Synapse nur mit der angegebenen Wahrscheinlichkeit
                 if (connectivity >= 1.0D || this.random.nextDouble() < connectivity) {
                     double weight = this.random.nextDouble() * 0.002D - 0.001D;
-                    synapsesynapseList.add(new Synapse(srcNeuron, tgtNeuron, weight));
+                    addSynapse(new Synapse(srcNeuron, tgtNeuron, weight));
                 }
             }
         }
@@ -476,10 +488,9 @@ public class NeuralNetwork implements Serializable {
         // Verbinde den neuen Layer mit dem nächsten Layer
         for (Neuron srcNeuron : newLayer.getNeuronsArray()) {
             for (Neuron tgtNeuron : nextLayer) {
-                // Erstelle Synapse nur mit der angegebenen Wahrscheinlichkeit
                 if (connectivity >= 1.0D || this.random.nextDouble() < connectivity) {
                     double weight = this.random.nextDouble() * 0.002D - 0.001D;
-                    this.synapsesynapseList.add(new Synapse(srcNeuron, tgtNeuron, weight));
+                    addSynapse(new Synapse(srcNeuron, tgtNeuron, weight));
                 }
             }
         }
@@ -499,18 +510,16 @@ public class NeuralNetwork implements Serializable {
         this.hiddenLayerList[layerIndex].addNeuron(newN);
         List<Neuron> prev = layerIndex == 0 ? Arrays.asList(this.inputNeuronList) : this.hiddenLayerList[layerIndex - 1].getNeurons();
         for (Neuron srcNeuron : prev) {
-            // Erstelle Synapse nur mit der angegebenen Wahrscheinlichkeit
             if (connectivity >= 1.0 || this.random.nextDouble() < connectivity) {
                 double weight = this.random.nextDouble() * 0.002D - 0.001D;
-                this.synapsesynapseList.add(new Synapse(srcNeuron, newN, weight));
+                addSynapse(new Synapse(srcNeuron, newN, weight));
             }
         }
         List<Neuron> next = layerIndex == this.hiddenLayerList.length - 1 ? Arrays.asList(this.outputNeuronList) : this.hiddenLayerList[layerIndex + 1].getNeurons();
         for (Neuron tgtNeuron : next) {
-            // Erstelle Synapse nur mit der angegebenen Wahrscheinlichkeit
             if (connectivity >= 1.0 || this.random.nextDouble() < connectivity) {
                 double weight = this.random.nextDouble() * 0.002D - 0.001D;
-                this.synapsesynapseList.add(new Synapse(newN, tgtNeuron, weight));
+                addSynapse(new Synapse(newN, tgtNeuron, weight));
             }
         }
     }
@@ -541,20 +550,29 @@ public class NeuralNetwork implements Serializable {
     private void removeNeuron(final Layer layer, final int idx) {
         final List<Neuron> layerNeuronList = layer.getNeurons();
         final Neuron removedNeuron = layerNeuronList.remove(idx);
-        final Iterator<Synapse> synapseIterator = this.synapsesynapseList.iterator();
-        while (synapseIterator.hasNext()) {
-            final Synapse synapse = synapseIterator.next();
+        int i = 0;
+        while (i < synapseCount) {
+            final Synapse synapse = synapseArray[i];
             if (synapse.getSourceNeuron() == removedNeuron || synapse.getTargetNeuron() == removedNeuron) {
                 synapse.getSourceNeuron().getOutputSynapses().remove(synapse);
-                // Für Input-Synapsen die neue Methode verwenden
                 if (synapse.getTargetNeuron() == removedNeuron) {
-                    synapseIterator.remove();
+                    // Entferne Synapse
+                    removeSynapseAt(i);
                     continue;
                 }
                 synapse.getTargetNeuron().removeInputSynapse(synapse);
-                synapseIterator.remove();
+                removeSynapseAt(i);
+            } else {
+                i++;
             }
         }
+    }
+    // Hilfsmethode zum Entfernen einer Synapse an Index
+    private void removeSynapseAt(int idx) {
+        if (idx < synapseCount - 1) {
+            System.arraycopy(synapseArray, idx + 1, synapseArray, idx, synapseCount - idx - 1);
+        }
+        synapseArray[--synapseCount] = null;
     }
 
     public void addRandomSynapse() {
@@ -584,25 +602,30 @@ public class NeuralNetwork implements Serializable {
         
         // Erstellen Sie die Synapse
         Synapse synapse = new Synapse(sourceNeuron, targetNeuron, Math.random() * 0.002D - 0.001D);
-        this.synapsesynapseList.add(synapse);
+        addSynapse(synapse);
     }
 
     public void removeRandomSynapse() {
-        if (this.synapsesynapseList.isEmpty()) return;
-        
-        Synapse rem = this.synapsesynapseList.get(random.nextInt(this.synapsesynapseList.size()));
+        if (synapseCount == 0) return;
+        int idx = random.nextInt(synapseCount);
+        Synapse rem = synapseArray[idx];
         rem.getSourceNeuron().getOutputSynapses().remove(rem);
         rem.getTargetNeuron().removeInputSynapse(rem);
-        this.synapsesynapseList.remove(rem);
+        // Entferne aus Array
+        if (idx < synapseCount - 1) {
+            System.arraycopy(synapseArray, idx + 1, synapseArray, idx, synapseCount - idx - 1);
+        }
+        synapseArray[--synapseCount] = null;
     }
 
     // Expose the number of synapses for energy cost calculation
     public int getSynapseCount() {
-        return this.synapsesynapseList.size();
+        return this.synapseCount;
     }
 
     public List<Synapse> getSynapsesynapseList() {
-        return this.synapsesynapseList;
+        // Gibt eine unveränderliche Liste der Synapsen zurück
+        return Collections.unmodifiableList(Arrays.asList(Arrays.copyOf(synapseArray, synapseCount)));
     }
 
     /**
@@ -704,10 +727,11 @@ public class NeuralNetwork implements Serializable {
     }
 
     // Deserialisierung: Output-Synapsen wiederherstellen
+    @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        for (Synapse synapse : synapsesynapseList) {
-            synapse.restoreConnections();
+        for (int i = 0; i < synapseCount; i++) {
+            synapseArray[i].restoreConnections();
         }
     }
 }
