@@ -18,7 +18,7 @@ public class Neuron implements Serializable {
     private double bias;
     private transient Synapse[] inputSynapses; // Als transient markiert
     private int inputSynapseCount;   // Aktuelle Anzahl von Synapsen im Array
-    private transient List<Synapse> outputSynapses; // Entferne final, da es neu initialisiert werden muss
+    private transient List<Synapse> outputSynapses;
     private ActivationFunction activationFunction;
     private boolean isOutputNeuron; // Flag für Output-Neuronen
     
