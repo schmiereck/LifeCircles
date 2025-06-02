@@ -172,15 +172,15 @@ public class NeuralNetwork implements Serializable {
         this.outputArr = new double[this.outputNeuronList.length];
 
         // connect layers sequentially: input -> hidden1 -> ... -> hiddenN -> output
-        Collection<Neuron> prev = Arrays.asList(this.inputNeuronList);
+        Neuron[] prev = this.inputNeuronList;
         for (Layer layer : this.hiddenLayerList) {
-            this.connectLayers(prev, Arrays.asList(layer.getNeuronsArray()), synapseConnectivity);
-            prev = Arrays.asList(layer.getNeuronsArray());
+            this.connectLayers(prev, layer.getNeuronsArray(), synapseConnectivity);
+            prev = layer.getNeuronsArray();
         }
-        this.connectLayers(prev, Arrays.asList(this.outputNeuronList), synapseConnectivity);
+        this.connectLayers(prev, this.outputNeuronList, synapseConnectivity);
     }
 
-    private void connectLayers(Collection<Neuron> sourceLayer, Collection<Neuron> targetLayer, double connectivity) {
+    private void connectLayers(Neuron[] sourceLayer, Neuron[] targetLayer, double connectivity) {
         connectivity = Math.max(0.0, Math.min(1.0, connectivity));
         for (Neuron source : sourceLayer) {
             for (Neuron target : targetLayer) {
