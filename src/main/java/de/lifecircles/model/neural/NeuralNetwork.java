@@ -688,11 +688,11 @@ public class NeuralNetwork implements Serializable {
     }
 
     /**
-     * Gibt die Liste der Input-Neuronen zurück
-     * @return Liste der Input-Neuronen
+     * Gibt das Array der Input-Neuronen zurück
+     * @return Array der Input-Neuronen
      */
-    public List<Neuron> getInputNeuronList() {
-        return Collections.unmodifiableList(Arrays.asList(inputNeuronList));
+    public Neuron[] getInputNeuronList() {
+        return inputNeuronList;
     }
 
     /**
