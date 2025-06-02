@@ -306,7 +306,7 @@ public class CellDetailView extends Stage {
         //gc.fillRect(0, 0, width, height);
 
         // Synapse-Liste vom Netzwerk holen
-        List<Synapse> synapseList = network.getSynapsesynapseList();
+        List<Synapse> synapseList = network.getSynapseList();
 
         // Positions-Map für Neuronen erstellen: Speichert die X,Y-Position für jedes Neuron
         Map<Neuron, double[]> neuronPositions = new HashMap<>();
@@ -339,7 +339,10 @@ public class CellDetailView extends Stage {
 
             for (int i = 0; i < layerSize; i++) {
                 double nodeY = layerYOffset + vSpacing * (i + 0.5);
-
+                // Position in die Map eintragen
+                if (i < neurons.size()) {
+                    neuronPositions.put(neurons.get(i), new double[] {layerX, nodeY});
+                }
                 // Aktivierungswert direkt vom Hidden-Neuron holen
                 double activation = 0;
                 if (i < neurons.size()) {

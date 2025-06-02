@@ -102,7 +102,7 @@ public class NeuralNetworkTest {
 
         // Initialisiere Synapse-Gewichte für die erste Generation
         for (NeuralNetwork network : population) {
-            for (Synapse synapse : network.getSynapsesynapseList()) {
+            for (Synapse synapse : network.getSynapseList()) {
                 // Verbesserte Xavier/Glorot-Initialisierung
                 double limit = Math.sqrt(6.0 / (network.getInputLayerSize() + network.getOutputLayerSize()));
                 synapse.setWeight(random.nextDouble() * 2 * limit - limit);
@@ -229,7 +229,7 @@ public class NeuralNetworkTest {
                             synapseConnectivity, 0);
                     
                     // Gewichte initialisieren
-                    for (Synapse synapse : freshNetwork.getSynapsesynapseList()) {
+                    for (Synapse synapse : freshNetwork.getSynapseList()) {
                         double limit = Math.sqrt(6.0 / (freshNetwork.getInputLayerSize() + freshNetwork.getOutputLayerSize()));
                         synapse.setWeight(random.nextDouble() * 2 * limit - limit);
                     }
@@ -255,7 +255,7 @@ public class NeuralNetworkTest {
                             synapseConnectivity, 0);
                     
                     // Gewichte initialisieren
-                    for (Synapse synapse : freshNetwork.getSynapsesynapseList()) {
+                    for (Synapse synapse : freshNetwork.getSynapseList()) {
                         double limit = Math.sqrt(6.0 / (freshNetwork.getInputLayerSize() + freshNetwork.getOutputLayerSize()));
                         synapse.setWeight(random.nextDouble() * 2 * limit - limit);
                     }
@@ -343,8 +343,8 @@ public class NeuralNetworkTest {
     // Crossover: Kombiniert zwei Netzwerke zu einem neuen
     private NeuralNetwork crossover(NeuralNetwork parent1, NeuralNetwork parent2, Random random) {
         NeuralNetwork child = cloneNetwork(parent1);
-        List<Synapse> childSynapses = child.getSynapsesynapseList();
-        List<Synapse> parent2Synapses = parent2.getSynapsesynapseList();
+        List<Synapse> childSynapses = child.getSynapseList();
+        List<Synapse> parent2Synapses = parent2.getSynapseList();
         
         int minSize = Math.min(childSynapses.size(), parent2Synapses.size());
         

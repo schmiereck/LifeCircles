@@ -5,7 +5,6 @@ import de.lifecircles.service.SimulationConfig;
 import java.io.Serial;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.io.Serializable;
 import java.io.ObjectInputStream;
 import java.io.IOException;
@@ -623,7 +622,7 @@ public class NeuralNetwork implements Serializable {
         return this.synapseCount;
     }
 
-    public List<Synapse> getSynapsesynapseList() {
+    public List<Synapse> getSynapseList() {
         // Gibt eine unveränderliche Liste der Synapsen zurück
         return Collections.unmodifiableList(Arrays.asList(Arrays.copyOf(synapseArray, synapseCount)));
     }

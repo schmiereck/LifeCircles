@@ -70,7 +70,7 @@ public class SerialTest {
         }
 
         // Überprüfe, ob die Verbindungen korrekt wiederhergestellt wurden
-        for (Synapse synapse : deserializedNetwork.getSynapsesynapseList()) {
+        for (Synapse synapse : deserializedNetwork.getSynapseList()) {
             Assertions.assertNotNull(synapse.getSourceNeuron());
             Assertions.assertNotNull(synapse.getTargetNeuron());
             Assertions.assertTrue(synapse.getSourceNeuron().getOutputSynapses().contains(synapse));
