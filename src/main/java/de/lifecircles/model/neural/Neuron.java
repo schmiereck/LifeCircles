@@ -184,25 +184,5 @@ public class Neuron implements Serializable {
             Synapse synapse = (Synapse) ois.readObject();
             outputSynapses.add(synapse);
         }
-        // Nach dem Wiederherstellen der Output-Synapsen: Input-Synapsen-Array neu aufbauen
-        this.rebuildInputSynapsesFromList();
-    }
-
-    /**
-     * Baut das Array inputSynapses und den Zähler inputSynapseCount aus der Output-Synapsen aller Quellneuronen neu auf.
-     * Sollte nach der Deserialisierung aufgerufen werden.
-     */
-    public void rebuildInputSynapsesFromList() {
-        if (this.inputSynapses == null) {
-            this.inputSynapses = new Synapse[INITIAL_SYNAPSE_CAPACITY];
-        }
-        this.inputSynapseCount = 0;
-        // Durchlaufe alle Output-Synapsen aller Quellneuronen und füge die passenden als Input hinzu
-        for (Synapse synapse : this.outputSynapses) {
-            Neuron target = synapse.getTargetNeuron();
-            if (target == this) {
-                this.addInputSynapse(synapse);
-            }
-        }
     }
 }
