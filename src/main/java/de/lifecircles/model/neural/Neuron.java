@@ -13,13 +13,13 @@ public class Neuron implements Serializable {
     
     private double value;
     private double bias;
-    private transient Synapse[] inputSynapses; // Als transient markiert
-    private int inputSynapseCount;   // Aktuelle Anzahl von Synapsen im Array
+    transient Synapse[] inputSynapses; // Als transient markiert
+    int inputSynapseCount;   // Aktuelle Anzahl von Synapsen im Array
     private transient List<Synapse> outputSynapses;
     private ActivationFunction activationFunction;
     private boolean isOutputNeuron; // Flag für Output-Neuronen
     
-    private static final int INITIAL_SYNAPSE_CAPACITY = 8;
+    static final int INITIAL_SYNAPSE_CAPACITY = 8;
 
     public Neuron() {
         this.value = 0.0;
@@ -183,6 +183,26 @@ public class Neuron implements Serializable {
         for (int i = 0; i < outputSynapseCount; i++) {
             Synapse synapse = (Synapse) ois.readObject();
             outputSynapses.add(synapse);
+        }
+        // Nach dem Wiederherstellen der Output-Synapsen: Input-Synapsen-Array neu aufbauen
+        this.rebuildInputSynapsesFromList();
+    }
+
+    /**
+     * Baut das Array inputSynapses und den Zähler inputSynapseCount aus der Output-Synapsen aller Quellneuronen neu auf.
+     * Sollte nach der Deserialisierung aufgerufen werden.
+     */
+    public void rebuildInputSynapsesFromList() {
+        if (this.inputSynapses == null) {
+            this.inputSynapses = new Synapse[INITIAL_SYNAPSE_CAPACITY];
+        }
+        this.inputSynapseCount = 0;
+        // Durchlaufe alle Output-Synapsen aller Quellneuronen und füge die passenden als Input hinzu
+        for (Synapse synapse : this.outputSynapses) {
+            Neuron target = synapse.getTargetNeuron();
+            if (target == this) {
+                this.addInputSynapse(synapse);
+            }
         }
     }
 }

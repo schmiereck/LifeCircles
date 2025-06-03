@@ -732,6 +732,28 @@ public class NeuralNetwork implements Serializable {
         for (int i = 0; i < synapseCount; i++) {
             synapseArray[i].restoreConnections();
         }
+        // Nach der Wiederherstellung der Synapsen: Input-Synapsen-Array und Zähler für alle Neuronen korrekt setzen
+        // Alle Neuronen einsammeln
+        List<Neuron> allNeurons = new ArrayList<>();
+        Collections.addAll(allNeurons, inputNeuronList);
+        for (Layer layer : hiddenLayerList) {
+            Collections.addAll(allNeurons, layer.getNeuronsArray());
+        }
+        Collections.addAll(allNeurons, outputNeuronList);
+        // Für jedes Neuron: Input-Synapsen-Array neu aufbauen
+        for (Neuron neuron : allNeurons) {
+            List<Synapse> inputList = new ArrayList<>();
+            for (int i = 0; i < synapseCount; i++) {
+                Synapse s = synapseArray[i];
+                if (s.getTargetNeuron() == neuron) {
+                    inputList.add(s);
+                }
+            }
+            neuron.inputSynapses = new Synapse[Math.max(Neuron.INITIAL_SYNAPSE_CAPACITY, inputList.size())];
+            neuron.inputSynapseCount = 0;
+            for (Synapse s : inputList) {
+                neuron.inputSynapses[neuron.inputSynapseCount++] = s;
+            }
+        }
     }
 }
-
