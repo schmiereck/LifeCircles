@@ -13,13 +13,11 @@ public class Neuron implements Serializable {
     
     private double value;
     private double bias;
-    transient Synapse[] inputSynapses; // Als transient markiert
+    private transient Synapse[] inputSynapses; // Als transient markiert
     private transient List<Synapse> outputSynapses;
     private ActivationFunction activationFunction;
     private boolean isOutputNeuron; // Flag für Output-Neuronen
     
-    static final int INITIAL_SYNAPSE_CAPACITY = 8;
-
     public Neuron() {
         this.value = 0.0;
         this.bias = Math.random() * 2 - 1; // Random bias between -1 and 1
@@ -178,7 +176,11 @@ public class Neuron implements Serializable {
         int outputSynapseCount = ois.readInt();
         for (int i = 0; i < outputSynapseCount; i++) {
             Synapse synapse = (Synapse) ois.readObject();
-            outputSynapses.add(synapse);
+            this.outputSynapses.add(synapse);
         }
+    }
+
+    public void setInputSynapses(Synapse[] inputSynapses) {
+        this.inputSynapses = inputSynapses;
     }
 }
