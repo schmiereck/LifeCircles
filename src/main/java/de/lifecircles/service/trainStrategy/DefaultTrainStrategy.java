@@ -58,7 +58,7 @@ public class DefaultTrainStrategy implements TrainStrategy {
         Random random = new Random();
         for (int i = 0; i < config.getInitialCellCount(); i++) {
             final double x = random.nextDouble() * config.getWidth();
-            final double y = random.nextDouble() * config.getHeight();
+            final double y = (random.nextDouble() * (config.getHeight() - 80.0D)) + 40.0D;
             final double hiddenCountFactor = SimulationConfig.hiddenCountFactorDefault;
             //final double hiddenCountFactor = 0.5D;
             final double stateHiddenLayerSynapseConnectivity = SimulationConfig.stateHiddenLayerSynapseConnectivityDefault;

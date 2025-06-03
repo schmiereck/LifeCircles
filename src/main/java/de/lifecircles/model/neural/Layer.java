@@ -14,7 +14,6 @@ public class Layer implements Serializable {
     private Neuron[] neurons;
     private boolean isActiveLayer;
     private transient double activationCounter = 0.0D;
-    private static final int INITIAL_CAPACITY = 8;
 
     public Layer() {
         this.neurons = new Neuron[0];

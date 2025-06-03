@@ -127,6 +127,11 @@ public class Renderer {
                 this.drawActors(cell);
             }
 
+            // Draw cell state as a number in the center of the cell
+            if (this.config.isShowSpecialization() && (this.camera.getScale() > 0.5D)) {
+                this.drawCellState(cell, screenCellPos, rgb);
+            }
+
             // Draw energy bar
             if (this.config.isShowEnergy() && (this.camera.getScale() > 0.5D)) {
                 double energyBarWidth = screenCellRadius * 0.8;
@@ -164,11 +169,6 @@ public class Renderer {
                     ageBarWidth * normalizedAge,
                     ageBarHeight
                 );
-            }
-
-            // Draw cell state as a number in the center of the cell
-            if (this.config.isShowSpecialization() && (this.camera.getScale() > 0.5D)) {
-                this.drawCellState(cell, screenCellPos, rgb);
             }
         }
     }
