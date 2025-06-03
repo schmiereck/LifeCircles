@@ -14,7 +14,6 @@ public class Neuron implements Serializable {
     private double value;
     private double bias;
     transient Synapse[] inputSynapses; // Als transient markiert
-    int inputSynapseCount;   // Aktuelle Anzahl von Synapsen im Array
     private transient List<Synapse> outputSynapses;
     private ActivationFunction activationFunction;
     private boolean isOutputNeuron; // Flag für Output-Neuronen
@@ -24,8 +23,7 @@ public class Neuron implements Serializable {
     public Neuron() {
         this.value = 0.0;
         this.bias = Math.random() * 2 - 1; // Random bias between -1 and 1
-        this.inputSynapses = new Synapse[INITIAL_SYNAPSE_CAPACITY];
-        this.inputSynapseCount = 0;
+        this.inputSynapses = new Synapse[0];
         this.outputSynapses = new ArrayList<>();
         this.activationFunction = ActivationFunction.Sigmoid;
         this.isOutputNeuron = false; // Standardmäßig kein Output-Neuron
@@ -33,13 +31,10 @@ public class Neuron implements Serializable {
 
     public void addInputSynapse(Synapse synapse) {
         // Array vergrößern, falls erforderlich
-        if (this.inputSynapseCount >= this.inputSynapses.length) {
-            Synapse[] newInputSynapses = new Synapse[this.inputSynapses.length * 2];
-            System.arraycopy(this.inputSynapses, 0, newInputSynapses, 0, this.inputSynapses.length);
-            this.inputSynapses = newInputSynapses;
-        }
-
-        this.inputSynapses[inputSynapseCount++] = synapse;
+        Synapse[] newInputSynapses = new Synapse[this.inputSynapses.length + 1];
+        System.arraycopy(this.inputSynapses, 0, newInputSynapses, 0, this.inputSynapses.length);
+        newInputSynapses[this.inputSynapses.length] = synapse;
+        this.inputSynapses = newInputSynapses;
     }
 
     public void addOutputSynapse(Synapse synapse) {
@@ -75,7 +70,7 @@ public class Neuron implements Serializable {
      * Gibt die Anzahl der tatsächlich vorhandenen Input-Synapsen zurück.
      */
     public int getInputSynapseCount() {
-        return this.inputSynapseCount;
+        return this.inputSynapses.length;
     }
 
     public List<Synapse> getOutputSynapses() {
@@ -87,16 +82,18 @@ public class Neuron implements Serializable {
      * Diese Operation ist langsamer als Zugriffe.
      */
     public void removeInputSynapse(Synapse synapse) {
-        for (int i = 0; i < this.inputSynapseCount; i++) {
+        int idx = -1;
+        for (int i = 0; i < this.inputSynapses.length; i++) {
             if (this.inputSynapses[i] == synapse) {
-                // Verschiebe alle Elemente nach dem zu löschenden um eine Position nach vorne
-                if (i < this.inputSynapseCount - 1) {
-                    System.arraycopy(inputSynapses, i + 1, inputSynapses, i, inputSynapseCount - i - 1);
-                }
-                this.inputSynapseCount--;
-                this.inputSynapses[inputSynapseCount] = null; // Verhindere memory leak
-                return;
+                idx = i;
+                break;
             }
+        }
+        if (idx != -1) {
+            Synapse[] newInputSynapses = new Synapse[this.inputSynapses.length - 1];
+            System.arraycopy(this.inputSynapses, 0, newInputSynapses, 0, idx);
+            System.arraycopy(this.inputSynapses, idx + 1, newInputSynapses, idx, this.inputSynapses.length - idx - 1);
+            this.inputSynapses = newInputSynapses;
         }
     }
 
@@ -108,14 +105,14 @@ public class Neuron implements Serializable {
     public long activate() {
         double sum = this.bias;
         // Direkte Array-Iteration für bessere Performance
-        for (int i = 0; i < this.inputSynapseCount; i++) {
+        for (int i = 0; i < this.inputSynapses.length; i++) {
             Synapse synapse = this.inputSynapses[i];
             sum += synapse.getSourceNeuron().getValue() * synapse.getWeight();
         }
         
          this.value = this.activationFunction.apply(sum);
 
-        return this.inputSynapseCount;
+        return this.inputSynapses.length;
     }
 
     public void setActivationFunction(ActivationFunction activationFunction) {
@@ -175,8 +172,7 @@ public class Neuron implements Serializable {
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         // Initialisiere die transienten Felder
-        this.inputSynapses = new Synapse[INITIAL_SYNAPSE_CAPACITY];
-        this.inputSynapseCount = 0;
+        this.inputSynapses = new Synapse[0];
         this.outputSynapses = new ArrayList<>(); // Initialisiere die Liste der Output-Synapsen
         // Stelle die Output-Synapsen wieder her
         int outputSynapseCount = ois.readInt();

@@ -749,10 +749,10 @@ public class NeuralNetwork implements Serializable {
                     inputList.add(s);
                 }
             }
-            neuron.inputSynapses = new Synapse[Math.max(Neuron.INITIAL_SYNAPSE_CAPACITY, inputList.size())];
-            neuron.inputSynapseCount = 0;
-            for (Synapse s : inputList) {
-                neuron.inputSynapses[neuron.inputSynapseCount++] = s;
+            neuron.inputSynapses = new Synapse[inputList.size()];
+            for (int inputPos = 0; inputPos < inputList.size(); inputPos++) {
+                Synapse s = inputList.get(inputPos);
+                neuron.inputSynapses[inputPos] = s;
             }
         }
     }
