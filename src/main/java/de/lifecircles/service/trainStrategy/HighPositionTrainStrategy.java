@@ -28,7 +28,7 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         this.config.setScaleSimulation(1.6D * 4.0D);
         //this.config.setViscosity(5.75D * 2.0D);
 
-        this.config.setEnergyPerRay(0.015D); // 0.005; //0.015; // 0.025;
+        //this.config.setEnergyPerRay(0.015D); // 0.005; //0.015; // 0.025;
 
         return new Environment(config.getWidth(), config.getHeight());
     }

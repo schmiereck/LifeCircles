@@ -523,8 +523,11 @@ public class NeuralNetwork implements Serializable {
     }
 
     private void removeHiddenLayer(final int pos) {
-        // Entferne Layer aus Array
-        this.hiddenLayerList = removeLayer(this.hiddenLayerList, pos);
+        final Layer layer = this.hiddenLayerList[pos];
+        if (layer.getNeurons().size() == 1) {
+            // Entferne Layer aus Array
+            this.hiddenLayerList = removeLayer(this.hiddenLayerList, pos);
+        }
     }
 
     // Hilfsmethode zum Entfernen eines Layers aus einem Array
