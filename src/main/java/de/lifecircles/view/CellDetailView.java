@@ -402,7 +402,7 @@ public class CellDetailView extends Stage {
             if (sourcePos != null && targetPos != null) {
                 // Gewicht der Synapse holen und auf Farbe abbilden
                 double weight = synapse.getWeight();
-                Color synapseColor = weightToColor(weight);
+                Color synapseColor = this.weightToColor(weight);
 
                 // Synapse mit entsprechender Farbe zeichnen
                 gc.setStroke(synapseColor);
