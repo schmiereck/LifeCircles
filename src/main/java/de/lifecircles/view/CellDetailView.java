@@ -24,7 +24,7 @@ import java.util.Map;
  * Ein Fenster, das detaillierte Informationen zu einer ausgewählten Zelle anzeigt.
  */
 public class CellDetailView extends Stage {
-    
+
     private Cell currentCell;
     private final Canvas brainCanvas;
     private final Label typeLabel;
@@ -39,37 +39,37 @@ public class CellDetailView extends Stage {
     private double panOffsetY = 0.0;
     private double lastMouseX;
     private double lastMouseY;
-    
+
     // Timer für die Brain-Aktualisierung (in Nanosekunden)
     private long lastBrainUpdate = 0;
     private static final long BRAIN_UPDATE_INTERVAL = 1_000_000_000; // 1 Sekunde in Nanosekunden
 
     public CellDetailView() {
         setTitle("Zelldetails");
-        
+
         // Haupt-Layout erstellen
         BorderPane mainLayout = new BorderPane();
-        
+
         // Layout für die Mitte vorbereiten
         VBox centerBox = new VBox(10);
         centerBox.setPadding(new javafx.geometry.Insets(10));
-        
+
         // Canvas für die Visualisierung des neuronalen Netzes
         brainCanvas = new Canvas(400, 300);
-        
+
         // Info-Panel mit Zelleigenschaften
         GridPane infoPanel = new GridPane();
         infoPanel.setHgap(10);
         infoPanel.setVgap(5);
         infoPanel.setPadding(new javafx.geometry.Insets(10));
-        
+
         // Labels für Zelleigenschaften
         typeLabel = new Label();
         stateLabel = new Label();
         ageLabel = new Label();
         energyLabel = new Label();
         generationLabel = new Label();
-        
+
         // Labels zum Panel hinzufügen
         infoPanel.add(new Label("Typ:"), 0, 0);
         infoPanel.add(typeLabel, 1, 0);
@@ -81,35 +81,35 @@ public class CellDetailView extends Stage {
         infoPanel.add(energyLabel, 1, 3);
         infoPanel.add(new Label("Generation:"), 0, 4);
         infoPanel.add(generationLabel, 1, 4);
-        
+
         // Label für die Netzwerk-Visualisierung
         Label networkLabel = new Label("Neuronales Netzwerk (ZellBrain):");
-        
+
         // Layout zusammenbauen
         centerBox.getChildren().addAll(networkLabel, brainCanvas);
         VBox.setVgrow(brainCanvas, Priority.ALWAYS); // Canvas soll vertikal wachsen
-        
+
         mainLayout.setCenter(centerBox);
         mainLayout.setBottom(infoPanel);
-        
+
         // Szene erstellen und Stage konfigurieren
         Scene scene = new Scene(mainLayout, 600, 500);
         setScene(scene);
         setResizable(true);
-        
+
         // Animation-Timer für Updates der Zelleigenschaften und Netzwerkvisualisierung
         updateTimer = new AnimationTimer() {
             private long lastUpdate = 0;
-            
+
             @Override
             public void handle(long now) {
                 if (currentCell != null) {
                     // Zellinformationen aktualisieren (ca. 10 mal pro Sekunde)
-                    if (now - lastUpdate > 100_000_000) { 
+                    if (now - lastUpdate > 100_000_000) {
                         updateCellInfo();
                         lastUpdate = now;
                     }
-                    
+
                     // Neuronales Netzwerk nur einmal pro Sekunde aktualisieren
                     // oder wenn eine Neuzeichnung angefordert wurde
                     if (now - lastBrainUpdate > BRAIN_UPDATE_INTERVAL || needsRedraw) {
@@ -120,7 +120,7 @@ public class CellDetailView extends Stage {
                 }
             }
         };
-        
+
         // Direkt an Fensteränderungen binden statt an Container-Änderungen
         // Dies funktioniert zuverlässiger, besonders beim Verkleinern
         scene.widthProperty().addListener((obs, oldVal, newVal) -> {
@@ -137,7 +137,7 @@ public class CellDetailView extends Stage {
                 }
             }
         });
-        
+
         scene.heightProperty().addListener((obs, oldVal, newVal) -> {
             if (brainCanvas != null) {
                 // Feste Höhe für Labels und Padding verwenden (statt Label-Höhe abzufragen)
@@ -153,11 +153,11 @@ public class CellDetailView extends Stage {
                 }
             }
         });
-        
+
         // Initialisiere die Canvas-Größe mit aktuellen Fenstermaßen
         brainCanvas.setWidth(scene.getWidth() - 40);
         brainCanvas.setHeight(scene.getHeight() - 150);
-        
+
         // Wenn das Fenster geschlossen wird, Timer anhalten
         setOnCloseRequest(e -> {
             if (updateTimer != null) {
@@ -335,11 +335,12 @@ public class CellDetailView extends Stage {
                     Math.min(maxVerticalSpacing, height / (layerSize + 1)));
             layerYOffset = (height - layerSize * vSpacing) / 2;
 
-            List<Neuron> neurons = network.getHiddenLayerList()[li].getNeurons();
+            Layer currentHiddenLayer = network.getHiddenLayerList()[li];
+            boolean layerIsActive = currentHiddenLayer.isActiveLayer();
+            List<Neuron> neurons = currentHiddenLayer.getNeurons();
 
             for (int i = 0; i < layerSize; i++) {
                 double nodeY = layerYOffset + vSpacing * (i + 0.5);
-                // Position in die Map eintragen
                 if (i < neurons.size()) {
                     neuronPositions.put(neurons.get(i), new double[] {layerX, nodeY});
                 }
@@ -347,7 +348,6 @@ public class CellDetailView extends Stage {
                 double activation = 0;
                 if (i < neurons.size()) {
                     activation = neurons.get(i).getValue();
-                    // Aktivierungswert auf den Bereich [0,1] begrenzen
                     activation = Math.max(0, Math.min(1, activation));
                 }
 
@@ -358,10 +358,17 @@ public class CellDetailView extends Stage {
                         (int) (255 * (1 - activation))
                 );
 
-                // Neuron zeichnen
+                final Color strokeColor;
+                if (!layerIsActive) {
+                    nodeColor = nodeColor.desaturate();
+                    strokeColor = Color.GRAY;
+                } else {
+                    strokeColor = Color.GREEN;
+                }
+
                 gc.setFill(nodeColor);
                 gc.fillOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
-                gc.setStroke(Color.BLACK);
+                gc.setStroke(strokeColor);
                 gc.strokeOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
             }
         }
@@ -382,7 +389,7 @@ public class CellDetailView extends Stage {
         }
 
         // Verbindungen zeichnen und entsprechend ihres Gewichts einfärben
-        gc.setLineWidth(0.01D * screenSizeFactor);
+        gc.setLineWidth(0.02D * screenSizeFactor);
 
         for (Synapse synapse : synapseList) {
             Neuron source = synapse.getSourceNeuron();
