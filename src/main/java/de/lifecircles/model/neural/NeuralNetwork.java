@@ -19,7 +19,7 @@ public class NeuralNetwork implements Serializable {
     private final Neuron[] outputNeuronList;
     // Synapsen als Array statt List
     private Synapse[] synapseArray;
-    private final Random random = new Random();
+    private static final Random random = new Random();
     private double[] outputArr;
 
     private static final int INITIAL_SYNAPSE_CAPACITY = 64;
@@ -36,7 +36,7 @@ public class NeuralNetwork implements Serializable {
      * 
      * @param original Das zu kopierende neuronale Netzwerk
      */
-    public NeuralNetwork(NeuralNetwork original) {
+    public NeuralNetwork(final NeuralNetwork original) {
         this.inputNeuronList = new Neuron[original.inputNeuronList.length];
         this.outputNeuronList = new Neuron[original.outputNeuronList.length];
         // Synapsen-Array initialisieren
@@ -45,12 +45,12 @@ public class NeuralNetwork implements Serializable {
         this.fixedHiddenLayerCount = original.fixedHiddenLayerCount;
         
         // Erstelle eine Map, die die Originalneuronen den neuen Neuronen zuordnet
-        Map<Neuron, Neuron> neuronMap = new HashMap<>();
+        final Map<Neuron, Neuron> neuronMap = new HashMap<>();
         
         // Kopiere Input-Neuronen
         for (int i = 0; i < original.inputNeuronList.length; i++) {
-            Neuron originalNeuron = original.inputNeuronList[i];
-            Neuron newNeuron = new Neuron();
+            final Neuron originalNeuron = original.inputNeuronList[i];
+            final Neuron newNeuron = new Neuron();
             newNeuron.setBias(originalNeuron.getBias());
             newNeuron.setActivationFunction(originalNeuron.getActivationFunction());
             newNeuron.setValue(originalNeuron.getValue());
@@ -61,12 +61,12 @@ public class NeuralNetwork implements Serializable {
         // Kopiere Hidden Layers
         this.hiddenLayerList = new Layer[original.hiddenLayerList.length];
         for (int i = 0; i < original.hiddenLayerList.length; i++) {
-            Layer originalLayer = original.hiddenLayerList[i];
-            Layer newLayer = new Layer();
+            final Layer originalLayer = original.hiddenLayerList[i];
+            final Layer newLayer = new Layer();
             newLayer.setActiveLayer(originalLayer.isActiveLayer());
 
-            for (Neuron originalNeuron : originalLayer.getNeuronsArray()) {
-                Neuron newNeuron = new Neuron();
+            for (final Neuron originalNeuron : originalLayer.getNeuronsArray()) {
+                final Neuron newNeuron = new Neuron();
                 newNeuron.setBias(originalNeuron.getBias());
                 newNeuron.setActivationFunction(originalNeuron.getActivationFunction());
                 if (newLayer.isActiveLayer()) {
@@ -82,8 +82,8 @@ public class NeuralNetwork implements Serializable {
         
         // Kopiere Output-Neuronen
         for (int i = 0; i < original.outputNeuronList.length; i++) {
-            Neuron originalNeuron = original.outputNeuronList[i];
-            Neuron newNeuron = new Neuron();
+            final Neuron originalNeuron = original.outputNeuronList[i];
+            final Neuron newNeuron = new Neuron();
             newNeuron.setBias(originalNeuron.getBias());
             newNeuron.setActivationFunction(originalNeuron.getActivationFunction());
             newNeuron.setValue(originalNeuron.getValue());
@@ -98,16 +98,16 @@ public class NeuralNetwork implements Serializable {
         // Kopiere alle Synapsen mit den korrekten Verbindungen zwischen den neuen Neuronen
         int synapseIndex = 0;
         for (int i = 0; i < original.getSynapseList().size(); i++) {
-            Synapse originalSynapse = original.getSynapseList().get(i);
-            Neuron sourceNeuron = neuronMap.get(originalSynapse.getSourceNeuron());
-            Neuron targetNeuron = neuronMap.get(originalSynapse.getTargetNeuron());
+            final Synapse originalSynapse = original.getSynapseList().get(i);
+            final Neuron sourceNeuron = neuronMap.get(originalSynapse.getSourceNeuron());
+            final Neuron targetNeuron = neuronMap.get(originalSynapse.getTargetNeuron());
             if (sourceNeuron != null && targetNeuron != null) {
                 Synapse newSynapse = new Synapse(sourceNeuron, targetNeuron, originalSynapse.getWeight());
                 this.synapseArray[synapseIndex++] = newSynapse;
             }
         }
         if (synapseIndex < this.synapseArray.length) {
-            Synapse[] resized = new Synapse[synapseIndex];
+            final Synapse[] resized = new Synapse[synapseIndex];
             System.arraycopy(this.synapseArray, 0, resized, 0, synapseIndex);
             this.synapseArray = resized;
         }
@@ -312,15 +312,15 @@ public class NeuralNetwork implements Serializable {
 
         // Mutate weights and biases
         mutated.applyToAllNeurons(neuron -> {
-            if (Math.random() < mutationRate) {
-                double mutation = (Math.random() * 2.0D - 1.0D) * mutationStrength;
+            if (random.nextDouble() < mutationRate) {
+                double mutation = (random.nextDouble() * 2.0D - 1.0D) * mutationStrength;
                 neuron.setBias(neuron.getBias() + mutation);
             }
         });
         
         for (Synapse synapse : mutated.synapseArray) {
-            if (Math.random() < mutationRate) {
-                double mutation = (Math.random() * 2.0D - 1.0D) * mutationStrength;
+            if (random.nextDouble() < mutationRate) {
+                double mutation = (random.nextDouble() * 2.0D - 1.0D) * mutationStrength;
                 synapse.setWeight(synapse.getWeight() + mutation);
             }
         }
@@ -603,7 +603,7 @@ public class NeuralNetwork implements Serializable {
         Neuron targetNeuron = targetLayer.get(this.random.nextInt(targetLayer.size()));
         
         // Erstellen Sie die Synapse
-        Synapse synapse = new Synapse(sourceNeuron, targetNeuron, Math.random() * 0.002D - 0.001D);
+        Synapse synapse = new Synapse(sourceNeuron, targetNeuron, random.nextDouble() * 0.002D - 0.001D);
         addSynapse(synapse);
     }
 
