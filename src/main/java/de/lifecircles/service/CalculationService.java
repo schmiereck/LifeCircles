@@ -33,6 +33,7 @@ public class CalculationService implements Runnable {
                 switch (config.getTrainMode()) {
                     case HIGH_ENERGY -> new HighEnergyTrainStrategy();
                     case HIGH_POSITION -> new HighPositionTrainStrategy();
+                    case HIGH_POSITION2 -> new HighPosition2TrainStrategy();
                     case TEST_A -> new TestATrainStrategy();
                     case TEST_B -> new TestBTrainStrategy();
                     case TEST_C -> new TestCTrainStrategy();

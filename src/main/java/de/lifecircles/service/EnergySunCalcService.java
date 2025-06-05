@@ -57,10 +57,24 @@ public class EnergySunCalcService {
         double sunAngleRad = Math.toRadians(sunAngleDeg);
         double dirX = Math.sin(sunAngleRad);
         double dirY = Math.cos(sunAngleRad);
-        // Sonnenstrahlen starten am oberen Rand (y=0), aber x-Position muss so gewählt werden, dass der Strahl das Fenster trifft
+        // Erweiterung: X-Startbereich so wählen, dass alle Bodenbereiche erreicht werden
+        double minX = 0;
+        double maxX = width;
+        if (dirY > 0.0001) { // Nur sinnvoll, wenn Strahlen nach unten gehen
+            // Für den linken Rand: x=0, berechne StartX, sodass Strahl bei x=0, y=height ankommt
+            double startXForLeft = 0 - (height * dirX / dirY);
+            // Für den rechten Rand: x=width, berechne StartX, sodass Strahl bei x=width, y=height ankommt
+            double startXForRight = width - (height * dirX / dirY);
+            minX = Math.min(startXForLeft, startXForRight);
+            maxX = Math.max(startXForLeft, startXForRight);
+        }
+        // Optional: minX/maxX auf sinnvolle Werte begrenzen (z.B. max 2*width außerhalb)
+        double margin = width * 2.0;
+        minX = Math.max(minX, -margin);
+        maxX = Math.min(maxX, width + margin);
         for (int rayNo = 0; rayNo < numRays; rayNo++) {
-            // Strahlen gleichmäßig entlang der oberen Kante verteilen
-            final double rayStartX = random.nextDouble() * width;
+            // Strahlen gleichmäßig (aber zufällig) im erweiterten Bereich verteilen
+            final double rayStartX = minX + random.nextDouble() * (maxX - minX);
             final double rayStartY = 0;
             // Strahlrichtung: (dirX, dirY)
             // Berechne, wo der Strahl das untere oder seitliche Fensterende trifft

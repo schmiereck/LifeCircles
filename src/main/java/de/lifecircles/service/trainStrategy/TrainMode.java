@@ -8,6 +8,7 @@ public enum TrainMode {
     EVOLUTIONARY,
     HIGH_ENERGY,
     HIGH_POSITION,
+    HIGH_POSITION2,
 
     TEST_A,
     TEST_B,
