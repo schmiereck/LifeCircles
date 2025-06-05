@@ -32,6 +32,8 @@ public class CellDetailView extends Stage {
     private final Label ageLabel;
     private final Label energyLabel;
     private final Label generationLabel;
+    private final Label synapseCountLabel; // NEU
+    private final Label cellSizeLabel;     // NEU
     private AnimationTimer updateTimer;
     private boolean needsRedraw = true;
     private double zoomFactor = 1.0;
@@ -59,8 +61,8 @@ public class CellDetailView extends Stage {
 
         // Info-Panel mit Zelleigenschaften
         GridPane infoPanel = new GridPane();
-        infoPanel.setHgap(10);
-        infoPanel.setVgap(5);
+        infoPanel.setHgap(16); // Mehr Abstand zwischen den Spalten
+        infoPanel.setVgap(4);  // Mehr Abstand zwischen den Zeilen
         infoPanel.setPadding(new javafx.geometry.Insets(10));
 
         // Labels für Zelleigenschaften
@@ -69,8 +71,11 @@ public class CellDetailView extends Stage {
         ageLabel = new Label();
         energyLabel = new Label();
         generationLabel = new Label();
+        synapseCountLabel = new Label();
+        cellSizeLabel = new Label();
 
-        // Labels zum Panel hinzufügen
+        // Zweispaltiges Layout: links und rechts jeweils 4 Details
+        // Spalte 0/1: links, Spalte 2/3: rechts
         infoPanel.add(new Label("Typ:"), 0, 0);
         infoPanel.add(typeLabel, 1, 0);
         infoPanel.add(new Label("Status:"), 0, 1);
@@ -79,8 +84,14 @@ public class CellDetailView extends Stage {
         infoPanel.add(ageLabel, 1, 2);
         infoPanel.add(new Label("Energie:"), 0, 3);
         infoPanel.add(energyLabel, 1, 3);
-        infoPanel.add(new Label("Generation:"), 0, 4);
-        infoPanel.add(generationLabel, 1, 4);
+
+        infoPanel.add(new Label("Generation:"), 2, 0);
+        infoPanel.add(generationLabel, 3, 0);
+        infoPanel.add(new Label("Synapsen:"), 2, 1);
+        infoPanel.add(synapseCountLabel, 3, 1);
+        infoPanel.add(new Label("Zellgröße:"), 2, 2);
+        infoPanel.add(cellSizeLabel, 3, 2);
+        // Platz für weitere Details in Zeile 3, Spalte 2/3
 
         // Label für die Netzwerk-Visualisierung
         Label networkLabel = new Label("Neuronales Netzwerk (ZellBrain):");
@@ -234,6 +245,14 @@ public class CellDetailView extends Stage {
         ageLabel.setText(String.format("%.2f", currentCell.getAge()));
         energyLabel.setText(String.format("%.2f", currentCell.getEnergy()));
         generationLabel.setText(String.valueOf(currentCell.getGeneration()));
+        // NEU: Synapsen-Anzahl anzeigen
+        int synapseCount = 0;
+        if (currentCell.getBrain() != null) {
+            synapseCount = currentCell.getBrain().getSynapseCount();
+        }
+        synapseCountLabel.setText(String.valueOf(synapseCount));
+        // NEU: Zellgröße anzeigen
+        cellSizeLabel.setText(String.format("%.2f", currentCell.getRadiusSize()));
     }
 
     /**
@@ -552,4 +571,3 @@ public class CellDetailView extends Stage {
         }
     }
 }
-
