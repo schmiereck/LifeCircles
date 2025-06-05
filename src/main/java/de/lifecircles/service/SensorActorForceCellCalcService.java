@@ -16,13 +16,14 @@ public class SensorActorForceCellCalcService {
      */
     public static void processInteractions(final List<Cell> cells, final PartitioningStrategy partitioner) {
         // cache positions for all sensorActors in this simulation step
-        for (final Cell cell : cells) {
-            for (final SensorActor actor : cell.getSensorActors()) {
+        //for (final Cell calcCell : cells) {
+        cells.parallelStream().forEach(calcCell -> {
+            for (final SensorActor actor : calcCell.getSensorActors()) {
                 actor.updateCachedPosition();
                 actor.setSensedCell(null);
                 actor.setSensedActor(null);
             }
-        }
+        });
         
         // Prüfe Blocker-Kollisionen
         checkBlockerCollisions(cells);
