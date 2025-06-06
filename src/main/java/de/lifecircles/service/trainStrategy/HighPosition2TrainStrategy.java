@@ -8,8 +8,14 @@ import java.util.*;
 
 /**
  * Training-Strategie: HighPosition.
- * Start mit 60 Zellen, selektiert alle 3000 Schritte die Top-20% nach Höhe über dem Boden,
+ * Start mit SeperatorCount Zellen, selektiert alle GENERATION_STEP Schritte die Top SeperatorCount,
  * erzeugt mutierte Nachkommen und ersetzt die Population.
+ *
+ * Die Gewinner-Zellen werden global aus allen Zellen ausgewählt,
+ * indem sie zuerst nach Y-Position (höchste zuerst) und dann
+ * nach Nähe zur Abschnittsmitte sortiert werden.
+ * Die besten N Zellen (N = SeperatorCount) werden als Gewinner verwendet.
+ * Damit werden beide Kriterien – Höhe und Zentrierung – bei der globalen Auswahl berücksichtigt.
  */
 public class HighPosition2TrainStrategy implements TrainStrategy {
     private static final int GENERATION_STEP = 2500 * 4;
@@ -70,17 +76,22 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
         if (cells.isEmpty()) {
             return;
         }
-        // Sortiere nach Y-Koordinate aufsteigend (höhere Zellen oben)
-        //cells.sort(Comparator.comparingDouble((Cell c) -> c.getPosition().getY()).reversed());
-        cells.sort(Comparator.comparingDouble((Cell c) -> c.getPosition().getY()));
-
+        double xSpace = (config.getWidth() / SeperatorCount);
+        // Sortiere global: erst nach Y absteigend, dann nach Abstand zur Abschnittsmitte aufsteigend
+        cells.sort(Comparator.comparingDouble((Cell c) -> -c.getPosition().getY())
+                .thenComparingDouble(c -> {
+                    double cx = c.getPosition().getX();
+                    int section = (int) (cx / xSpace);
+                    double sectionMid = xSpace * section + xSpace / 2.0D;
+                    return Math.abs(cx - sectionMid);
+                }));
         int winnersCount = Math.min(SeperatorCount, cells.size());
         List<Cell> winners = new ArrayList<>(cells.subList(0, winnersCount));
         winners.forEach(cell -> cell.setEnergy(SimulationConfig.CELL_MAX_ENERGY));
 
         List<Cell> nextGen = new ArrayList<>();
         nextGen.addAll(winners);
-        while (nextGen.size() < (SeperatorCount - 1)) {
+        while (nextGen.size() < SeperatorCount) {
             final Cell parent = winners.get(random.nextInt(winnersCount));
             final Cell childCell = ReproductionManagerService.reproduce(config, environment, parent);
             if (Objects.nonNull(childCell)) {
@@ -90,20 +101,18 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
         }
         for (int posX = 0; posX < SeperatorCount; posX++) {
             final Cell cell = nextGen.get(posX);
-            final double xSpace = (config.getWidth() / SeperatorCount);
             final double x = xSpace * posX + xSpace / 2.0D;
             final double y = config.getHeight() - Environment.GroundBlockerHeight - config.getCellMaxRadiusSize();
             cell.setType(new CellType(
                     random.nextDouble(),
                     random.nextDouble(),
                     random.nextDouble()
-                ));
+            ));
             cell.setCellState(0);
             cell.setAge(0.0D);
             cell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
             cell.setPosition(new Vector2D(x, y));
         }
-
         environment.resetCells(nextGen);
     }
 }
