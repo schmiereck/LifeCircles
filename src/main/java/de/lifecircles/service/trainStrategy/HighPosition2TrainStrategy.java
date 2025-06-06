@@ -18,7 +18,7 @@ import java.util.*;
  * Damit werden beide Kriterien – Höhe und Zentrierung – bei der globalen Auswahl berücksichtigt.
  */
 public class HighPosition2TrainStrategy implements TrainStrategy {
-    private static final int GENERATION_STEP = 2500 * 4;
+    private static final int GENERATION_STEP = 2200;//2500 * 4;
     private final SimulationConfig config = SimulationConfig.getInstance();
     private final Random random = new Random();
     private long stepCounter = 0;
@@ -66,6 +66,10 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
         }
     }
 
+    // Gewichtungsfaktoren
+    private static final double POSITION_WEIGHT = 0.6; // Gewichtung der Y-Position (höher = wichtiger)
+    private static final double DISTANCE_WEIGHT = 0.4; // Gewichtung des Abstands zur Mitte
+
     @Override
     public void selectAndMutate(Environment environment) {
         stepCounter++;
@@ -77,51 +81,57 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
             return;
         }
         double xSpace = (config.getWidth() / SeperatorCount);
-        // Sortiere global: Nach Y absteigend (höchste) und nach Abstand zur Abschnittsmitte aufsteigend.
-        // Sortiere primär nach Abschnitten, dann innerhalb jedes Abschnitts nach Y-Position absteigend und Nähe zur Mitte
-        cells.sort((c1, c2) -> {
-            double c1x = c1.getPosition().getX();
-            double c2x = c2.getPosition().getX();
-            int section1 = (int) (c1x / xSpace);
-            int section2 = (int) (c2x / xSpace);
 
-            // Sortiere primär nach Abschnitt
-            if (section1 != section2) {
-                return Integer.compare(section1, section2);
+        // Sortiere Zellen nach einer gewichteten Kombination aus Y-Position und Nähe zur Mitte
+        cells.sort(new Comparator<Cell>() {
+            @Override
+            public int compare(Cell c1, Cell c2) {
+                double c1x = c1.getPosition().getX();
+                double c2x = c2.getPosition().getX();
+                int section1 = (int) (c1x / xSpace);
+                int section2 = (int) (c2x / xSpace);
+
+                // Sortiere primär nach Abschnitt
+                if (section1 != section2) {
+                    return Integer.compare(section1, section2);
+                }
+
+                // Berechne Abstand zur Mitte für beide Zellen
+                double sectionMid = xSpace * section1 + xSpace / 2.0D;
+                double distToMid1 = Math.abs(c1x - sectionMid);
+                double distToMid2 = Math.abs(c2x - sectionMid);
+
+                // Normalisiere die Werte
+                double maxPossibleDistance = xSpace / 2.0D; // Maximaler Abstand zur Mitte eines Abschnitts
+                double normalizedDistToMid1 = distToMid1 / maxPossibleDistance; // 0 = perfekt zentriert, 1 = am Rand
+                double normalizedDistToMid2 = distToMid2 / maxPossibleDistance;
+
+                // Y-Position (höher ist besser)
+                double normalizedY1 = c1.getPosition().getY() / config.getHeight(); // 0 = unten, 1 = oben
+                double normalizedY2 = c2.getPosition().getY() / config.getHeight();
+
+                // Berechne Gesamtbewertung:
+                // - Hohe Y-Position gibt einen hohen Wert
+                // - Kleine Distanz zur Mitte gibt einen hohen Wert
+                double score1 = (POSITION_WEIGHT * normalizedY1) + (DISTANCE_WEIGHT * (1.0 - normalizedDistToMid1));
+                double score2 = (POSITION_WEIGHT * normalizedY2) + (DISTANCE_WEIGHT * (1.0 - normalizedDistToMid2));
+
+                // Vergleiche die Scores direkt, nicht den Double.compare nutzen für klare Reihenfolge
+                if (score1 < score2) {
+                    return 1;
+                } else if (score1 > score2) {
+                    return -1;
+                } else {
+                    // Bei gleichen Scores nach Y-Position sortieren für konsistente Sortierung
+                    return Double.compare(c2.getPosition().getY(), c1.getPosition().getY());
+                }
             }
-
-            // Innerhalb des gleichen Abschnitts: Kombiniere Y-Position und Abstand zur Mitte
-            double sectionMid = xSpace * section1 + xSpace / 2.0D;
-            double distToMid1 = Math.abs(c1x - sectionMid);
-            double distToMid2 = Math.abs(c2x - sectionMid);
-
-            // Normalisiere die Werte
-            double maxPossibleDistance = xSpace / 2.0D; // Maximaler Abstand zur Mitte eines Abschnitts
-            double normalizedDistToMid1 = distToMid1 / maxPossibleDistance; // 0 = perfekt zentriert, 1 = am Rand
-            double normalizedDistToMid2 = distToMid2 / maxPossibleDistance;
-
-            // Normalisiere Y-Position (höher ist besser)
-            double normalizedY1 = c1.getPosition().getY() / config.getHeight(); // 0 = unten, 1 = oben
-            double normalizedY2 = c2.getPosition().getY() / config.getHeight();
-
-            // Gewichtungsfaktoren
-            final double POSITION_WEIGHT = 0.7; // Gewichtung der Y-Position (höher = wichtiger)
-            final double DISTANCE_WEIGHT = 0.3; // Gewichtung des Abstands zur Mitte
-
-            // Berechne Gesamtbewertung:
-            // - Hohe Y-Position gibt einen hohen Wert
-            // - Kleine Distanz zur Mitte gibt einen hohen Wert
-            double score1 = (POSITION_WEIGHT * normalizedY1) + (DISTANCE_WEIGHT * (1.0 - normalizedDistToMid1));
-            double score2 = (POSITION_WEIGHT * normalizedY2) + (DISTANCE_WEIGHT * (1.0 - normalizedDistToMid2));
-
-            // Höhere Bewertung zuerst
-            return Double.compare(score2, score1);
         });
 
         // Wähle die besten Zellen aus jedem Abschnitt aus
         List<Cell> winners = new ArrayList<>();
         int[] selectedPerSection = new int[SeperatorCount];
-        int maxPerSection = Math.max(1, cells.size() / SeperatorCount);
+        int maxPerSection = 2;//Math.max(1, cells.size() / SeperatorCount);
 
         for (Cell cell : cells) {
             int section = (int) (cell.getPosition().getX() / xSpace);
@@ -135,19 +145,23 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
             }
         }
 
-        winners.forEach(cell -> cell.setEnergy(SimulationConfig.CELL_MAX_ENERGY));
-
         List<Cell> nextGen = new ArrayList<>();
+
         nextGen.addAll(winners);
+
+        // nextGen auffüllen, wenn zu klein:
         while (nextGen.size() < SeperatorCount) {
-            final Cell parent = winners.get(random.nextInt(winners.size()));
-            final Cell childCell = ReproductionManagerService.reproduce(config, environment, parent);
+            final Cell parentCell = winners.get(random.nextInt(winners.size()));
+            parentCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
+            final Cell childCell = ReproductionManagerService.reproduce(config, environment, parentCell);
             if (Objects.nonNull(childCell)) {
                 nextGen.add(childCell);
                 childCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
             }
         }
-        for (int posX = 0; posX < SeperatorCount; posX++) {
+
+        // nextGen initalisieren.
+        for (int posX = 0; posX < nextGen.size(); posX++) {
             final Cell cell = nextGen.get(posX);
             final double x = xSpace * posX + xSpace / 2.0D;
             final double y = config.getHeight() - Environment.GroundBlockerHeight - config.getCellMaxRadiusSize();
