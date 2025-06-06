@@ -29,7 +29,7 @@ public class ReproductionManagerService {
      * The child inherits traits from the parentCell with mutations.
      */
     public static Cell reproduce(final SimulationConfig config, final Environment environment, final Cell parentCell) {
-        final Cell child;
+        final Cell childCell;
 
         // Calculate child position slightly offset from parentCell
         //double angle = random.nextDouble() * 2 * Math.PI;
@@ -65,13 +65,13 @@ public class ReproductionManagerService {
                     final CellBrain childCellBrain = new CellBrain(childBrainNetwork);
 
                     // Create child cell
-                    child = new Cell(childPosition, parentSize, childCellBrain);
+                    childCell = new Cell(childPosition, parentSize, childCellBrain);
 
                     // Starte den Wachstumsprozess der neuen Zelle
-                    child.startGrowthProcess();
+                    childCell.startGrowthProcess();
 
                     // Übernehme die Rotation der Mutter-Zelle
-                    child.setRotation(parentCell.getRotation());
+                    childCell.setRotation(parentCell.getRotation());
 
                     // Inherit and mutate type
                     final CellType parentType = parentCell.getType();
@@ -80,46 +80,57 @@ public class ReproductionManagerService {
                             mutateValue(parentType.getGreen(), typeMutationStrength),
                             mutateValue(parentType.getBlue(), typeMutationStrength)
                     );
-                    child.setType(childType);
+                    childCell.setType(childType);
 
                     // Share energy based on the actor's energy share percentage
                     final double energySharePercentage = chosenActor.getReproductionEnergyShareOutput();
                     final double energyForChild = parentCell.getEnergy() * energySharePercentage;
                     parentCell.setEnergy(parentCell.getEnergy() - energyForChild);
-                    child.setEnergy(energyForChild);
+                    childCell.setEnergy(energyForChild);
 
                     // Inherit and increment generation counter
-                    child.setGeneration(parentCell.getGeneration() + 1);
+                    childCell.setGeneration(parentCell.getGeneration() + 1);
 
                     // Ensure child's neural network outputs are set by running think once
-                    CellBrainService.think(child);
+                    CellBrainService.think(childCell);
 
                     final int childState = chosenActor.getReproductionState();
 
-                    child.setCellState(childState);
+                    childCell.setCellState(childState);
 
                     // Set active layers in the child's brain based on the cell state
-                    boolean[] activeLayers = child.getBrain().determineActiveHiddenLayers(child.getCellState());
-                    Layer[] hiddenLayerList = childBrainNetwork.getHiddenLayerList();
-                    for (int i = 0; i < Math.min(hiddenLayerList.length, SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT); i++) {
-                        final Layer layer = hiddenLayerList[i];
-                        layer.setActiveLayer(activeLayers[i]);
-                    }
+                    calcActiveLayersByState(childCell);
 
                     // Mutate mutationRateFactor and mutationStrengthFactor
-                    child.setMutationRateFactor(parentCell.getMutationRateFactor());
-                    child.setMutationStrengthFactor(parentCell.getMutationStrengthFactor());
-                    child.mutateMutationFactors(config.getMutationRate(), config.getMutationStrength());
+                    childCell.setMutationRateFactor(parentCell.getMutationRateFactor());
+                    childCell.setMutationStrengthFactor(parentCell.getMutationStrengthFactor());
+                    childCell.mutateMutationFactors(config.getMutationRate(), config.getMutationStrength());
                 } else {
-                    child = null;
+                    childCell = null;
                 }
             } else {
-                child = null;
+                childCell = null;
             }
         } else {
-            child = null;
+            childCell = null;
         }
-        return child;
+        return childCell;
+    }
+
+    public static void calcActiveLayersByState(final Cell cell) {
+        final CellBrain cellBrain = (CellBrain) cell.getBrain();
+        final NeuralNetwork childBrainNetwork = cellBrain.getNeuralNetwork();
+        final boolean[] activeLayers = cellBrain.determineActiveHiddenLayers(cell.getCellState());
+        final Layer[] hiddenLayerList = childBrainNetwork.getHiddenLayerList();
+        for (int i = 0; i < Math.min(hiddenLayerList.length, SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT); i++) {
+            final Layer layer = hiddenLayerList[i];
+            layer.setActiveLayer(activeLayers[i]);
+            if (!layer.isActiveLayer()) {
+                for (final Neuron neuron : layer.getNeuronsArray()) {
+                    neuron.setValue(0.0D);
+                }
+            }
+        }
     }
 
     private static double mutateValue(double value, double strength) {

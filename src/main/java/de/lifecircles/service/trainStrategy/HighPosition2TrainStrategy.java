@@ -32,7 +32,7 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
         //this.config.setViscosity(5.75D * 2.0D);
 
         this.config.setEnergyPerRay(0.005D); // 0.005; //0.015; // 0.025;
-        this.config.setReproductionAgeThreshold(4.0D); // 8.0D
+        this.config.setReproductionAgeThreshold(6.0D); // 8.0D
 
         return new Environment(config.getWidth(), config.getHeight());
     }
@@ -175,6 +175,7 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
                     random.nextDouble()
             ));
             cell.setCellState(0);
+            ReproductionManagerService.calcActiveLayersByState(cell);
             cell.setAge(0.0D);
             cell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
             cell.setPosition(new Vector2D(x, y));

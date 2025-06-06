@@ -222,9 +222,14 @@ public class NeuralNetwork implements Serializable {
 
         // process hidden layers
         for (final Layer layer : this.hiddenLayerList) {
+            final Neuron[] neuronArr = layer.getNeuronsArray();
             if (layer.isActiveLayer()) {
-                for (final Neuron neuron : layer.getNeuronsArray()) {
+                for (final Neuron neuron : neuronArr) {
                     this.proccessedSynapses += neuron.activate();
+                }
+            } else {
+                if (neuronArr.length > 0) {
+                    this.proccessedSynapses += layer.getNeuronsArray()[0].activate();
                 }
             }
         }
@@ -243,9 +248,9 @@ public class NeuralNetwork implements Serializable {
         if (!disableLayerDeactivation) {
             for (int layerPos = this.fixedHiddenLayerCount; layerPos < hiddenLayerList.length; layerPos++) {
                 final Layer layer = this.hiddenLayerList[layerPos];
-                final List<Neuron> neuronList = layer.getNeurons();
-                if (neuronList.size() > 0) {
-                    final Neuron neuron = neuronList.get(0);
+                final Neuron[] neuronArr = layer.getNeuronsArray();
+                if (neuronArr.length > 0) {
+                    final Neuron neuron = neuronArr[0];
                     final double actValue = Math.max(1.0D / 1000,
                             layer.getActivationCounter() + neuron.getValue());
                     if (actValue >= 1.0D) {
