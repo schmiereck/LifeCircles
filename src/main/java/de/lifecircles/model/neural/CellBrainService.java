@@ -55,15 +55,8 @@ public class CellBrainService {
             if (Objects.nonNull(sensedCell)) {
                 final CellType sensedCellType = sensedCell.getType();
 
-                // --- Entfernung berechnen (0.0 = fern, 1.0 = nah) ---
-                double dist = 0.0;
-                double maxDist = 1.0;
-                if (maActor.getCachedPosition() != null && maActor.getSensedActor() != null && maActor.getSensedActor().getCachedPosition() != null) {
-                    dist = maActor.getCachedPosition().distance(maActor.getSensedActor().getCachedPosition());
-                    int totalSensors = maActor.getParentCell().getSensorActors().size();
-                    maxDist = de.lifecircles.service.SensorActorForceCellCalcService.calcSensorRadius(maActor.getParentCell().getRadiusSize(), totalSensors);
-                }
-                double distanceFactor = 1.0 - Math.min(dist / maxDist, 1.0); // 1.0 = nah, 0.0 = fern
+                SensableActor sensedActor = maActor.getSensedActor();
+                double distanceFactor = calcDistanceFactor(maActor, sensedActor);
                 // Werte mit Distanzfaktor multiplizieren
                 sensedCellTypeR = sensedCellType.getRed() * distanceFactor;
                 sensedCellTypeG = sensedCellType.getGreen() * distanceFactor;
@@ -115,6 +108,19 @@ public class CellBrainService {
         }
 
         return inputs;
+    }
+
+    public static double calcDistanceFactor(SensorActor maActor, SensableActor sensedActor) {
+        // --- Entfernung berechnen (0.0 = fern, 1.0 = nah) ---
+        double dist = 0.0D;
+        double maxDist = 1.0D;
+        if (maActor.getCachedPosition() != null && sensedActor != null && sensedActor.getCachedPosition() != null) {
+            dist = maActor.getCachedPosition().distance(sensedActor.getCachedPosition());
+            int totalSensors = maActor.getParentCell().getSensorActors().size();
+            maxDist = de.lifecircles.service.SensorActorForceCellCalcService.calcSensorRadius(maActor.getParentCell().getRadiusSize(), totalSensors);
+        }
+        double distanceFactor = 1.0 - Math.min(dist / maxDist, 1.0D); // 1.0 = nah, 0.0 = fern
+        return distanceFactor;
     }
 
     public static void applyOutputs(final Cell cell, final double[] outputs) {

@@ -87,6 +87,11 @@ public class CellBrain implements CellBrainInterface, Serializable {
         return  this.network.getOutputValue(outputNeuronPos);
     }
 
+    @Override
+    public double getInputValue(int inputNeuronPos) {
+        return  this.network.getInputNeuronList()[inputNeuronPos].getValue();
+    }
+
     public NeuralNetwork getNeuralNetwork() {
         return this.network;
     }

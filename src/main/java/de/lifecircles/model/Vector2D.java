@@ -67,6 +67,10 @@ public class Vector2D implements Serializable {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
+    public static double distance(Vector2D position, Vector2D position1) {
+        return position.distance(position1);
+    }
+
     public Vector2D rotate(double angleRadians) {
         double cos = Math.cos(angleRadians);
         double sin = Math.sin(angleRadians);

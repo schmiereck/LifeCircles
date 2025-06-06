@@ -104,10 +104,10 @@ public class CalculationService implements Runnable {
     }
 
     private void update(final double deltaTime) {
-        final List<Cell> cells = this.environment.getCells();
+        final List<Cell> cellList = this.environment.getCells();
 
         // Update all cells with their neighborhood information
-        this.partitioner.build(cells);
+        this.partitioner.build(cellList);
 
         // Update environment physics
         this.environment.update(deltaTime, this.partitioner);

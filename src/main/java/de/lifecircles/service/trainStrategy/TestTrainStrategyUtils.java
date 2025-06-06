@@ -36,6 +36,7 @@ public abstract class TestTrainStrategyUtils {
                                          final boolean isAttraction, final boolean isRepulsion, final boolean isDelivery, final boolean isAbsorbtion) {
         final CellBrainInterface cellBrain = new CellBrainInterface() {
 
+            double cellEnergy = 0.75D;
             final double[] output;
             final double[] inputs;
 
@@ -43,6 +44,8 @@ public abstract class TestTrainStrategyUtils {
                 int inputCount = GlobalInputFeature.values().length +
                         (SensorInputFeature.values().length * SimulationConfig.CELL_SENSOR_ACTOR_COUNT);
                 this.inputs = new double[inputCount];
+
+                this.inputs[GlobalInputFeature.MY_CELL_ENERGY.ordinal()] = this.cellEnergy;
 
                 // Initialize the output array with the desired size
                 int outputCount = GlobalOutputFeature.values().length +
@@ -92,6 +95,11 @@ public abstract class TestTrainStrategyUtils {
             @Override
             public double getOutputValue(int outputNeuronPos) {
                 return this.output[outputNeuronPos];
+            }
+
+            @Override
+            public double getInputValue(int inputNeuronPos) {
+                return this.inputs[inputNeuronPos];
             }
 
             @Override

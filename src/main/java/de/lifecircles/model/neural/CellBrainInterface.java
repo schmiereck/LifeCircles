@@ -16,4 +16,6 @@ public interface CellBrainInterface {
     NeuralNetwork mutate(double mutationRate, double mutationStrength);
 
     double getOutputValue(int outputNeuronPos);
+
+    double getInputValue(int inputNeuronPos);
 }
