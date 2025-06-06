@@ -77,22 +77,70 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
             return;
         }
         double xSpace = (config.getWidth() / SeperatorCount);
-        // Sortiere global: erst nach Y absteigend, dann nach Abstand zur Abschnittsmitte aufsteigend
-        cells.sort(Comparator.comparingDouble((Cell c) -> -c.getPosition().getY())
-                .thenComparingDouble(c -> {
-                    double cx = c.getPosition().getX();
-                    int section = (int) (cx / xSpace);
-                    double sectionMid = xSpace * section + xSpace / 2.0D;
-                    return Math.abs(cx - sectionMid);
-                }));
-        int winnersCount = Math.min(SeperatorCount, cells.size());
-        List<Cell> winners = new ArrayList<>(cells.subList(0, winnersCount));
+        // Sortiere global: Nach Y absteigend (höchste) und nach Abstand zur Abschnittsmitte aufsteigend.
+        // Sortiere primär nach Abschnitten, dann innerhalb jedes Abschnitts nach Y-Position absteigend und Nähe zur Mitte
+        cells.sort((c1, c2) -> {
+            double c1x = c1.getPosition().getX();
+            double c2x = c2.getPosition().getX();
+            int section1 = (int) (c1x / xSpace);
+            int section2 = (int) (c2x / xSpace);
+
+            // Sortiere primär nach Abschnitt
+            if (section1 != section2) {
+                return Integer.compare(section1, section2);
+            }
+
+            // Innerhalb des gleichen Abschnitts: Kombiniere Y-Position und Abstand zur Mitte
+            double sectionMid = xSpace * section1 + xSpace / 2.0D;
+            double distToMid1 = Math.abs(c1x - sectionMid);
+            double distToMid2 = Math.abs(c2x - sectionMid);
+
+            // Normalisiere die Werte
+            double maxPossibleDistance = xSpace / 2.0D; // Maximaler Abstand zur Mitte eines Abschnitts
+            double normalizedDistToMid1 = distToMid1 / maxPossibleDistance; // 0 = perfekt zentriert, 1 = am Rand
+            double normalizedDistToMid2 = distToMid2 / maxPossibleDistance;
+
+            // Normalisiere Y-Position (höher ist besser)
+            double normalizedY1 = c1.getPosition().getY() / config.getHeight(); // 0 = unten, 1 = oben
+            double normalizedY2 = c2.getPosition().getY() / config.getHeight();
+
+            // Gewichtungsfaktoren
+            final double POSITION_WEIGHT = 0.7; // Gewichtung der Y-Position (höher = wichtiger)
+            final double DISTANCE_WEIGHT = 0.3; // Gewichtung des Abstands zur Mitte
+
+            // Berechne Gesamtbewertung:
+            // - Hohe Y-Position gibt einen hohen Wert
+            // - Kleine Distanz zur Mitte gibt einen hohen Wert
+            double score1 = (POSITION_WEIGHT * normalizedY1) + (DISTANCE_WEIGHT * (1.0 - normalizedDistToMid1));
+            double score2 = (POSITION_WEIGHT * normalizedY2) + (DISTANCE_WEIGHT * (1.0 - normalizedDistToMid2));
+
+            // Höhere Bewertung zuerst
+            return Double.compare(score2, score1);
+        });
+
+        // Wähle die besten Zellen aus jedem Abschnitt aus
+        List<Cell> winners = new ArrayList<>();
+        int[] selectedPerSection = new int[SeperatorCount];
+        int maxPerSection = Math.max(1, cells.size() / SeperatorCount);
+
+        for (Cell cell : cells) {
+            int section = (int) (cell.getPosition().getX() / xSpace);
+            if (section >= 0 && section < SeperatorCount && selectedPerSection[section] < maxPerSection) {
+                winners.add(cell);
+                selectedPerSection[section]++;
+            }
+
+            if (winners.size() >= SeperatorCount) {
+                break;
+            }
+        }
+
         winners.forEach(cell -> cell.setEnergy(SimulationConfig.CELL_MAX_ENERGY));
 
         List<Cell> nextGen = new ArrayList<>();
         nextGen.addAll(winners);
         while (nextGen.size() < SeperatorCount) {
-            final Cell parent = winners.get(random.nextInt(winnersCount));
+            final Cell parent = winners.get(random.nextInt(winners.size()));
             final Cell childCell = ReproductionManagerService.reproduce(config, environment, parent);
             if (Objects.nonNull(childCell)) {
                 nextGen.add(childCell);
