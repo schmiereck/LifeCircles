@@ -18,7 +18,7 @@ import java.util.*;
  * Damit werden beide Kriterien – Höhe und Zentrierung – bei der globalen Auswahl berücksichtigt.
  */
 public class HighPosition2TrainStrategy implements TrainStrategy {
-    private static final int GENERATION_STEP = 2500 * 1; // Anzahl der Schritte bis zur Selektion
+    private static final int GENERATION_STEP = 2500 * 2; // Anzahl der Schritte bis zur Selektion
     private final SimulationConfig config = SimulationConfig.getInstance();
     private final Random random = new Random();
     private long stepCounter = 0;
