@@ -18,7 +18,7 @@ import java.util.*;
  * Damit werden beide Kriterien – Höhe und Zentrierung – bei der globalen Auswahl berücksichtigt.
  */
 public class HighPosition2TrainStrategy implements TrainStrategy {
-    private static final int GENERATION_STEP = 2200;//2500 * 4;
+    private static final int GENERATION_STEP = 2500 * 1; // Anzahl der Schritte bis zur Selektion
     private final SimulationConfig config = SimulationConfig.getInstance();
     private final Random random = new Random();
     private long stepCounter = 0;
@@ -67,8 +67,10 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
     }
 
     // Gewichtungsfaktoren
-    private static final double POSITION_WEIGHT = 0.6; // Gewichtung der Y-Position (höher = wichtiger)
-    private static final double DISTANCE_WEIGHT = 0.4; // Gewichtung des Abstands zur Mitte
+    //private static final double POSITION_WEIGHT = 0.999D; // Gewichtung der Y-Position (höher = wichtiger)
+    //private static final double DISTANCE_WEIGHT = 0.001D; // Gewichtung des Abstands zur Mitte
+    private static final double POSITION_WEIGHT = 1.0D; // Gewichtung der Y-Position (höher = wichtiger)
+    private static final double DISTANCE_WEIGHT = 0.0D; // Gewichtung des Abstands zur Mitte
 
     @Override
     public void selectAndMutate(Environment environment) {
@@ -82,10 +84,19 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
         }
         double xSpace = (config.getWidth() / SeperatorCount);
 
+        final double minHeight = cells.stream().
+                min((c1, c2) -> Double.compare(c1.getPosition().getY(), c2.getPosition().getY()))
+                .map(cell -> cell.getPosition().getY()).orElse(0.0D);
+        final double maxHeight = cells.stream().
+                max((c1, c2) -> Double.compare(c1.getPosition().getY(), c2.getPosition().getY()))
+                .map(cell -> cell.getPosition().getY()).orElse(0.0D);
+
         // Sortiere Zellen nach einer gewichteten Kombination aus Y-Position und Nähe zur Mitte
-        cells.sort(new Comparator<Cell>() {
-            @Override
-            public int compare(Cell c1, Cell c2) {
+        //final List<Cell> sortedCellList = cells.stream().
+        //        sorted((c1, c2) -> Double.compare(c1.getPosition().getY(), c2.getPosition().getY())).
+        //        toList();
+        final List<Cell> sortedCellList = cells.stream().
+                sorted((c1, c2) -> {
                 double c1x = c1.getPosition().getX();
                 double c2x = c2.getPosition().getX();
                 int section1 = (int) (c1x / xSpace);
@@ -103,37 +114,36 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
 
                 // Normalisiere die Werte
                 double maxPossibleDistance = xSpace / 2.0D; // Maximaler Abstand zur Mitte eines Abschnitts
-                double normalizedDistToMid1 = distToMid1 / maxPossibleDistance; // 0 = perfekt zentriert, 1 = am Rand
-                double normalizedDistToMid2 = distToMid2 / maxPossibleDistance;
+                double normalizedDistToMid1Score = (1.0D - (distToMid1 / maxPossibleDistance)); // 0 = perfekt zentriert, 1 = am Rand
+                double normalizedDistToMid2Score = (1.0D - (distToMid2 / maxPossibleDistance));
 
                 // Y-Position (höher ist besser)
-                double normalizedY1 = c1.getPosition().getY() / config.getHeight(); // 0 = unten, 1 = oben
-                double normalizedY2 = c2.getPosition().getY() / config.getHeight();
+                // Statt auf gesamte Höhe zu normalisieren, verwenden wir die tatsächlichen min/max Werte
+                // und stellen sicher, dass wir Division durch Null vermeiden
+                double heightRange = maxHeight - minHeight;
+                double normalizedY1Score = heightRange > 0.0D ?
+                    1.0D - ((maxHeight - c1.getPosition().getY()) / heightRange) :
+                    0.5D; // Defaultwert bei keinem Unterschied
+                double normalizedY2Score = heightRange > 0.0D ?
+                    1.0D - ((maxHeight - c2.getPosition().getY()) / heightRange) :
+                    0.5D;
 
                 // Berechne Gesamtbewertung:
                 // - Hohe Y-Position gibt einen hohen Wert
                 // - Kleine Distanz zur Mitte gibt einen hohen Wert
-                double score1 = (POSITION_WEIGHT * normalizedY1) + (DISTANCE_WEIGHT * (1.0 - normalizedDistToMid1));
-                double score2 = (POSITION_WEIGHT * normalizedY2) + (DISTANCE_WEIGHT * (1.0 - normalizedDistToMid2));
+                double score1 = (POSITION_WEIGHT * normalizedY1Score) + (DISTANCE_WEIGHT * (normalizedDistToMid1Score));
+                double score2 = (POSITION_WEIGHT * normalizedY2Score) + (DISTANCE_WEIGHT * (normalizedDistToMid2Score));
 
-                // Vergleiche die Scores direkt, nicht den Double.compare nutzen für klare Reihenfolge
-                if (score1 < score2) {
-                    return 1;
-                } else if (score1 > score2) {
-                    return -1;
-                } else {
-                    // Bei gleichen Scores nach Y-Position sortieren für konsistente Sortierung
-                    return Double.compare(c2.getPosition().getY(), c1.getPosition().getY());
-                }
-            }
-        });
+                return Double.compare(score2, score1);
+            }).
+            toList();
 
         // Wähle die besten Zellen aus jedem Abschnitt aus
         List<Cell> winners = new ArrayList<>();
         int[] selectedPerSection = new int[SeperatorCount];
         int maxPerSection = 2;//Math.max(1, cells.size() / SeperatorCount);
 
-        for (Cell cell : cells) {
+        for (Cell cell : sortedCellList) {
             int section = (int) (cell.getPosition().getX() / xSpace);
             if (section >= 0 && section < SeperatorCount && selectedPerSection[section] < maxPerSection) {
                 winners.add(cell);
