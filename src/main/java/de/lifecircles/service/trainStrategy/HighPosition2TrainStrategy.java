@@ -18,7 +18,7 @@ import java.util.*;
  * Damit werden beide Kriterien – Höhe und Zentrierung – bei der globalen Auswahl berücksichtigt.
  */
 public class HighPosition2TrainStrategy implements TrainStrategy {
-    private static final int GENERATION_STEP = 2500 * 2; // Anzahl der Schritte bis zur Selektion
+    private static final int GENERATION_STEP = 3000 * 1; // Anzahl der Schritte bis zur Selektion
     private final SimulationConfig config = SimulationConfig.getInstance();
     private final Random random = new Random();
     private long stepCounter = 0;
@@ -32,6 +32,7 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
         //this.config.setViscosity(5.75D * 2.0D);
 
         this.config.setEnergyPerRay(0.005D); // 0.005; //0.015; // 0.025;
+        this.config.setReproductionAgeThreshold(4.0D); // 8.0D
 
         return new Environment(config.getWidth(), config.getHeight());
     }
@@ -67,8 +68,8 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
     }
 
     // Gewichtungsfaktoren
-    private static final double POSITION_WEIGHT = 0.8D; // Gewichtung der Y-Position (höher = wichtiger)
-    private static final double DISTANCE_WEIGHT = 0.2D; // Gewichtung des Abstands zur Mitte
+    private static final double POSITION_WEIGHT = 0.7D; // Gewichtung der Y-Position (höher = wichtiger)
+    private static final double DISTANCE_WEIGHT = 0.3D; // Gewichtung des Abstands zur Mitte
     //private static final double POSITION_WEIGHT = 1.0D; // Gewichtung der Y-Position (höher = wichtiger)
     //private static final double DISTANCE_WEIGHT = 0.0D; // Gewichtung des Abstands zur Mitte
 

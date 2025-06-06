@@ -163,6 +163,11 @@ public class Cell implements SensableCell, Serializable {
             if (elapsedTime >= SimulationConfig.getInstance().getSizeChangeDelay()) {
                 this.radiusSize = this.targetRadiusSize;
                 this.sizeChangeTimestamp = -1; // Zurücksetzen des Zeitstempels
+            } else {
+                // Berechne den Fortschritt der Verzögerung
+                double progress = (double) elapsedTime / SimulationConfig.getInstance().getSizeChangeDelay();
+                // Interpolieren zwischen der aktuellen Größe und der Zielgröße
+                this.radiusSize = this.radiusSize + (this.targetRadiusSize - this.radiusSize) * progress;
             }
         }
     }

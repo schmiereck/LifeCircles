@@ -102,10 +102,10 @@ public class SimulationConfig {
     public static final int CELL_STATE_ACTIVE_LAYER_COUNT = 3;
 
     // Konstante für die Zellwachstumszeit in Sekunden
-    public static final double CELL_GROWTH_DURATION = 2.0D;
+    public static final double CELL_GROWTH_DURATION = 1.0D;
 
     private double cellMinRadiusSize = 6.0D;
-    private double cellMinGrowRadiusSize = 2.0D;
+    private double cellMinGrowRadiusSize = 0.5D; //2.0D;
     private double cellMaxRadiusSize = 20.0D;
 
     public static double cellActorMaxFieldRadiusFactor = 0.9D;

@@ -1,6 +1,8 @@
 package de.lifecircles.view;
 
 import de.lifecircles.model.Cell;
+import de.lifecircles.model.SensorActor;
+import de.lifecircles.model.Vector2D;
 import de.lifecircles.model.neural.*;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
@@ -10,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -27,13 +30,14 @@ public class CellDetailView extends Stage {
 
     private Cell currentCell;
     private final Canvas brainCanvas;
+    private final Canvas cellCanvas; // Neue Canvas für die Zellansicht
     private final Label typeLabel;
     private final Label stateLabel;
     private final Label ageLabel;
     private final Label energyLabel;
     private final Label generationLabel;
-    private final Label synapseCountLabel; // NEU
-    private final Label cellSizeLabel;     // NEU
+    private final Label synapseCountLabel;
+    private final Label cellSizeLabel;
     private AnimationTimer updateTimer;
     private boolean needsRedraw = true;
     private double zoomFactor = 1.0;
@@ -52,17 +56,52 @@ public class CellDetailView extends Stage {
         // Haupt-Layout erstellen
         BorderPane mainLayout = new BorderPane();
 
-        // Layout für die Mitte vorbereiten
-        VBox centerBox = new VBox(10);
-        centerBox.setPadding(new javafx.geometry.Insets(10));
+        // Layout für die Mitte vorbereiten - zwei Spalten nebeneinander
+        GridPane centerGridPane = new GridPane();
+        centerGridPane.setPadding(new javafx.geometry.Insets(10));
+        centerGridPane.setHgap(10); // Horizontaler Abstand zwischen den Komponenten
 
         // Canvas für die Visualisierung des neuronalen Netzes
         brainCanvas = new Canvas(400, 300);
 
+        // Canvas für die Zellansicht - jetzt größer definiert
+        cellCanvas = new Canvas(300, 300);
+
+        // Labels für die Visualisierungen
+        Label networkLabel = new Label("Neuronales Netzwerk (ZellBrain):");
+        Label cellLabel = new Label("Zellansicht:");
+
+        // Brain-Canvas VBox
+        VBox brainBox = new VBox(5);
+        brainBox.getChildren().addAll(networkLabel, brainCanvas);
+        VBox.setVgrow(brainCanvas, Priority.ALWAYS);
+
+        // Cell-Canvas VBox
+        VBox cellBox = new VBox(5);
+        cellBox.getChildren().addAll(cellLabel, cellCanvas);
+        VBox.setVgrow(cellCanvas, Priority.ALWAYS);
+
+        // Beide Canvas-Boxen ins Grid einfügen
+        centerGridPane.add(brainBox, 0, 0);
+        centerGridPane.add(cellBox, 1, 0);
+
+        // Spaltengewichtung setzen (60% Gehirn, 40% Zelle)
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setPercentWidth(60);
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setPercentWidth(40);
+        centerGridPane.getColumnConstraints().addAll(col1, col2);
+
+        // Beide Canvas sollen proportional zur verfügbaren Fläche wachsen
+        GridPane.setHgrow(brainBox, Priority.ALWAYS);
+        GridPane.setVgrow(brainBox, Priority.ALWAYS);
+        GridPane.setHgrow(cellBox, Priority.ALWAYS);
+        GridPane.setVgrow(cellBox, Priority.ALWAYS);
+
         // Info-Panel mit Zelleigenschaften
         GridPane infoPanel = new GridPane();
-        infoPanel.setHgap(16); // Mehr Abstand zwischen den Spalten
-        infoPanel.setVgap(4);  // Mehr Abstand zwischen den Zeilen
+        infoPanel.setHgap(16);
+        infoPanel.setVgap(4);
         infoPanel.setPadding(new javafx.geometry.Insets(10));
 
         // Labels für Zelleigenschaften
@@ -93,18 +132,12 @@ public class CellDetailView extends Stage {
         infoPanel.add(cellSizeLabel, 3, 2);
         // Platz für weitere Details in Zeile 3, Spalte 2/3
 
-        // Label für die Netzwerk-Visualisierung
-        Label networkLabel = new Label("Neuronales Netzwerk (ZellBrain):");
-
-        // Layout zusammenbauen
-        centerBox.getChildren().addAll(networkLabel, brainCanvas);
-        VBox.setVgrow(brainCanvas, Priority.ALWAYS); // Canvas soll vertikal wachsen
-
-        mainLayout.setCenter(centerBox);
+        // Haupt-Layout zusammenbauen
+        mainLayout.setCenter(centerGridPane);
         mainLayout.setBottom(infoPanel);
 
         // Szene erstellen und Stage konfigurieren
-        Scene scene = new Scene(mainLayout, 600, 500);
+        Scene scene = new Scene(mainLayout, 800, 600);
         setScene(scene);
         setResizable(true);
 
@@ -121,10 +154,11 @@ public class CellDetailView extends Stage {
                         lastUpdate = now;
                     }
 
-                    // Neuronales Netzwerk nur einmal pro Sekunde aktualisieren
+                    // Neuronales Netzwerk und Zellansicht nur einmal pro Sekunde aktualisieren
                     // oder wenn eine Neuzeichnung angefordert wurde
                     if (now - lastBrainUpdate > BRAIN_UPDATE_INTERVAL || needsRedraw) {
                         renderBrain();
+                        renderCell(); // Neue Methode zum Rendern der Zellansicht
                         lastBrainUpdate = now;
                         needsRedraw = false;
                     }
@@ -135,39 +169,61 @@ public class CellDetailView extends Stage {
         // Direkt an Fensteränderungen binden statt an Container-Änderungen
         // Dies funktioniert zuverlässiger, besonders beim Verkleinern
         scene.widthProperty().addListener((obs, oldVal, newVal) -> {
-            if (brainCanvas != null) {
+            if (brainCanvas != null && cellCanvas != null) {
                 // Padding berücksichtigen und Canvas-Breite anpassen
-                double width = newVal.doubleValue() - 40; // Mehr Platz für Ränder lassen
-                if (width > 0) {
-                    brainCanvas.setWidth(width);
+                double totalWidth = newVal.doubleValue() - 40; // Außenrand berücksichtigen
+
+                // Aufteilung der Breite zwischen Brain-Canvas (60%) und Cell-Canvas (40%)
+                if (totalWidth > 0) {
+                    double brainCanvasWidth = totalWidth * 0.55; // 60% - etwas weniger wegen Innenabstand
+                    brainCanvas.setWidth(brainCanvasWidth);
+
+                    double cellCanvasWidth = totalWidth * 0.35; // 40% - etwas weniger wegen Innenabstand
+                    cellCanvas.setWidth(cellCanvasWidth);
+
                     needsRedraw = true;
+
                     // Sofortige Neuzeichnung erzwingen, wenn eine Zelle aktiv ist
                     if (currentCell != null) {
                         renderBrain();
+                        renderCell();
                     }
                 }
             }
         });
 
         scene.heightProperty().addListener((obs, oldVal, newVal) -> {
-            if (brainCanvas != null) {
-                // Feste Höhe für Labels und Padding verwenden (statt Label-Höhe abzufragen)
+            if (brainCanvas != null && cellCanvas != null) {
+                // Feste Höhe für Labels und Padding verwenden
                 double reservedSpace = 150; // Platz für Labels, Infobereich und Padding
-                double height = newVal.doubleValue() - reservedSpace;
-                if (height > 0) {
-                    brainCanvas.setHeight(height);
+                double availableHeight = newVal.doubleValue() - reservedSpace;
+
+                if (availableHeight > 0) {
+                    // Beide Canvas erhalten die gleiche Höhe
+                    brainCanvas.setHeight(availableHeight);
+                    cellCanvas.setHeight(availableHeight);
+
                     needsRedraw = true;
+
                     // Sofortige Neuzeichnung erzwingen, wenn eine Zelle aktiv ist
                     if (currentCell != null) {
                         renderBrain();
+                        renderCell();
                     }
                 }
             }
         });
 
         // Initialisiere die Canvas-Größe mit aktuellen Fenstermaßen
-        brainCanvas.setWidth(scene.getWidth() - 40);
+        double initialWidth = scene.getWidth() - 40;
+        double brainCanvasWidth = initialWidth * 0.55; // 60% - etwas weniger wegen Innenabstand
+        double cellCanvasWidth = initialWidth * 0.35;  // 40% - etwas weniger wegen Innenabstand
+
+        brainCanvas.setWidth(brainCanvasWidth);
         brainCanvas.setHeight(scene.getHeight() - 150);
+
+        cellCanvas.setWidth(cellCanvasWidth);
+        cellCanvas.setHeight(scene.getHeight() - 150);
 
         // Wenn das Fenster geschlossen wird, Timer anhalten
         setOnCloseRequest(e -> {
@@ -548,6 +604,331 @@ public class CellDetailView extends Stage {
     }
 
     /**
+     * Visualisiert die Zelle mit allen SensorActors und ihren Feldern
+     */
+    private void renderCell() {
+        if (currentCell == null) return;
+
+        GraphicsContext gc = cellCanvas.getGraphicsContext2D();
+        double width = cellCanvas.getWidth();
+        double height = cellCanvas.getHeight();
+
+        if (width <= 0 || height <= 0) return; // Verhindere Zeichnen bei ungültiger Größe
+
+        gc.clearRect(0, 0, width, height);
+        gc.setFill(Color.rgb(20, 20, 30)); // Dunkler Hintergrund
+        gc.fillRect(0, 0, width, height);
+
+        // Zelle in die Mitte der Canvas platzieren mit geeignetem Zoom
+        double cellSize = currentCell.getRadiusSize() * 2;
+        double scale = Math.min(width, height) * 0.6 / cellSize; // 60% der Canvas nutzen
+
+        // Transformiere das Koordinatensystem
+        gc.save();
+        gc.translate(width / 2, height / 2); // Mittelpunkt der Canvas
+        gc.scale(scale, scale); // Vergrößere für bessere Sichtbarkeit
+
+        // Erkannte Nachbar-Aktoren zuerst zeichnen (im Hintergrund)
+        drawSensedActors(gc);
+
+        // Zeichne die Zelle
+        double[] rgb = {
+            currentCell.getType().getRed(),
+            currentCell.getType().getGreen(),
+            currentCell.getType().getBlue()
+        };
+
+        // Zeichne die Zelle mit leichter Transparenz
+        gc.setFill(Color.color(rgb[0], rgb[1], rgb[2], 0.5));
+        gc.fillOval(
+            -currentCell.getRadiusSize(),
+            -currentCell.getRadiusSize(),
+            currentCell.getRadiusSize() * 2,
+            currentCell.getRadiusSize() * 2
+        );
+
+        // Umrandung der Zelle
+        gc.setStroke(Color.WHITE);
+        gc.setLineWidth(0.2);
+        gc.strokeOval(
+            -currentCell.getRadiusSize(),
+            -currentCell.getRadiusSize(),
+            currentCell.getRadiusSize() * 2,
+            currentCell.getRadiusSize() * 2
+        );
+
+        // Richtungsindikator zeichnen (Rotation der Zelle)
+        gc.setStroke(Color.YELLOW);
+        gc.setLineWidth(0.3);
+        gc.strokeLine(0, 0, currentCell.getRadiusSize() * Math.cos(currentCell.getRotation()),
+                currentCell.getRadiusSize() * Math.sin(currentCell.getRotation()));
+
+        // SensorActors und ihre Kraftfelder zeichnen
+        List<SensorActor> sensorActors = currentCell.getSensorActors();
+        int actorCount = sensorActors.size();
+
+        // Zeichne zuerst alle Kraftfelder
+        for (SensorActor actor : sensorActors) {
+            // SensorActor Position berechnen
+            actor.updateCachedPosition(); // Stelle sicher, dass die Position aktuell ist
+            Vector2D actorPos = actor.getCachedPosition();
+
+            if (actorPos != null) {
+                // Umrechnen in das Canvas-Koordinatensystem (relativ zum Mittelpunkt)
+                double actorX = actorPos.getX() - currentCell.getPosition().getX();
+                double actorY = actorPos.getY() - currentCell.getPosition().getY();
+
+                // Radius für das Kraftfeld
+                double radius = de.lifecircles.service.SensorActorForceCellCalcService.calcSensorRadius(
+                        currentCell.getRadiusSize(), actorCount);
+
+                // Färbung des Kraftfelds basierend auf der Kraftstärke
+                final Color fieldColor;
+                if (actor.getForceStrength() > 0) {
+                    // Attraktionskraft - rot
+                    fieldColor = Color.color(
+                            1.0, 0, 0,
+                            0.3 * Math.abs(actor.getForceStrength() /
+                                  de.lifecircles.service.SimulationConfig.getInstance().getCellActorMaxAttractiveForceStrength())
+                    );
+                } else {
+                    // Abstoßungskraft - grün
+                    fieldColor = Color.color(
+                            0, 1.0, 0,
+                            0.3 * Math.abs(actor.getForceStrength() /
+                                  de.lifecircles.service.SimulationConfig.getInstance().getCellActorMaxRepulsiveForceStrength())
+                    );
+                }
+
+                // Kraftfeld als Kreis zeichnen
+                gc.setFill(fieldColor);
+                gc.fillOval(
+                        actorX - radius,
+                        actorY - radius,
+                        radius * 2,
+                        radius * 2
+                );
+            }
+        }
+
+        // Zeichne dann die SensorActors
+        for (SensorActor actor : sensorActors) {
+            Vector2D actorPos = actor.getCachedPosition();
+
+            if (actorPos != null) {
+                // Umrechnen in das Canvas-Koordinatensystem (relativ zum Mittelpunkt)
+                double actorX = actorPos.getX() - currentCell.getPosition().getX();
+                double actorY = actorPos.getY() - currentCell.getPosition().getY();
+
+                double actorSize = 0.8; // Größe des SensorActors
+
+                // Färbung des Sensors
+                double[] actorRgb = {
+                    actor.getType().getRed(),
+                    actor.getType().getGreen(),
+                    actor.getType().getBlue()
+                };
+
+                // SensorActor als kleineren Kreis zeichnen
+                gc.setFill(Color.color(actorRgb[0], actorRgb[1], actorRgb[2]));
+                gc.fillOval(
+                        actorX - actorSize/2,
+                        actorY - actorSize/2,
+                        actorSize,
+                        actorSize
+                );
+
+                // Umrandung
+                gc.setStroke(Color.WHITE);
+                gc.setLineWidth(0.1);
+                gc.strokeOval(
+                        actorX - actorSize/2,
+                        actorY - actorSize/2,
+                        actorSize,
+                        actorSize
+                );
+
+                // Bei aktivem Reproduktionswunsch einen Indikator zeichnen
+                if (actor.getReproductionDesire() > 0.5) {
+                    // Zeichne einen kleinen Stern oder Pfeil
+                    gc.setFill(Color.PINK);
+                    double starSize = actorSize * 0.5;
+                    double[] xPoints = {
+                            actorX, actorX - starSize/2, actorX + starSize/2
+                    };
+                    double[] yPoints = {
+                            actorY - starSize, actorY - starSize/2, actorY - starSize/2
+                    };
+                    gc.fillPolygon(xPoints, yPoints, 3);
+                }
+
+                // Energieabsorption/Energieabgabe visualisieren
+                if (actor.getEnergyAbsorption() > 0.1) {
+                    gc.setStroke(Color.GREEN);
+                    gc.setLineWidth(0.2);
+                    double energySize = actorSize * actor.getEnergyAbsorption();
+                    gc.strokeLine(actorX, actorY + actorSize/2, actorX, actorY + actorSize/2 + energySize);
+                }
+
+                if (actor.getEnergyDelivery() > 0.1) {
+                    gc.setStroke(Color.RED);
+                    gc.setLineWidth(0.2);
+                    double energySize = actorSize * actor.getEnergyDelivery();
+                    gc.strokeLine(actorX, actorY - actorSize/2, actorX, actorY - actorSize/2 - energySize);
+                }
+
+                // Verbindung zu erkanntem Aktor zeichnen
+                if (actor.getSensedActor() != null && actor.getSensedActor() instanceof SensorActor) {
+                    SensorActor sensedActor = (SensorActor) actor.getSensedActor();
+                    sensedActor.updateCachedPosition();
+                    Vector2D sensedActorPos = sensedActor.getCachedPosition();
+
+                    if (sensedActorPos != null) {
+                        // Verbindungslinie zeichnen
+                        gc.setStroke(Color.YELLOW);
+                        gc.setLineWidth(0.15);
+                        gc.setLineDashes(0.4, 0.6); // Gestrichelte Linie
+
+                        // Umrechnen der sensedActor-Position in das Canvas-System
+                        double sensedActorX = sensedActorPos.getX() - currentCell.getPosition().getX();
+                        double sensedActorY = sensedActorPos.getY() - currentCell.getPosition().getY();
+
+                        gc.strokeLine(actorX, actorY, sensedActorX, sensedActorY);
+                        gc.setLineDashes(null); // Linienart zurücksetzen
+                    }
+                }
+            }
+        }
+
+        // Energielevel anzeigen
+        double energyLevel = currentCell.getEnergy() / currentCell.getMaxEnergy();
+        double barWidth = currentCell.getRadiusSize() * 1.0;
+        double barHeight = currentCell.getRadiusSize() * 0.2;
+
+        gc.setFill(Color.RED);
+        gc.fillRect(-barWidth/2, currentCell.getRadiusSize() + 1, barWidth, barHeight);
+
+        gc.setFill(Color.GREEN);
+        gc.fillRect(-barWidth/2, currentCell.getRadiusSize() + 1, barWidth * energyLevel, barHeight);
+
+        // Zelltitel mit Zelltypfarbe
+        gc.setFill(Color.color(rgb[0], rgb[1], rgb[2], 0.9));
+        gc.setFont(new javafx.scene.text.Font("Arial", 2));
+        gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+        gc.fillText("Zelle #" + currentCell.getCellState(), 0, -currentCell.getRadiusSize() - 2);
+
+        // Status-Text hinzufügen
+        gc.setFont(new javafx.scene.text.Font("Arial", 1.5));
+        gc.fillText(String.format("E: %.1f  R: %.1f",
+                    currentCell.getEnergy(),
+                    currentCell.getRadiusSize()),
+                    0, currentCell.getRadiusSize() + 4);
+
+        gc.restore(); // Transformation zurücksetzen
+    }
+
+    /**
+     * Zeichnet erkannte Nachbar-Aktoren und ihre Zellen
+     */
+    private void drawSensedActors(GraphicsContext gc) {
+        if (currentCell == null) return;
+
+        List<SensorActor> sensorActors = currentCell.getSensorActors();
+        Map<Cell, Boolean> drawnCells = new HashMap<>(); // Speichert bereits gezeichnete Zellen
+
+        for (SensorActor actor : sensorActors) {
+            if (actor.getSensedActor() != null && actor.getSensedCell() != null) {
+                if (actor.getSensedActor() instanceof SensorActor) {
+                    SensorActor sensedActor = (SensorActor) actor.getSensedActor();
+                    Cell sensedCell = null;
+
+                    // Versuche, die Cell aus dem SensedCell zu bekommen
+                    if (actor.getSensedCell() instanceof Cell) {
+                        sensedCell = (Cell) actor.getSensedCell();
+
+                        // Zeichne die Nachbarzelle nur einmal
+                        if (!drawnCells.containsKey(sensedCell)) {
+                            drawNeighborCell(gc, sensedCell);
+                            drawnCells.put(sensedCell, true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Zeichnet eine erkannte Nachbarzelle auf die Canvas
+     */
+    private void drawNeighborCell(GraphicsContext gc, Cell neighborCell) {
+        if (neighborCell == null || currentCell == null) return;
+
+        // Position der Nachbarzelle relativ zur aktuellen Zelle berechnen
+        Vector2D cellPos = currentCell.getPosition();
+        Vector2D neighborPos = neighborCell.getPosition();
+        double neighborX = neighborPos.getX() - cellPos.getX();
+        double neighborY = neighborPos.getY() - cellPos.getY();
+        double neighborRadius = neighborCell.getRadiusSize();
+
+        // Zeichne die Nachbarzelle mit leichter Transparenz
+        double[] rgb = {
+            neighborCell.getType().getRed(),
+            neighborCell.getType().getGreen(),
+            neighborCell.getType().getBlue()
+        };
+
+        // Zeichne die Nachbarzelle halbtransparent im Hintergrund
+        gc.setFill(Color.color(rgb[0], rgb[1], rgb[2], 0.1));
+        gc.fillOval(
+            neighborX - neighborRadius,
+            neighborY - neighborRadius,
+            neighborRadius * 2,
+            neighborRadius * 2
+        );
+
+        // Dünne Umrandung der Nachbarzelle
+        gc.setStroke(Color.color(rgb[0], rgb[1], rgb[2], 0.8).brighter());
+        gc.setLineWidth(0.3);
+        gc.strokeOval(
+            neighborX - neighborRadius,
+            neighborY - neighborRadius,
+            neighborRadius * 2,
+            neighborRadius * 2
+        );
+
+        // SensorActors der Nachbarzelle zeichnen
+        List<SensorActor> neighborActors = neighborCell.getSensorActors();
+        for (SensorActor actor : neighborActors) {
+            actor.updateCachedPosition();
+            Vector2D actorPos = actor.getCachedPosition();
+
+            if (actorPos != null) {
+                // Position relativ zur aktuellen Zelle
+                double actorX = actorPos.getX() - cellPos.getX();
+                double actorY = actorPos.getY() - cellPos.getY();
+
+                double actorSize = 0.4; // Kleinere Größe für Nachbar-Aktoren
+
+                // Aktualisierte Färbung des Nachbar-Sensors
+                double[] actorRgb = {
+                    actor.getType().getRed(),
+                    actor.getType().getGreen(),
+                    actor.getType().getBlue()
+                };
+
+                // Nachbar-SensorActor zeichnen
+                gc.setFill(Color.color(actorRgb[0], actorRgb[1], actorRgb[2], 0.6));
+                gc.fillOval(
+                    actorX - actorSize/2,
+                    actorY - actorSize/2,
+                    actorSize,
+                    actorSize
+                );
+            }
+        }
+    }
+
+    /**
      * Konvertiert ein Synapsen-Gewicht in eine Farbe mit einer nichtlinearen Funktion.
      *
      * @param weight Gewicht der Synapse
@@ -571,3 +952,4 @@ public class CellDetailView extends Stage {
         }
     }
 }
+

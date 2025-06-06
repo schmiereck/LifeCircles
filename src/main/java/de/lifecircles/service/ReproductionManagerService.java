@@ -49,7 +49,7 @@ public class ReproductionManagerService {
             if (Objects.nonNull(direction)) {
                 Vector2D childPosition = parentCell.getPosition().
                         add(direction.multiply(parentCell.getRadiusSize() +
-                                (SimulationConfig.getInstance().getCellMinRadiusSize() * 0.75D)));
+                                (SimulationConfig.getInstance().getCellMinGrowRadiusSize() * 2.0D)));
 
                 if (!BlockerCellCalcService.checkCellIsInsideBlocker(childPosition, environment.getBlockers())) {
                     // Set initial size (slightly mutated from parentCell's initial size)

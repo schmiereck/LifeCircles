@@ -75,8 +75,14 @@ public class SensorActorForceCellCalcService {
                                 calcCellActor.setSensedCell(otherCell);
                                 calcCellActor.setSensedActor(otherCellActor);
 
-                                final Vector2D forceOnCalcCell = direction.normalize().multiply(totalForceStrength);
-                                final Vector2D forceOnOtherCell = direction.normalize().multiply(-totalForceStrength);
+                                final double calcCellForceStrength = calcCell.getRadiusSize() / SimulationConfig.getInstance().getCellMaxRadiusSize();
+                                final double otherCellForceStrength = otherCell.getRadiusSize() / SimulationConfig.getInstance().getCellMaxRadiusSize();
+
+                                final Vector2D forceOnCalcCell = direction.normalize().multiply(totalForceStrength *
+                                        calcCellForceStrength * otherCellForceStrength);
+                                final Vector2D forceOnOtherCell = direction.normalize().multiply(-totalForceStrength *
+                                        otherCellForceStrength * calcCellForceStrength);
+
                                 calcCell.applyForce(forceOnCalcCell, calcCellActor.getCachedPosition());
                                 otherCell.applyForce(forceOnOtherCell, calcCellActor.getCachedPosition());
                             }
