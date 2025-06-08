@@ -76,9 +76,9 @@ public class ReproductionManagerService {
                     // Inherit and mutate type
                     final CellType parentType = parentCell.getType();
                     final CellType childType = new CellType(
-                            mutateValue(parentType.getRed(), typeMutationStrength),
-                            mutateValue(parentType.getGreen(), typeMutationStrength),
-                            mutateValue(parentType.getBlue(), typeMutationStrength)
+                            mutateValue(parentType.getRed(), typeMutationStrength / 10.0D),
+                            mutateValue(parentType.getGreen(), typeMutationStrength / 10.0D),
+                            mutateValue(parentType.getBlue(), typeMutationStrength / 10.0D)
                     );
                     childCell.setType(childType);
 
