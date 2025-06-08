@@ -24,8 +24,8 @@ public class EnergyTransferCellCalcService {
      * @param cells list of cells in the environment
      */
     public static void processEnergyTransfers(final List<Cell> cells) {
-        for (final Cell cell : cells) {
-            for (final SensorActor sensor : cell.getSensorActors()) {
+        for (final Cell calcCell : cells) {
+            for (final SensorActor sensor : calcCell.getSensorActors()) {
                 final SensableActor otherActor = sensor.getSensedActor();
                 if (Objects.nonNull(otherActor)) {
                     final SensableCell otherCell = sensor.getSensedCell();
@@ -35,17 +35,21 @@ public class EnergyTransferCellCalcService {
                         double maxSensorRadius = 1.0;
                         if (sensor.getCachedPosition() != null && otherActor.getCachedPosition() != null) {
                             distance = sensor.getCachedPosition().distance(otherActor.getCachedPosition());
-                            int totalSensors = cell.getSensorActors().size();
-                            maxSensorRadius = SensorActorForceCellCalcService.calcSensorRadius(cell.getRadiusSize(), totalSensors);
+                            int totalSensors = calcCell.getSensorActors().size();
+                            maxSensorRadius = SensorActorForceCellCalcService.calcSensorRadius(calcCell.getRadiusSize(), totalSensors);
                         }
                         double distFactorDelivery = 1.0;
                         double distFactorAbsorption = 1.0;
                         if (maxSensorRadius > 0.0) {
                             double normDist = Math.min(distance / maxSensorRadius, 1.0);
+
+                            final double calcCellTransferStrength = calcCell.getRadiusSize() / SimulationConfig.getInstance().getCellMaxRadiusSize();
+                            //final double otherCellTransferStrength = otherCell.getRadiusSize() / SimulationConfig.getInstance().getCellMaxRadiusSize();
+
                             // Linear Interpolation: 1.0 (nah) -> 0.8 (fern) für Delivery
-                            distFactorDelivery = 1.0 - (1.0 - SimulationConfig.CELL_ENERGY_DELIVERY_FACTOR_FAR) * normDist;
+                            distFactorDelivery = 1.0 - (1.0 - SimulationConfig.CELL_ENERGY_DELIVERY_FACTOR_FAR) * normDist * calcCellTransferStrength;
                             // Linear Interpolation: 1.0 (nah) -> 0.7 (fern) für Absorption
-                            distFactorAbsorption = 1.0 - (1.0 - SimulationConfig.CELL_ENERGY_ABSORPTION_FACTOR_FAR) * normDist;
+                            distFactorAbsorption = 1.0 - (1.0 - SimulationConfig.CELL_ENERGY_ABSORPTION_FACTOR_FAR) * normDist * calcCellTransferStrength;
                         }
                         // --- Absorption ---
                         final double absorptionOutput = sensor.getEnergyAbsorption();
@@ -57,21 +61,22 @@ public class EnergyTransferCellCalcService {
                                                     MAX_ENERGY_ABSORBTION_TRANSFER,
                                                     absorptionOutput * distFactorAbsorption
                                             ));
+
                             final double cellTransferAmountLimited;
-                            if ((cell.getEnergy() + otherCellTransferAmountLimit) > cell.getMaxEnergy()) {
-                                cellTransferAmountLimited = cell.getMaxEnergy() - cell.getEnergy();
+                            if ((calcCell.getEnergy() + otherCellTransferAmountLimit) > calcCell.getMaxEnergy()) {
+                                cellTransferAmountLimited = calcCell.getMaxEnergy() - calcCell.getEnergy();
                             } else {
                                 cellTransferAmountLimited = otherCellTransferAmountLimit;
                             }
-                            cell.setEnergy(cell.getEnergy() + cellTransferAmountLimited);
+                            calcCell.setEnergy(calcCell.getEnergy() + cellTransferAmountLimited);
                             otherCell.setEnergy(otherCell.getEnergy() - cellTransferAmountLimited);
                         }
                         // --- Delivery ---
                         final double deliveryOutput = sensor.getEnergyDelivery();
-                        if ((deliveryOutput > 0.0D) && (cell.getEnergy() > MIN_ENERGY_FOR_TRANSFER)) {
+                        if ((deliveryOutput > 0.0D) && (calcCell.getEnergy() > MIN_ENERGY_FOR_TRANSFER)) {
                             final double cellTransferAmountLimit =
                                         Math.min(
-                                                cell.getEnergy(),
+                                                calcCell.getEnergy(),
                                                 Math.min(
                                                         MAX_ENERGY_DELIVERY_TRANSFER,
                                                         deliveryOutput * distFactorDelivery
@@ -82,7 +87,7 @@ public class EnergyTransferCellCalcService {
                             } else {
                                 otherCellTransferAmountLimited = cellTransferAmountLimit;
                             }
-                            cell.setEnergy(cell.getEnergy() - otherCellTransferAmountLimited);
+                            calcCell.setEnergy(calcCell.getEnergy() - otherCellTransferAmountLimited);
                             otherCell.setEnergy(otherCell.getEnergy() + otherCellTransferAmountLimited);
                         }
                     }

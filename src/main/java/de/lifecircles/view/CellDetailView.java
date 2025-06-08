@@ -230,6 +230,7 @@ public class CellDetailView extends Stage {
             if (updateTimer != null) {
                 updateTimer.stop();
             }
+            this.currentCell = null;
         });
 
         // Maus-Scroll-Event für Zoom
