@@ -16,7 +16,7 @@ import java.util.Random;
  */
 public class HighEnergyTrainStrategy implements TrainStrategy {
     private static final int INITIAL_COUNT = 20;
-    private static final int GENERATION_STEP = 2500 * 4;
+    private static final int GENERATION_STEP = 2500 * 1;
     private static final double SELECTION_PERCENT = 0.2;
     private final SimulationConfig config = SimulationConfig.getInstance();
     private final Random random = new Random();
@@ -31,7 +31,19 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
     public void initialize(Environment environment) {
         // Add ground blocker by default
         environment.addGroundBlocker();
-        environment.addSunBlocker(1024 * 2 / 4, (int)(environment.getHeight() - (environment.getHeight() / 8)), 1024 * 2 / 6);
+        final int sunBlockerXPos = (1024 * 2 / 4);
+        final int sunBlockerXWidth = (1024 * 2 / 6);
+        environment.addSunBlocker(sunBlockerXPos, (int)(environment.getHeight() - (environment.getHeight() / 8)), sunBlockerXWidth);
+
+        final double xStart =  ((sunBlockerXPos + sunBlockerXWidth)) + 50;
+        final double xWidth =  config.getWidth() - (xStart + 150);
+        final int seperatorCount = 8;
+        for (int posX = 0; posX <= seperatorCount; posX++) {
+            final double x = (xWidth / seperatorCount) * posX + xStart;
+            final double yTop = Environment.GroundBlockerHeight + (config.getCellMaxRadiusSize() * 4.0D);
+            final double yBottom = Environment.GroundBlockerHeight;
+            environment.addWallBlocker(x, yTop, yBottom);
+        }
 
         this.config.setEnergyPerRay(0.02D); // 0.005; //0.015; // 0.025;
 
@@ -71,14 +83,13 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
             Cell parentCell = winners.get(random.nextInt(winnersCount));
             Cell childCell = ReproductionManagerService.reproduce(this.config, environment, parentCell);
             if (Objects.nonNull(childCell)) {
-                childCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
-                childCell.setType(new CellType(
-                        random.nextDouble(),
-                        random.nextDouble(),
-                        random.nextDouble()
-                ));
-                childCell.setCellState(0);
-                ReproductionManagerService.calcActiveLayersByState(childCell);
+                //childCell.setType(new CellType(
+                //        random.nextDouble(),
+                //        random.nextDouble(),
+                //        random.nextDouble()
+                //));
+                //childCell.setCellState(0);
+                //ReproductionManagerService.calcActiveLayersByState(childCell);
                 childCell.setAge(0.0D);
                 childCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
                 nextGen.add(childCell);
