@@ -40,7 +40,7 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
         final int seperatorCount = 8;
         for (int posX = 0; posX <= seperatorCount; posX++) {
             final double x = (xWidth / seperatorCount) * posX + xStart;
-            final double yTop = Environment.GroundBlockerHeight + (config.getCellMaxRadiusSize() * 4.0D);
+            final double yTop = Environment.GroundBlockerHeight + (config.getCellMaxRadiusSize() * 3.0D);
             final double yBottom = Environment.GroundBlockerHeight;
             environment.addWallBlocker(x, yTop, yBottom);
         }

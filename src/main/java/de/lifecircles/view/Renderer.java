@@ -114,7 +114,11 @@ public class Renderer {
             );
 
             // Draw outline
-            this.gc.setStroke(config.getCellOutlineColor());
+            if (this.camera.getScale() > 0.5D) {
+                this.gc.setStroke(config.getCellOutlineColor());
+            } else {
+                this.gc.setStroke(Color.color(rgb[0], rgb[1], rgb[2]));
+            }
             this.gc.setLineWidth(config.getCellOutlineWidth());
             this.gc.strokeOval(
                 screenCellPos.getX() - screenCellRadius,

@@ -32,6 +32,9 @@ public class DefaultTrainStrategy implements TrainStrategy {
         // Add ground blocker by default
         environment.addGroundBlocker();
         environment.addSunBlocker(1600 * 3 / 4, (int)(environment.getHeight() - (environment.getHeight() / 8)), 1600 * 3 / 6);
+
+        this.addGroundSeperators(environment, 50, 600, 6);
+
         environment.addWallBlocker(1200.0D + 150.0D * 0, 600.0D, 165.0D);
         environment.addWallBlocker(1200.0D + 150.0D * 1, 600.0D, 165.0D);
         environment.addWallBlocker(1200.0D + 150.0D * 2, 600.0D, 165.0D);
@@ -52,6 +55,8 @@ public class DefaultTrainStrategy implements TrainStrategy {
             environment.addSunBlocker(xSunBlocker + xPos, 50, 20);
         }
 
+        this.addGroundSeperators(environment, 1200.0D + 150.0D * 24, 1500, 10);
+
         environment.addSunBlocker(1600 * 3 / 4, (int)(environment.getHeight() - (environment.getHeight() / 8)), 1600 * 3 / 6);
 
         Random random = new Random();
@@ -67,6 +72,15 @@ public class DefaultTrainStrategy implements TrainStrategy {
             environment.addCell(CellFactory.createCell(new Vector2D(x, y), config.getCellMaxRadiusSize() / 2.0,
                     hiddenCountFactor,
                     stateHiddenLayerSynapseConnectivity, hiddenLayerSynapseConnectivity));
+        }
+    }
+
+    private void addGroundSeperators(Environment environment, double xStart, double xWidth, final int seperatorCount) {
+        for (int posX = 0; posX <= seperatorCount; posX++) {
+            final double x = (xWidth / seperatorCount) * posX + xStart;
+            final double yTop = Environment.GroundBlockerHeight + (config.getCellMaxRadiusSize() * 4.0D);
+            final double yBottom = Environment.GroundBlockerHeight;
+            environment.addWallBlocker(x, yTop, yBottom);
         }
     }
 

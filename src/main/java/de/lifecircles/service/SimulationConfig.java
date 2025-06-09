@@ -119,7 +119,7 @@ public class SimulationConfig {
     /**
      * Maximum attractive force strength for cell actors (< 0).
      */
-    private double cellActorMaxAttractiveForceStrength = 70.0D;
+    private double cellActorMaxAttractiveForceStrength = 90.0D;
     /**
      * Maximum attractive force strength for cell actors (> 0).
      */
