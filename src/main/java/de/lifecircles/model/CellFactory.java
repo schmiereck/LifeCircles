@@ -8,16 +8,16 @@ public abstract class CellFactory {
     public static Cell createCell(final Vector2D position, final double radiusSize) {
         return createCell(position, radiusSize, SimulationConfig.hiddenCountFactorDefault,
                 SimulationConfig.stateHiddenLayerSynapseConnectivityDefault,
-                SimulationConfig.brainSynapseConnectivityDefault);
+                SimulationConfig.hiddenLayerSynapseConnectivityDefault);
     }
 
     public static Cell createCell(final Vector2D position, final double radiusSize, final double hiddenCountFactor,
-                                  final double stateHiddenLayerSynapseConnectivity, final double synapseConnectivity) {
+                                  final double stateHiddenLayerSynapseConnectivity, final double hiddenLayerSynapseConnectivity) {
         final int sensorActorCount = SimulationConfig.CELL_SENSOR_ACTOR_COUNT;
 
         final CellBrain cellBrain = new CellBrain(calcInputCount(sensorActorCount), calcOutputCount(sensorActorCount),
                 hiddenCountFactor,
-                stateHiddenLayerSynapseConnectivity, synapseConnectivity);
+                stateHiddenLayerSynapseConnectivity, hiddenLayerSynapseConnectivity);
 
         return new Cell(position, radiusSize, cellBrain);
     }

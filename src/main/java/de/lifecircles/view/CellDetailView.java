@@ -304,10 +304,12 @@ public class CellDetailView extends Stage {
         generationLabel.setText(String.valueOf(currentCell.getGeneration()));
         // NEU: Synapsen-Anzahl anzeigen
         int synapseCount = 0;
+        long proccessedSynapses = 0;
         if (currentCell.getBrain() != null) {
             synapseCount = currentCell.getBrain().getSynapseCount();
+            proccessedSynapses = currentCell.getBrain().getProccessedSynapses();
         }
-        synapseCountLabel.setText(String.valueOf(synapseCount));
+        synapseCountLabel.setText("%d / %d".formatted(proccessedSynapses, synapseCount));
         // NEU: Zellgröße anzeigen
         cellSizeLabel.setText(String.format("%.2f", currentCell.getRadiusSize()));
     }
@@ -445,6 +447,7 @@ public class CellDetailView extends Stage {
                 gc.setFill(nodeColor);
                 gc.fillOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
                 gc.setStroke(strokeColor);
+                gc.setLineWidth(0.3);
                 gc.strokeOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
             }
         }

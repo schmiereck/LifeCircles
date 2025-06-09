@@ -36,7 +36,7 @@ public class Cell implements SensableCell, Serializable {
     private double mutationRateFactor; // Faktor für die Mutationsrate
     private double mutationStrengthFactor; // Faktor für die Mutationsstärke
     private transient long sizeChangeTimestamp = -1; // Zeitstempel für verzögerte Größenänderung
-
+    private transient final Random random = new Random();
     //private int tempThinkHackCounter = SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX;
 
     public Cell(final Vector2D position, final double radiusSize, final CellBrainInterface cellBrain) {
@@ -50,7 +50,7 @@ public class Cell implements SensableCell, Serializable {
         this.targetRadiusSize = radiusSize;
         this.isGrowing = false;
         this.growthAge = 0;
-        this.type = new CellType(0, 0, 0);
+        this.type = new CellType(this.random.nextDouble(), this.random.nextDouble(), this.random.nextDouble());
         this.sensorActors = this.createSensorActors(this);
         this.brain = cellBrain;
         this.energy = SimulationConfig.CELL_MAX_ENERGY;

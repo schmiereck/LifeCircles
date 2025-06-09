@@ -1,9 +1,6 @@
 package de.lifecircles.service.trainStrategy;
 
-import de.lifecircles.model.Cell;
-import de.lifecircles.model.CellFactory;
-import de.lifecircles.model.Environment;
-import de.lifecircles.model.Vector2D;
+import de.lifecircles.model.*;
 import de.lifecircles.service.ReproductionManagerService;
 import de.lifecircles.service.SimulationConfig;
 
@@ -44,9 +41,10 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
             double y = random.nextDouble() * this.config.getHeight();
             final double hiddenCountFactor = SimulationConfig.hiddenCountFactorDefault;
             final double stateHiddenLayerSynapseConnectivity = SimulationConfig.stateHiddenLayerSynapseConnectivityDefault;
-            final double brainSynapseConnectivity = SimulationConfig.brainSynapseConnectivityDefault;
+            final double hiddenLayerSynapseConnectivity = SimulationConfig.hiddenLayerSynapseConnectivityDefault;
             environment.addCell(CellFactory.createCell(new Vector2D(x, y), this.config.getCellMaxRadiusSize() / 2.0,
-                    hiddenCountFactor, stateHiddenLayerSynapseConnectivity, brainSynapseConnectivity));
+                    hiddenCountFactor,
+                    stateHiddenLayerSynapseConnectivity, hiddenLayerSynapseConnectivity));
         }
     }
 
@@ -70,12 +68,19 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
         Random random = new Random();
         // Fülle Population bis INITIAL_COUNT mit mutierten Nachkommen auf
         while (nextGen.size() < INITIAL_COUNT) {
-            Cell parent = winners.get(random.nextInt(winnersCount));
-            Cell childCell = ReproductionManagerService.reproduce(this.config, environment, parent);
+            Cell parentCell = winners.get(random.nextInt(winnersCount));
+            Cell childCell = ReproductionManagerService.reproduce(this.config, environment, parentCell);
             if (Objects.nonNull(childCell)) {
                 childCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
+                childCell.setType(new CellType(
+                        random.nextDouble(),
+                        random.nextDouble(),
+                        random.nextDouble()
+                ));
                 childCell.setCellState(0);
+                ReproductionManagerService.calcActiveLayersByState(childCell);
                 childCell.setAge(0.0D);
+                childCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
                 nextGen.add(childCell);
             }
         }

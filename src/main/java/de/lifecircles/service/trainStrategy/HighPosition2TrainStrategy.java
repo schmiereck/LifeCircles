@@ -60,10 +60,11 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
             final double hiddenCountFactor = 0.5D;
             //final double stateHiddenLayerSynapseConnectivity = SimulationConfig.stateHiddenLayerSynapseConnectivityDefault;
             final double stateHiddenLayerSynapseConnectivity = 0.01D;
-            //final double brainSynapseConnectivity = SimulationConfig.brainSynapseConnectivityDefault;
-            final double brainSynapseConnectivity = 0.025D;
+            //final double hiddenLayerSynapseConnectivity = SimulationConfig.brainSynapseConnectivityDefault;
+            final double hiddenLayerSynapseConnectivity = 0.025D;
             environment.addCell(CellFactory.createCell(new Vector2D(x, y), config.getCellMaxRadiusSize() / 2.0,
-                    hiddenCountFactor, stateHiddenLayerSynapseConnectivity, brainSynapseConnectivity));
+                    hiddenCountFactor,
+                    stateHiddenLayerSynapseConnectivity, hiddenLayerSynapseConnectivity));
         }
     }
 

@@ -4,7 +4,6 @@ import de.lifecircles.model.neural.*;
 import de.lifecircles.service.*;
 import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
 import de.lifecircles.service.partitioningStrategy.PartitioningStrategyFactory;
-import de.lifecircles.service.trainStrategy.TestTrainStrategyUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -70,7 +69,7 @@ public class CellSensorVisibilityTest {
         double y = 10.0D;
         double cellRadiusSize = 5.0D;
         Cell cell = CellFactory.createCell(new Vector2D(x, y), cellRadiusSize,
-                SimulationConfig.hiddenCountFactorDefault, SimulationConfig.stateHiddenLayerSynapseConnectivityDefault, SimulationConfig.brainSynapseConnectivityDefault);
+                SimulationConfig.hiddenCountFactorDefault, SimulationConfig.stateHiddenLayerSynapseConnectivityDefault, SimulationConfig.hiddenLayerSynapseConnectivityDefault);
         cell.setType(cellType);
         environment.addCell(cell);
     }
