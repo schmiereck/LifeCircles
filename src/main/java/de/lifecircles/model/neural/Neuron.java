@@ -18,6 +18,10 @@ public class Neuron implements Serializable {
     private ActivationFunction activationFunction;
     private boolean isOutputNeuron; // Flag für Output-Neuronen
     
+    // Für Backpropagation benötigte Felder
+    private transient double inputSum; // Eingangssumme vor Aktivierung
+    private transient double delta; // Delta für Backpropagation
+
     public Neuron() {
         this.value = 0.0;
         this.bias = Math.random() * 2 - 1; // Random bias between -1 and 1
@@ -25,6 +29,8 @@ public class Neuron implements Serializable {
         this.outputSynapses = new ArrayList<>();
         this.activationFunction = ActivationFunction.Sigmoid;
         this.isOutputNeuron = false; // Standardmäßig kein Output-Neuron
+        this.inputSum = 0.0;
+        this.delta = 0.0;
     }
 
     public void addInputSynapse(Synapse synapse) {
@@ -108,7 +114,8 @@ public class Neuron implements Serializable {
             sum += synapse.getSourceNeuron().getValue() * synapse.getWeight();
         }
         
-         this.value = this.activationFunction.apply(sum);
+        this.inputSum = sum; // Speichere die Summe vor Aktivierung für Backpropagation
+        this.value = this.activationFunction.apply(sum);
 
         return this.inputSynapses.length;
     }
@@ -152,6 +159,30 @@ public class Neuron implements Serializable {
     }
 
     /**
+     * Gibt den Eingangswert zurück (vor Anwendung der Aktivierungsfunktion)
+     * @return Die Eingangssumme vor Aktivierung
+     */
+    public double getInputSum() {
+        return this.inputSum;
+    }
+
+    /**
+     * Setzt den Delta-Wert für Backpropagation
+     * @param delta Der Delta-Wert
+     */
+    public void setDelta(double delta) {
+        this.delta = delta;
+    }
+
+    /**
+     * Gibt den Delta-Wert für Backpropagation zurück
+     * @return Der Delta-Wert
+     */
+    public double getDelta() {
+        return this.delta;
+    }
+
+    /**
      * Benutzerdefinierte Serialisierungsmethode.
      */
     private void writeObject(ObjectOutputStream oos) throws IOException {
@@ -172,6 +203,8 @@ public class Neuron implements Serializable {
         // Initialisiere die transienten Felder
         this.inputSynapses = new Synapse[0];
         this.outputSynapses = new ArrayList<>(); // Initialisiere die Liste der Output-Synapsen
+        this.inputSum = 0.0;
+        this.delta = 0.0;
         // Stelle die Output-Synapsen wieder her
         int outputSynapseCount = ois.readInt();
         for (int i = 0; i < outputSynapseCount; i++) {

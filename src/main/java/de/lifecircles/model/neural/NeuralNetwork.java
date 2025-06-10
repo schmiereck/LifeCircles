@@ -31,6 +31,9 @@ public class NeuralNetwork implements Serializable {
 
     private long proccessedSynapses = 0L;
 
+    // Learning rate für Backpropagation
+    private double learningRate = 0.01D;
+
     /**
      * Copy-Konstruktor: Erstellt eine exakte Kopie des übergebenen neuronalen Netzwerks
      * 
@@ -223,7 +226,7 @@ public class NeuralNetwork implements Serializable {
         // process hidden layers
         for (final Layer layer : this.hiddenLayerList) {
             final Neuron[] neuronArr = layer.getNeuronsArray();
-            if (layer.isActiveLayer()) {
+            if (layer.isActiveLayer() || this.disableLayerDeactivation) {
                 for (final Neuron neuron : neuronArr) {
                     this.proccessedSynapses += neuron.activate();
                 }
@@ -729,6 +732,236 @@ public class NeuralNetwork implements Serializable {
         return this.disableLayerDeactivation;
     }
 
+    /**
+     * Sets the learning rate for backpropagation.
+     *
+     * @param learningRate Die Lernrate für den Gradientenabstieg (0.0 - 1.0)
+     */
+    public void setLearningRate(double learningRate) {
+        this.learningRate = Math.max(0.0, Math.min(1.0, learningRate));
+    }
+
+    /**
+     * Gets the current learning rate.
+     *
+     * @return Die aktuelle Lernrate
+     */
+    public double getLearningRate() {
+        return this.learningRate;
+    }
+
+    /**
+     * Trainiert das neuronale Netzwerk mittels Backpropagation.
+     * Diese Methode berechnet den Fehler und aktualisiert die Gewichte und Bias-Werte.
+     *
+     * @param targetOutput Die erwarteten Ausgabewerte
+     * @return Der quadratische Fehler des Netzwerks vor dem Training
+     */
+    public double backpropagate(double[] targetOutput) {
+        if (targetOutput.length != this.outputNeuronList.length) {
+            throw new IllegalArgumentException("Zielausgabe muss die gleiche Größe haben wie die Ausgabeschicht");
+        }
+
+        // Berechne den Fehler vor dem Training
+        double error = calculateError(targetOutput);
+
+        // 1. Berechne den Fehler für die Ausgabeneuronen
+        for (int i = 0; i < this.outputNeuronList.length; i++) {
+            Neuron outputNeuron = this.outputNeuronList[i];
+            double output = outputNeuron.getValue();
+            double target = targetOutput[i];
+
+            // Delta = (Ausgabe - Ziel) * Ableitung der Aktivierungsfunktion
+            double delta = (output - target) *
+                    outputNeuron.getActivationFunction().derivative(outputNeuron.getInputSum());
+            outputNeuron.setDelta(delta);
+        }
+
+        // 2. Backpropagiere den Fehler durch alle versteckten Schichten (von hinten nach vorne)
+        for (int l = this.hiddenLayerList.length - 1; l >= 0; l--) {
+            Layer layer = this.hiddenLayerList[l];
+            if (!layer.isActiveLayer() && !disableLayerDeactivation) continue; // Überspringe inaktive Layer
+
+            Neuron[] neurons = layer.getNeuronsArray();
+            for (Neuron neuron : neurons) {
+                double errorSum = 0.0;
+
+                // Sammle Fehler von allen ausgehenden Verbindungen
+                for (Synapse synapse : neuron.getOutputSynapses()) {
+                    Neuron targetNeuron = synapse.getTargetNeuron();
+                    errorSum += targetNeuron.getDelta() * synapse.getWeight();
+                }
+
+                // Berechne Delta für dieses Neuron
+                double delta = errorSum * neuron.getActivationFunction().derivative(neuron.getInputSum());
+                neuron.setDelta(delta);
+            }
+        }
+
+        // 3. Aktualisiere Gewichte und Bias-Werte
+        updateWeights();
+
+        return error;
+    }
+
+    /**
+     * Berechnet den quadratischen Fehler des Netzwerks
+     *
+     * @param targetOutput Die erwarteten Ausgabewerte
+     * @return Der quadratische Fehler
+     */
+    private double calculateError(double[] targetOutput) {
+        double error = 0.0;
+        for (int i = 0; i < this.outputNeuronList.length; i++) {
+            double output = this.outputNeuronList[i].getValue();
+            double target = targetOutput[i];
+            double diff = output - target;
+            error += diff * diff; // Quadratischer Fehler
+        }
+        return error / 2.0; // Division durch 2 ist übliche Konvention für MSE
+    }
+
+    /**
+     * Aktualisiert die Gewichte und Bias-Werte basierend auf den berechneten Deltas.
+     * Wird als Teil des Backpropagation-Algorithmus aufgerufen.
+     */
+    private void updateWeights() {
+        // Aktualisiere alle Bias-Werte und Gewichte
+
+        // 1. Aktualisiere die Bias-Werte in allen Neuronen
+        // Input-Neuronen haben normalerweise keinen Bias
+
+        // Hidden Layer Neuronen
+        for (Layer layer : this.hiddenLayerList) {
+            if (!layer.isActiveLayer() && !disableLayerDeactivation) continue; // Überspringe inaktive Layer
+
+            Neuron[] neurons = layer.getNeuronsArray();
+            for (Neuron neuron : neurons) {
+                neuron.setBias(neuron.getBias() - this.learningRate * neuron.getDelta());
+            }
+        }
+
+        // Output Neuronen
+        for (Neuron neuron : this.outputNeuronList) {
+            neuron.setBias(neuron.getBias() - this.learningRate * neuron.getDelta());
+        }
+
+        // 2. Aktualisiere alle Synapsengewichte
+        for (Synapse synapse : this.synapseArray) {
+            Neuron targetNeuron = synapse.getTargetNeuron();
+            Neuron sourceNeuron = synapse.getSourceNeuron();
+
+            // Überspringe Synapsen zu deaktivierten Layern
+            if (targetNeuron instanceof Neuron && !((Neuron) targetNeuron).isOutputNeuron()) {
+                Layer targetLayer = findLayerForNeuron(targetNeuron);
+                if (targetLayer != null && !targetLayer.isActiveLayer() && !disableLayerDeactivation) {
+                    continue;
+                }
+            }
+
+            // Berechne die Gewichtsänderung: delta * Ausgabe der Quelle * Lernrate
+            double weightChange = targetNeuron.getDelta() * sourceNeuron.getValue() * this.learningRate;
+            synapse.setWeight(synapse.getWeight() - weightChange);
+        }
+    }
+
+    /**
+     * Findet das Layer, zu dem ein bestimmtes Neuron gehört.
+     *
+     * @param neuron Das Neuron
+     * @return Das Layer oder null, wenn das Neuron nicht gefunden wurde
+     */
+    private Layer findLayerForNeuron(Neuron neuron) {
+        for (Layer layer : this.hiddenLayerList) {
+            for (Neuron n : layer.getNeuronsArray()) {
+                if (n == neuron) {
+                    return layer;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Trainiert das Netzwerk mit einem Satz von Trainingsdaten.
+     *
+     * @param trainingInputs Die Eingaben für das Training
+     * @param trainingTargets Die erwarteten Ausgaben
+     * @param epochs Die Anzahl der Trainingsdurchläufe
+     * @return Der durchschnittliche Fehler nach dem Training
+     */
+    public double train(double[][] trainingInputs, double[][] trainingTargets, int epochs) {
+        if (trainingInputs.length != trainingTargets.length) {
+            throw new IllegalArgumentException("Anzahl der Eingaben und Ziele muss übereinstimmen");
+        }
+
+        double totalError = 0.0;
+
+        for (int epoch = 0; epoch < epochs; epoch++) {
+            totalError = 0.0;
+
+            for (int i = 0; i < trainingInputs.length; i++) {
+                double error = calcTrainError(trainingInputs[i], trainingTargets[i]);
+                totalError += error;
+            }
+
+            // Durchschnittlicher Fehler pro Trainingssatz
+            totalError /= trainingInputs.length;
+        }
+
+        return totalError;
+    }
+
+    public double[] calcTrain(double[] trainingInputs, double[] trainingTargets) {
+        // Forward pass
+        this.setInputs(trainingInputs);
+        double[] outputArray = this.process();
+
+        // Backward pass (Backpropagation)
+        this.backpropagate(trainingTargets);
+
+        return outputArray;
+    }
+
+    public double calcTrainError(double[] trainingInputs, double[] trainingTargets) {
+        // Forward pass
+        this.setInputs(trainingInputs);
+        this.process();
+
+        // Backward pass (Backpropagation)
+        return this.backpropagate(trainingTargets);
+    }
+
+    /**
+     * Gibt die Aktivierungswerte aller Neuronen im Netzwerk zurück.
+     * Dies ist nützlich für die Analyse und das Debugging.
+     *
+     * @return Eine Map mit den Neuronennamen (IDs) und ihren Aktivierungswerten
+     */
+    public Map<String, Double> getNeuronActivations() {
+        Map<String, Double> activations = new HashMap<>();
+
+        // Füge Input-Neuronen hinzu
+        for (int i = 0; i < this.inputNeuronList.length; i++) {
+            activations.put("input_" + i, this.inputNeuronList[i].getValue());
+        }
+
+        // Füge Hidden-Layer-Neuronen hinzu
+        for (int l = 0; l < this.hiddenLayerList.length; l++) {
+            Layer layer = this.hiddenLayerList[l];
+            for (int i = 0; i < layer.getNeuronsArray().length; i++) {
+                activations.put("hidden_" + l + "_" + i, layer.getNeuronsArray()[i].getValue());
+            }
+        }
+
+        // Füge Output-Neuronen hinzu
+        for (int i = 0; i < this.outputNeuronList.length; i++) {
+            activations.put("output_" + i, this.outputNeuronList[i].getValue());
+        }
+
+        return activations;
+    }
+
     // Deserialisierung: Output-Synapsen wiederherstellen
     @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -753,6 +986,19 @@ public class NeuralNetwork implements Serializable {
                 }
             }
             neuron.setInputSynapses(inputList.toArray(new Synapse[0]));
+        }
+    }
+
+    public void rnnClearPreviousState() {
+        // Setze alle Neuronen in den Hidden-Layern zurück
+        for (Layer layer : this.hiddenLayerList) {
+            for (final Neuron neuron : layer.getNeuronsArray()) {
+                neuron.setValue(0.0D);
+            }
+        }
+        // Setze auch die Output-Neuronen zurück
+        for (final Neuron neuron : this.outputNeuronList) {
+            neuron.setValue(0.0D);
         }
     }
 }
