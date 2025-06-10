@@ -117,18 +117,32 @@ public class MemoryNeuralNetworkTest {
             network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
             trainResultList.add(new NNTrainResult(network, 0.0D));
         }
-
+        char[] startCharArr = new char[] { 'A', 'F', 'A', 'F' };
         {
             String[] patterns = {"Auto fährt. ", "Fahrad fährt. ", "Auto fährt schnell. ", "Fahrrad fährt langsam. "};
             int epochs = 5_000;
             int trainDataSize = 20;
-            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs);
+            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, startCharArr);
             final NeuralNetwork network = trainResultList.get(0).getNetwork();
-            generateText(network, new char[] { 'A', 'F', 'A', 'F' });
+            generateText(network, startCharArr);
         }
     }
 
     private static List<NNTrainResult> trainSmallLanguageModel(final Random random, final List<NNTrainResult> inTrainResultList, String[] patterns, int trainDataSize, int epochs) {
+        return trainSmallLanguageModel(random,
+                                        inTrainResultList,
+                                        patterns,
+                                        trainDataSize,
+                                        epochs,
+                                        new char[] { '0', '1', '2' });
+    }
+
+    private static List<NNTrainResult> trainSmallLanguageModel(final Random random,
+                                                               final List<NNTrainResult> inTrainResultList,
+                                                               String[] patterns,
+                                                               int trainDataSize,
+                                                               int epochs,
+                                                               char[] startCharArr) {
         // Zufällige Reihenfolge der Muster generieren
         StringBuilder trainingData = new StringBuilder();
         for (int i = 0; i < trainDataSize; i++) {
@@ -140,7 +154,7 @@ public class MemoryNeuralNetworkTest {
 
         // Sprachmodell initialisieren und trainieren
         System.out.println("Starte Training für " + epochs + " Epochen...");
-        return train(random, inTrainResultList, trainText, epochs);
+        return train(random, inTrainResultList, trainText, epochs, startCharArr);
     }
 
     /**
@@ -149,7 +163,8 @@ public class MemoryNeuralNetworkTest {
      * @param text Der Trainingstext
      * @param epochs Anzahl der Trainingsepochen
      */
-    public static List<NNTrainResult> train(final Random random, final List<NNTrainResult> inTrainResultList, String text, int epochs) {
+    public static List<NNTrainResult> train(final Random random, final List<NNTrainResult> inTrainResultList, String text, int epochs,
+                                            char[] startCharArr) {
         NeuralNetwork bestNeuralNetwork = null;
         logger.info("Starte Training mit Text: '{}' für {} Epochen", text, epochs);
 
@@ -206,11 +221,11 @@ public class MemoryNeuralNetworkTest {
 
             if (bestTrainResult.getLoss() < 0.01D) {
                 logger.info("Bestes Netzwerk erreicht einen Verlust von {}. Training wird abgebrochen.", bestTrainResult.getLoss());
-                generateText(bestNeuralNetwork);
+                generateText(bestNeuralNetwork, startCharArr);
                 break; // Training abbrechen, wenn Verlust unter 0.01 liegt
             }
             if (epoch % 100 == 0) {
-                generateText(bestNeuralNetwork);
+                generateText(bestNeuralNetwork, startCharArr);
             }
 
             // Durchschnittlicher Verlust über alle Sequenzen
@@ -280,6 +295,7 @@ public class MemoryNeuralNetworkTest {
     }
 
     private static void generateText(NeuralNetwork network, char[] startCharArr) {
+        System.out.println();
         for (Character startChar : startCharArr) {
             System.out.print("Generierter Text: ");
             String generatedText = generateText(network, startChar, 100);
