@@ -164,9 +164,9 @@ public class MemoryNeuralNetworkTest {
                 }
                 // 75% Verlust, 25% Proccessed Synapses
                 //final double resultWeight = 1.0D; // 0.75D;
-                final double resultWeight = 0.95D;
+                final double resultWeight = 0.925D;
                 //final double proccesWeight = 0.0D; // 0.25D;
-                final double proccesWeight = 0.05D;
+                final double proccesWeight = 0.025D;
                 trainResult.setLoss((trainResult.lossSum / (timeSeriesLength * trainCount)) * resultWeight +
                         (trainResult.proccesLoss / (timeSeriesLength * trainCount * maxProccessedSynapses)) * proccesWeight);
             });
