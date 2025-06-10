@@ -120,7 +120,7 @@ public class MemoryNeuralNetworkTest {
         char[] startCharArr = new char[] { 'A', 'F', 'A', 'F' };
         {
             String[] patterns = {"Auto fährt. ", "Fahrad fährt. ", "Auto fährt schnell. ", "Fahrrad fährt langsam. "};
-            int epochs = 5_000;
+            int epochs = 25_000;
             int trainDataSize = 20;
             trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, startCharArr);
             final NeuralNetwork network = trainResultList.get(0).getNetwork();
@@ -297,6 +297,7 @@ public class MemoryNeuralNetworkTest {
     private static void generateText(NeuralNetwork network, char[] startCharArr) {
         System.out.println();
         for (Character startChar : startCharArr) {
+            network.rnnClearPreviousState();
             System.out.print("Generierter Text: ");
             String generatedText = generateText(network, startChar, 100);
             System.out.println(generatedText);
