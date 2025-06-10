@@ -55,6 +55,11 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
+* Neuen Typ Neuron
+  * Intern ein NN das für alle eines Typs gleich ist.
+  * Neuron muss mehrere Input- und Output-Typen haben können die auf Inputs und Outputs des internen NN abgebildet werden.
+  * Nach Berechnung werden die Outputs des internen NN auf die Outputs des Neurons abgebildet.
+
 * Interaktionsradius der Aktor-Forces auf 1.5 oder 2.0 erweitern.
   * Testen ob damit höhere Buildings möglich sind.
 

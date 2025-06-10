@@ -96,7 +96,36 @@ public class MemoryNeuralNetworkTest {
             final NeuralNetwork network = trainResultList.get(0).getNetwork();
             generateText(network);
         }
+    }
 
+    @Test
+    public void testText() {
+        final Random random = new Random();
+
+        final int inputCount = 8;
+        final int outputCount = 8;
+        final int hiddenCount = inputCount * 2;
+        final int[] architecture = {
+                hiddenCount, hiddenCount,
+                hiddenCount,
+        };
+        final double synapseConnectivity = 0.8D;
+
+        List<NNTrainResult> trainResultList = new ArrayList<>();
+        for (int networkPos = 0; networkPos < 60; networkPos++) {
+            NeuralNetwork network = new NeuralNetwork(inputCount, architecture, outputCount, synapseConnectivity, 0);
+            network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+            trainResultList.add(new NNTrainResult(network, 0.0D));
+        }
+
+        {
+            String[] patterns = {"Auto fährt. ", "Fahrad fährt. ", "Auto fährt schnell. ", "Fahrrad fährt langsam. "};
+            int epochs = 5_000;
+            int trainDataSize = 20;
+            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs);
+            final NeuralNetwork network = trainResultList.get(0).getNetwork();
+            generateText(network, new char[] { 'A', 'F', 'A', 'F' });
+        }
     }
 
     private static List<NNTrainResult> trainSmallLanguageModel(final Random random, final List<NNTrainResult> inTrainResultList, String[] patterns, int trainDataSize, int epochs) {
@@ -247,20 +276,13 @@ public class MemoryNeuralNetworkTest {
     }
 
     private static void generateText(NeuralNetwork network) {
-        {
-            System.out.print("\n");
+        generateText(network, new char[] { '0', '1', '2' });
+    }
+
+    private static void generateText(NeuralNetwork network, char[] startCharArr) {
+        for (Character startChar : startCharArr) {
             System.out.print("Generierter Text: ");
-            String generatedText = generateText(network, '0', 100);
-            System.out.println(generatedText);
-        }
-        {
-            System.out.print("Generierter Text: ");
-            String generatedText = generateText(network, '1', 100);
-            System.out.println(generatedText);
-        }
-        {
-            System.out.print("Generierter Text: ");
-            String generatedText = generateText(network, '2', 100);
+            String generatedText = generateText(network, startChar, 100);
             System.out.println(generatedText);
         }
     }
