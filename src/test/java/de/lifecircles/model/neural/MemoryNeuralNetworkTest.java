@@ -108,19 +108,21 @@ public class MemoryNeuralNetworkTest {
         final int[] architecture = {
                 hiddenCount, hiddenCount,
                 hiddenCount,
+                hiddenCount,
         };
-        final double synapseConnectivity = 0.8D;
+        final double synapseConnectivity = 0.9D;
 
         List<NNTrainResult> trainResultList = new ArrayList<>();
-        for (int networkPos = 0; networkPos < 60; networkPos++) {
+        for (int networkPos = 0; networkPos < 60 * 3; networkPos++) {
             NeuralNetwork network = new NeuralNetwork(inputCount, architecture, outputCount, synapseConnectivity, 0);
             network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
             trainResultList.add(new NNTrainResult(network, 0.0D));
         }
         char[] startCharArr = new char[] { 'A', 'F', 'A', 'F' };
         {
-            String[] patterns = {"Auto fährt. ", "Fahrad fährt. ", "Auto fährt schnell. ", "Fahrrad fährt langsam. "};
-            int epochs = 25_000;
+            //String[] patterns = {"Auto fährt. ", "Fahrad fährt. ", "Auto fährt schnell. ", "Fahrrad fährt langsam. "};
+            String[] patterns = {"Au fä. ", "Fa fä. ", "Au fä sch. ", "Fa fä lang. "};
+            int epochs = 250_000;
             int trainDataSize = 20;
             trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, startCharArr);
             final NeuralNetwork network = trainResultList.get(0).getNetwork();
@@ -208,9 +210,9 @@ public class MemoryNeuralNetworkTest {
                 }
                 // 75% Verlust, 25% Proccessed Synapses
                 //final double resultWeight = 1.0D; // 0.75D;
-                final double resultWeight = 0.925D;
+                final double resultWeight = 0.995D;
                 //final double proccesWeight = 0.0D; // 0.25D;
-                final double proccesWeight = 0.025D;
+                final double proccesWeight = 0.005D;
                 trainResult.setLoss((trainResult.lossSum / (timeSeriesLength * trainCount)) * resultWeight +
                         (trainResult.proccesLoss / (timeSeriesLength * trainCount * maxProccessedSynapses)) * proccesWeight);
             });

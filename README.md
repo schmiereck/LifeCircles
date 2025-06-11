@@ -55,10 +55,17 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
-* Neuen Typ Neuron
+* Neuer Typ Neuron
   * Intern ein NN das für alle eines Typs gleich ist.
   * Neuron muss mehrere Input- und Output-Typen haben können die auf Inputs und Outputs des internen NN abgebildet werden.
   * Nach Berechnung werden die Outputs des internen NN auf die Outputs des Neurons abgebildet.
+  * Jedes Neuron bekommt eine ID. Die neuron-Value wird von einem von der Architektur unabhängigen Objekt (NeuronalnetworkValues) verwaltet.  
+    Der Zugriff erfolgt über die ID.
+    Somit kann die gleiche Netzwerk-Architektur mit verschiedenen Werten verwendet werden.
+  * Die IDs werden in der Reihenfolge der Neuronen im Layer vergeben.  
+    Wird ein Neuron gelöscht wird ein lowestFreeID gesetzt, wenn diese niedriger ist als zuvor.
+    Wird eine neue ID benötigt wird diese auf lowestIDPos gesetzt und dann die nächste Freie ID gesucht.  
+    lastFreeID steht auf der hächten freien ID. Sollten beide gleich sein, muss nicht gesucht werden, da es dann keine Lücke gibt. 
 
 * Interaktionsradius der Aktor-Forces auf 1.5 oder 2.0 erweitern.
   * Testen ob damit höhere Buildings möglich sind.
