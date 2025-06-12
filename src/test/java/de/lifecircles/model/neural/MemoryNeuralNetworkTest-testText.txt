@@ -1,0 +1,720 @@
+Trainingsdaten: Au fä. Fa fä lang. Au fä sch. Au fä sch. Au fä sch. Au fä sch. Au fä. Au fä. Fa fä. Fa fä lang. Fa fä. Au fä sch. Au fä sch. Au fä. Fa fä. Au fä sch. Au fä. Au fä sch. Au fä sch. Fa fä.
+Starte Training für 250000 Epochen...
+[main] INFO de.lifecircles.model.neural.MemoryNeuralNetworkTest - Starte Training mit Text: 'Au fä. Fa fä lang. Au fä sch. Au fä sch. Au fä sch. Au fä sch. Au fä. Au fä. Fa fä. Fa fä lang. Fa fä. Au fä sch. Au fä sch. Au fä. Fa fä. Au fä sch. Au fä. Au fä sch. Au fä sch. Fa fä. ' für 250000 Epochen
+
+Generierter Text: A```````````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: F```````````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: A```````````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: F```````````````````````````````````````````````````````````````````````````````````````````````````
+Epoche 99 abgeschlossen, Durchschnittsverlust: 1,347070, Synapses: 168, lossSum: 1,344531, proccesLoss: 0,002539, maxProccessedSynapses: 933
+Generierter Text: Ag``````````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: F` `````````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Ag``````````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: F` `````````````````````````````````````````````````````````````````````````````````````````````````
+Epoche 199 abgeschlossen, Durchschnittsverlust: 1,308328, Synapses: 692, lossSum: 1,306024, proccesLoss: 0,002304, maxProccessedSynapses: 934
+Generierter Text: Ad$%`dddddddddd`````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: F```dddddddddddd````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Ad`dddddddddddddddd`````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fa`dddddddd`````````````````````````````````````````````````````````````````````````````````````````
+Epoche 299 abgeschlossen, Durchschnittsverlust: 1,281693, Synapses: 275, lossSum: 1,279312, proccesLoss: 0,002381, maxProccessedSynapses: 934
+Generierter Text: Adbbb```````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fd$b````````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Ad$$$$$$$```````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fd$$$$``````````````````````````````````````````````````````````````````````````````````````````````
+Epoche 399 abgeschlossen, Durchschnittsverlust: 1,249918, Synapses: 276, lossSum: 1,247507, proccesLoss: 0,002411, maxProccessedSynapses: 934
+Generierter Text: A`         jj``jj  ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+Generierter Text: Fddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+Generierter Text: A````````ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+Generierter Text: Fddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+Epoche 499 abgeschlossen, Durchschnittsverlust: 1,261139, Synapses: 494, lossSum: 1,258502, proccesLoss: 0,002637, maxProccessedSynapses: 934
+Generierter Text: Addddd```dddd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``d
+Generierter Text: Fa``ddddd```dddd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd
+Generierter Text: Addddd```dddd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``d
+Generierter Text: Fa``ddddd```dddd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd``dd
+Epoche 599 abgeschlossen, Durchschnittsverlust: 1,230351, Synapses: 494, lossSum: 1,227749, proccesLoss: 0,002602, maxProccessedSynapses: 934
+Generierter Text: A￦￦bbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+Generierter Text: Fc￦￦bbdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+Generierter Text: Addddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+Generierter Text: Fcdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+Epoche 699 abgeschlossen, Durchschnittsverlust: 1,249261, Synapses: 382, lossSum: 1,246542, proccesLoss: 0,002719, maxProccessedSynapses: 934
+Generierter Text: Ajj``$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Generierter Text: Fs$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Generierter Text: Ajj``$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Generierter Text: Fs$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Epoche 799 abgeschlossen, Durchschnittsverlust: 1,211500, Synapses: 591, lossSum: 1,208697, proccesLoss: 0,002803, maxProccessedSynapses: 934
+Generierter Text: Add  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa
+Generierter Text: Fq  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa
+Generierter Text: Add  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa
+Generierter Text: Fq  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa  dd,,aa
+Epoche 899 abgeschlossen, Durchschnittsverlust: 1,221141, Synapses: 383, lossSum: 1,218376, proccesLoss: 0,002766, maxProccessedSynapses: 934
+Generierter Text: Ann  dd$$  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  `
+Generierter Text: Fann$$  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``
+Generierter Text: Ann  dd$$  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  `
+Generierter Text: Fann$$  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``
+Epoche 999 abgeschlossen, Durchschnittsverlust: 1,247210, Synapses: 386, lossSum: 1,244764, proccesLoss: 0,002446, maxProccessedSynapses: 934
+Generierter Text: Ann  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``
+Generierter Text: Fa  aa  aa  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``
+Generierter Text: Ann  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``
+Generierter Text: Fa  aa  aa  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``
+Epoche 1099 abgeschlossen, Durchschnittsverlust: 1,253192, Synapses: 388, lossSum: 1,250741, proccesLoss: 0,002451, maxProccessedSynapses: 934
+Generierter Text: Ann$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Generierter Text: Fa  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``
+Generierter Text: Ann  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``
+Generierter Text: Fa..................................................................................................
+Epoche 1199 abgeschlossen, Durchschnittsverlust: 1,175291, Synapses: 709, lossSum: 1,172065, proccesLoss: 0,003226, maxProccessedSynapses: 934
+Generierter Text: An.``$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Generierter Text: Fc``$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Generierter Text: An.dd$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Generierter Text: Fc``$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Epoche 1299 abgeschlossen, Durchschnittsverlust: 1,171456, Synapses: 709, lossSum: 1,168220, proccesLoss: 0,003236, maxProccessedSynapses: 934
+Generierter Text: A``ﾮﾮ$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Generierter Text: Fc$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Generierter Text: A``ﾮﾮ$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Generierter Text: Fc$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Epoche 1399 abgeschlossen, Durchschnittsverlust: 1,193493, Synapses: 504, lossSum: 1,190601, proccesLoss: 0,002892, maxProccessedSynapses: 934
+Generierter Text: A` aa**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**c
+Generierter Text: Fc$$ﾮﾮ  cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**
+Generierter Text: Aﾮﾮ&&  cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**c
+Generierter Text: Fc  bb* ``  aa""cc  cc""cc  cc""cc  cc""cc  cc""cc  cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**cc**
+Epoche 1499 abgeschlossen, Durchschnittsverlust: 1,256354, Synapses: 712, lossSum: 1,253688, proccesLoss: 0,002666, maxProccessedSynapses: 934
+Generierter Text: Al,dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$d
+Generierter Text: Fc,,,,``  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa
+Generierter Text: Ad$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$d
+Generierter Text: Fc,,,,``  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa$$dd  aa
+Epoche 1599 abgeschlossen, Durchschnittsverlust: 1,225036, Synapses: 391, lossSum: 1,222260, proccesLoss: 0,002776, maxProccessedSynapses: 934
+Generierter Text: Al,,,``  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$
+Generierter Text: Fnﾦﾦ  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$$dd
+Generierter Text: Ad$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$
+Generierter Text: Fn,,``  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$$dd  aa$$$$  aa$$
+Epoche 1699 abgeschlossen, Durchschnittsverlust: 1,205346, Synapses: 394, lossSum: 1,202556, proccesLoss: 0,002789, maxProccessedSynapses: 934
+Generierter Text: Al,,,```````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fj``````````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Al,,,  aa$$$$```````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fj$$````````````````````````````````````````````````````````````````````````````````````````````````
+Epoche 1799 abgeschlossen, Durchschnittsverlust: 1,196920, Synapses: 394, lossSum: 1,194111, proccesLoss: 0,002810, maxProccessedSynapses: 934
+Generierter Text: Ad$$$!!dd$$`````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fjdd````````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Ad$$$!!dd$$`````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fj``````````````````````````````````````````````````````````````````````````````````````````````````
+Epoche 1899 abgeschlossen, Durchschnittsverlust: 1,222003, Synapses: 393, lossSum: 1,219227, proccesLoss: 0,002777, maxProccessedSynapses: 934
+Generierter Text: Ad$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$
+Generierter Text: Fj..  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$
+Generierter Text: Ad$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$
+Generierter Text: Fj,,  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$  aa$$$$
+Epoche 1999 abgeschlossen, Durchschnittsverlust: 1,221784, Synapses: 394, lossSum: 1,219003, proccesLoss: 0,002781, maxProccessedSynapses: 934
+Generierter Text: Ad$$$  aa$$$$```````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fj``````````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Ad$$$  aa$$$$```````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fj``````````````````````````````````````````````````````````````````````````````````````````````````
+Epoche 2099 abgeschlossen, Durchschnittsverlust: 1,222311, Synapses: 395, lossSum: 1,219518, proccesLoss: 0,002793, maxProccessedSynapses: 934
+Generierter Text: Ad$$$  aa$$$$```````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fj``````````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Ad$$$  aa$$$$```````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fj``````````````````````````````````````````````````````````````````````````````````````````````````
+Epoche 2199 abgeschlossen, Durchschnittsverlust: 1,221891, Synapses: 396, lossSum: 1,219098, proccesLoss: 0,002793, maxProccessedSynapses: 934
+Generierter Text: Ad$$$$$``  aa$$$$```````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fndd  aa$$$$  aa$$$$````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Al,,,``  aa$$$$`````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fn``  aa$$$$````````````````````````````````````````````````````````````````````````````````````````
+Epoche 2299 abgeschlossen, Durchschnittsverlust: 1,211342, Synapses: 397, lossSum: 1,208498, proccesLoss: 0,002844, maxProccessedSynapses: 934
+Generierter Text: Ad$$$ $`````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fndd  aa  dd$$``````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Ad$$$ $`````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fn  aa  dd$$````````````````````````````````````````````````````````````````````````````````````````
+Epoche 2399 abgeschlossen, Durchschnittsverlust: 1,225205, Synapses: 398, lossSum: 1,222624, proccesLoss: 0,002581, maxProccessedSynapses: 939
+Generierter Text: An.nd```````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Ff&&&&&&````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Annnd```````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Ff&&&&&&````````````````````````````````````````````````````````````````````````````````````````````
+Epoche 2499 abgeschlossen, Durchschnittsverlust: 1,231411, Synapses: 595, lossSum: 1,228782, proccesLoss: 0,002629, maxProccessedSynapses: 939
+Generierter Text: An.,   ````````        ````````        ````````        ````````        ````````        ````````
+Generierter Text: Ff..       ````````        ````````        ````````        ````````        ````````        ````````
+Generierter Text: An.,   ````````        ````````        ````````        ````````        ````````        ````````
+Generierter Text: Ff..       ````````        ````````        ````````        ````````        ````````        ````````
+Epoche 2599 abgeschlossen, Durchschnittsverlust: 1,223070, Synapses: 400, lossSum: 1,220430, proccesLoss: 0,002640, maxProccessedSynapses: 940
+Generierter Text: An$,        ````````        ````````        ````````        ````````        ````````        ````````
+Generierter Text: F&&&&&&&&&        ````````        ````````        ````````        ````````        ````````        ``
+Generierter Text: Af&&&&&&&        ````````        ````````        ````````        ````````        ````````        ```
+Generierter Text: Ff&&&&&        ````````        ````````        ````````        ````````        ````````        `````
+Epoche 2699 abgeschlossen, Durchschnittsverlust: 1,222797, Synapses: 402, lossSum: 1,220147, proccesLoss: 0,002649, maxProccessedSynapses: 940
+Generierter Text: An..         `````````         `````````         `````````         `````````         `````````
+Generierter Text: Ff&&         `````````         `````````         `````````         `````````         `````````
+Generierter Text: Af&&&         `````````         `````````         `````````         `````````         `````````
+Generierter Text: Fn.         `````````         `````````         `````````         `````````         `````````
+Epoche 2799 abgeschlossen, Durchschnittsverlust: 1,221136, Synapses: 401, lossSum: 1,218493, proccesLoss: 0,002643, maxProccessedSynapses: 943
+Generierter Text: An$,        ````````        ````````        ````````        ````````        ````````        ````````
+Generierter Text: F&&&&&&&&&        ````````        ````````        ````````        ````````        ````````        ``
+Generierter Text: Af&&&&&&&        ````````        ````````        ````````        ````````        ````````        ```
+Generierter Text: Ff&&&&&        ````````        ````````        ````````        ````````        ````````        `````
+Epoche 2899 abgeschlossen, Durchschnittsverlust: 1,221506, Synapses: 401, lossSum: 1,218874, proccesLoss: 0,002632, maxProccessedSynapses: 947
+Generierter Text: An$,         ````````         `````````        ````````         `````````        ````````         ``
+Generierter Text: F`$$$$$$        ````````         `````````        ````````         `````````        ````````
+Generierter Text: A`!        ````````         `````````        ````````         `````````        ````````         ````
+Generierter Text: F`$$$$        ````````         `````````        ````````         `````````        ````````         `
+Epoche 2999 abgeschlossen, Durchschnittsverlust: 1,220800, Synapses: 600, lossSum: 1,218014, proccesLoss: 0,002787, maxProccessedSynapses: 949
+Generierter Text: Andf`!!,,, !!! `ff !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,,
+Generierter Text: Fd$$$$$$$$$           ``aaff, !!! `ff !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,,
+Generierter Text: A`$  aaff, !!! `ff !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,,
+Generierter Text: Fd$$$$$$$$$           ``aaff, !!! `ff !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,, !!!  ,,,
+Epoche 3099 abgeschlossen, Durchschnittsverlust: 1,213232, Synapses: 404, lossSum: 1,210428, proccesLoss: 0,002804, maxProccessedSynapses: 950
+Generierter Text: Ad$, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!
+Generierter Text: Fd$$$$$$$$$           ``aaff,!,,, !!!!,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!
+Generierter Text: Al, !!!!,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !
+Generierter Text: F`$$           ``aaff,!,,, !!!!,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,, !!!!ff!,,,
+Epoche 3199 abgeschlossen, Durchschnittsverlust: 1,207687, Synapses: 398, lossSum: 1,204933, proccesLoss: 0,002753, maxProccessedSynapses: 951
+Generierter Text: Ad$, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!
+Generierter Text: Fn, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,
+Generierter Text: A&&&&&&&&&&&&&&           ``aaff, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!
+Generierter Text: F`$$$$$$ !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,,
+Epoche 3299 abgeschlossen, Durchschnittsverlust: 1,212450, Synapses: 399, lossSum: 1,209686, proccesLoss: 0,002764, maxProccessedSynapses: 951
+Generierter Text: Ad ,!aff, !!!aff, !!!aff, !!!aff, !!!aff, !!!aff, !!!aff, !!!aff, !!!aff, !!!aff, !!!aff, !!!aff, !!
+Generierter Text: Fn, !!!aff, !!!aff, !!!aff, !!!aff, !!!aff, !!!aff, !!!aff, !!!aff, !!!aff, !!!aff, !!!aff, !!!aff,
+Generierter Text: Ad$&$          ```aaf,, !!!!,,, !!!!,,, !!!!,,, !!!!,,, !!!!,,, !!!!,,, !!!!,,, !!!!,,, !!!!,,, !!!!
+Generierter Text: Fd$$$$ !!!!,,, !!!!,,, !!!!,,, !!!!,,, !!!!,,, !!!!,,, !!!!,,, !!!!,,, !!!!,,, !!!!,,, !!!!,,, !!!!,
+Epoche 3399 abgeschlossen, Durchschnittsverlust: 1,212468, Synapses: 403, lossSum: 1,209697, proccesLoss: 0,002771, maxProccessedSynapses: 951
+Generierter Text: Ad$, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!
+Generierter Text: Fnfdddd !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !
+Generierter Text: A`!!.,, !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !
+Generierter Text: F`!!.,, !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !!!!ff !!!!,, !
+Epoche 3499 abgeschlossen, Durchschnittsverlust: 1,197349, Synapses: 611, lossSum: 1,194569, proccesLoss: 0,002780, maxProccessedSynapses: 951
+Generierter Text: Al,$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!
+Generierter Text: Ff& !!!!$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$
+Generierter Text: A&&&&&&&&&&&&& !!!!$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$
+Generierter Text: F`   aaff$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$$ !!!!ff`!!$$
+Epoche 3599 abgeschlossen, Durchschnittsverlust: 1,198994, Synapses: 611, lossSum: 1,196210, proccesLoss: 0,002784, maxProccessedSynapses: 951
+Generierter Text: Aa,, !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!
+Generierter Text: Ff&$$$$$$$$$         ``aaff$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !
+Generierter Text: A`   aaaff !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$
+Generierter Text: Ff&&&&&&&&&         ``aaff$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!!!$$ !!
+Epoche 3699 abgeschlossen, Durchschnittsverlust: 1,134257, Synapses: 609, lossSum: 1,131122, proccesLoss: 0,003135, maxProccessedSynapses: 951
+Generierter Text: Ae,,$  ``  aa  ff$$  ``  aa  ff$$  ``  aa  ff$$  ``  aa  ff$$  ``  aa  ff$$  ``  aa  ff$$  ``  aa  f
+Generierter Text: Fd$$$  aa!!a`$$  ``  aa$$$$  ``  aa$$$$  ``  aa$$$$  ``  aa$$$$  ``  aa$$$$  ``  aa$$$$  ``  aa$$$$
+Generierter Text: Ae, !aa!!ab$$  ``  aa  ff$$  ``  aa  ff$$  ``  aa  ff$$  ``  aa  ff$$  ``  aa  ff$$  ``  aa  ff$$  `
+Generierter Text: Fl$$  ``  aa  ff$$  ``  aa  ff$$  ``  aa  ff$$  ``  aa  ff$$  ``  aa  ff$$  ``  aa  ff$$  ``  aa  ff
+Epoche 3799 abgeschlossen, Durchschnittsverlust: 1,144830, Synapses: 581, lossSum: 1,141721, proccesLoss: 0,003109, maxProccessedSynapses: 951
+Generierter Text: Ad%. !aaa$$`````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Fa.`````````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: Ad$.````````````````````````````````````````````````````````````````````````````````````````````````
+Generierter Text: F&&&````````````````````````````````````````````````````````````````````````````````````````````````
+Epoche 3899 abgeschlossen, Durchschnittsverlust: 1,215330, Synapses: 582, lossSum: 1,212180, proccesLoss: 0,003150, maxProccessedSynapses: 951
+Generierter Text: Ad%.  aa  dd$$  aa( fd  aa( fd  aa( fd  aa( fd  aa( fd  aa( fd  aa( fd  aa( fd  aa( fd  aa( fd  aa(
+Generierter Text: F&&&  aa  dd,$  aa$$,$  aa$$,$  aa$$,$  aa$$,$  aa$$,$  aa$$,$  aa$$,$  aa$$,$  aa$$,$  aa$$,$  aa$$
+Generierter Text: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAe.  aa  dd$$  aa( fd  aa( fd  aa( fd  aa( fd  aa( fd
+Generierter Text: F&&&& !aa  dd$$  aa( fd  aa( fd  aa( fd  aa( fd  aa( fd  aa( fd  aa( fd  aa( fd  aa( fd  aa( fd  aa(
+Epoche 3999 abgeschlossen, Durchschnittsverlust: 1,079332, Synapses: 407, lossSum: 1,076630, proccesLoss: 0,002702, maxProccessedSynapses: 951
+Generierter Text: Ad$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: Fa%!!!ad$!dd$ ddlbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbdd
+Generierter Text: Aq1!!!!!!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: Fa%!!!ad$!dd$ ddlbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbdd
+Epoche 4099 abgeschlossen, Durchschnittsverlust: 1,081547, Synapses: 612, lossSum: 1,078934, proccesLoss: 0,002613, maxProccessedSynapses: 951
+Generierter Text: Add$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: Fa111$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: Aq1!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!$$ `adddbddccd$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd
+Generierter Text: F&&&bddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddbbddb
+Epoche 4199 abgeschlossen, Durchschnittsverlust: 1,149968, Synapses: 406, lossSum: 1,147474, proccesLoss: 0,002495, maxProccessedSynapses: 951
+Generierter Text: Ad$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$
+Generierter Text: Fa&&&#,$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$
+Generierter Text: Aa!!QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQqqd$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$
+Generierter Text: F&&&##,$$#,$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$$!$$
+Epoche 4299 abgeschlossen, Durchschnittsverlust: 1,121310, Synapses: 409, lossSum: 1,118886, proccesLoss: 0,002424, maxProccessedSynapses: 951
+Generierter Text: A` dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ d
+Generierter Text: Fa&&'&& $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: A￬dqd$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬dqd$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Epoche 4399 abgeschlossen, Durchschnittsverlust: 1,133081, Synapses: 410, lossSum: 1,130653, proccesLoss: 0,002429, maxProccessedSynapses: 951
+Generierter Text: Ad$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬dsd``````$$!$$$!$$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ d
+Generierter Text: Aa!AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAad$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬dqd$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Epoche 4499 abgeschlossen, Durchschnittsverlust: 1,121625, Synapses: 587, lossSum: 1,119091, proccesLoss: 0,002535, maxProccessedSynapses: 951
+Generierter Text: Aa!,a``ddd3&.$ dd$!dd$!dd$$$$aallla$$$$$$aallla$$$$$$aallla$$$$$$aallla$$$$$$aallla$$$$$$aallla$$$$$
+Generierter Text: F￬dsd$$ $$$$ dd$ dd$!dd$!dd$$$$aallla$$$$$$aallla$$$$$$aallla$$$$$$aallla$$$$$$aallla$$$$$$aallla$$$
+Generierter Text: A￬dsa!3$$ dd$!dd$!dd$$$$aallla$$$$$$aallla$$$$$$aallla$$$$$$aallla$$$$$$aallla$$$$$$aallla$$$$$$aall
+Generierter Text: F&&&al$$$$$!cd$$ $$$$ dd$ dd$ dd$!dd$!dd$$$$aallla$$$$$$aallla$$$$$$aallla$$$$$$aallla$$$$$$aallla$$
+Epoche 4599 abgeschlossen, Durchschnittsverlust: 1,101842, Synapses: 585, lossSum: 1,099343, proccesLoss: 0,002498, maxProccessedSynapses: 951
+Generierter Text: A` ￤￤$$$ ee$ ae$ dd$ dd$ ee$ dd$ dd$ ee$ dd$ dd$ ee$ dd$ dd$ ee$ dd$ dd$ ee$ dd$ dd$ ee$ dd$ dd$ ee$
+Generierter Text: F￬$3$$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: A￬dsd$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬$3$$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Epoche 4699 abgeschlossen, Durchschnittsverlust: 1,091700, Synapses: 584, lossSum: 1,089249, proccesLoss: 0,002451, maxProccessedSynapses: 951
+Generierter Text: Aa!$$$$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd
+Generierter Text: F&&& $$$$ dd$ dd$!aa$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: Aq11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+Generierter Text: Fa!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!ﾬﾬ $$$$3$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Epoche 4799 abgeschlossen, Durchschnittsverlust: 1,107413, Synapses: 589, lossSum: 1,104979, proccesLoss: 0,002434, maxProccessedSynapses: 951
+Generierter Text: A￬ $$$$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd
+Generierter Text: F&&& $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd
+Generierter Text: Assssssssssd$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F` dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ d
+Epoche 4899 abgeschlossen, Durchschnittsverlust: 1,080332, Synapses: 588, lossSum: 1,077894, proccesLoss: 0,002438, maxProccessedSynapses: 951
+Generierter Text: A` dd$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬$1$$$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd
+Generierter Text: A&&&&& $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F` dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ d
+Epoche 4999 abgeschlossen, Durchschnittsverlust: 1,094048, Synapses: 411, lossSum: 1,091657, proccesLoss: 0,002390, maxProccessedSynapses: 951
+Generierter Text: A` dd$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!dd$!d
+Generierter Text: Fa!!!!ﾬ$$$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!d
+Generierter Text: Aa!!!!ﾬ$$$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!d
+Generierter Text: Fa!!!!ﾬ$$$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!dd$!dd$!dd$$$$$!dd$!d
+Epoche 5099 abgeschlossen, Durchschnittsverlust: 1,086006, Synapses: 412, lossSum: 1,083617, proccesLoss: 0,002388, maxProccessedSynapses: 953
+Generierter Text: A` dd$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ dd$ d
+Generierter Text: Fa!!!!ﾬ$$$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ d
+Generierter Text: Aa!!!!ﾬ$$$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ d
+Generierter Text: Fa!!!!ﾬ$$$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ dd$ dd$ dd$$$$$!dd$ d
+Epoche 5199 abgeschlossen, Durchschnittsverlust: 1,105649, Synapses: 417, lossSum: 1,103256, proccesLoss: 0,002393, maxProccessedSynapses: 956
+Generierter Text: Aa!dd$!dd$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ d
+Generierter Text: Fa!!!!ﾬ$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ d
+Generierter Text: Aa!!!!ﾬ$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ d
+Generierter Text: Fa!!!!ﾬ$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ d
+Epoche 5299 abgeschlossen, Durchschnittsverlust: 1,093107, Synapses: 408, lossSum: 1,090720, proccesLoss: 0,002387, maxProccessedSynapses: 956
+Generierter Text: Aa!dd$!dd$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ d
+Generierter Text: Fa!!!!!!ﾬ$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: A￬$!dd$!dd$!dd$!dd$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: Fc#&$$#.$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Epoche 5399 abgeschlossen, Durchschnittsverlust: 1,076046, Synapses: 408, lossSum: 1,073660, proccesLoss: 0,002386, maxProccessedSynapses: 956
+Generierter Text: Ad$$!dd$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬$!dd$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: Ad$$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Epoche 5499 abgeschlossen, Durchschnittsverlust: 1,071184, Synapses: 415, lossSum: 1,068791, proccesLoss: 0,002393, maxProccessedSynapses: 956
+Generierter Text: Ad$$!dd$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬$!dd$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: Ad$$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Epoche 5599 abgeschlossen, Durchschnittsverlust: 1,066766, Synapses: 410, lossSum: 1,064372, proccesLoss: 0,002394, maxProccessedSynapses: 956
+Generierter Text: Ad$$!dd$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬$!dd$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: Ad$$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Epoche 5699 abgeschlossen, Durchschnittsverlust: 1,065191, Synapses: 409, lossSum: 1,062801, proccesLoss: 0,002389, maxProccessedSynapses: 959
+Generierter Text: Ad$$!dd$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬$!dd$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: Ad$$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬$!dd$!dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Epoche 5799 abgeschlossen, Durchschnittsverlust: 1,054852, Synapses: 410, lossSum: 1,052467, proccesLoss: 0,002384, maxProccessedSynapses: 959
+Generierter Text: Ad$,1,,,1,,,1$$$$$$$#$$$!dd$!dd$!dd$$$$$#$$$!dd$!dd$!dd$$$$$#$$$!dd$!dd$!dd$$$$$#$$$!dd$!dd$!dd$$$$$
+Generierter Text: F￬$$$$$!dd$!dd$!dd$!dd$$$$$#$$$!dd$!dd$!dd$$$$$#$$$!dd$!dd$!dd$$$$$#$$$!dd$!dd$!dd$$$$$#$$$!dd$!dd$!
+Generierter Text: Ad$$$$$$#$$$!dd$!dd$!dd$$$$$#$$$!dd$!dd$!dd$$$$$#$$$!dd$!dd$!dd$$$$$#$$$!dd$!dd$!dd$$$$$#$$$!dd$!dd$
+Generierter Text: F￬,1$$$$$$$#$$$!dd$!dd$!dd$$$$$#$$$!dd$!dd$!dd$$$$$#$$$!dd$!dd$!dd$$$$$#$$$!dd$!dd$!dd$$$$$#$$$!dd$!
+Epoche 5899 abgeschlossen, Durchschnittsverlust: 1,046365, Synapses: 417, lossSum: 1,043947, proccesLoss: 0,002418, maxProccessedSynapses: 959
+Generierter Text: A` dd,QQ` dd,QQ` dd,c#$$$ $$$$ dd$ dd$ ee$ ae$ ae$ ad$ dd$ ee$ ae$ ae$ ad$ dd$ ee$ ae$ ae$ ad$ dd
+Generierter Text: Ff&&&!!!aad$$ $$$$ dd$ dd$ ee$ ae$ ae$ ad$ dd$ ee$ ae$ ae$ ad$ dd$ ee$ ae$ ae$ ad$ dd$ ee$ ae$ ae$ a
+Generierter Text: A￬,QQ` dd,c#$$$ $$$$ dd$ dd$ ee$ ae$ ae$ ad$ dd$ ee$ ae$ ae$ ad$ dd$ ee$ ae$ ae$ ad$ dd$ ee$ ae$ a
+Generierter Text: F￬, ll, ll, ll, ee$ ae$ ae$ ad$ dd$ ee$ ae$ ae$ ad$ dd$ ee$ ae$ ae$ ad$ dd$ ee$ ae$ ae$ ad$ dd$ ee$
+Epoche 5999 abgeschlossen, Durchschnittsverlust: 1,012609, Synapses: 415, lossSum: 1,010200, proccesLoss: 0,002410, maxProccessedSynapses: 965
+Generierter Text: A` ll,QQ` ll,QQ` ll,s#$$$ $$$$ dd$ dd$ ee$!ad$ ee$!ad,!dd,!dd,!dd$ dd$ dd$ dd$ ee$!ad$ ee$!ad,!dd
+Generierter Text: Fe$$$!!$$$!$$$!$$$!$$$ $$$$ dd$ dd$ ee$!ad$ ee$!ad,!dd,!dd,!dd$ dd$ dd$ dd$ ee$!ad$ ee$!ad,!dd,!dd,!
+Generierter Text: Ad$$ dd$ dd$ dd$ ee$!ae$!ae$ ad$ dd$ ee$!ad$ ee$!ad,!dd,!dd,!dd$ dd$ dd$ dd$ ee$!ad$ ee$!ad,!dd,!dd,
+Generierter Text: F￬,s#$$$ $$$$ dd$ dd$ ee$!ad$ ee$!ad,!dd,!dd,!dd$ dd$ dd$ dd$ ee$!ad$ ee$!ad,!dd,!dd,!dd$ dd$ dd$ d
+Epoche 6099 abgeschlossen, Durchschnittsverlust: 0,997315, Synapses: 416, lossSum: 0,994857, proccesLoss: 0,002458, maxProccessedSynapses: 966
+Generierter Text: At$$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$
+Generierter Text: F￬&3&&&cj$$`d$$`d$$ $$$$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$
+Generierter Text: A￬&3&&&cj$$`d$$`d$$ $$$$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$
+Generierter Text: F￬&3&&&cj$$`d$$`d$$ $$$$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$!ad$ dd$ ee$
+Epoche 6199 abgeschlossen, Durchschnittsverlust: 0,972637, Synapses: 419, lossSum: 0,970189, proccesLoss: 0,002448, maxProccessedSynapses: 968
+Generierter Text: At$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬&3&&&ai$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: A￬&3&&&ai$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬&3&&&ai$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Epoche 6299 abgeschlossen, Durchschnittsverlust: 0,962054, Synapses: 419, lossSum: 0,959590, proccesLoss: 0,002464, maxProccessedSynapses: 969
+Generierter Text: At$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d
+Generierter Text: F￬&3&&&ai$$``$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d
+Generierter Text: A￬&3&$$``$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d
+Generierter Text: F￬&3&&&ai$$``$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d
+Epoche 6399 abgeschlossen, Durchschnittsverlust: 0,960253, Synapses: 421, lossSum: 0,957797, proccesLoss: 0,002457, maxProccessedSynapses: 974
+Generierter Text: At$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬$3$$$ai$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: A￬$3$$$ai$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬$3$$$ai$$ $$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Epoche 6499 abgeschlossen, Durchschnittsverlust: 0,984197, Synapses: 421, lossSum: 0,981742, proccesLoss: 0,002455, maxProccessedSynapses: 979
+Generierter Text: At$$ cad&&ah$$ 3!dd&"aa$$$ cad&&ah$$ 3!dd&"aa$$$ cad&&ah$$ 3!dd&"aa$$$ cad&&ah$$ 3!dd&"aa$$$ cad&&ah
+Generierter Text: Fqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqh$$$ cad&&ah$$ 3!dd&"aa$$$ cad&&ah$$ 3!dd&"aa$$$ cad&&ah$$ 3!dd
+Generierter Text: Aqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqql""cc&&&"aa$$$ cad&&ah$$ 3!dd&"aa$$$ cad&&ah$$ 3!dd&"aa
+Generierter Text: Fp`$$$$ $$$$$ 3!dd&"aa$$$ cad&&ah$$ 3!dd&"aa$$$ cad&&ah$$ 3!dd&"aa$$$ cad&&ah$$ 3!dd&"aa$$$ cad&&ah$
+Epoche 6599 abgeschlossen, Durchschnittsverlust: 0,999717, Synapses: 425, lossSum: 0,997252, proccesLoss: 0,002464, maxProccessedSynapses: 979
+Generierter Text: At$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Generierter Text: F￬$3$$$qah&&ah$$``$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$
+Generierter Text: Aqqqqqqqqqqqqqqqqqqqqqqqqqqh$$``$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`
+Generierter Text: Fqah&&ah$$``$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`
+Epoche 6699 abgeschlossen, Durchschnittsverlust: 0,971493, Synapses: 425, lossSum: 0,969029, proccesLoss: 0,002464, maxProccessedSynapses: 980
+Generierter Text: At$$ cad$$aa$$$"aa$$$ cad&&ah$$ 3!aa&&&"aa$$$ cad&&ah$$ 3!aa&&&"aa$$$ cad&&ah$$ 3!aa&&&"aa$$$ cad&&a
+Generierter Text: F￬ah$$ 3!aa$$$"aa$$$ cad&&ah$$ 3!aa&&&"aa$$$ cad&&ah$$ 3!aa&&&"aa$$$ cad&&ah$$ 3!aa&&&"aa$$$ cad&&ah
+Generierter Text: Aqqqqqqqqqqqqqqh$$$ cad$$aa&&&"aa$$$ cad&&ah$$ 3!aa&&&"aa$$$ cad&&ah$$ 3!aa&&&"aa$$$ cad&&ah$$ 3!aa&
+Generierter Text: Fs3333333333333333333333333333333333333333333333333333333333&$$ 3"aa&&&"aa$$$ cad&&ah$$ 3!aa&&&"aa$$
+Epoche 6799 abgeschlossen, Durchschnittsverlust: 0,986720, Synapses: 431, lossSum: 0,984255, proccesLoss: 0,002465, maxProccessedSynapses: 980
+Generierter Text: At$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d
+Generierter Text: F￮ﾦ3ﾦﾦﾦqh$$``$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d
+Generierter Text: A￮ﾦ3ﾤdd$ dd$ dd$ dd$!dd&"aa$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$
+Generierter Text: Fsqqqqqqqqqqqqqqqqqqqqqqh&&3&$$``$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d
+Epoche 6899 abgeschlossen, Durchschnittsverlust: 1,007968, Synapses: 428, lossSum: 1,005411, proccesLoss: 0,002557, maxProccessedSynapses: 980
+Generierter Text: At$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Generierter Text: F￮ﾦ#ﾦﾦﾦsh$$aa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Generierter Text: A￮ﾦ#ﾦ$$aa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Generierter Text: F￮ﾦ#ﾦﾦﾦsh$$aa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Epoche 6999 abgeschlossen, Durchschnittsverlust: 1,015954, Synapses: 423, lossSum: 1,013416, proccesLoss: 0,002538, maxProccessedSynapses: 980
+Generierter Text: Av&&"aa`h$$aa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Generierter Text: F￮ﾦ#ﾦ$$aa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Generierter Text: A￮ﾦ#ﾦﾦﾦqh$$aa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Generierter Text: F￮ﾦ#ﾦ$$aa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Epoche 7099 abgeschlossen, Durchschnittsverlust: 1,052963, Synapses: 422, lossSum: 1,050495, proccesLoss: 0,002468, maxProccessedSynapses: 980
+Generierter Text: At$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Generierter Text: F￮ﾦ#ﾦﾦﾦah$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$
+Generierter Text: Asaaaaaaaaaaaaaaah$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$
+Generierter Text: F￦ﾦahhﾦﾦﾦ#ﾦ$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa`$$aa
+Epoche 7199 abgeschlossen, Durchschnittsverlust: 1,020268, Synapses: 418, lossSum: 1,017818, proccesLoss: 0,002449, maxProccessedSynapses: 980
+Generierter Text: At$d`$$d`$$d`$$d`$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Generierter Text: F￮ﾦ#ﾦﾦﾦah$$aa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Generierter Text: A￮ﾦ#ﾦ$$``$$d`$$d`$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Generierter Text: F￮ﾦ#ﾦﾦﾦah$$aa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Epoche 7299 abgeschlossen, Durchschnittsverlust: 1,026755, Synapses: 430, lossSum: 1,024292, proccesLoss: 0,002464, maxProccessedSynapses: 980
+Generierter Text: At$d`$$dd$ aaa`$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$
+Generierter Text: Fs#$$dd$3ah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa
+Generierter Text: A￮$$``ch$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$
+Generierter Text: Ff&ah&&ah$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$$aaa`$$aaah$
+Epoche 7399 abgeschlossen, Durchschnittsverlust: 1,021849, Synapses: 422, lossSum: 1,019323, proccesLoss: 0,002526, maxProccessedSynapses: 980
+Generierter Text: At$d`$$dd$ aaa$$dd$"aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa
+Generierter Text: Fv&sh$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`
+Generierter Text: A￮$$```h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$
+Generierter Text: Fv&shh&&&#&$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`
+Epoche 7499 abgeschlossen, Durchschnittsverlust: 1,016312, Synapses: 424, lossSum: 1,013773, proccesLoss: 0,002539, maxProccessedSynapses: 980
+Generierter Text: At$d`$$dd$ aaa&&&"aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aa
+Generierter Text: Ft$aa$$dd$ aaa$$dd$ aaa$$dd$ aaa$$dd$ aaa$$dd$ aaa$$dd$ aaa$$dd$ aaa$$dd$ aaa$$dd$ aaa$$dd$ aaa$$dd$
+Generierter Text: A￮&3&&&sh$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$
+Generierter Text: Fs`h&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$aaah&&ah$$
+Epoche 7599 abgeschlossen, Durchschnittsverlust: 1,006881, Synapses: 421, lossSum: 1,004428, proccesLoss: 0,002453, maxProccessedSynapses: 980
+Generierter Text: At$d`$$dd$ aaa$$dd$"aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aa
+Generierter Text: Fv&qh$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaa
+Generierter Text: A￮$$aa`h$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$
+Generierter Text: Fv&shh&&&#&$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaa
+Epoche 7699 abgeschlossen, Durchschnittsverlust: 1,008960, Synapses: 418, lossSum: 1,006442, proccesLoss: 0,002518, maxProccessedSynapses: 980
+Generierter Text: At$d`a`$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$a
+Generierter Text: F￮$ aaa$$dd$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaa
+Generierter Text: A￮&&qh$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aa
+Generierter Text: Fv&qh$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaa
+Epoche 7799 abgeschlossen, Durchschnittsverlust: 1,008373, Synapses: 422, lossSum: 1,005852, proccesLoss: 0,002521, maxProccessedSynapses: 980
+Generierter Text: At$d`a`$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$a
+Generierter Text: F￮$ aaa$$dd$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`
+Generierter Text: A￮&.qh$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa
+Generierter Text: F~.qh$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`
+Epoche 7899 abgeschlossen, Durchschnittsverlust: 1,006505, Synapses: 433, lossSum: 1,003984, proccesLoss: 0,002522, maxProccessedSynapses: 980
+Generierter Text: At$d`a`$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$a
+Generierter Text: F￮$ aaa$$dd$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaa
+Generierter Text: A￮..sh$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aa
+Generierter Text: F~.sh$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaa
+Epoche 7999 abgeschlossen, Durchschnittsverlust: 0,971574, Synapses: 420, lossSum: 0,969106, proccesLoss: 0,002468, maxProccessedSynapses: 980
+Generierter Text: At$da $dd$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$
+Generierter Text: Fsﾮ``&&$"aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$a
+Generierter Text: A￮$ Aqa$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$a
+Generierter Text: F￮.3$$dd$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$aaah$$
+Epoche 8099 abgeschlossen, Durchschnittsverlust: 0,952077, Synapses: 424, lossSum: 0,949586, proccesLoss: 0,002491, maxProccessedSynapses: 980
+Generierter Text: A~..3$$dd$$```a,,dd, aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,a
+Generierter Text: F￮$ Aqa,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,a
+Generierter Text: A￮.3$$dd$$```a,,dd, aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aa
+Generierter Text: F~.qh..qh$$```a,,dd, aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,aaah,,a
+Epoche 8199 abgeschlossen, Durchschnittsverlust: 0,950672, Synapses: 422, lossSum: 0,948093, proccesLoss: 0,002578, maxProccessedSynapses: 980
+Generierter Text: At$d`aa$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$a
+Generierter Text: F￮.3.$$aabbah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$a
+Generierter Text: A￮.3.$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaa
+Generierter Text: Fsﾮbbbbbbaa..."aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah.
+Epoche 8299 abgeschlossen, Durchschnittsverlust: 0,960699, Synapses: 432, lossSum: 0,958194, proccesLoss: 0,002506, maxProccessedSynapses: 980
+Generierter Text: At$daa`$$aaah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,,
+Generierter Text: F~.Qx$$aaah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,,aa
+Generierter Text: A~..3.$$aabbah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,
+Generierter Text: Fsbbah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,,aa,,, Aqa$$aaah,,aa,,, A
+Epoche 8399 abgeschlossen, Durchschnittsverlust: 0,952778, Synapses: 420, lossSum: 0,950282, proccesLoss: 0,002496, maxProccessedSynapses: 981
+Generierter Text: At$d`aa$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ a
+Generierter Text: F￮$ Aqa,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$a
+Generierter Text: A￮.3.$$aabbbbah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$
+Generierter Text: F￮.3...Qx$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$
+Epoche 8499 abgeschlossen, Durchschnittsverlust: 0,953600, Synapses: 422, lossSum: 0,951124, proccesLoss: 0,002476, maxProccessedSynapses: 983
+Generierter Text: At$daa`$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ a
+Generierter Text: F￮$!Aa`,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$a
+Generierter Text: A￮.#.$$dd$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$
+Generierter Text: F￮.#....3.$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee
+Epoche 8599 abgeschlossen, Durchschnittsverlust: 0,953443, Synapses: 421, lossSum: 0,950962, proccesLoss: 0,002481, maxProccessedSynapses: 983
+Generierter Text: At$d```$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$a
+Generierter Text: F￮.#.$$dd$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$
+Generierter Text: Asqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq`$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,
+Generierter Text: F~.qh$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaa
+Epoche 8699 abgeschlossen, Durchschnittsverlust: 0,954209, Synapses: 420, lossSum: 0,951730, proccesLoss: 0,002479, maxProccessedSynapses: 983
+Generierter Text: At$d```$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ a
+Generierter Text: F￮$!Aa`,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$a
+Generierter Text: A￮.#.$$dd$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$
+Generierter Text: F￮.#....#.$$dd$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da$$ee$ aaah$$aaah,,aa,,da
+Epoche 8799 abgeschlossen, Durchschnittsverlust: 0,944993, Synapses: 427, lossSum: 0,942428, proccesLoss: 0,002565, maxProccessedSynapses: 983
+Generierter Text: At$d`a`$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$a
+Generierter Text: F￮.#.$$aa`h..`h$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaa
+Generierter Text: A￮..qh$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aa
+Generierter Text: F|,aa$$aa`h$$aa`h..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..a
+Epoche 8899 abgeschlossen, Durchschnittsverlust: 0,941808, Synapses: 428, lossSum: 0,939236, proccesLoss: 0,002572, maxProccessedSynapses: 983
+Generierter Text: At$d`a`$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$a
+Generierter Text: F￮.#.$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaa
+Generierter Text: A￮..qh$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aa
+Generierter Text: F~.``$$aa`h$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..a
+Epoche 8999 abgeschlossen, Durchschnittsverlust: 0,929431, Synapses: 428, lossSum: 0,926915, proccesLoss: 0,002516, maxProccessedSynapses: 983
+Generierter Text: At$d`aa$$aa`h..`h$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$a
+Generierter Text: F￮.#.$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaa
+Generierter Text: A￮..qh$$aa`h..`h$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aa
+Generierter Text: Ft$aa$$dd$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$
+Epoche 9099 abgeschlossen, Durchschnittsverlust: 0,925886, Synapses: 422, lossSum: 0,923362, proccesLoss: 0,002524, maxProccessedSynapses: 983
+Generierter Text: At$d`aa$$aa`h,,aa,,,"aa$$ee$!aaah$$aaah,,aa,,,"aa$$ee$!aaah$$aaah,,aa,,,"aa$$ee$!aaah$$aaah,,aa,,,"a
+Generierter Text: F￮.#.$$ee$!aaah$$aaah,,aa,,,"aa$$ee$!aaah$$aaah,,aa,,,"aa$$ee$!aaah$$aaah,,aa,,,"aa$$ee$!aaah$$aaah,
+Generierter Text: As#CSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+Generierter Text: Fs##################################################################################################
+Epoche 9199 abgeschlossen, Durchschnittsverlust: 0,929176, Synapses: 429, lossSum: 0,926653, proccesLoss: 0,002523, maxProccessedSynapses: 983
+Generierter Text: At$d`aa$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$a
+Generierter Text: F￮.#.$$aa`h..ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaa
+Generierter Text: A￮..qh$$aa`h..ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aa
+Generierter Text: Ft$aa$$dd$$aa`h,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$
+Epoche 9299 abgeschlossen, Durchschnittsverlust: 0,956149, Synapses: 421, lossSum: 0,953651, proccesLoss: 0,002498, maxProccessedSynapses: 983
+Generierter Text: At$daaa$$aabbbbbbah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,
+Generierter Text: Fsah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$
+Generierter Text: A~.s`..s`$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$
+Generierter Text: FsSp$$aabbbbbbah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah
+Epoche 9399 abgeschlossen, Durchschnittsverlust: 0,954047, Synapses: 424, lossSum: 0,951532, proccesLoss: 0,002515, maxProccessedSynapses: 983
+Generierter Text: At$da$$dd$ Cp`$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah,,ah$$aaah
+Generierter Text: FSSsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
+Generierter Text: As##################################################################################################
+Generierter Text: Fs##################################################################################################
+Epoche 9499 abgeschlossen, Durchschnittsverlust: 0,953136, Synapses: 431, lossSum: 0,950572, proccesLoss: 0,002564, maxProccessedSynapses: 983
+Generierter Text: At$da$$ee$ aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$
+Generierter Text: Fssb$$aabbbbbbbbbbbbbbah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$
+Generierter Text: Av&sb&&sb$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$
+Generierter Text: Fssb$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah
+Epoche 9599 abgeschlossen, Durchschnittsverlust: 0,948294, Synapses: 422, lossSum: 0,945719, proccesLoss: 0,002575, maxProccessedSynapses: 983
+Generierter Text: At$d`$$ee$ aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$
+Generierter Text: Fssb$$aabbbbbbbbbbbbbbah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$
+Generierter Text: A~.sb..sb$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$
+Generierter Text: Fssb$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah..ah$$aaah
+Epoche 9699 abgeschlossen, Durchschnittsverlust: 0,938948, Synapses: 437, lossSum: 0,936379, proccesLoss: 0,002569, maxProccessedSynapses: 983
+Generierter Text: At$d`$$dd$ Ap`$$aa&&&&`a..."aa$$dd$ Aqa..ah$$aa&&&&`a..."aa$$dd$ Aqa..ah$$aa&&&&`a..."aa$$dd$ Aqa..a
+Generierter Text: F￮`h$$aa&&&&`a..."aa$$dd$ Aqa..ah$$aa&&&&`a..."aa$$dd$ Aqa..ah$$aa&&&&`a..."aa$$dd$ Aqa..ah$$aa&&&&`
+Generierter Text: A￮$$aa..."aa$$dd$ Aqa..`h$$aa&&&&`a..."aa$$dd$ Aqa..ah$$aa&&&&`a..."aa$$dd$ Aqa..ah$$aa&&&&`a..."aa$
+Generierter Text: Fsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
+Epoche 9799 abgeschlossen, Durchschnittsverlust: 0,935761, Synapses: 428, lossSum: 0,933172, proccesLoss: 0,002589, maxProccessedSynapses: 985
+Generierter Text: At$d`$$dd$ cbb`h$$```h..`h$$```h..`h$$```h..`h$$```h..`h$$```h..`h$$```h..`h$$```h..`h$$```h..`h$$``
+Generierter Text: F|,$$```h..`h$$```h..`h$$```h..`h$$```h..`h$$```h..`h$$```h..`h$$```h..`h$$```h..`h$$```h..`h$$```h.
+Generierter Text: As#sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
+Generierter Text: Fs##################################################################################################
+Epoche 9899 abgeschlossen, Durchschnittsverlust: 0,947461, Synapses: 431, lossSum: 0,944941, proccesLoss: 0,002520, maxProccessedSynapses: 985
+Generierter Text: A~..#$$dd$ Aqa,,ah,,ah$$aaa`$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``
+Generierter Text: FSSSSsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
+Generierter Text: As##################################################################################################
+Generierter Text: Fs##############################################ﾮ&&#"dd``$$aaah,,ah,,ah$$aaa`$$aa``$$aa``$$aa``$$aa`
+Epoche 9999 abgeschlossen, Durchschnittsverlust: 0,946900, Synapses: 428, lossSum: 0,944404, proccesLoss: 0,002495, maxProccessedSynapses: 986
+Generierter Text: Av&.#ddd`ddd`ddd`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll
+Generierter Text: F￬.#ddd`ddd`ddd`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`
+Generierter Text: At$d`$$dd$ aaa,,, dd$ Aqa,,ah,,ah$$aaa`llaillaillaillaillaillaillaillaillaillaillaillaillaillaillail
+Generierter Text: Fs#ddd`ddd`ddd`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`lll`l
+Epoche 10099 abgeschlossen, Durchschnittsverlust: 0,948537, Synapses: 430, lossSum: 0,946042, proccesLoss: 0,002495, maxProccessedSynapses: 988
+Generierter Text: Av&.#&&&"aaah,,ah,,ah$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$
+Generierter Text: Fs#&&&"aaah,,ah,,ah$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$a
+Generierter Text: A￬.#...#&&&"aaah,,ah,,ah$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aa
+Generierter Text: F~.Qx$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa
+Epoche 10199 abgeschlossen, Durchschnittsverlust: 0,937737, Synapses: 422, lossSum: 0,935246, proccesLoss: 0,002491, maxProccessedSynapses: 988
+Generierter Text: As#...#&&&"aaah,,ah,,ah$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaa
+Generierter Text: F￬ah,,ah$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$
+Generierter Text: A~.q`..q`..q`ddaaddaaddaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$a
+Generierter Text: F￬.#...#&&&"aaah,,ah,,ah$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aa
+Epoche 10299 abgeschlossen, Durchschnittsverlust: 0,941478, Synapses: 424, lossSum: 0,938988, proccesLoss: 0,002490, maxProccessedSynapses: 988
+Generierter Text: Aq!,,,,!dd$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa
+Generierter Text: FQQQQqqqqh$$AQqa$$dd$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$
+Generierter Text: A|,qh,,qh,,qh$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$a
+Generierter Text: F￮,!￤￤,,qh$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa$$aaaa
+Epoche 10399 abgeschlossen, Durchschnittsverlust: 0,942914, Synapses: 429, lossSum: 0,940418, proccesLoss: 0,002496, maxProccessedSynapses: 989
+Generierter Text: As#,,,ql$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$
+Generierter Text: F|,qh,,qh,,qh$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$a
+Generierter Text: A￮,#,,,#$$dd$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa
+Generierter Text: F|,ql$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa`
+Epoche 10499 abgeschlossen, Durchschnittsverlust: 1,003248, Synapses: 428, lossSum: 1,000813, proccesLoss: 0,002435, maxProccessedSynapses: 995
+Generierter Text: A|,,!dd$$````$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$a
+Generierter Text: F￬,!￤￤,,ql$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``
+Generierter Text: Aqqqqqql$ Aqa$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$aa`h$$a
+Generierter Text: F￬,!dd$$````$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa
+Epoche 10599 abgeschlossen, Durchschnittsverlust: 0,928854, Synapses: 431, lossSum: 0,926377, proccesLoss: 0,002477, maxProccessedSynapses: 997
+Generierter Text: As#,,,,#ah,,aa$$dd$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa
+Generierter Text: F|,ql$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa`
+Generierter Text: A￮$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$
+Generierter Text: F|,qh,,qqh$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``
+Epoche 10699 abgeschlossen, Durchschnittsverlust: 0,969602, Synapses: 429, lossSum: 0,967134, proccesLoss: 0,002468, maxProccessedSynapses: 997
+Generierter Text: At$￤aa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$a
+Generierter Text: F￮, dd$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aa
+Generierter Text: A|,al,,al$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$
+Generierter Text: Fsﾮaa$$dd$ Aqa$$aa``$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$
+Epoche 10799 abgeschlossen, Durchschnittsverlust: 0,938486, Synapses: 438, lossSum: 0,936009, proccesLoss: 0,002477, maxProccessedSynapses: 997
+Generierter Text: As#,,,ql$$aa``$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$
+Generierter Text: F~.ql..ql..qh$$aa``$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$a
+Generierter Text: A￮.#...#$$dd$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aa
+Generierter Text: F~.ql$$aa``$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa
+Epoche 10899 abgeschlossen, Durchschnittsverlust: 0,937986, Synapses: 426, lossSum: 0,935495, proccesLoss: 0,002491, maxProccessedSynapses: 997
+Generierter Text: As#,,,qh$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$
+Generierter Text: F|,ql,,ql,,ql$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$a
+Generierter Text: A￮,#,,,#$$dd$ Qqa,,ah,,ah$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$a
+Generierter Text: F￮,#,,,#$$dd$ Qqa,,ah,,ah$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$aa``$$a
+Epoche 10999 abgeschlossen, Durchschnittsverlust: 0,937207, Synapses: 426, lossSum: 0,934710, proccesLoss: 0,002497, maxProccessedSynapses: 997
+Generierter Text: As#,,,ql$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$
+Generierter Text: F|,ql,,ql,,qh$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$a
+Generierter Text: A￮,#,,,#$$dd$ Qqa,,ah,,ah$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$a
+Generierter Text: F￮,#,,,#$$dd$ Qqa,,ah,,ah$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$a
+Epoche 11099 abgeschlossen, Durchschnittsverlust: 0,941963, Synapses: 428, lossSum: 0,939480, proccesLoss: 0,002483, maxProccessedSynapses: 997
+Generierter Text: As#,,,ql$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$
+Generierter Text: F|,ql,,ql,,ql$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$a
+Generierter Text: A￮,#,,,#$$dd$ Aqa,,ah,,ah$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$a
+Generierter Text: F￮,#,,,#$$dd$ Aqa,,ah,,ah$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$aaa`$$a
+Epoche 11199 abgeschlossen, Durchschnittsverlust: 0,951047, Synapses: 425, lossSum: 0,948555, proccesLoss: 0,002492, maxProccessedSynapses: 997
+Generierter Text: Ar"￤cah,,ah,,ah$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$d
+Generierter Text: Fs#QQQqqh$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa
+Generierter Text: AQQQQqqqqh$$ddaa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$
+Generierter Text: F|,a`$$aa$$dd$ Aqa,,ah,,ah$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$
+Epoche 11299 abgeschlossen, Durchschnittsverlust: 0,994364, Synapses: 423, lossSum: 0,991883, proccesLoss: 0,002481, maxProccessedSynapses: 997
+Generierter Text: A|,,&`daa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa
+Generierter Text: Fp`$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$
+Generierter Text: At$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd
+Generierter Text: Fqal$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$$dd$ Aq`$$aa$
+Epoche 11399 abgeschlossen, Durchschnittsverlust: 0,942527, Synapses: 427, lossSum: 0,940031, proccesLoss: 0,002496, maxProccessedSynapses: 998
+Generierter Text: As#,,,qh$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$
+Generierter Text: Fsqh$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$
+Generierter Text: Asqqqqqh,,ha,,, aa$$dd$ Aqa,,ah,,ah$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa
+Generierter Text: FQQQQQQQQQxh,,ha,,, aa$$dd$ Aqa,,ah,,ah$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$ Aqa$$aa$$dd$
+Epoche 11499 abgeschlossen, Durchschnittsverlust: 0,992113, Synapses: 424, lossSum: 0,989623, proccesLoss: 0,002490, maxProccessedSynapses: 998
+Generierter Text: A|,,&aa$$$ Aqa$$aa$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$
+Generierter Text: FQph$$aa$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`
+Generierter Text: A|,,&aa$$$ Aqa$$aa$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$
+Generierter Text: FQph$$aa$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`
+Epoche 11599 abgeschlossen, Durchschnittsverlust: 0,993734, Synapses: 427, lossSum: 0,991240, proccesLoss: 0,002494, maxProccessedSynapses: 998
+Generierter Text: A~.,&`daa$$$ Aq`$$``$$$ Aq`$$aa$$$ Aq`$$``$$$ Aq`$$aa$$$ Aq`$$``$$$ Aq`$$aa$$$ Aq`$$``$$$ Aq`$$aa$$$
+Generierter Text: F￮,&aa$$$ Aq`$$aa$$$ Aq`$$``$$$ Aq`$$aa$$$ Aq`$$``$$$ Aq`$$aa$$$ Aq`$$``$$$ Aq`$$aa$$$ Aq`$$``$$$ Aq
+Generierter Text: A￮.,`l,,`l,,`l$$``$$$ Aq`$$aa$$$ Aq`$$``$$$ Aq`$$aa$$$ Aq`$$``$$$ Aq`$$aa$$$ Aq`$$``$$$ Aq`$$aa$$$ A
+Generierter Text: F￮ﾮ`l$$``$$$ Aq`$$aa$$$ Aq`$$``$$$ Aq`$$aa$$$ Aq`$$``$$$ Aq`$$aa$$$ Aq`$$``$$$ Aq`$$aa$$$ Aq`$$``$$$
+Epoche 11699 abgeschlossen, Durchschnittsverlust: 0,938076, Synapses: 427, lossSum: 0,935571, proccesLoss: 0,002505, maxProccessedSynapses: 1003
+Generierter Text: Av&,&aa,,, dd$ dd$ dd$ dd$ aahh$$$ Aqa,,ah,,ah$$aa$$$ Aqa$$aa$$$ Aqa$$aa$$$ Aqa$$aa$$$ Aqa$$aa$$$ Aq
+Generierter Text: F￮ah,,ah$$aa$$$ Aqa$$aa$$$ Aqa$$aa$$$ Aqa$$aa$$$ Aqa$$aa$$$ Aqa$$aa$$$ Aqa$$aa$$$ Aqa$$aa$$$ Aqa$$aa
+Generierter Text: Av&,&aa,,, dd$ dd$ dd$ aahhhh$$$ Aqa,,ah,,ah$$aa$$$ Aqa$$aa$$$ Aqa$$aa$$$ Aqa$$aa$$$ Aqa$$aa$$$ Aqa$
+Generierter Text: Fsﾮaa,,, dd$ dd$ dd$ dd$ aahh$$$ Aqa,,ah,,ah$$aa$$$ Aqa$$aa$$$ Aqa$$aa$$$ Aqa$$aa$$$ Aqa$$aa$$$ Aqa$
+Epoche 11799 abgeschlossen, Durchschnittsverlust: 0,953844, Synapses: 429, lossSum: 0,951338, proccesLoss: 0,002506, maxProccessedSynapses: 1003
+Generierter Text: Av&.&ddaa$$$"ah$$aa$$$"ah$$aa$$$"ah$$aa$$$"ah$$aa$$$"ah$$aa$$$"ah$$aa$$$"ah$$aa$$$"ah$$aa$$$"ah$$aa$
+Generierter Text: Fs#qqqqqh$$aa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Generierter Text: A￮.&aa$$$"ah$$aa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da
+Generierter Text: Ftdaa$$$"ah$$aa$$$"ah$$aa$$$"ah$$aa$$$"ah$$aa$$$"ah$$aa$$$"ah$$aa$$$"ah$$aa$$$"ah$$aa$$$"ah$$aa$$$"a
+Epoche 11899 abgeschlossen, Durchschnittsverlust: 0,958293, Synapses: 433, lossSum: 0,955784, proccesLoss: 0,002509, maxProccessedSynapses: 1007
+Generierter Text: At$,$dd``$$$ Aq`$$aa$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`
+Generierter Text: Ftd``$$$ Aq`$$``$$$ Aq`$$aa$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$
+Generierter Text: As#qqqqqqqqh$$aa$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`
+Generierter Text: Ftd``$$$ Aq`$$aa$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`$$d`
+Epoche 11999 abgeschlossen, Durchschnittsverlust: 0,924058, Synapses: 432, lossSum: 0,921535, proccesLoss: 0,002523, maxProccessedSynapses: 1009
+Generierter Text: At$,$``,,, aa$$$ ￤￤$$`l$$`l$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$
+Generierter Text: Fsah,,ah,,ah,,ah$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h
+Generierter Text: Aqaaaaaaaaaaaaaa$$$ aa``$$$ dd$ ￤￤$$`l$$`l$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$
+Generierter Text: F|,ddah,,ah,,ah,,ah$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$$`h$
+Epoche 12099 abgeschlossen, Durchschnittsverlust: 1,014836, Synapses: 433, lossSum: 1,012326, proccesLoss: 0,002510, maxProccessedSynapses: 1009
+Generierter Text: A￼ﾬ￬￬``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,
+Generierter Text: F￮ﾬﾬaa,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"
+Generierter Text: Aq!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!aa!!
+Generierter Text: F|l`h,,`h,,``  aa  aa  aa  aa  aa  aa  aa  aa  aa  aa  aa  aa  aa  aa  aa  aa  aa  aa  aa  aa  aa  a
+Epoche 12199 abgeschlossen, Durchschnittsverlust: 1,097298, Synapses: 448, lossSum: 1,094834, proccesLoss: 0,002464, maxProccessedSynapses: 1014
+Generierter Text: A￮ ,,,, dd$ dd$!$$$$!dd$!dd$!dd$!dd$!dd$!dd$!dd$!dd$!dd$!dd$!dd$!dd$!dd$!dd$!dd$!dd$!dd$!dd$!dd$!dd$
+Generierter Text: F￮,$aah$$`h$$`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,
+Generierter Text: Asﾮ`ah$$ah$$`h$$`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,
+Generierter Text: Fl,`l,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`h,,`
+Epoche 12299 abgeschlossen, Durchschnittsverlust: 1,064103, Synapses: 613, lossSum: 1,061674, proccesLoss: 0,002429, maxProccessedSynapses: 1016
+Generierter Text: An.$ ff$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $
+Generierter Text: Fq   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```
+Generierter Text: An, ￦￦$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$
+Generierter Text: Fs.   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```
+Epoche 12399 abgeschlossen, Durchschnittsverlust: 1,078802, Synapses: 607, lossSum: 1,076382, proccesLoss: 0,002420, maxProccessedSynapses: 1019
+Generierter Text: An.$ ff$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $
+Generierter Text: Fp   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```   ```
+Generierter Text: An                                                  aa``$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$
+Generierter Text: Fs#$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$$ $$$
+Epoche 12499 abgeschlossen, Durchschnittsverlust: 0,987133, Synapses: 431, lossSum: 0,984658, proccesLoss: 0,002475, maxProccessedSynapses: 1021
+Generierter Text: Ap dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ d
+Generierter Text: FsQxhhhhhhhhhhhhhh$$$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd
+Generierter Text: AQQqqhhhhhhhhhhhhhhhhhhhhh$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$
+Generierter Text: F|,qh,,qh$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$``$$`
+Epoche 12599 abgeschlossen, Durchschnittsverlust: 0,987265, Synapses: 435, lossSum: 0,984785, proccesLoss: 0,002480, maxProccessedSynapses: 1023
+Generierter Text: At$,$aa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$
+Generierter Text: Fshhhh$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$
+Generierter Text: AQqhhhhh$$aa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da
+Generierter Text: Fqa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$
+Epoche 12699 abgeschlossen, Durchschnittsverlust: 0,977988, Synapses: 443, lossSum: 0,975503, proccesLoss: 0,002485, maxProccessedSynapses: 1026
+Generierter Text: A|,,,aa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$
+Generierter Text: F￬hlaa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$
+Generierter Text: Aplla$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$d
+Generierter Text: F￬,,hh$$aa$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$da$$
+Epoche 12799 abgeschlossen, Durchschnittsverlust: 0,997543, Synapses: 437, lossSum: 0,995054, proccesLoss: 0,002489, maxProccessedSynapses: 1026
+Generierter Text: A|,,,``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,
+Generierter Text: F￬,,``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"
+Generierter Text: Ap dd$ dd$ dd$ ee$!ee$!ee$!ee$ ee$ ee$ ee$!ee$!ee$!ee$ ee$ ee$ ee$!ee$!ee$!ee$ ee$ ee$ ee$!ee$!ee$!e
+Generierter Text: F￬h`,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``,,,"``
+Epoche 12899 abgeschlossen, Durchschnittsverlust: 1,025526, Synapses: 432, lossSum: 1,023033, proccesLoss: 0,002493, maxProccessedSynapses: 1029
+Generierter Text: A|,,,l`,,, dd, dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ d
+Generierter Text: F￬l`,,, dd, dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: A|,,,ll``,,, dd, dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$
+Generierter Text: F￬,,``,,, dd, dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd$ dd
+Epoche 12999 abgeschlossen, Durchschnittsverlust: 1,020087, Synapses: 442, lossSum: 1,017674, proccesLoss: 0,002413, maxProccessedSynapses: 1031
+Generierter Text: A|,,,llllllllllllld p,,, ee$ ee$ ee$ ee$ ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``
+Generierter Text: FQxh,, p,,, ee$ ee$ ee$ ee$ ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``
+Generierter Text: Asﾬha,,, ee$ ee$ ee$ ee$ ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``
+Generierter Text: Fs, p,,, ee$ ee$ ee$ ee$ ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``  ``
+Epoche 13099 abgeschlossen, Durchschnittsverlust: 1,007240, Synapses: 437, lossSum: 1,004814, proccesLoss: 0,002426, maxProccessedSynapses: 1031
+Generierter Text: A|,,,,,,,,,,,,,,$ p,,, ee$ ee$ ee$ ee$ ee$ ee$ ee$ ee$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa
+Generierter Text: FQq(dd, ee$ ee$ ee$ ee$ ee$ ee$ ee$ ee$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa
+Generierter Text: AQq!aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa
+Generierter Text: FQq(dd, ee$ ee$ ee$ ee$ ee$ ee$ ee$ ee$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa
+Epoche 13199 abgeschlossen, Durchschnittsverlust: 1,011221, Synapses: 450, lossSum: 1,008794, proccesLoss: 0,002427, maxProccessedSynapses: 1031
+Generierter Text: A|,,,,,,,,,,,,,,$ p,,, ee$ ee$ ee$ ee$ ee$ ee$ ee$ ee$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa
+Generierter Text: FQq(dd, ee$ ee$ ee$ ee$ ee$ ee$ ee$ ee$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa
+Generierter Text: AQq11aa,,, Aq`,, $$$$ ee$ ee$ ee !aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa
+Generierter Text: FQq11aa,,, Aq`,, $$$$ ee$ ee$ ee !aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa  aa  aa$$$ aa
+Epoche 13299 abgeschlossen, Durchschnittsverlust: 0,945833, Synapses: 436, lossSum: 0,943316, proccesLoss: 0,002517, maxProccessedSynapses: 1034
+Generierter Text: At$,$``,,, ee$!￤￤$,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,a
+Generierter Text: F￬ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah
+Generierter Text: Aqhhh,,, Aq`,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah
+Generierter Text: Fqhhh,,, Aq`,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah,,ah
+Epoche 13399 abgeschlossen, Durchschnittsverlust: 1,159458, Synapses: 440, lossSum: 1,157192, proccesLoss: 0,002267, maxProccessedSynapses: 1034
+Generierter Text: A￮,,,,,,,,,,   bbb   bbb   bbb $$$$!fff`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$
+Generierter Text: Fs..,, p$$$  bbb   bbb   bbfadd$!$$$$add$!$$$$add$!$$$$add$!$$$$add$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$
+Generierter Text: As.$ $ddd`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$$`
+Generierter Text: F￮,,,$   bbb   bbb   bff`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$!$$$$`dd$
+Epoche 13499 abgeschlossen, Durchschnittsverlust: 1,125900, Synapses: 431, lossSum: 1,123598, proccesLoss: 0,002302, maxProccessedSynapses: 1034
+Generierter Text: A￮,,lll``$$$!$$$all$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$
+Generierter Text: F￮,,aalldad$$all$!$$$!..$!$$$!..$!$$$!..$!$$$!..$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$
+Generierter Text: Aq!.ll￬aalldad$$all$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$
+Generierter Text: F￮,,aall$!$$$all$!$$$!..$!$$$!..$!$$$!..$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$$!,,$!$$
+Epoche 13599 abgeschlossen, Durchschnittsverlust: 1,119455, Synapses: 602, lossSum: 1,117201, proccesLoss: 0,002254, maxProccessedSynapses: 1034
+Generierter Text: An.ldd`llldd`llldd`llldd!,,$!$$$!$$$!,,$!$$$!$$$!,,$!$$$!$$$!,,$!$$$!$$$!,,$!$$$!dddall$!$$$!dddall$
+Generierter Text: Fnldd`llldd`llld`!,,$!$$$!$$$!,,$!$$$!$$$!,,$!$$$!$$$!,,$!$$$!dddall$!$$$!dddall$!$$$!dddall$!$$$!dd
+Generierter Text: Aq!!.$$!$$$all$!$$$!$$$all$!$$$!dddall$!$$$!dddall$!$$$!dddall$!$$$!dddall$!$$$!dddall$!$$$!dddall$!
+Generierter Text: Fn`dd$!$$$!$$$all$!$$$!$$$all$!$$$!$$$all$!$$$!$$$all$!$$$!$$$all$!$$$!$$$all$!$$$!dddall$!$$$!dddal
+Epoche 13699 abgeschlossen, Durchschnittsverlust: 1,078118, Synapses: 608, lossSum: 1,075877, proccesLoss: 0,002241, maxProccessedSynapses: 1034
+Generierter Text: Al,ddd`ddddd`ddddd`ddddd`ddddd`ddddd`dd$!$$$!nnn!$$$!$$$!nnn!$$$!$$$!nnn!$$$!$$$!nnn!$$$!$$$!nnn!$$$
+Generierter Text: Fl,`ddddd`dddd`    bbb    bbb    bbb    bbb    bbb   $$$$!$$$!$$$!nnn!$$$!$$$!nnn!$$$!$$$!nnn!$$$!$$
+Generierter Text: Aq!!,,$!$$$!nnn!$$$!$$$!nnn!$$$!$$$!nnn!$$$!$$$!nnn!$$$!$$$!nnn!$$$!$$$!nnn!$$$!$$$!nnn!$$$!$$$!nnn!
+Generierter Text: Fl,``ddd`ddddd`ddddd`ddddd`ddddd    bbb    bbb    bbb    bbb    bbb    bnn!$$$!$$$!nnn!$$$!$$$!nnn!$
+Epoche 13799 abgeschlossen, Durchschnittsverlust: 1,077666, Synapses: 616, lossSum: 1,075426, proccesLoss: 0,002240, maxProccessedSynapses: 1034
+Generierter Text: Al,ddd`llddd`llddd`llddd`llddd`llddd`llddd`llddd`llddd`lldd`    bbbc$$$    bbbc$$$    bbbc$$$    bbb
+Generierter Text: Flddd`llddd`llddd`lldd`    bbbc$$$    bbbc$$$    bbbc$$$    bbbc$$$    bbbc$$$    bbn`ll,!,,,!nnn`ll
+Generierter Text: AQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
+Generierter Text: Fqﾬ￬￬￬￬ p,,$!$$$$    bbb    bbb    bbb    bbb    nnn`ll,!,,,!nnn`ll,!,,,!nnn`ll,!,,,!nnn`ll,!,,,!nn
+Epoche 13899 abgeschlossen, Durchschnittsverlust: 1,127117, Synapses: 615, lossSum: 1,124890, proccesLoss: 0,002227, maxProccessedSynapses: 1034
+Generierter Text: At$,    bbbb p$$$ p$$$ Arnn$ $   bbb    bbb    bbb    bbb    bbb    bbb    bbf""""""""""""""""""""
+Generierter Text: Ft$$$ p$$$ p$$$ Arnn$ $   bbb    bbb    bbb    bbb    bbb    bbb    bbf"""""""""""""""""""""""""""
+Generierter Text: At $$$$$ p$$$ p,,$ $   bbb    bbb    bbb    bbb    bbb    bbb    bbf""""""""""""""""""""""""""""""
+Generierter Text: Fq!!!!!!!!!!!!!!!!!!!QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
+Epoche 13999 abgeschlossen, Durchschnittsverlust: 1,097125, Synapses: 617, lossSum: 1,094895, proccesLoss: 0,002230, maxProccessedSynapses: 1034
+Generierter Text: At$$     bbbbb     bbbbb     bbbbb     bbbbb !!!!!!!!!!!!!cccccccccccccccc##########################
+Generierter Text: Fq$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$
+Generierter Text: AQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
+Generierter Text: Fq!!!!!!!!!!!!!!!!!!!!!!SSSSSSSSSSSSSSSSSSSSSSQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
+Epoche 14099 abgeschlossen, Durchschnittsverlust: 1,085019, Synapses: 613, lossSum: 1,082785, proccesLoss: 0,002234, maxProccessedSynapses: 1034
+Generierter Text: At$$    bbbb ! ! ! Cbbbb`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$
+Generierter Text: Ft$    bbbb ! ! ! Cbbbb`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!
+Generierter Text: At$$ $    bbbb p$$$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll
+Generierter Text: FQqll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$$`ll$!$$$
+Epoche 14199 abgeschlossen, Durchschnittsverlust: 1,088724, Synapses: 439, lossSum: 1,086483, proccesLoss: 0,002240, maxProccessedSynapses: 1034
+Generierter Text: At$$ $$$$ $$$$ fffb ! ! ! Ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn
+Generierter Text: FQqll$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$
+Generierter Text: At$$ fffb ! ! ! Ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn
+Generierter Text: FQqll$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$!ccnn$!$$$
+
+7 h 17 min

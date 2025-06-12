@@ -111,9 +111,11 @@ public class MemoryNeuralNetworkTest {
                 hiddenCount,
         };
         final double synapseConnectivity = 0.9D;
+        //final int networkCount = 60 * 3; // Anzahl der Netzwerke
+        final int networkCount = 12 * 2; // Anzahl der Netzwerke
 
         List<NNTrainResult> trainResultList = new ArrayList<>();
-        for (int networkPos = 0; networkPos < 60 * 3; networkPos++) {
+        for (int networkPos = 0; networkPos < networkCount; networkPos++) {
             NeuralNetwork network = new NeuralNetwork(inputCount, architecture, outputCount, synapseConnectivity, 0);
             network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
             trainResultList.add(new NNTrainResult(network, 0.0D));
@@ -213,8 +215,9 @@ public class MemoryNeuralNetworkTest {
                 final double resultWeight = 0.995D;
                 //final double proccesWeight = 0.0D; // 0.25D;
                 final double proccesWeight = 0.005D;
-                trainResult.setLoss((trainResult.lossSum / (timeSeriesLength * trainCount)) * resultWeight +
-                        (trainResult.proccesLoss / (timeSeriesLength * trainCount * maxProccessedSynapses)) * proccesWeight);
+                trainResult.lossSum = (trainResult.lossSum / (timeSeriesLength * trainCount)) * resultWeight;
+                trainResult.proccesLoss = (trainResult.proccesLoss / (timeSeriesLength * trainCount * maxProccessedSynapses)) * proccesWeight;
+                trainResult.setLoss(trainResult.lossSum + trainResult.proccesLoss);
             });
             // Sortieren der Netzwerke nach Verlust
             trainResultList.sort((a, b) -> Double.compare(a.getLoss(), b.getLoss()));
@@ -231,8 +234,8 @@ public class MemoryNeuralNetworkTest {
             }
 
             // Durchschnittlicher Verlust über alle Sequenzen
-            System.out.printf("\rEpoche %d abgeschlossen, Durchschnittsverlust: %f, Synapses: %d",
-                    epoch, bestTrainResult.getLoss(), bestNeuralNetwork.getProccessedSynapses());
+            System.out.printf("\rEpoche %d abgeschlossen, Durchschnittsverlust: %f, Synapses: %d, lossSum: %f, proccesLoss: %f, maxProccessedSynapses: %d",
+                    epoch, bestTrainResult.getLoss(), bestNeuralNetwork.getProccessedSynapses(), bestTrainResult.lossSum, bestTrainResult.proccesLoss, maxProccessedSynapses);
             System.out.flush();
             if ((epoch + 1) >= epochs) {
                 break;
