@@ -59,7 +59,8 @@ public class MemoryNeuralNetworkTest {
             String[] patterns = { "01.01.01.12." };
             int epochs = 5_000;
             int trainDataSize = 20;
-            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs);
+            final int trainCount = 30;
+            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, trainCount);
             final NeuralNetwork network = trainResultList.get(0).getNetwork();
             generateText(network);
         }
@@ -67,7 +68,8 @@ public class MemoryNeuralNetworkTest {
             String[] patterns = { "12.12.12.01." };
             int epochs = 5_000;
             int trainDataSize = 20;
-            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs);
+            final int trainCount = 30;
+            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, trainCount);
             final NeuralNetwork network = trainResultList.get(0).getNetwork();
             generateText(network);
         }
@@ -76,7 +78,8 @@ public class MemoryNeuralNetworkTest {
             String[] patterns = { "01.12.01.12." };
             int epochs = 8_000;
             int trainDataSize = 20;
-            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs);
+            final int trainCount = 30;
+            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, trainCount);
             final NeuralNetwork network = trainResultList.get(0).getNetwork();
             generateText(network);
         }
@@ -84,7 +87,8 @@ public class MemoryNeuralNetworkTest {
             String[] patterns = { "01.12.01." };
             int epochs = 10_000;
             int trainDataSize = 20;
-            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs);
+            final int trainCount = 30;
+            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, trainCount);
             final NeuralNetwork network = trainResultList.get(0).getNetwork();
             generateText(network);
         }
@@ -92,7 +96,8 @@ public class MemoryNeuralNetworkTest {
             String[] patterns = { "01.", "12." };
             int epochs = 15_000;
             int trainDataSize = 20;
-            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs);
+            final int trainCount = 30;
+            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, trainCount);
             final NeuralNetwork network = trainResultList.get(0).getNetwork();
             generateText(network);
         }
@@ -122,22 +127,132 @@ public class MemoryNeuralNetworkTest {
         }
         char[] startCharArr = new char[] { 'A', 'F', 'A', 'F' };
         {
-            //String[] patterns = {"Auto fährt. ", "Fahrad fährt. ", "Auto fährt schnell. ", "Fahrrad fährt langsam. "};
-            String[] patterns = {"Au fä. ", "Fa fä. ", "Au fä sch. ", "Fa fä lang. "};
+            //String[] patterns = { "Auto fährt. ", "Fahrad fährt. ", "Auto fährt schnell. ", "Fahrrad fährt langsam. " };
+            String[] patterns = { "Au fä. ", "Fa fä. ", "Au fä sch. ", "Fa fä lang. " };
             int epochs = 250_000;
             int trainDataSize = 20;
-            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, startCharArr);
+            final int trainCount = 30;
+            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, trainCount, startCharArr);
             final NeuralNetwork network = trainResultList.get(0).getNetwork();
             generateText(network, startCharArr);
         }
     }
 
-    private static List<NNTrainResult> trainSmallLanguageModel(final Random random, final List<NNTrainResult> inTrainResultList, String[] patterns, int trainDataSize, int epochs) {
+    @Test
+    public void testSmallCount() {
+        final Random random = new Random();
+
+        final int inputCount = 8;
+        final int outputCount = 8;
+        final int hiddenCount = inputCount * 2;
+        final int[] architecture = {
+                hiddenCount,
+                hiddenCount * 2,
+                hiddenCount,
+                hiddenCount,
+        };
+        final double synapseConnectivity = 0.9D;
+        //final int networkCount = 60 * 3; // Anzahl der Netzwerke
+        final int networkCount = 12 * 3; // Anzahl der Netzwerke
+
+        List<NNTrainResult> trainResultList = new ArrayList<>();
+        for (int networkPos = 0; networkPos < networkCount; networkPos++) {
+            NeuralNetwork network = new NeuralNetwork(inputCount, architecture, outputCount, synapseConnectivity, 0);
+            network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+            trainResultList.add(new NNTrainResult(network, 0.0D));
+        }
+        {
+            char[] startCharArr = new char[]{'0', '1'};
+            {
+                String[] patterns = {"01"};
+                int epochs = 250_000;
+                int trainDataSize = 12;
+                final int trainCount = 8 * 3;
+                trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, trainCount, startCharArr);
+                final NeuralNetwork network = trainResultList.get(0).getNetwork();
+                generateText(network, startCharArr);
+            }
+        }
+        {
+            char[] startCharArr = new char[]{'0', '1', '2'};
+            {
+                String[] patterns = {"012"};
+                int epochs = 250_000;
+                int trainDataSize = 8;
+                final int trainCount = 8 * 3;
+                trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, trainCount, startCharArr);
+                final NeuralNetwork network = trainResultList.get(0).getNetwork();
+                generateText(network, startCharArr);
+            }
+        }
+        {
+            char[] startCharArr = new char[]{'0', '1', '2', '3'};
+            {
+                String[] patterns = {"0123"};
+                int epochs = 250_000;
+                int trainDataSize = 4;
+                final int trainCount = 8 * 3;
+                trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, trainCount, startCharArr);
+                final NeuralNetwork network = trainResultList.get(0).getNetwork();
+                generateText(network, startCharArr);
+            }
+        }
+        // With memory:
+        {
+            char[] startCharArr = new char[]{'0', '1', '1'};
+            {
+                String[] patterns = {"011"};
+                int epochs = 250_000;
+                int trainDataSize = 8;
+                final int trainCount = 8 * 3;
+                trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, trainCount, startCharArr);
+                final NeuralNetwork network = trainResultList.get(0).getNetwork();
+                generateText(network, startCharArr);
+            }
+        }
+    }
+
+    @Test
+    public void testCount() {
+        final Random random = new Random();
+
+        final int inputCount = 8;
+        final int outputCount = 8;
+        final int hiddenCount = inputCount * 2;
+        final int[] architecture = {
+                hiddenCount, hiddenCount,
+                hiddenCount,
+                hiddenCount,
+        };
+        final double synapseConnectivity = 0.9D;
+        //final int networkCount = 60 * 3; // Anzahl der Netzwerke
+        final int networkCount = 12 * 2; // Anzahl der Netzwerke
+
+        List<NNTrainResult> trainResultList = new ArrayList<>();
+        for (int networkPos = 0; networkPos < networkCount; networkPos++) {
+            NeuralNetwork network = new NeuralNetwork(inputCount, architecture, outputCount, synapseConnectivity, 0);
+            network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+            trainResultList.add(new NNTrainResult(network, 0.0D));
+        }
+        char[] startCharArr = new char[] { '0', '3', '6', '9' };
+        {
+            //String[] patterns = {"Auto fährt. ", "Fahrad fährt. ", "Auto fährt schnell. ", "Fahrrad fährt langsam. "};
+            String[] patterns = { "0123456789" };
+            int epochs = 250_000;
+            int trainDataSize = 4;
+            final int trainCount = 8;
+            trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, trainCount, startCharArr);
+            final NeuralNetwork network = trainResultList.get(0).getNetwork();
+            generateText(network, startCharArr);
+        }
+    }
+
+    private static List<NNTrainResult> trainSmallLanguageModel(final Random random, final List<NNTrainResult> inTrainResultList, String[] patterns, int trainDataSize, int epochs, final int trainCount) {
         return trainSmallLanguageModel(random,
                                         inTrainResultList,
                                         patterns,
                                         trainDataSize,
-                                        epochs,
+                                        epochs, trainCount,
                                         new char[] { '0', '1', '2' });
     }
 
@@ -145,7 +260,7 @@ public class MemoryNeuralNetworkTest {
                                                                final List<NNTrainResult> inTrainResultList,
                                                                String[] patterns,
                                                                int trainDataSize,
-                                                               int epochs,
+                                                               int epochs, final int trainCount,
                                                                char[] startCharArr) {
         // Zufällige Reihenfolge der Muster generieren
         StringBuilder trainingData = new StringBuilder();
@@ -158,7 +273,7 @@ public class MemoryNeuralNetworkTest {
 
         // Sprachmodell initialisieren und trainieren
         System.out.println("Starte Training für " + epochs + " Epochen...");
-        return train(random, inTrainResultList, trainText, epochs, startCharArr);
+        return train(random, inTrainResultList, trainText, epochs, trainCount, startCharArr);
     }
 
     /**
@@ -167,7 +282,7 @@ public class MemoryNeuralNetworkTest {
      * @param text Der Trainingstext
      * @param epochs Anzahl der Trainingsepochen
      */
-    public static List<NNTrainResult> train(final Random random, final List<NNTrainResult> inTrainResultList, String text, int epochs,
+    public static List<NNTrainResult> train(final Random random, final List<NNTrainResult> inTrainResultList, String text, int epochs, final int trainCount,
                                             char[] startCharArr) {
         NeuralNetwork bestNeuralNetwork = null;
         logger.info("Starte Training mit Text: '{}' für {} Epochen", text, epochs);
@@ -187,22 +302,26 @@ public class MemoryNeuralNetworkTest {
             //for (final NNTrainResult trainResult : trainResultList) {
                 final NeuralNetwork network = trainResult.getNetwork();
 
-                // Netzwerk für die nächste Epoche zurücksetzen
-                network.rnnClearPreviousState();
-
                 trainResult.lossSum = 0;
                 trainResult.proccesLoss = 0;
-                final int trainCount = 30;
+                //final int trainCount = 30;
 
                 for (int trainPos = 0; trainPos < trainCount; trainPos++) {
+                    // Netzwerk für das nächste Training zurücksetzen
+                    network.rnnClearPreviousState();
+
+                    // Training für die gesamte Sequenz
+                    final int startCharPos = random.nextInt(timeSeriesLength - 1);
                     for (int charPos = 0; charPos < timeSeriesLength; charPos++) {
-                        char currentChar = characters[charPos];
-                        char nextChar = characters[charPos + 1];
+                        final int currentCharPos = (startCharPos + charPos) % timeSeriesLength;
+                        final int nextCharPos = (currentCharPos + 1) % characters.length;
+                        char currentChar = characters[currentCharPos];
+                        char nextChar = characters[nextCharPos];
 
                         double[] inputArr = CharEncoder.encode(currentChar);
                         double[] expectedOutputArr = CharEncoder.encode(nextChar);
 
-                        // Training für die gesamte Sequenz
+                        // Training für den nächsten Buchstaben.
                         double[] outputArray = network.calcTrain(inputArr, expectedOutputArr);
 
                         long proccessedSynapses = network.getProccessedSynapses();
@@ -256,9 +375,10 @@ public class MemoryNeuralNetworkTest {
                 NeuralNetwork childNetwork = winnerNetwork.mutate(mutationRate, mutationStrengt);
                 winnerNetworkList.add(childNetwork);
             }
+            final int winnerCout = winnerNetworkList.size();
             // Muttieren der ausgewählten Netze und hinzufügen zu den Gewinnern.
-            while (winnerNetworkList.size() < (inTrainResultList.size() - (trainResultList.size()) / 10)) {
-                NeuralNetwork winnerNetwork = winnerNetworkList.get(random.nextInt(winnerNetworkList.size()));
+            while (winnerNetworkList.size() < inTrainResultList.size()) {
+                NeuralNetwork winnerNetwork = winnerNetworkList.get(random.nextInt(winnerCout));
                 // Mutieren des Netzwerks
                 NeuralNetwork childNetwork = winnerNetwork.mutate(mutationRate, mutationStrengt);
                 winnerNetworkList.add(childNetwork);
