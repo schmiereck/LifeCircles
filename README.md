@@ -55,6 +55,9 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
+* Beim mutieren wächst ständig die Anzahl der HideenLayer un der Neuronen.
+  * Ändere den mutate-Agrorithmus, so das weniger sinnlosen Neuronen entstehen und bestehen bleiben. 
+
 * Neuer Typ Neuron
   * Intern ein NN das für alle eines Typs gleich ist.
   * Neuron muss mehrere Input- und Output-Typen haben können die auf Inputs und Outputs des internen NN abgebildet werden.

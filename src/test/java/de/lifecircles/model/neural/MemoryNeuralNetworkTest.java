@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -349,13 +350,20 @@ public class MemoryNeuralNetworkTest {
                 break; // Training abbrechen, wenn Verlust unter 0.01 liegt
             }
             if (epoch % 100 == 0) {
+                // Anzahl der neuronen.
+                final long neronCount = Arrays.stream(bestNeuralNetwork.getHiddenLayerList())
+                        .mapToInt(layer -> layer.getNeuronsArray().length).sum();
+
+                System.out.printf("Epoche %d, Durchschnittsverlust: %f, Synapses: %d, HiddenLayers: %d, neronCount: %d, lossSum: %f, proccesLoss: %f, maxProccessedSynapses: %d%n",
+                        epoch, bestTrainResult.getLoss(),
+                        bestNeuralNetwork.getProccessedSynapses(),
+                        bestNeuralNetwork.getHiddenLayerList().length,
+                        neronCount,
+                        bestTrainResult.lossSum, bestTrainResult.proccesLoss, maxProccessedSynapses);
+
                 generateText(bestNeuralNetwork, startCharArr);
             }
 
-            // Durchschnittlicher Verlust über alle Sequenzen
-            System.out.printf("\rEpoche %d abgeschlossen, Durchschnittsverlust: %f, Synapses: %d, lossSum: %f, proccesLoss: %f, maxProccessedSynapses: %d",
-                    epoch, bestTrainResult.getLoss(), bestNeuralNetwork.getProccessedSynapses(), bestTrainResult.lossSum, bestTrainResult.proccesLoss, maxProccessedSynapses);
-            System.out.flush();
             if ((epoch + 1) >= epochs) {
                 break;
             }
@@ -420,7 +428,6 @@ public class MemoryNeuralNetworkTest {
     }
 
     private static void generateText(NeuralNetwork network, char[] startCharArr) {
-        System.out.println();
         for (Character startChar : startCharArr) {
             network.rnnClearPreviousState();
             System.out.print("Generierter Text: ");

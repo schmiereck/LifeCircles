@@ -318,6 +318,8 @@ public class NeuralNetwork implements Serializable {
         // Verwende den Copy-Konstruktor, um eine exakte Kopie des Netzwerks zu erstellen
         NeuralNetwork mutated = new NeuralNetwork(this);
 
+        mutated.disableLayerDeactivation = this.disableLayerDeactivation; // Behalte das Flag bei
+
         // Mutate weights and biases
         mutated.applyToAllNeurons(neuron -> {
             if (random.nextDouble() < mutationRate) {
@@ -852,10 +854,12 @@ public class NeuralNetwork implements Serializable {
             Neuron sourceNeuron = synapse.getSourceNeuron();
 
             // Überspringe Synapsen zu deaktivierten Layern
-            if (targetNeuron instanceof Neuron && !((Neuron) targetNeuron).isOutputNeuron()) {
-                Layer targetLayer = findLayerForNeuron(targetNeuron);
-                if (targetLayer != null && !targetLayer.isActiveLayer() && !disableLayerDeactivation) {
-                    continue;
+            if (!this.disableLayerDeactivation) {
+                if (targetNeuron instanceof Neuron && !((Neuron) targetNeuron).isOutputNeuron()) {
+                    Layer targetLayer = findLayerForNeuron(targetNeuron);
+                    if (targetLayer != null && !targetLayer.isActiveLayer()) {
+                        continue;
+                    }
                 }
             }
 
