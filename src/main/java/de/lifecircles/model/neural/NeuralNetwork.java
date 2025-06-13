@@ -19,7 +19,7 @@ public class NeuralNetwork implements Serializable {
     private final Neuron[] outputNeuronList;
     // Synapsen als Array statt List
     private Synapse[] synapseArray;
-    private static final Random random = new Random();
+    private static Random random = new Random();
     private double[] outputArr;
 
     private static final int INITIAL_SYNAPSE_CAPACITY = 64;
@@ -195,6 +195,10 @@ public class NeuralNetwork implements Serializable {
                 }
             }
         }
+    }
+
+    public static void setRandom(final Random random) {
+        NeuralNetwork.random = random;
     }
 
     // Hilfsmethode zum Hinzufügen einer Synapse zum Array
@@ -404,7 +408,7 @@ public class NeuralNetwork implements Serializable {
         
         // Möglichkeit, ein komplettes Hidden Layer hinzuzufügen
         int addLayerRange = (this.hiddenLayerList.length - this.fixedHiddenLayerCount) + 1;
-        if (addLayerRange > 0 && this.random.nextDouble() < structuralMutationRate * 1.5) { // Erhöhte Wahrscheinlichkeit
+        if (addLayerRange > 0 && this.random.nextDouble() < structuralMutationRate) {
             final int pos = random.nextInt(addLayerRange) + this.fixedHiddenLayerCount;
             // Zufällige Neuronenzahl zwischen 1 und 5
             int neuronCount = 1 + this.random.nextInt(5);
@@ -413,7 +417,7 @@ public class NeuralNetwork implements Serializable {
 
         // Möglichkeit, ein Hidden Layer zu entfernen
         int removeLayerRange = (this.hiddenLayerList.length - this.fixedHiddenLayerCount);
-        if (removeLayerRange > 0 && this.random.nextDouble() < structuralMutationRate * 1.5) { // Erhöhte Wahrscheinlichkeit
+        if (removeLayerRange > 0 && this.random.nextDouble() < structuralMutationRate * 1.5D) { // Erhöhte Wahrscheinlichkeit
             final int pos = random.nextInt(removeLayerRange) + this.fixedHiddenLayerCount;
             this.removeHiddenLayer(pos);
         }
@@ -421,7 +425,7 @@ public class NeuralNetwork implements Serializable {
         // Wahrscheinlichkeit, ein Neuron zu einem bestehenden Layer hinzuzufügen
         int addNeuronLayerCount = this.hiddenLayerList.length - this.fixedHiddenLayerCount;
         if (addNeuronLayerCount > 0 &&
-                this.random.nextDouble() < structuralMutationRate * 2.0D) { // Verdoppelte Wahrscheinlichkeit
+                this.random.nextDouble() < structuralMutationRate * 1.5D) { // Verdoppelte Wahrscheinlichkeit
             int li = this.random.nextInt(addNeuronLayerCount) + this.fixedHiddenLayerCount;
             this.addNeuronToHiddenLayer(li, structuralMutationRate);
         }
