@@ -4,7 +4,6 @@ import de.lifecircles.model.*;
 import de.lifecircles.model.neural.*;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -121,13 +120,13 @@ public class ReproductionManagerService {
         final CellBrain cellBrain = (CellBrain) cell.getBrain();
         final NeuralNetwork childBrainNetwork = cellBrain.getNeuralNetwork();
         final boolean[] activeLayers = cellBrain.determineActiveHiddenLayers(cell.getCellState());
-        final Layer[] hiddenLayerList = childBrainNetwork.getHiddenLayerList();
+        final Layer[] hiddenLayerList = childBrainNetwork.getHiddenLayerArr();
         for (int i = 0; i < Math.min(hiddenLayerList.length, SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT); i++) {
             final Layer layer = hiddenLayerList[i];
             layer.setActiveLayer(activeLayers[i]);
             if (!layer.isActiveLayer()) {
                 for (final Neuron neuron : layer.getNeuronsArray()) {
-                    neuron.setValue(0.0D);
+                    childBrainNetwork.writeNeuronValue(neuron, 0.0D);
                 }
             }
         }

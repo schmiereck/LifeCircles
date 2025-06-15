@@ -55,9 +55,6 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
-* Beim mutieren wächst ständig die Anzahl der HideenLayer un der Neuronen.
-  * Ändere den mutate-Agrorithmus, so das weniger sinnlosen Neuronen entstehen und bestehen bleiben. 
-
 * Neuer Typ Neuron
   * Intern ein NN das für alle eines Typs gleich ist.
   * Neuron muss mehrere Input- und Output-Typen haben können die auf Inputs und Outputs des internen NN abgebildet werden.
@@ -65,11 +62,13 @@ Das System-Design der Anwendung soll enthalten:
   * Jedes Neuron bekommt eine ID. Die neuron-Value wird von einem von der Architektur unabhängigen Objekt (NeuronalnetworkValues) verwaltet.  
     Der Zugriff erfolgt über die ID.
     Somit kann die gleiche Netzwerk-Architektur mit verschiedenen Werten verwendet werden.
-  * Die IDs werden in der Reihenfolge der Neuronen im Layer vergeben.  
+  * Die IDs werden in der Reihenfolge der Neuronen im NeuronalNetwork vergeben.  
     Wird ein Neuron gelöscht wird ein lowestFreeID gesetzt, wenn diese niedriger ist als zuvor.
     Wird eine neue ID benötigt wird diese auf lowestIDPos gesetzt und dann die nächste Freie ID gesucht.  
     lastFreeID steht auf der hächten freien ID. Sollten beide gleich sein, muss nicht gesucht werden, da es dann keine Lücke gibt. 
-
+  * Jede Value eines Neurons kann selbst wiederum NeronValues bereit stellen, die für dessen Berechnung verwendet werden.
+    Dadurch kann eine Hirarchie von NeuronalNetworks aufgebaut werden.
+  
 * Interaktionsradius der Aktor-Forces auf 1.5 oder 2.0 erweitern.
   * Testen ob damit höhere Buildings möglich sind.
 
@@ -119,6 +118,9 @@ Das System-Design der Anwendung soll enthalten:
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
 # DONE
+
+* Beim mutieren wächst ständig die Anzahl der HideenLayer un der Neuronen.
+  * Ändere den mutate-Agrorithmus, so das weniger sinnlosen Neuronen entstehen und bestehen bleiben.
 
 * Die Values der inaktiven Layer die vom Zell-State gesteuert werden sollen auf 0 gesetzt werden, wenn diese nicht aktiv sind.
 

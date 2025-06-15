@@ -10,7 +10,8 @@ import java.util.List;
  */
 public class Neuron implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
+    private final int id;
     private double value;
     private double bias;
     private transient Synapse[] inputSynapses; // Als transient markiert
@@ -22,7 +23,8 @@ public class Neuron implements Serializable {
     private transient double inputSum; // Eingangssumme vor Aktivierung
     private transient double delta; // Delta für Backpropagation
 
-    public Neuron() {
+    public Neuron(final int id) {
+        this.id = id;
         this.value = 0.0;
         this.bias = Math.random() * 2 - 1; // Random bias between -1 and 1
         this.inputSynapses = new Synapse[0];
@@ -101,25 +103,6 @@ public class Neuron implements Serializable {
         }
     }
 
-    /**
-     * Calculates the neuron's output value based on its inputs.
-     * Optimized version using array iteration instead of ArrayList.
-     * For output neurons, no activation function is applied.
-     */
-    public long activate() {
-        double sum = this.bias;
-        // Direkte Array-Iteration für bessere Performance
-        for (int i = 0; i < this.inputSynapses.length; i++) {
-            Synapse synapse = this.inputSynapses[i];
-            sum += synapse.getSourceNeuron().getValue() * synapse.getWeight();
-        }
-        
-        this.inputSum = sum; // Speichere die Summe vor Aktivierung für Backpropagation
-        this.value = this.activationFunction.apply(sum);
-
-        return this.inputSynapses.length;
-    }
-
     public void setActivationFunction(ActivationFunction activationFunction) {
         this.activationFunction = activationFunction;
     }
@@ -143,17 +126,6 @@ public class Neuron implements Serializable {
         return this.isOutputNeuron;
     }
 
-    /**
-     * Creates a copy of this neuron with the same bias.
-     */
-    public Neuron copy() {
-        Neuron copy = new Neuron();
-        copy.bias = this.bias;
-        copy.isOutputNeuron = this.isOutputNeuron; // Übertrage Output-Neuron-Status
-        copy.activationFunction = this.activationFunction;
-        return copy;
-    }
-
     public ActivationFunction getActivationFunction() {
         return this.activationFunction;
     }
@@ -164,6 +136,13 @@ public class Neuron implements Serializable {
      */
     public double getInputSum() {
         return this.inputSum;
+    }
+
+    /**
+     * Setzt den Eingangswert der Eingangssumme vor Aktivierung.
+     */
+    public void setInputSum(final double inputSum) {
+        this.inputSum = inputSum;
     }
 
     /**
@@ -215,5 +194,9 @@ public class Neuron implements Serializable {
 
     public void setInputSynapses(Synapse[] inputSynapses) {
         this.inputSynapses = inputSynapses;
+    }
+
+    public int getId() {
+        return this.id;
     }
 }

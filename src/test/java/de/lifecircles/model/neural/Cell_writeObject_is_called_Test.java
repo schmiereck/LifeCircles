@@ -2,7 +2,6 @@ package de.lifecircles.model.neural;
 
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.Vector2D;
-import de.lifecircles.service.SimulationConfig;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -63,18 +62,18 @@ public class Cell_writeObject_is_called_Test {
         // Vergleiche Layergrößen
         assertArrayEquals(origNN.getLayerSizes(), deserNN.getLayerSizes(), "Layergrößen unterschiedlich");
         // Vergleiche Biases der Neuronen
-        for (int i = 0; i < origNN.getInputNeuronList().length; i++) {
-            assertEquals(origNN.getInputNeuronList()[i].getBias(), deserNN.getInputNeuronList()[i].getBias(), 1e-9, "Input-Bias unterschiedlich");
+        for (int i = 0; i < origNN.getInputNeuronArr().length; i++) {
+            assertEquals(origNN.getInputNeuronArr()[i].getBias(), deserNN.getInputNeuronArr()[i].getBias(), 1e-9, "Input-Bias unterschiedlich");
         }
-        for (int l = 0; l < origNN.getHiddenLayerList().length; l++) {
-            Neuron[] origLayer = origNN.getHiddenLayerList()[l].getNeuronsArray();
-            Neuron[] deserLayer = deserNN.getHiddenLayerList()[l].getNeuronsArray();
+        for (int l = 0; l < origNN.getHiddenLayerArr().length; l++) {
+            Neuron[] origLayer = origNN.getHiddenLayerArr()[l].getNeuronsArray();
+            Neuron[] deserLayer = deserNN.getHiddenLayerArr()[l].getNeuronsArray();
             for (int n = 0; n < origLayer.length; n++) {
                 assertEquals(origLayer[n].getBias(), deserLayer[n].getBias(), 1e-9, "Hidden-Bias unterschiedlich");
             }
         }
-        for (int i = 0; i < origNN.getOutputNeuronList().length; i++) {
-            assertEquals(origNN.getOutputNeuronList()[i].getBias(), deserNN.getOutputNeuronList()[i].getBias(), 1e-9, "Output-Bias unterschiedlich");
+        for (int i = 0; i < origNN.getOutputNeuronArr().length; i++) {
+            assertEquals(origNN.getOutputNeuronArr()[i].getBias(), deserNN.getOutputNeuronArr()[i].getBias(), 1e-9, "Output-Bias unterschiedlich");
         }
         // Vergleiche Synapsen-Gewichte
         assertEquals(origNN.getSynapseCount(), deserNN.getSynapseCount(), "Synapsenanzahl unterschiedlich");

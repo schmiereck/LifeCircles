@@ -1,6 +1,5 @@
 package de.lifecircles.model.neural;
 
-import de.lifecircles.model.Cell;
 import de.lifecircles.service.SimulationConfig;
 import java.io.Serializable;
 
@@ -89,7 +88,7 @@ public class CellBrain implements CellBrainInterface, Serializable {
 
     @Override
     public double getInputValue(int inputNeuronPos) {
-        return  this.network.getInputNeuronList()[inputNeuronPos].getValue();
+        return this.network.readNeuronValue(this.network.getInputNeuronArr()[inputNeuronPos]);
     }
 
     public NeuralNetwork getNeuralNetwork() {
