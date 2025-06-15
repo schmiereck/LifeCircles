@@ -298,7 +298,7 @@ public class NeuralNetwork implements Serializable {
         // Direkte Array-Iteration für bessere Performance
         for (int i = 0; i < neuron.getInputSynapses().length; i++) {
             Synapse synapse = neuron.getInputSynapses()[i];
-            sum += synapse.getSourceNeuron().getValue() * synapse.getWeight();
+            sum += this.neuronValueFunction.readValue(this, synapse.getSourceNeuron()) * synapse.getWeight();
         }
 
         neuron.setInputSum(sum); // Speichere die Summe vor Aktivierung für Backpropagation

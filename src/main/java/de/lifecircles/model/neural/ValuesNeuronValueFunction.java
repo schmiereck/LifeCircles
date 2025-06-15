@@ -61,6 +61,8 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
         return currentLowestFreeID;
     }
 
+    // TODO Neron löschen implemehtieren
+
     private void checkValueArrSize(final int id) {
         if (id >= this.valuesArr.length) {
             // Ensure the valuesArr is large enough to hold the neuron's value

@@ -86,16 +86,11 @@ public class NeuralNetworkValuesTest {
         final double eliteRate = 0.1; // Top 10% direkt übernehmen
         final Random random = new Random();
 
-        final NeuronValueFunctionFactory valueFunctionFactory = new NeuronValueFunctionFactory() {
-            @Override
-            public NeuronValueFunction create() {
-                return new ValuesNeuronValueFunction();
-            }
-        };
         // Erstelle diversere initiale Population mit unterschiedlichen Architekturen
         final NeuronValueFunctionFactory neuronValueFunctionFactory = new NeuronValueFunctionFactory() {
             @Override
             public NeuronValueFunction create() {
+                //return new DefaultNeuronValueFunction();
                 return new ValuesNeuronValueFunction();
             }
         };
@@ -111,7 +106,7 @@ public class NeuralNetworkValuesTest {
 
         // Initialisiere Synapse-Gewichte für die erste Generation
         for (NeuralNetwork network : population) {
-            for (Synapse synapse : network.getSynapseArr()) {
+            for (Synapse synapse : network.getSynapseList()) {
                 // Verbesserte Xavier/Glorot-Initialisierung
                 double limit = Math.sqrt(6.0 / (network.getInputLayerSize() + network.getOutputLayerSize()));
                 synapse.setWeight(random.nextDouble() * 2 * limit - limit);
