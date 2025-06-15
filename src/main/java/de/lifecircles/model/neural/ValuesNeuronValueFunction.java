@@ -2,7 +2,6 @@ package de.lifecircles.model.neural;
 
 public class ValuesNeuronValueFunction implements NeuronValueFunction {
     private double[] valuesArr = { };
-    private double[] outputArr;
 
     private int lowestFreeID = 0;
     private int lastFreeID = 0;

@@ -8,7 +8,7 @@ import java.util.List;
  * Represents a neuron in the neural network.
  * Uses a sigmoid activation function.
  */
-public class Neuron implements Serializable {
+public class Neuron implements NeuronInterface {
     private static final long serialVersionUID = 1L;
 
     private final int id;
@@ -23,8 +23,11 @@ public class Neuron implements Serializable {
     private transient double inputSum; // Eingangssumme vor Aktivierung
     private transient double delta; // Delta für Backpropagation
 
-    public Neuron(final int id) {
+    private final NeuronTypeInfoData neuronTypeInfoData;
+
+    public Neuron(final int id, final NeuronTypeInfoData neuronTypeInfoData) {
         this.id = id;
+        this.neuronTypeInfoData = neuronTypeInfoData;
         this.value = 0.0;
         this.bias = Math.random() * 2 - 1; // Random bias between -1 and 1
         this.inputSynapses = new Synapse[0];
@@ -35,7 +38,7 @@ public class Neuron implements Serializable {
         this.delta = 0.0;
     }
 
-    public void addInputSynapse(Synapse synapse) {
+    public void addInputSynapse(final int inputTypePos, final Synapse synapse) {
         // Array vergrößern, falls erforderlich
         Synapse[] newInputSynapses = new Synapse[this.inputSynapses.length + 1];
         System.arraycopy(this.inputSynapses, 0, newInputSynapses, 0, this.inputSynapses.length);
@@ -43,15 +46,15 @@ public class Neuron implements Serializable {
         this.inputSynapses = newInputSynapses;
     }
 
-    public void addOutputSynapse(Synapse synapse) {
+    public void addOutputSynapse(final int outputTypePos, final Synapse synapse) {
         this.outputSynapses.add(synapse);
     }
 
-    public double getValue() {
+    public double getValue(final int outputTypePos) {
         return this.value;
     }
 
-    public void setValue(double value) {
+    public void setValue(final int outputTypePos, final double value) {
         this.value = value;
     }
 
@@ -65,21 +68,19 @@ public class Neuron implements Serializable {
 
     /**
      * Gibt ein Array mit allen Input-Synapsen zurück.
-     * Hinweis: Array kann größer sein als die tatsächliche Anzahl der Synapsen.
-     * Verwende inputSynapseCount für die tatsächliche Anzahl.
      */
-    public Synapse[] getInputSynapses() {
+    public Synapse[] getInputSynapses(final int inputTypePos) {
         return this.inputSynapses;
     }
     
     /**
      * Gibt die Anzahl der tatsächlich vorhandenen Input-Synapsen zurück.
      */
-    public int getInputSynapseCount() {
+    public int getInputSynapseCount(final int inputTypePos) {
         return this.inputSynapses.length;
     }
 
-    public List<Synapse> getOutputSynapses() {
+    public List<Synapse> getOutputSynapses(final int outputTypePos) {
         return this.outputSynapses;
     }
 
@@ -87,7 +88,7 @@ public class Neuron implements Serializable {
      * Entfernt eine Input-Synapse.
      * Diese Operation ist langsamer als Zugriffe.
      */
-    public void removeInputSynapse(Synapse synapse) {
+    public void removeInputSynapse(final int inputTypePos, final Synapse synapse) {
         int idx = -1;
         for (int i = 0; i < this.inputSynapses.length; i++) {
             if (this.inputSynapses[i] == synapse) {
@@ -134,22 +135,22 @@ public class Neuron implements Serializable {
      * Gibt den Eingangswert zurück (vor Anwendung der Aktivierungsfunktion)
      * @return Die Eingangssumme vor Aktivierung
      */
-    public double getInputSum() {
+    public double getInputSum(final int inputTypePos) {
         return this.inputSum;
     }
 
     /**
      * Setzt den Eingangswert der Eingangssumme vor Aktivierung.
      */
-    public void setInputSum(final double inputSum) {
+    public void setInputSum(final int inputTypePos, final double inputSum) {
         this.inputSum = inputSum;
     }
 
     /**
-     * Setzt den Delta-Wert für Backpropagation
+     * Setzt den Delta-Wert für Backpropagation.
      * @param delta Der Delta-Wert
      */
-    public void setDelta(double delta) {
+    public void setDelta(final int inputTypePos, double delta) {
         this.delta = delta;
     }
 
@@ -157,7 +158,7 @@ public class Neuron implements Serializable {
      * Gibt den Delta-Wert für Backpropagation zurück
      * @return Der Delta-Wert
      */
-    public double getDelta() {
+    public double getDelta(final int inputTypePos) {
         return this.delta;
     }
 
@@ -192,11 +193,15 @@ public class Neuron implements Serializable {
         }
     }
 
-    public void setInputSynapses(Synapse[] inputSynapses) {
+    public void setInputSynapses(final int inputTypePos, Synapse[] inputSynapses) {
         this.inputSynapses = inputSynapses;
     }
 
     public int getId() {
         return this.id;
+    }
+
+    public NeuronTypeInfoData getNeuronTypeInfoData() {
+        return this.neuronTypeInfoData;
     }
 }

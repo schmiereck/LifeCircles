@@ -38,87 +38,118 @@ public class NeuralNetwork implements Serializable {
     private final NeuronValueFunction neuronValueFunction;
 
     /**
+     * List of Neuron-Types can be used in this Network.
+     */
+    private List<NeuronTypeInfoData> neuronTypeInfoDataList = new ArrayList<>() {
+        {
+            add(new NeuronTypeInfoData(1, 1, null)); // Initialisiere mit einem Dummy-Wert
+        }
+    };
+
+    /**
      * Copy-Konstruktor: Erstellt eine exakte Kopie des übergebenen neuronalen Netzwerks
      *
      * @param original Das zu kopierende neuronale Netzwerk
      */
     public NeuralNetwork(final NeuralNetwork original) {
+        this(original, true);
+    }
+
+    /**
+     * Copy-Konstruktor: Erstellt eine exakte Kopie des übergebenen neuronalen Netzwerks
+     *
+     * @param original Das zu kopierende neuronale Netzwerk
+     */
+    public NeuralNetwork(final NeuralNetwork original, final boolean makeCopy) {
         this.neuronValueFunctionFactory = original.neuronValueFunctionFactory;
         this.neuronValueFunction = neuronValueFunctionFactory.create();
 
-        this.inputNeuronList = new Neuron[original.inputNeuronList.length];
-        this.outputNeuronList = new Neuron[original.outputNeuronList.length];
-        // Synapsen-Array initialisieren
-        this.synapseArray = new Synapse[original.getSynapseList().size()];
+        if (makeCopy) {
+            this.inputNeuronList = new Neuron[original.inputNeuronList.length];
+            this.outputNeuronList = new Neuron[original.outputNeuronList.length];
+            // Synapsen-Array initialisieren
+            this.synapseArray = new Synapse[original.getSynapseList().size()];
 
-        this.fixedHiddenLayerCount = original.fixedHiddenLayerCount;
+            this.fixedHiddenLayerCount = original.fixedHiddenLayerCount;
 
-        // Erstelle eine Map, die die Originalneuronen den neuen Neuronen zuordnet
-        final Map<Neuron, Neuron> neuronMap = new HashMap<>();
+            // Erstelle eine Map, die die Originalneuronen den neuen Neuronen zuordnet
+            final Map<Neuron, Neuron> neuronMap = new HashMap<>();
 
-        // Kopiere Input-Neuronen
-        for (int i = 0; i < original.inputNeuronList.length; i++) {
-            final Neuron originalNeuron = original.inputNeuronList[i];
-            final Neuron newNeuron = new Neuron(this.neuronValueFunction.fetchNextFreeId(this));
-            newNeuron.setBias(originalNeuron.getBias());
-            newNeuron.setActivationFunction(originalNeuron.getActivationFunction());
-            this.neuronValueFunction.writeValue(this, newNeuron, this.neuronValueFunction.readValue(this, originalNeuron));
-            this.inputNeuronList[i] = newNeuron;
-            neuronMap.put(originalNeuron, newNeuron);
-        }
-
-        // Kopiere Hidden Layers
-        this.hiddenLayerList = new Layer[original.hiddenLayerList.length];
-        for (int i = 0; i < original.hiddenLayerList.length; i++) {
-            final Layer originalLayer = original.hiddenLayerList[i];
-            final Layer newLayer = new Layer();
-            newLayer.setActiveLayer(originalLayer.isActiveLayer());
-
-            for (final Neuron originalNeuron : originalLayer.getNeuronsArray()) {
-                final Neuron newNeuron = new Neuron(this.neuronValueFunction.fetchNextFreeId(this));
+            // Kopiere Input-Neuronen
+            for (int i = 0; i < original.inputNeuronList.length; i++) {
+                final Neuron originalNeuron = original.inputNeuronList[i];
+                final Neuron newNeuron = new Neuron(this.neuronValueFunction.fetchNextFreeId(this), originalNeuron.getNeuronTypeInfoData());
                 newNeuron.setBias(originalNeuron.getBias());
                 newNeuron.setActivationFunction(originalNeuron.getActivationFunction());
-                if (newLayer.isActiveLayer()) {
-                    this.neuronValueFunction.writeValue(this, newNeuron, this.neuronValueFunction.readValue(this, originalNeuron));
-                } else {
-                    this.neuronValueFunction.writeValue(this, newNeuron, 0.0D);
-                }
-                newLayer.addNeuron(newNeuron);
+                this.neuronValueFunction.writeValue(this, newNeuron, this.neuronValueFunction.readValue(this, originalNeuron));
+                this.inputNeuronList[i] = newNeuron;
                 neuronMap.put(originalNeuron, newNeuron);
             }
-            this.hiddenLayerList[i] = newLayer;
-        }
 
-        // Kopiere Output-Neuronen
-        for (int i = 0; i < original.outputNeuronList.length; i++) {
-            final Neuron originalNeuron = original.outputNeuronList[i];
-            final Neuron newNeuron = new Neuron(this.neuronValueFunction.fetchNextFreeId(this));
-            newNeuron.setBias(originalNeuron.getBias());
-            newNeuron.setActivationFunction(originalNeuron.getActivationFunction());
-            this.neuronValueFunction.writeValue(this, newNeuron, this.neuronValueFunction.readValue(this, originalNeuron));
-            newNeuron.setOutputNeuron(true); // Markiere als Output-Neuron
-            this.outputNeuronList[i] = newNeuron;
-            neuronMap.put(originalNeuron, newNeuron);
-        }
+            // Kopiere Hidden Layers
+            this.hiddenLayerList = new Layer[original.hiddenLayerList.length];
+            for (int i = 0; i < original.hiddenLayerList.length; i++) {
+                final Layer originalLayer = original.hiddenLayerList[i];
+                final Layer newLayer = new Layer();
+                newLayer.setActiveLayer(originalLayer.isActiveLayer());
 
-        // Erstelle das Array für die Ausgabewerte
-        this.outputArr = new double[this.outputNeuronList.length];
-
-        // Kopiere alle Synapsen mit den korrekten Verbindungen zwischen den neuen Neuronen
-        int synapseIndex = 0;
-        for (int i = 0; i < original.getSynapseList().size(); i++) {
-            final Synapse originalSynapse = original.getSynapseList().get(i);
-            final Neuron sourceNeuron = neuronMap.get(originalSynapse.getSourceNeuron());
-            final Neuron targetNeuron = neuronMap.get(originalSynapse.getTargetNeuron());
-            if (sourceNeuron != null && targetNeuron != null) {
-                Synapse newSynapse = new Synapse(sourceNeuron, targetNeuron, originalSynapse.getWeight());
-                this.synapseArray[synapseIndex++] = newSynapse;
+                for (final Neuron originalNeuron : originalLayer.getNeuronsArray()) {
+                    final Neuron newNeuron = new Neuron(this.neuronValueFunction.fetchNextFreeId(this), originalNeuron.getNeuronTypeInfoData());
+                    newNeuron.setBias(originalNeuron.getBias());
+                    newNeuron.setActivationFunction(originalNeuron.getActivationFunction());
+                    if (newLayer.isActiveLayer()) {
+                        this.neuronValueFunction.writeValue(this, newNeuron, this.neuronValueFunction.readValue(this, originalNeuron));
+                    } else {
+                        this.neuronValueFunction.writeValue(this, newNeuron, 0.0D);
+                    }
+                    newLayer.addNeuron(newNeuron);
+                    neuronMap.put(originalNeuron, newNeuron);
+                }
+                this.hiddenLayerList[i] = newLayer;
             }
-        }
-        if (synapseIndex < this.synapseArray.length) {
-            final Synapse[] resized = new Synapse[synapseIndex];
-            System.arraycopy(this.synapseArray, 0, resized, 0, synapseIndex);
-            this.synapseArray = resized;
+
+            // Kopiere Output-Neuronen
+            for (int i = 0; i < original.outputNeuronList.length; i++) {
+                final Neuron originalNeuron = original.outputNeuronList[i];
+                final Neuron newNeuron = new Neuron(this.neuronValueFunction.fetchNextFreeId(this), originalNeuron.getNeuronTypeInfoData());
+                newNeuron.setBias(originalNeuron.getBias());
+                newNeuron.setActivationFunction(originalNeuron.getActivationFunction());
+                this.neuronValueFunction.writeValue(this, newNeuron, this.neuronValueFunction.readValue(this, originalNeuron));
+                newNeuron.setOutputNeuron(true); // Markiere als Output-Neuron
+                this.outputNeuronList[i] = newNeuron;
+                neuronMap.put(originalNeuron, newNeuron);
+            }
+
+            // Erstelle das Array für die Ausgabewerte
+            this.outputArr = new double[this.outputNeuronList.length];
+
+            // Kopiere alle Synapsen mit den korrekten Verbindungen zwischen den neuen Neuronen
+            int synapseIndex = 0;
+            for (int i = 0; i < original.getSynapseList().size(); i++) {
+                final Synapse originalSynapse = original.getSynapseList().get(i);
+                final Neuron sourceNeuron = neuronMap.get(originalSynapse.getSourceNeuron());
+                final Neuron targetNeuron = neuronMap.get(originalSynapse.getTargetNeuron());
+                if (sourceNeuron != null && targetNeuron != null) {
+                    Synapse newSynapse = new Synapse(sourceNeuron, targetNeuron, originalSynapse.getWeight());
+                    this.synapseArray[synapseIndex++] = newSynapse;
+                }
+            }
+            if (synapseIndex < this.synapseArray.length) {
+                final Synapse[] resized = new Synapse[synapseIndex];
+                System.arraycopy(this.synapseArray, 0, resized, 0, synapseIndex);
+                this.synapseArray = resized;
+            }
+        } else {
+            this.inputNeuronList = original.inputNeuronList;
+            this.outputNeuronList = original.outputNeuronList;
+            // Synapsen-Array initialisieren
+            this.synapseArray = original.synapseArray;
+
+            this.fixedHiddenLayerCount = original.fixedHiddenLayerCount;
+
+            this.hiddenLayerList = original.hiddenLayerList;
+
+            this.outputArr = new double[this.outputNeuronList.length];
         }
     }
 
@@ -164,7 +195,8 @@ public class NeuralNetwork implements Serializable {
 
         // create input neurons
         for (int i = 0; i < this.inputNeuronList.length; i++) {
-            this.inputNeuronList[i] = new Neuron(this.neuronValueFunction.fetchNextFreeId(this));
+            this.inputNeuronList[i] = new Neuron(this.neuronValueFunction.fetchNextFreeId(this),
+                    this.neuronTypeInfoDataList.get(0));
         }
 
         // create hidden layers
@@ -173,14 +205,16 @@ public class NeuralNetwork implements Serializable {
             int count = hiddenCounts[i];
             Layer layer = new Layer();
             for (int j = 0; j < count; j++) {
-                layer.addNeuron(new Neuron(this.neuronValueFunction.fetchNextFreeId(this)));
+                layer.addNeuron(new Neuron(this.neuronValueFunction.fetchNextFreeId(this),
+                        this.neuronTypeInfoDataList.get(0)));
             }
             this.hiddenLayerList[i] = layer;
         }
 
         // create output neurons
         for (int i = 0; i < this.outputNeuronList.length; i++) {
-            Neuron outputNeuron = new Neuron(this.neuronValueFunction.fetchNextFreeId(this));
+            Neuron outputNeuron = new Neuron(this.neuronValueFunction.fetchNextFreeId(this),
+                    this.neuronTypeInfoDataList.get(0));
             outputNeuron.setOutputNeuron(true); // Markiere als Output-Neuron
             this.outputNeuronList[i] = outputNeuron;
         }
@@ -507,7 +541,8 @@ public class NeuralNetwork implements Serializable {
 
         // Erstelle die neuen Neuronen
         for (int i = 0; i < neuronCount; i++) {
-            newLayer.addNeuron(new Neuron(this.neuronValueFunction.fetchNextFreeId(this)));
+            newLayer.addNeuron(new Neuron(this.neuronValueFunction.fetchNextFreeId(this),
+                    this.neuronTypeInfoDataList.get(this.random.nextInt(this.neuronTypeInfoDataList.size()))));
         }
 
         // Bestimme die angrenzenden Layer
@@ -548,7 +583,8 @@ public class NeuralNetwork implements Serializable {
     }
 
     public void addNeuronToHiddenLayer(final int layerIndex, final double connectivity) {
-        Neuron newN = new Neuron(this.neuronValueFunction.fetchNextFreeId(this));
+        Neuron newN = new Neuron(this.neuronValueFunction.fetchNextFreeId(this),
+                this.neuronTypeInfoDataList.get(this.random.nextInt(this.neuronTypeInfoDataList.size())));
         this.hiddenLayerList[layerIndex].addNeuron(newN);
         List<Neuron> prev = layerIndex == 0 ? Arrays.asList(this.inputNeuronList) : this.hiddenLayerList[layerIndex - 1].getNeurons();
         for (Neuron srcNeuron : prev) {
