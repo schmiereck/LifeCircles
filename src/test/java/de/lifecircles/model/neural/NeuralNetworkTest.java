@@ -91,10 +91,17 @@ public class NeuralNetworkTest {
         final Random random = new Random();
         
         // Erstelle diversere initiale Population mit unterschiedlichen Architekturen
+        final NeuronValueFunctionFactory neuronValueFunctionFactory = new NeuronValueFunctionFactory() {
+            @Override
+            public NeuronValueFunction create() {
+                return new DefaultNeuronValueFunction();
+            }
+        };
         List<NeuralNetwork> population = new ArrayList<>();
         for (int i = 0; i < populationSize; i++) {
             int[] architecture = architectureVariants[i % architectureVariants.length];
-            NeuralNetwork nn = new NeuralNetwork(inputCount, architecture, outputCount,
+            NeuralNetwork nn = new NeuralNetwork(neuronValueFunctionFactory,
+                    inputCount, architecture, outputCount,
                     synapseConnectivity, 0);
             nn.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
             population.add(nn);
@@ -225,7 +232,8 @@ public class NeuralNetworkTest {
                 }
                 else { // 10% Kompletter Neustart (neue zufällige Netzwerke)
                     int[] architecture = architectureVariants[random.nextInt(architectureVariants.length)];
-                    NeuralNetwork freshNetwork = new NeuralNetwork(inputCount, architecture, outputCount,
+                    NeuralNetwork freshNetwork = new NeuralNetwork(neuronValueFunctionFactory,
+                            inputCount, architecture, outputCount,
                             synapseConnectivity, 0);
                     
                     // Gewichte initialisieren
@@ -251,7 +259,8 @@ public class NeuralNetworkTest {
                 // Ersetze den Rest mit neuen zufälligen Netzwerken
                 for (int i = keepCount; i < populationSize; i++) {
                     int[] architecture = architectureVariants[random.nextInt(architectureVariants.length)];
-                    NeuralNetwork freshNetwork = new NeuralNetwork(inputCount, architecture, outputCount,
+                    NeuralNetwork freshNetwork = new NeuralNetwork(neuronValueFunctionFactory,
+                            inputCount, architecture, outputCount,
                             synapseConnectivity, 0);
                     
                     // Gewichte initialisieren

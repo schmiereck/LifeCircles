@@ -83,7 +83,14 @@ public class BackpropagateTest {
         final double eliteRate = 0.1; // Top 10% direkt übernehmen
         final Random random = new Random();
 
-        NeuralNetwork nn = new NeuralNetwork(inputCount, architecture, outputCount,
+        final NeuronValueFunctionFactory neuronValueFunctionFactory = new NeuronValueFunctionFactory() {
+            @Override
+            public NeuronValueFunction create() {
+                return new DefaultNeuronValueFunction();
+            }
+        };
+        NeuralNetwork nn = new NeuralNetwork(neuronValueFunctionFactory,
+                inputCount, architecture, outputCount,
                 synapseConnectivity, 0);
         nn.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
 

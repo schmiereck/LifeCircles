@@ -86,18 +86,31 @@ public class NeuralNetworkValuesTest {
         final double eliteRate = 0.1; // Top 10% direkt übernehmen
         final Random random = new Random();
 
+        final NeuronValueFunctionFactory valueFunctionFactory = new NeuronValueFunctionFactory() {
+            @Override
+            public NeuronValueFunction create() {
+                return new ValuesNeuronValueFunction();
+            }
+        };
         // Erstelle diversere initiale Population mit unterschiedlichen Architekturen
-        List<NeuralNetworkValues> population = new ArrayList<>();
+        final NeuronValueFunctionFactory neuronValueFunctionFactory = new NeuronValueFunctionFactory() {
+            @Override
+            public NeuronValueFunction create() {
+                return new ValuesNeuronValueFunction();
+            }
+        };
+        List<NeuralNetwork> population = new ArrayList<>();
         for (int i = 0; i < populationSize; i++) {
             int[] architecture = architectureVariants[i % architectureVariants.length];
-            NeuralNetworkValues nn = new NeuralNetworkValues(inputCount, architecture, outputCount,
+            NeuralNetwork nn = new NeuralNetwork(neuronValueFunctionFactory,
+                    inputCount, architecture, outputCount,
                     synapseConnectivity, 0);
             nn.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
             population.add(nn);
         }
 
         // Initialisiere Synapse-Gewichte für die erste Generation
-        for (NeuralNetworkValues network : population) {
+        for (NeuralNetwork network : population) {
             for (Synapse synapse : network.getSynapseArr()) {
                 // Verbesserte Xavier/Glorot-Initialisierung
                 double limit = Math.sqrt(6.0 / (network.getInputLayerSize() + network.getOutputLayerSize()));
@@ -117,14 +130,14 @@ public class NeuralNetworkValuesTest {
         int catastropheInterval = 50;
 
         // Tracking für das beste Netzwerk global
-        NeuralNetworkValues globalBestNetwork = null;
+        NeuralNetwork globalBestNetwork = null;
         double globalBestError = Double.MAX_VALUE;
 
         // Training über mehrere Generationen
         for (int generation = 0; generation < 500_000; generation++) {
             // Evaluiere alle Netzwerke
             List<NeuralNetworkValuesTest.NetworkScore> scores = new ArrayList<>();
-            for (NeuralNetworkValues network : population) {
+            for (NeuralNetwork network : population) {
                 double totalError = 0;
                 for (int trainPos = 0; trainPos < inputs.length; trainPos++) {
                     network.setInputs(inputs[trainPos]);
@@ -143,7 +156,7 @@ public class NeuralNetworkValuesTest {
 
             // Beste Netzwerke identifizieren
             NeuralNetworkValuesTest.NetworkScore bestNetworkScore = scores.get(0);
-            NeuralNetworkValues bestNetwork = bestNetworkScore.getNetwork();
+            NeuralNetwork bestNetwork = bestNetworkScore.getNetwork();
             double currentBestError = bestNetworkScore.getError();
 
             // Globales Optimum aktualisieren
@@ -172,12 +185,12 @@ public class NeuralNetworkValuesTest {
             }
 
             // Erstelle neue Population
-            List<NeuralNetworkValues> nextGeneration = new ArrayList<>();
+            List<NeuralNetwork> nextGeneration = new ArrayList<>();
 
             // Elitismus: Behalte beste Netzwerke unverändert
             int eliteCount = (int) (populationSize * eliteRate);
             for (int i = 0; i < eliteCount; i++) {
-                NeuralNetworkValues elite = cloneNetwork(scores.get(i).getNetwork());
+                NeuralNetwork elite = cloneNetwork(scores.get(i).getNetwork());
                 elite.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
                 nextGeneration.add(elite);
             }
@@ -188,11 +201,11 @@ public class NeuralNetworkValuesTest {
 
                 if (operationChance < 0.7) {  // 70% Crossover + Mutation
                     // Eltern durch Tournament Selection auswählen
-                    NeuralNetworkValues parent1 = tournamentSelect(scores, 5, random);
-                    NeuralNetworkValues parent2 = tournamentSelect(scores, 5, random);
+                    NeuralNetwork parent1 = tournamentSelect(scores, 5, random);
+                    NeuralNetwork parent2 = tournamentSelect(scores, 5, random);
 
                     // Crossover durchführen
-                    NeuralNetworkValues child = crossover(parent1, parent2, random);
+                    NeuralNetwork child = crossover(parent1, parent2, random);
 
                     // Mutationsstärke bestimmen
                     double mutationStrength = isCatastrophe ?
@@ -206,8 +219,8 @@ public class NeuralNetworkValuesTest {
                 }
                 else if (operationChance < 0.9) { // 20% Nur Mutation
                     // Wähle ein Netzwerk durch Tournament Selection
-                    NeuralNetworkValues parent = tournamentSelect(scores, 3, random);
-                    NeuralNetworkValues child = cloneNetwork(parent);
+                    NeuralNetwork parent = tournamentSelect(scores, 3, random);
+                    NeuralNetwork child = cloneNetwork(parent);
 
                     // Bestimme Mutationsstärke
                     double mutationStrength = isCatastrophe ?
@@ -221,7 +234,8 @@ public class NeuralNetworkValuesTest {
                 }
                 else { // 10% Kompletter Neustart (neue zufällige Netzwerke)
                     int[] architecture = architectureVariants[random.nextInt(architectureVariants.length)];
-                    NeuralNetworkValues freshNetwork = new NeuralNetworkValues(inputCount, architecture, outputCount,
+                    NeuralNetwork freshNetwork = new NeuralNetwork(neuronValueFunctionFactory,
+                            inputCount, architecture, outputCount,
                             synapseConnectivity, 0);
 
                     // Gewichte initialisieren
@@ -247,7 +261,8 @@ public class NeuralNetworkValuesTest {
                 // Ersetze den Rest mit neuen zufälligen Netzwerken
                 for (int i = keepCount; i < populationSize; i++) {
                     int[] architecture = architectureVariants[random.nextInt(architectureVariants.length)];
-                    NeuralNetworkValues freshNetwork = new NeuralNetworkValues(inputCount, architecture, outputCount,
+                    NeuralNetwork freshNetwork = new NeuralNetwork(neuronValueFunctionFactory,
+                            inputCount, architecture, outputCount,
                             synapseConnectivity, 0);
 
                     // Gewichte initialisieren
@@ -270,7 +285,7 @@ public class NeuralNetworkValuesTest {
 
             // Fortschritt ausgeben
             if (generation % 50 == 0 || generation < 10) {
-                NeuralNetworkValues genBestNetwork = scores.get(0).getNetwork();
+                NeuralNetwork genBestNetwork = scores.get(0).getNetwork();
                 System.out.printf("Gen %d: Fehler = %.9f | Global = %.9f | Stagnation: %d | Mut.Rate: %.3f | Arch: %s%n",
                         generation, currentBestError, globalBestError, stagnationCounter, mutationRate,
                         Arrays.toString(getArchitecture(genBestNetwork)));
@@ -289,7 +304,7 @@ public class NeuralNetworkValuesTest {
         }
 
         // Verwende das global beste Netzwerk für Tests
-        NeuralNetworkValues finalNetwork = globalBestNetwork != null ? globalBestNetwork : population.get(0);
+        NeuralNetwork finalNetwork = globalBestNetwork != null ? globalBestNetwork : population.get(0);
         finalNetwork.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
 
         // Teste das finale Netzwerk
@@ -324,7 +339,7 @@ public class NeuralNetworkValuesTest {
     }
 
     // Tournament Selection: Wählt das beste Netzwerk aus einer zufälligen Gruppe
-    private NeuralNetworkValues tournamentSelect(List<NeuralNetworkValuesTest.NetworkScore> scores, int tournamentSize, Random random) {
+    private NeuralNetwork tournamentSelect(List<NeuralNetworkValuesTest.NetworkScore> scores, int tournamentSize, Random random) {
         NeuralNetworkValuesTest.NetworkScore best = null;
         for (int i = 0; i < tournamentSize; i++) {
             int idx = random.nextInt(scores.size());
@@ -337,8 +352,8 @@ public class NeuralNetworkValuesTest {
     }
 
     // Crossover: Kombiniert zwei Netzwerke zu einem neuen
-    private NeuralNetworkValues crossover(NeuralNetworkValues parent1, NeuralNetworkValues parent2, Random random) {
-        NeuralNetworkValues child = cloneNetwork(parent1);
+    private NeuralNetwork crossover(NeuralNetwork parent1, NeuralNetwork parent2, Random random) {
+        NeuralNetwork child = cloneNetwork(parent1);
         List<Synapse> childSynapses = child.getSynapseList();
         List<Synapse> parent2Synapses = parent2.getSynapseList();
 
@@ -369,20 +384,20 @@ public class NeuralNetworkValuesTest {
     }
 
     // Mutation: Ändert zufällig Gewichte im Netzwerk
-    private NeuralNetworkValues mutateNetwork(NeuralNetworkValues network, double rate, double strength, Random random) {
+    private NeuralNetwork mutateNetwork(NeuralNetwork network, double rate, double strength, Random random) {
         // Einfacher Wrapper um die vorhandene mutate-Methode
         return network.mutate(rate, strength);
     }
 
     // Hilfsmethode: Klont ein Netzwerk (falls nicht verfügbar)
-    private NeuralNetworkValues cloneNetwork(NeuralNetworkValues network) {
+    private NeuralNetwork cloneNetwork(NeuralNetwork network) {
         // Falls die Klasse keine clone-Methode hat, diese implementieren
         // Hier wird angenommen, dass network.mutate mit Rate 0 ein Klon erzeugt
         return network.mutate(0, 0);
     }
 
     // Hilfsmethode: Gibt die Architektur eines Netzwerks zurück
-    private int[] getArchitecture(NeuralNetworkValues network) {
+    private int[] getArchitecture(NeuralNetwork network) {
         Layer[] hiddenLayers = network.getHiddenLayerArr();
         int[] architecture = new int[hiddenLayers.length];
         for (int i = 0; i < hiddenLayers.length; i++) {
@@ -393,7 +408,7 @@ public class NeuralNetworkValuesTest {
     }
 
     // Hilfsmethode: Zeigt Zwischenergebnisse
-    private void showResults(double[][] inputs, double[][] outputs, NeuralNetworkValues network) {
+    private void showResults(double[][] inputs, double[][] outputs, NeuralNetwork network) {
         System.out.println("\nZwischenergebnisse:");
         double totalError = 0;
         for (int i = 0; i < inputs.length; i++) {
@@ -409,15 +424,15 @@ public class NeuralNetworkValuesTest {
     }
 
     private static class NetworkScore {
-        private final NeuralNetworkValues network;
+        private final NeuralNetwork network;
         private final double error;
 
-        public NetworkScore(NeuralNetworkValues network, double error) {
+        public NetworkScore(NeuralNetwork network, double error) {
             this.network = network;
             this.error = error;
         }
 
-        public NeuralNetworkValues getNetwork() {
+        public NeuralNetwork getNetwork() {
             return network;
         }
 

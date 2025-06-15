@@ -15,7 +15,8 @@ public class CellBrain implements CellBrainInterface, Serializable {
      *
      * @param hiddenLayerSynapseConnectivity Prozentsatz der zu erstellenden Synapsen (0.0-1.0)
      */
-    public CellBrain(final int inputCount, final int outputCount, final double hiddenCountFactor,
+    public CellBrain(final NeuronValueFunctionFactory neuronValueFunctionFactory,
+                     final int inputCount, final int outputCount, final double hiddenCountFactor,
                      final double stateHiddenLayerSynapseConnectivity, final double hiddenLayerSynapseConnectivity) {
 
         //final int hiddenCount = (inputCount + outputCount) * 2; // Arbitrary hidden layer size
@@ -24,7 +25,8 @@ public class CellBrain implements CellBrainInterface, Serializable {
                 outputCount
         };
 
-        this.network = new NeuralNetwork(inputCount, hiddenCountArr, outputCount,
+        this.network = new NeuralNetwork(neuronValueFunctionFactory,
+                inputCount, hiddenCountArr, outputCount,
                 hiddenLayerSynapseConnectivity, SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT);
 
         this.network.addHiddenLayer(0, inputCount / 4, stateHiddenLayerSynapseConnectivity); // State 0

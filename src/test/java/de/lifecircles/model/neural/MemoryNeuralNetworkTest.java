@@ -36,6 +36,14 @@ public class MemoryNeuralNetworkTest {
         }
     }
 
+    final NeuronValueFunctionFactory neuronValueFunctionFactory = new NeuronValueFunctionFactory() {
+        @Override
+        public NeuronValueFunction create() {
+            return new DefaultNeuronValueFunction();
+        }
+    };
+
+
     @Test
     public void test() {
         final Random random = new Random(23);
@@ -52,7 +60,8 @@ public class MemoryNeuralNetworkTest {
 
         List<NNTrainResult> trainResultList = new ArrayList<>();
         for (int networkPos = 0; networkPos < 60; networkPos++) {
-            NeuralNetwork network = new NeuralNetwork(inputCount, architecture, outputCount, synapseConnectivity, 0);
+            NeuralNetwork network = new NeuralNetwork(neuronValueFunctionFactory,
+                    inputCount, architecture, outputCount, synapseConnectivity, 0);
             network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
             trainResultList.add(new NNTrainResult(network, 0.0D));
         }
@@ -98,7 +107,8 @@ public class MemoryNeuralNetworkTest {
 
         List<NNTrainResult> trainResultList = new ArrayList<>();
         for (int networkPos = 0; networkPos < networkCount; networkPos++) {
-            NeuralNetwork network = new NeuralNetwork(inputCount, architecture, outputCount, synapseConnectivity, 0);
+            NeuralNetwork network = new NeuralNetwork(neuronValueFunctionFactory,
+                    inputCount, architecture, outputCount, synapseConnectivity, 0);
             network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
             trainResultList.add(new NNTrainResult(network, 0.0D));
         }
@@ -145,7 +155,8 @@ public class MemoryNeuralNetworkTest {
 
         List<NNTrainResult> trainResultList = new ArrayList<>();
         for (int networkPos = 0; networkPos < networkCount; networkPos++) {
-            NeuralNetwork network = new NeuralNetwork(inputCount, architecture, outputCount, synapseConnectivity, 0);
+            NeuralNetwork network = new NeuralNetwork(neuronValueFunctionFactory,
+                    inputCount, architecture, outputCount, synapseConnectivity, 0);
             network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
             trainResultList.add(new NNTrainResult(network, 0.0D));
         }
@@ -298,7 +309,8 @@ public class MemoryNeuralNetworkTest {
 
         List<NNTrainResult> trainResultList = new ArrayList<>();
         for (int networkPos = 0; networkPos < networkCount; networkPos++) {
-            NeuralNetwork network = new NeuralNetwork(inputCount, architecture, outputCount, synapseConnectivity, 0);
+            NeuralNetwork network = new NeuralNetwork(neuronValueFunctionFactory,
+                    inputCount, architecture, outputCount, synapseConnectivity, 0);
             network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
             trainResultList.add(new NNTrainResult(network, 0.0D));
         }
@@ -364,7 +376,8 @@ public class MemoryNeuralNetworkTest {
 
         List<NNTrainResult> trainResultList = new ArrayList<>();
         for (int networkPos = 0; networkPos < networkCount; networkPos++) {
-            NeuralNetwork network = new NeuralNetwork(inputCount, architecture, outputCount, synapseConnectivity, 0);
+            NeuralNetwork network = new NeuralNetwork(neuronValueFunctionFactory,
+                    inputCount, architecture, outputCount, synapseConnectivity, 0);
             network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
             trainResultList.add(new NNTrainResult(network, 0.0D));
         }

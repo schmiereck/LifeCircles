@@ -17,7 +17,14 @@ public class Cell_writeObject_is_called_Test {
         double hiddenCountFactor = 1.0;
         double stateHiddenLayerSynapseConnectivity = 1.0;
         double synapseConnectivity = 1.0;
-        CellBrain brain = new CellBrain(inputCount, outputCount, hiddenCountFactor, stateHiddenLayerSynapseConnectivity, synapseConnectivity);
+        final NeuronValueFunctionFactory neuronValueFunctionFactory = new NeuronValueFunctionFactory() {
+            @Override
+            public NeuronValueFunction create() {
+                return new DefaultNeuronValueFunction();
+            }
+        };
+        CellBrain brain = new CellBrain(neuronValueFunctionFactory,
+                inputCount, outputCount, hiddenCountFactor, stateHiddenLayerSynapseConnectivity, synapseConnectivity);
         Cell cell = new Cell(new Vector2D(1.0, 2.0), 5.0, brain);
         cell.setEnergy(42.0);
         cell.setAge(7.0);

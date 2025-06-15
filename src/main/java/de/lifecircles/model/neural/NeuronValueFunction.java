@@ -1,8 +1,8 @@
 package de.lifecircles.model.neural;
 
 public interface NeuronValueFunction {
-    double readValue(final Neuron neuron);
-    void writeValue(final Neuron neuron, final double value);
+    double readValue(final NeuralNetwork neuralNetwork, final Neuron neuron);
+    void writeValue(final NeuralNetwork neuralNetwork, final Neuron neuron, final double value);
 
-    int fetchNextFreeId();
+    int fetchNextFreeId(final NeuralNetwork neuralNetwork);
 }
