@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.util.Arrays;
 
 public class SerialTest {
 
@@ -57,14 +58,18 @@ public class SerialTest {
 
     @Test
     void testNeuronSynapseConnectionsAfterDeserialization() throws IOException, ClassNotFoundException {
-        final NeuronValueFunctionFactory neuronValueFunctionFactory = new NeuronValueFunctionFactory() {
-            @Override
-            public NeuronValueFunction create() {
-                return new DefaultNeuronValueFunction();
-            }
-        };
+        final NeuronValueFunctionFactory neuronValueFunctionFactory = new DefaultNeuronValueFunctionFactory();
         NeuralNetwork network = new NeuralNetwork(neuronValueFunctionFactory,
                 3, 2, 1);
+
+        // Überprüfe, ob die Verbindungen wie erwartet hergestellt wurden.
+        for (Synapse synapse : network.getSynapseList()) {
+            Assertions.assertNotNull(synapse.getSourceNeuron());
+            Assertions.assertNotNull(synapse.getTargetNeuron());
+            Assertions.assertTrue(synapse.getSourceNeuron().getOutputSynapses().contains(synapse));
+            Assertions.assertTrue(Arrays.asList(synapse.getTargetNeuron().getInputSynapses()).contains(synapse));
+        }
+
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         try (ObjectOutputStream out = new ObjectOutputStream(byteOut)) {
             out.writeObject(network);
@@ -81,7 +86,7 @@ public class SerialTest {
             Assertions.assertNotNull(synapse.getSourceNeuron());
             Assertions.assertNotNull(synapse.getTargetNeuron());
             Assertions.assertTrue(synapse.getSourceNeuron().getOutputSynapses().contains(synapse));
-            Assertions.assertTrue(synapse.getTargetNeuron().getInputSynapses()[0] == synapse);
+            Assertions.assertTrue(Arrays.asList(synapse.getTargetNeuron().getInputSynapses()).contains(synapse));
         }
     }
 

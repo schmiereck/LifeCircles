@@ -1,5 +1,7 @@
 package de.lifecircles.model.neural;
 
+import java.io.Serializable;
+
 public class DefaultNeuronValueFunction implements NeuronValueFunction {
     private int lastFreeID = 0;
 

@@ -1,5 +1,7 @@
 package de.lifecircles.model.neural;
 
-public interface NeuronValueFunctionFactory {
+import java.io.Serializable;
+
+public interface NeuronValueFunctionFactory extends Serializable {
     NeuronValueFunction create();
 }

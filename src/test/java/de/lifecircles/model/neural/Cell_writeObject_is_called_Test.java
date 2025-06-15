@@ -17,12 +17,7 @@ public class Cell_writeObject_is_called_Test {
         double hiddenCountFactor = 1.0;
         double stateHiddenLayerSynapseConnectivity = 1.0;
         double synapseConnectivity = 1.0;
-        final NeuronValueFunctionFactory neuronValueFunctionFactory = new NeuronValueFunctionFactory() {
-            @Override
-            public NeuronValueFunction create() {
-                return new DefaultNeuronValueFunction();
-            }
-        };
+        final NeuronValueFunctionFactory neuronValueFunctionFactory = new DefaultNeuronValueFunctionFactory();
         CellBrain brain = new CellBrain(neuronValueFunctionFactory,
                 inputCount, outputCount, hiddenCountFactor, stateHiddenLayerSynapseConnectivity, synapseConnectivity);
         Cell cell = new Cell(new Vector2D(1.0, 2.0), 5.0, brain);
@@ -96,5 +91,8 @@ public class Cell_writeObject_is_called_Test {
         for (int i = 0; i < expectedOutput.length; i++) {
             assertEquals(expectedOutput[i], deserializedOutput[i], 1e-6, "NN-Ausgabe unterscheidet sich an Index " + i);
         }
+        final NeuronValueFunctionFactory origNeuronValueFunctionFactory = origNN.getNeuronValueFunctionFactory();
+        final NeuronValueFunctionFactory deserNeuronValueFunctionFactory = deserNN.getNeuronValueFunctionFactory();
+        assertEquals(origNeuronValueFunctionFactory.getClass(), deserNeuronValueFunctionFactory.getClass());
     }
 }

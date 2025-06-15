@@ -125,12 +125,7 @@ public class NeuralNetworkTest {
         final Random random = new Random();
         
         // Erstelle diversere initiale Population mit unterschiedlichen Architekturen
-        final NeuronValueFunctionFactory neuronValueFunctionFactory = new NeuronValueFunctionFactory() {
-            @Override
-            public NeuronValueFunction create() {
-                return new DefaultNeuronValueFunction();
-            }
-        };
+        final NeuronValueFunctionFactory neuronValueFunctionFactory = new DefaultNeuronValueFunctionFactory();
         List<NeuralNetwork> population = new ArrayList<>();
         for (int i = 0; i < populationSize; i++) {
             int[] architecture = architectureVariants[i % architectureVariants.length];

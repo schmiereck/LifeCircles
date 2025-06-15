@@ -118,16 +118,11 @@ public class NeuralNetworkValuesTest {
 
         final int populationSize = 1_000;
         final double eliteRate = 0.1; // Top 10% direkt übernehmen
-        final Random random = new Random();
+        final Random random = new Random(23);
+        NeuralNetwork.setRandom(random);
 
         // Erstelle diversere initiale Population mit unterschiedlichen Architekturen
-        final NeuronValueFunctionFactory neuronValueFunctionFactory = new NeuronValueFunctionFactory() {
-            @Override
-            public NeuronValueFunction create() {
-                //return new DefaultNeuronValueFunction();
-                return new ValuesNeuronValueFunction();
-            }
-        };
+        final NeuronValueFunctionFactory neuronValueFunctionFactory = new ValuesNeuronValueFunctionFactory();
         List<NeuralNetwork> population = new ArrayList<>();
         for (int i = 0; i < populationSize; i++) {
             int[] architecture = architectureVariants[i % architectureVariants.length];

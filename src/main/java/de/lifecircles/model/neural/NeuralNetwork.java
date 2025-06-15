@@ -138,7 +138,7 @@ public class NeuralNetwork implements Serializable {
      * Constructs a network with a single hidden layer with full connectivity.
      */
     public NeuralNetwork(final NeuronValueFunctionFactory neuronValueFunctionFactory, int inputCount, int hiddenCount, int outputCount) {
-        this(neuronValueFunctionFactory, inputCount, new int[]{hiddenCount}, outputCount, 1.0, 0);
+        this(neuronValueFunctionFactory, inputCount, new int[]{hiddenCount}, outputCount, 1.0D, 0);
     }
 
     /**
@@ -149,7 +149,9 @@ public class NeuralNetwork implements Serializable {
      * @param outputCount number of output neurons
      * @param synapseConnectivity Prozentsatz der zu erstellenden Synapsen (0.0-1.0)
      */
-    public NeuralNetwork(final NeuronValueFunctionFactory neuronValueFunctionFactory, final int inputCount, final int[] hiddenCounts, final int outputCount, final double synapseConnectivity, final int fixedHiddenLayerCount) {
+    public NeuralNetwork(final NeuronValueFunctionFactory neuronValueFunctionFactory, final int inputCount,
+                         final int[] hiddenCounts, final int outputCount, final double synapseConnectivity,
+                         final int fixedHiddenLayerCount) {
         this.neuronValueFunctionFactory = neuronValueFunctionFactory;
         this.neuronValueFunction = neuronValueFunctionFactory.create();
 
@@ -1049,5 +1051,9 @@ public class NeuralNetwork implements Serializable {
 
     public void writeNeuronValue(final Neuron neuron, final double value) {
         this.neuronValueFunction.writeValue(this, neuron, value);
+    }
+
+    public NeuronValueFunctionFactory getNeuronValueFunctionFactory() {
+        return this.neuronValueFunctionFactory;
     }
 }

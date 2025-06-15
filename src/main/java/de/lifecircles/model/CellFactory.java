@@ -14,12 +14,7 @@ public abstract class CellFactory {
     public static Cell createCell(final Vector2D position, final double radiusSize, final double hiddenCountFactor,
                                   final double stateHiddenLayerSynapseConnectivity, final double hiddenLayerSynapseConnectivity) {
         final int sensorActorCount = SimulationConfig.CELL_SENSOR_ACTOR_COUNT;
-        final NeuronValueFunctionFactory neuronValueFunctionFactory = new NeuronValueFunctionFactory() {
-            @Override
-            public NeuronValueFunction create() {
-                return new DefaultNeuronValueFunction();
-            }
-        };
+        final NeuronValueFunctionFactory neuronValueFunctionFactory = new DefaultNeuronValueFunctionFactory();
 
         final CellBrain cellBrain = new CellBrain(neuronValueFunctionFactory,
                 calcInputCount(sensorActorCount), calcOutputCount(sensorActorCount),

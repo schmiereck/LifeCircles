@@ -1,6 +1,8 @@
 package de.lifecircles.model.neural;
 
-public interface NeuronValueFunction {
+import java.io.Serializable;
+
+public interface NeuronValueFunction extends Serializable {
     double readValue(final NeuralNetwork neuralNetwork, final Neuron neuron);
     void writeValue(final NeuralNetwork neuralNetwork, final Neuron neuron, final double value);
 

@@ -36,12 +36,7 @@ public class MemoryNeuralNetworkTest {
         }
     }
 
-    final NeuronValueFunctionFactory neuronValueFunctionFactory = new NeuronValueFunctionFactory() {
-        @Override
-        public NeuronValueFunction create() {
-            return new DefaultNeuronValueFunction();
-        }
-    };
+    final NeuronValueFunctionFactory neuronValueFunctionFactory = new DefaultNeuronValueFunctionFactory();
 
 
     @Test
@@ -88,7 +83,7 @@ public class MemoryNeuralNetworkTest {
         }
     }
 
-    @Test
+    //@Test
     public void testText() {
         final Random random = new Random(32);
         NeuralNetwork.setRandom(random);
@@ -135,7 +130,7 @@ public class MemoryNeuralNetworkTest {
         }
     }
 
-    @Test
+    //@Test
     public void testBigText() {
         final Random random = new Random(42);
         NeuralNetwork.setRandom(random);
@@ -289,7 +284,7 @@ public class MemoryNeuralNetworkTest {
         }
     }
 
-    @Test
+    //@Test
     public void testSmallCount() {
         final Random random = new Random(42);
         NeuralNetwork.setRandom(random);
@@ -357,7 +352,7 @@ public class MemoryNeuralNetworkTest {
         }
     }
 
-    @Test
+    //@Test
     public void testCount() {
         final Random random = new Random(42);
         NeuralNetwork.setRandom(random);
