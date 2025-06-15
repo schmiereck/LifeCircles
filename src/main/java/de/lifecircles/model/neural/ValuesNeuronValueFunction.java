@@ -61,7 +61,15 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
         return currentLowestFreeID;
     }
 
-    // TODO Neron löschen implemehtieren
+    @Override
+    public void releaseNeuron(NeuralNetwork neuralNetwork, Neuron neuron) {
+        final int id = neuron.getId();
+
+        if (this.lowestFreeID > id) {
+            // If the neuron ID is less than to the lowest free ID, we can update it
+            this.lowestFreeID = id;
+        }
+    }
 
     private void checkValueArrSize(final int id) {
         if (id >= this.valuesArr.length) {

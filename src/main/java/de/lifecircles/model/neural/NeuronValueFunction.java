@@ -5,4 +5,6 @@ public interface NeuronValueFunction {
     void writeValue(final NeuralNetwork neuralNetwork, final Neuron neuron, final double value);
 
     int fetchNextFreeId(final NeuralNetwork neuralNetwork);
+
+    void releaseNeuron(final NeuralNetwork neuralNetwork, final Neuron neuron);
 }

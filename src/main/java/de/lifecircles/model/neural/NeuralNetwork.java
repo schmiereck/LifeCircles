@@ -609,6 +609,7 @@ public class NeuralNetwork implements Serializable {
                 i++;
             }
         }
+        this.neuronValueFunction.releaseNeuron(this, removedNeuron);
     }
     // Hilfsmethode zum Entfernen einer Synapse an Index
     private void removeSynapseAt(int idx) {

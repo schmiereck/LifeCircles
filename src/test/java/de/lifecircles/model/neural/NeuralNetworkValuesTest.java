@@ -8,6 +8,18 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 public class NeuralNetworkValuesTest {
     private static final double THRESHOLD = 0.1;
+    private static final double[][] OR_INPUTS = {
+            {0, 0},
+            {0, 1},
+            {1, 0},
+            {1, 1}
+    };
+    private static final double[][] OR_OUTPUTS = {
+            {0},
+            {1},
+            {1},
+            {1}
+    };
     private static final double[][] XOR_INPUTS = {
             {0, 0},
             {0, 1},
@@ -32,6 +44,18 @@ public class NeuralNetworkValuesTest {
             {0},
             {1}
     };
+    private static final double[][] NAND_INPUTS = {
+            {0, 0},
+            {0, 1},
+            {1, 0},
+            {1, 1}
+    };
+    private static final double[][] NAND_OUTPUTS = {
+            {1},
+            {1},
+            {1},
+            {0}
+    };
     private static final double[][] XXX_INPUTS = {
             {0, 0, 0},
             {0, 0, 1},
@@ -54,6 +78,11 @@ public class NeuralNetworkValuesTest {
     };
 
     @Test
+    public void testORProblem() {
+        this.testProblem(OR_INPUTS, OR_OUTPUTS);
+    }
+
+    @Test
     public void testXORProblem() {
         this.testProblem(XOR_INPUTS, XOR_OUTPUTS);
     }
@@ -61,6 +90,11 @@ public class NeuralNetworkValuesTest {
     @Test
     public void testANDProblem() {
         this.testProblem(AND_INPUTS, AND_OUTPUTS);
+    }
+
+    @Test
+    public void testNANDProblem() {
+        this.testProblem(NAND_INPUTS, NAND_OUTPUTS);
     }
 
     @Test

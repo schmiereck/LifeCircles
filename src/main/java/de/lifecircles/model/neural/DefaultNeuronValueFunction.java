@@ -17,4 +17,9 @@ public class DefaultNeuronValueFunction implements NeuronValueFunction {
     public int fetchNextFreeId(NeuralNetwork neuralNetwork) {
         return this.lastFreeID++;
     }
+
+    @Override
+    public void releaseNeuron(NeuralNetwork neuralNetwork, Neuron neuron) {
+        // nothing to do here in this implementation
+    }
 }
