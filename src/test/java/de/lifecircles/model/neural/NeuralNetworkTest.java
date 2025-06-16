@@ -122,8 +122,9 @@ public class NeuralNetworkTest {
         
         final int populationSize = 1_000;
         final double eliteRate = 0.1; // Top 10% direkt übernehmen
-        final Random random = new Random();
-        
+        final Random random = new Random(42);
+        NeuralNetwork.setRandom(random);
+
         // Erstelle diversere initiale Population mit unterschiedlichen Architekturen
         final NeuronValueFunctionFactory neuronValueFunctionFactory = new DefaultNeuronValueFunctionFactory();
         List<NeuralNetwork> population = new ArrayList<>();
