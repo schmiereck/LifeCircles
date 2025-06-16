@@ -41,7 +41,7 @@ public class MemoryNeuralNetworkTest {
 
     @Test
     public void test() {
-        final Random random = new Random(23);
+        final Random random = new Random(2342);
         NeuralNetwork.setRandom(random);
 
         final int inputCount = 8;
@@ -69,7 +69,7 @@ public class MemoryNeuralNetworkTest {
             final int trainCount = 30;
             trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, trainCount, startCharArr);
             final NeuralNetwork network = trainResultList.get(0).getNetwork();
-            generateText(network);
+            generateText(network, startCharArr);
         }
         {
             String[] patterns = { "01.12.23." };
@@ -79,11 +79,11 @@ public class MemoryNeuralNetworkTest {
             final int trainCount = 30;
             trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, trainCount, startCharArr);
             final NeuralNetwork network = trainResultList.get(0).getNetwork();
-            generateText(network);
+            generateText(network, startCharArr);
         }
     }
 
-    //@Test
+    @Test
     public void testText() {
         final Random random = new Random(32);
         NeuralNetwork.setRandom(random);
