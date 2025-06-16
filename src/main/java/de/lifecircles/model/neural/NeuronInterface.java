@@ -1,7 +1,6 @@
 package de.lifecircles.model.neural;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -12,9 +11,9 @@ public interface NeuronInterface extends Serializable {
     double getBias(final int outputTypePos);
     void setBias(final int outputTypePos, final double bias);
 
-    long activate(final NeuralNetwork neuralNetwork);
+    long activate(NeuronValueFunction neuronValueFunction, final NeuralNet neuralNet);
 
-    NeuronInterface cloneNeuron(NeuralNetwork neuralNetwork, final boolean isActiveLayer);
+    NeuronInterface cloneNeuron(final NeuralNet neuralNet, final NeuronValueFunction neuronValueFunction, final boolean isActiveLayer);
 
     void addOutputSynapse(final int outputTypePos, final Synapse synapse);
 

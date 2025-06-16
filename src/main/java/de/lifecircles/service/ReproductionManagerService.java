@@ -119,8 +119,9 @@ public class ReproductionManagerService {
     public static void calcActiveLayersByState(final Cell cell) {
         final CellBrain cellBrain = (CellBrain) cell.getBrain();
         final NeuralNetwork childBrainNetwork = cellBrain.getNeuralNetwork();
+        final NeuralNet childNeuralNet = childBrainNetwork.getNeuralNet();
         final boolean[] activeLayers = cellBrain.determineActiveHiddenLayers(cell.getCellState());
-        final Layer[] hiddenLayerList = childBrainNetwork.getHiddenLayerArr();
+        final Layer[] hiddenLayerList = childNeuralNet.getHiddenLayerArr();
         for (int i = 0; i < Math.min(hiddenLayerList.length, SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT); i++) {
             final Layer layer = hiddenLayerList[i];
             layer.setActiveLayer(activeLayers[i]);

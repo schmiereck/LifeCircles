@@ -473,7 +473,7 @@ public class MemoryNeuralNetworkTest {
             // Sortieren der Netzwerke nach Verlust
             trainResultList.sort((a, b) -> Double.compare(a.getLoss(), b.getLoss()));
             NNTrainResult bestTrainResult = trainResultList.get(0);
-            NeuralNetwork bestNeuralNetwork = bestTrainResult.getNetwork();
+            final NeuralNetwork bestNeuralNetwork = bestTrainResult.getNetwork();
 
             if (bestTrainResult.getLoss() < 0.005D) {
                 logger.info("Bestes Netzwerk erreicht einen Verlust von {}. Training wird abgebrochen.", bestTrainResult.getLoss());

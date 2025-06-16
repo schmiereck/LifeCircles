@@ -229,7 +229,7 @@ public class Neuron implements NeuronInterface {
         return this.neuronTypeInfoData;
     }
 
-    public long activate(final NeuralNetwork neuralNetwork) {
+    public long activate(final NeuronValueFunction neuronValueFunction, final NeuralNet neuralNet) {
         long synapseCount = 0L;
         final int outputTypePos = 0; // This Neuron supports only one output.
         for (int inputTypePos = 0; inputTypePos < this.getNeuronTypeInfoData().getInputCount(); inputTypePos++) {
@@ -238,13 +238,13 @@ public class Neuron implements NeuronInterface {
             final Synapse[] inputSynapseArr = this.getInputSynapseArr(inputTypePos);
             for (int inputSynapsePos = 0; inputSynapsePos < inputSynapseArr.length; inputSynapsePos++) {
                 final Synapse synapse = inputSynapseArr[inputSynapsePos];
-                sum += neuralNetwork.getNeuronValueFunction().readValue(neuralNetwork, synapse.getSourceNeuron(), outputTypePos) * synapse.getWeight();
+                sum += neuronValueFunction.readValue(neuralNet, synapse.getSourceNeuron(), outputTypePos) * synapse.getWeight();
             }
 
             this.setInputSum(inputTypePos, sum); // Speichere die Summe vor Aktivierung für Backpropagation
             double value = this.getActivationFunction().apply(sum);
             //this.writeNeuronValue(neuron, outputTypePos, value);
-            neuralNetwork.getNeuronValueFunction().writeValue(neuralNetwork, this, outputTypePos, value);
+            neuronValueFunction.writeValue(neuralNet, this, outputTypePos, value);
 
             synapseCount += inputSynapseArr.length;
         }
@@ -252,17 +252,16 @@ public class Neuron implements NeuronInterface {
     }
 
     @Override
-    public NeuronInterface cloneNeuron(final NeuralNetwork neuralNetwork, final boolean isActiveLayer) {
-        final NeuronValueFunction neuronValueFunction = neuralNetwork.getNeuronValueFunction();
-        final Neuron newNeuron = new Neuron(neuronValueFunction.fetchNextFreeId(neuralNetwork), this.getNeuronTypeInfoData());
+    public NeuronInterface cloneNeuron(final NeuralNet neuralNet, final NeuronValueFunction neuronValueFunction, final boolean isActiveLayer) {
+        final Neuron newNeuron = new Neuron(neuronValueFunction.fetchNextFreeId(neuralNet), this.getNeuronTypeInfoData());
         newNeuron.setActivationFunction(this.getActivationFunction());
         for (int outputTypePos = 0; outputTypePos < this.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
             newNeuron.setBias(outputTypePos, this.getBias(outputTypePos));
             if (isActiveLayer) {
-                final double value = neuronValueFunction.readValue(neuralNetwork, this, outputTypePos);
-                neuronValueFunction.writeValue(neuralNetwork, newNeuron, outputTypePos, value);
+                final double value = neuronValueFunction.readValue(neuralNet, this, outputTypePos);
+                neuronValueFunction.writeValue(neuralNet, newNeuron, outputTypePos, value);
             } else {
-                neuronValueFunction.writeValue(neuralNetwork, newNeuron, outputTypePos, 0.0D);
+                neuronValueFunction.writeValue(neuralNet, newNeuron, outputTypePos, 0.0D);
             }
         }
         return newNeuron;

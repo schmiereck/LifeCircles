@@ -54,8 +54,8 @@ public class NeuronNetwork implements NeuronInterface {
     }
 
     @Override
-    public NeuronInterface cloneNeuron(final NeuralNetwork neuralNetwork, final boolean isActiveLayer) {
-        final int newId = neuralNetwork.getNeuronValueFunction().fetchNextFreeId(neuralNetwork);
+    public NeuronInterface cloneNeuron(final NeuralNet neuralNet, final NeuronValueFunction neuronValueFunction, final boolean isActiveLayer) {
+        final int newId = neuronValueFunction.fetchNextFreeId(neuralNet);
         NeuronNetwork newNeuron = new NeuronNetwork(newId, this.neuronTypeInfoData);
 
         return newNeuron;
@@ -124,20 +124,20 @@ public class NeuronNetwork implements NeuronInterface {
     }
 
     @Override
-    public long activate(final NeuralNetwork neuralNetwork) {
+    public long activate(NeuronValueFunction neuronValueFunction, final NeuralNet neuralNet) {
         final double[] inputArr = new double[this.neuronTypeInfoData.getInputCount()];
         for (int inputTypePos = 0; inputTypePos < this.neuronTypeInfoData.getInputCount(); inputTypePos++) {
             final Synapse[] inputSynapseArr = this.inputSynapsesList.get(inputTypePos);
             for (int inputSynapsePos = 0; inputSynapsePos < inputSynapseArr.length; inputSynapsePos++) {
                 final Synapse synapse = inputSynapseArr[inputSynapsePos];
                 int sourceOutputTypePos = synapse.getSourceOutputTypePos();
-                inputArr[inputTypePos] += neuralNetwork.getNeuronValueFunction().readValue(neuralNetwork, synapse.getSourceNeuron(), sourceOutputTypePos) * synapse.getWeight();
+                inputArr[inputTypePos] += neuronValueFunction.readValue(neuralNet, synapse.getSourceNeuron(), sourceOutputTypePos) * synapse.getWeight();
             }
         }
         final int outputTypePos = 0;
-        neuralNetwork.setInputs(inputArr);
-        neuralNetwork.process();
-        return neuralNetwork.getProccessedSynapses();
+        neuralNet.setInputs(neuronValueFunction, inputArr);
+        neuralNet.process(neuronValueFunction);
+        return neuralNet.getProccessedSynapses();
     }
 
     @Override

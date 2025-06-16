@@ -349,9 +349,10 @@ public class CellDetailView extends Stage {
             return;
         }
 
-        CellBrain brain = (CellBrain) brainInterface;
+        final CellBrain brain = (CellBrain) brainInterface;
+        final NeuralNetwork network = brain.getNeuralNetwork();
+        final NeuralNet neuralNet = network.getNeuralNet();
 
-        NeuralNetwork network = brain.getNeuralNetwork();
         if (network == null) return;
 
         // Netzwerkarchitektur holen
@@ -399,13 +400,13 @@ public class CellDetailView extends Stage {
 
         for (int layerPos = 0; layerPos < layerSize; layerPos++) {
             double nodeY = layerYOffset + vSpacing * (layerPos + 0.5);
-            if (layerPos < network.getInputNeuronArr().length) {
-                neuronPositions.put(network.getInputNeuronArr()[layerPos], new double[] {layerX, nodeY});
+            if (layerPos < neuralNet.getInputNeuronArr().length) {
+                neuronPositions.put(neuralNet.getInputNeuronArr()[layerPos], new double[] {layerX, nodeY});
             }
         }
 
         // Hidden-Layer-Neuronen-Positionen
-        for (int li = 0; li < network.getHiddenLayerArr().length; li++) {
+        for (int li = 0; li < neuralNet.getHiddenLayerArr().length; li++) {
             layerIdx = li + 1;
             layerSize = layers[layerIdx];
             layerX = horizontalSpacing * (layerIdx + 1);
@@ -413,7 +414,7 @@ public class CellDetailView extends Stage {
                     Math.min(maxVerticalSpacing, height / (layerSize + 1)));
             layerYOffset = (height - layerSize * vSpacing) / 2;
 
-            Layer currentHiddenLayer = network.getHiddenLayerArr()[li];
+            Layer currentHiddenLayer = neuralNet.getHiddenLayerArr()[li];
             boolean layerIsActive = currentHiddenLayer.isActiveLayer();
             List<NeuronInterface> neurons = currentHiddenLayer.getNeuronList();
 
@@ -463,8 +464,8 @@ public class CellDetailView extends Stage {
 
         for (int i = 0; i < layerSize; i++) {
             double nodeY = layerYOffset + vSpacing * (i + 0.5);
-            if (i < network.getOutputNeuronArr().length) {
-                neuronPositions.put(network.getOutputNeuronArr()[i], new double[] {layerX, nodeY});
+            if (i < neuralNet.getOutputNeuronArr().length) {
+                neuronPositions.put(neuralNet.getOutputNeuronArr()[i], new double[] {layerX, nodeY});
             }
         }
 
@@ -504,8 +505,8 @@ public class CellDetailView extends Stage {
 
             // Aktivierungswert direkt vom Input-Neuron holen
             double activation = 0;
-            if (layerPos < network.getInputNeuronArr().length) {
-                activation = network.readNeuronValue(network.getInputNeuronArr()[layerPos], outputTypePos);
+            if (layerPos < neuralNet.getInputNeuronArr().length) {
+                activation = network.readNeuronValue(neuralNet.getInputNeuronArr()[layerPos], outputTypePos);
                 // Aktivierungswert auf den Bereich [0,1] begrenzen
                 activation = Math.max(0, Math.min(1, activation));
             }
@@ -525,7 +526,7 @@ public class CellDetailView extends Stage {
         }
 
         // Hidden-Layer-Neuronen zeichnen
-        for (int li = 0; li < network.getHiddenLayerArr().length; li++) {
+        for (int li = 0; li < neuralNet.getHiddenLayerArr().length; li++) {
             layerIdx = li + 1; // +1 weil Input-Layer bereits gezeichnet wurde
             layerSize = layers[layerIdx];
             layerX = horizontalSpacing * (layerIdx + 1);
@@ -533,7 +534,7 @@ public class CellDetailView extends Stage {
                     Math.min(maxVerticalSpacing, height / (layerSize + 1)));
             layerYOffset = (height - layerSize * vSpacing) / 2;
 
-            List<NeuronInterface> neurons = network.getHiddenLayerArr()[li].getNeuronList();
+            List<NeuronInterface> neurons = neuralNet.getHiddenLayerArr()[li].getNeuronList();
 
             for (int i = 0; i < layerSize; i++) {
                 double nodeY = layerYOffset + vSpacing * (i + 0.5);
@@ -574,8 +575,8 @@ public class CellDetailView extends Stage {
 
             // Aktivierungswert direkt vom Output-Neuron holen
             double activation = 0;
-            if (i < network.getOutputNeuronArr().length) {
-                activation = network.readNeuronValue(network.getOutputNeuronArr()[i], outputTypePos);
+            if (i < neuralNet.getOutputNeuronArr().length) {
+                activation = network.readNeuronValue(neuralNet.getOutputNeuronArr()[i], outputTypePos);
                 // Aktivierungswert auf den Bereich [0,1] begrenzen
                 activation = Math.max(0, Math.min(1, activation));
             }

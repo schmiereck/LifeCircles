@@ -7,21 +7,21 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
     private int lastFreeID = 0;
 
     @Override
-    public double readValue(NeuralNetwork neuralNetwork, final NeuronInterface neuron, int outputTypePos) {
+    public double readValue(final NeuralNet neuralNet, final NeuronInterface neuron, final int outputTypePos) {
         final int id = neuron.getId();
         this.checkValueArrSize(id);
         return this.valuesArr[id];
     }
 
     @Override
-    public void writeValue(NeuralNetwork neuralNetwork, final NeuronInterface neuron, int outputTypePos, double value) {
+    public void writeValue(final NeuralNet neuralNet, final NeuronInterface neuron, final int outputTypePos, final double value) {
         final int id = neuron.getId();
         this.checkValueArrSize(id);
         this.valuesArr[id] = value;
     }
 
     @Override
-    public int fetchNextFreeId(NeuralNetwork neuralNetwork) {
+    public int fetchNextFreeId(final NeuralNet neuralNet) {
         final int currentLowestFreeID = this.lowestFreeID;
         final int currentLastFreeID = this.lastFreeID;
 
@@ -32,15 +32,15 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
         } else {
             // Potential gap exists, search for the next free ID starting from lowestFreeID
             final java.util.Set<Integer> existingIds = new java.util.HashSet<>();
-            for (final Neuron neuron : neuralNetwork.getInputNeuronArr()) {
+            for (final Neuron neuron : neuralNet.getInputNeuronArr()) {
                 existingIds.add(neuron.getId());
             }
-            for (final Layer layer : neuralNetwork.getHiddenLayerArr()) {
+            for (final Layer layer : neuralNet.getHiddenLayerArr()) {
                 for (final NeuronInterface neuron : layer.getNeuronsArr()) {
                     existingIds.add(neuron.getId());
                 }
             }
-            for (final Neuron neuron : neuralNetwork.getOutputNeuronArr()) {
+            for (final Neuron neuron : neuralNet.getOutputNeuronArr()) {
                 existingIds.add(neuron.getId());
             }
 
@@ -61,7 +61,7 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
     }
 
     @Override
-    public void releaseNeuron(NeuralNetwork neuralNetwork, NeuronInterface neuron) {
+    public void releaseNeuron(NeuralNet neuralNet, NeuronInterface neuron) {
         final int id = neuron.getId();
 
         if (this.lowestFreeID > id) {

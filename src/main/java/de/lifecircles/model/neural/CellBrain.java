@@ -67,7 +67,7 @@ public class CellBrain implements CellBrainInterface, Serializable {
 
     @Override
     public int getInputCount() {
-        return this.network.getInputCount();
+        return this.network.getNeuralNet().getInputCount();
     }
 
     @Override
@@ -76,7 +76,7 @@ public class CellBrain implements CellBrainInterface, Serializable {
     }
 
     @Override
-    public NeuralNetwork mutate(double mutationRate, double mutationStrength) {
+    public NeuralNetwork mutate(final double mutationRate, final double mutationStrength) {
         return this.network.mutate(
                 mutationRate,
                 mutationStrength
@@ -84,14 +84,14 @@ public class CellBrain implements CellBrainInterface, Serializable {
     }
 
     @Override
-    public double getOutputValue(int outputNeuronPos) {
-        return  this.network.getOutputValue(outputNeuronPos);
+    public double getOutputValue(final int outputNeuronPos) {
+        return  this.network.getNeuralNet().getOutputValue(this.network.getNeuronValueFunction(), outputNeuronPos);
     }
 
     @Override
-    public double getInputValue(int inputNeuronPos) {
+    public double getInputValue(final int inputNeuronPos) {
         final int outputTypePos = 0; // Default-Output-Type für Input-Neuronen.
-        return this.network.readNeuronValue(this.network.getInputNeuronArr()[inputNeuronPos], outputTypePos);
+        return this.network.readNeuronValue(this.network.getNeuralNet().getInputNeuronArr()[inputNeuronPos], outputTypePos);
     }
 
     public NeuralNetwork getNeuralNetwork() {
