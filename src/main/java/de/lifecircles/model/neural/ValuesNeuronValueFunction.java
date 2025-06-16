@@ -36,7 +36,7 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
                 existingIds.add(neuron.getId());
             }
             for (final Layer layer : neuralNetwork.getHiddenLayerArr()) {
-                for (final Neuron neuron : layer.getNeuronsArr()) {
+                for (final NeuronInterface neuron : layer.getNeuronsArr()) {
                     existingIds.add(neuron.getId());
                 }
             }

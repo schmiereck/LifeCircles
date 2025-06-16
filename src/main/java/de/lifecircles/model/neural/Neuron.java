@@ -30,7 +30,7 @@ public class Neuron implements NeuronInterface {
         this.id = id;
         this.neuronTypeInfoData = neuronTypeInfoData;
         this.value = 0.0;
-        this.bias = Math.random() * 2 - 1; // Random bias between -1 and 1
+        this.bias = NeuralNetwork.getRandom().nextDouble() * 2.0D - 1.0D; // Random bias between -1 and 1
         this.inputSynapseArr = new Synapse[0];
         this.outputSynapseList = new ArrayList<>();
         this.activationFunction = ActivationFunction.Sigmoid;
@@ -60,10 +60,12 @@ public class Neuron implements NeuronInterface {
         this.outputSynapseList.add(synapse);
     }
 
+    @Override
     public double getValue(final int outputTypePos) {
         return this.value;
     }
 
+    @Override
     public void setValue(final int outputTypePos, final double value) {
         this.value = value;
     }
@@ -79,6 +81,7 @@ public class Neuron implements NeuronInterface {
     /**
      * Gibt ein Array mit allen Input-Synapsen zurück.
      */
+    @Override
     public Synapse[] getInputSynapseArr(final int inputTypePos) {
         return this.inputSynapseArr;
     }
@@ -90,6 +93,7 @@ public class Neuron implements NeuronInterface {
         return this.inputSynapseArr.length;
     }
 
+    @Override
     public List<Synapse> getOutputSynapseList(final int outputTypePos) {
         return this.outputSynapseList;
     }
@@ -210,10 +214,12 @@ public class Neuron implements NeuronInterface {
         }
     }
 
+    @Override
     public void setInputSynapseArr(final int inputTypePos, Synapse[] inputSynapses) {
         this.inputSynapseArr = inputSynapses;
     }
 
+    @Override
     public int getId() {
         return this.id;
     }

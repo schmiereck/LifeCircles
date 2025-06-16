@@ -230,6 +230,10 @@ public class NeuralNetwork implements Serializable {
         this.connectLayers(prev, this.outputNeuronArr, synapseConnectivity);
     }
 
+    public static Random getRandom() {
+        return random;
+    }
+
     private void connectLayers(NeuronInterface[] sourceLayer, NeuronInterface[] targetLayer, double connectivity) {
         connectivity = Math.max(0.0, Math.min(1.0, connectivity));
         for (NeuronInterface source : sourceLayer) {
@@ -916,8 +920,8 @@ public class NeuralNetwork implements Serializable {
         for (final Layer layer : this.hiddenLayerArr) {
             if (!layer.isActiveLayer() && !disableLayerDeactivation) continue; // Überspringe inaktive Layer
 
-            final Neuron[] neurons = layer.getNeuronsArr();
-            for (final Neuron neuron : neurons) {
+            final NeuronInterface[] neurons = layer.getNeuronsArr();
+            for (final NeuronInterface neuron : neurons) {
                 for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
                     neuron.setBias(outputTypePos, neuron.getBias(outputTypePos) - this.learningRate * neuron.getDelta(outputTypePos));
                 }
@@ -933,13 +937,13 @@ public class NeuralNetwork implements Serializable {
 
         // 2. Aktualisiere alle Synapsengewichte
         for (final Synapse synapse : this.synapseArray) {
-            final Neuron targetNeuron = synapse.getTargetNeuron();
-            final Neuron sourceNeuron = synapse.getSourceNeuron();
+            final NeuronInterface targetNeuron = synapse.getTargetNeuron();
+            final NeuronInterface sourceNeuron = synapse.getSourceNeuron();
 
             // Überspringe Synapsen zu deaktivierten Layern
             if (!this.disableLayerDeactivation) {
                 if (targetNeuron instanceof Neuron && !((Neuron) targetNeuron).isOutputNeuron()) {
-                    final Layer targetLayer = findLayerForNeuron(targetNeuron);
+                    final Layer targetLayer = this.findLayerForNeuron(targetNeuron);
                     if (targetLayer != null && !targetLayer.isActiveLayer()) {
                         continue;
                     }
@@ -961,9 +965,9 @@ public class NeuralNetwork implements Serializable {
      * @param searchedNeuron ist das gesuchte Neuron.
      * @return den Layer oder null, wenn das Neuron nicht gefunden wurde.
      */
-    private Layer findLayerForNeuron(final Neuron searchedNeuron) {
+    private Layer findLayerForNeuron(final NeuronInterface searchedNeuron) {
         for (final Layer layer : this.hiddenLayerArr) {
-            for (final Neuron neuron : layer.getNeuronsArr()) {
+            for (final NeuronInterface neuron : layer.getNeuronsArr()) {
                 if (neuron == searchedNeuron) {
                     return layer;
                 }
@@ -1045,7 +1049,7 @@ public class NeuralNetwork implements Serializable {
         for (int hiddenLayerPos = 0; hiddenLayerPos < this.hiddenLayerArr.length; hiddenLayerPos++) {
             final Layer layer = this.hiddenLayerArr[hiddenLayerPos];
             for (int neuronPos = 0; neuronPos < layer.getNeuronsArr().length; neuronPos++) {
-                final Neuron neuron = layer.getNeuronsArr()[neuronPos];
+                final NeuronInterface neuron = layer.getNeuronsArr()[neuronPos];
                 for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
                     activations.put("hidden_" + hiddenLayerPos + "_" + neuronPos + "_" + outputTypePos, this.neuronValueFunction.readValue(this, neuron, outputTypePos));
                 }
@@ -1071,14 +1075,14 @@ public class NeuralNetwork implements Serializable {
         }
         // Nach der Wiederherstellung der Synapsen: Input-Synapsen-Array und Zähler für alle Neuronen korrekt setzen
         // Alle Neuronen einsammeln
-        List<Neuron> allNeurons = new ArrayList<>();
+        List<NeuronInterface> allNeurons = new ArrayList<>();
         Collections.addAll(allNeurons, inputNeuronList);
         for (Layer layer : hiddenLayerArr) {
             Collections.addAll(allNeurons, layer.getNeuronsArr());
         }
         Collections.addAll(allNeurons, outputNeuronArr);
         // Für jedes Neuron: Input-Synapsen-Array neu aufbauen
-        for (final Neuron neuron : allNeurons) {
+        for (final NeuronInterface neuron : allNeurons) {
             for (int inputTypePos = 0; inputTypePos < neuron.getNeuronTypeInfoData().getInputCount(); inputTypePos++) {
                 final List<Synapse> inputSynapseList = new ArrayList<>();
                 for (final Synapse synapse : this.synapseArray) {
@@ -1094,7 +1098,7 @@ public class NeuralNetwork implements Serializable {
     public void rnnClearPreviousState() {
         // Setze alle Neuronen in den Hidden-Layern zurück
         for (final Layer layer : this.hiddenLayerArr) {
-            for (final Neuron neuron : layer.getNeuronsArr()) {
+            for (final NeuronInterface neuron : layer.getNeuronsArr()) {
                 for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
                     this.neuronValueFunction.writeValue(this, neuron, outputTypePos, 0.0D);
                 }
@@ -1108,11 +1112,11 @@ public class NeuralNetwork implements Serializable {
         }
     }
 
-    public double readNeuronValue(final Neuron neuron, final int outputTypePos) {
+    public double readNeuronValue(final NeuronInterface neuron, final int outputTypePos) {
         return this.neuronValueFunction.readValue(this, neuron, outputTypePos);
     }
 
-    public void writeNeuronValue(final Neuron neuron, final int outputTypePos, final double value) {
+    public void writeNeuronValue(final NeuronInterface neuron, final int outputTypePos, final double value) {
         this.neuronValueFunction.writeValue(this, neuron, outputTypePos, value);
     }
 

@@ -18,7 +18,7 @@ public class Synapse implements Serializable {
                    final Neuron targetNeuron, final int targetInputTypePos) {
         this(sourceNeuron, sourceOutputTypePos,
                 targetNeuron, targetInputTypePos,
-                Math.random() * 2.0D - 1.0D); // Random weight between -1 and 1
+                NeuralNetwork.getRandom().nextDouble() * 2.0D - 1.0D); // Random weight between -1 and 1
     }
     public Synapse(final NeuronInterface sourceNeuron, final int sourceOutputTypePo,
                    final NeuronInterface targetNeuron, final int targetInputTypePos,

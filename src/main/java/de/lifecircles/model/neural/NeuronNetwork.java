@@ -1,6 +1,7 @@
 package de.lifecircles.model.neural;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -23,6 +24,10 @@ public class NeuronNetwork implements NeuronInterface {
 
     private final NeuralNetwork network;
 
+    private double[] deltaArr;
+    private double[] inputSumArr;
+    private double[] biasArr;
+
     public NeuronNetwork(final int id, final NeuronTypeInfoData neuronTypeInfoData) {
         this.id = id;
         this.neuronTypeInfoData = neuronTypeInfoData;
@@ -32,6 +37,15 @@ public class NeuronNetwork implements NeuronInterface {
 
         // Dass NN direkt verwenden, nicht als Kopie.
         this.network = new NeuralNetwork(neuronTypeInfoData.getNetwork(), false);
+
+        this.deltaArr = new double[this.neuronTypeInfoData.getOutputCount()];
+        this.inputSumArr = new double[this.neuronTypeInfoData.getOutputCount()];
+        this.biasArr = new double[this.neuronTypeInfoData.getOutputCount()];
+    }
+
+    @Override
+    public int getId() {
+        return this.id;
     }
 
     @Override
@@ -128,16 +142,18 @@ public class NeuronNetwork implements NeuronInterface {
 
     @Override
     public double getBias(final int outputTypePos) {
-        final Neuron neuron = this.network.getOutputNeuronArr()[outputTypePos];
-        final int neuronOutputTypePos = 0; // Default-Output-Type für Output-Neuronen.
-        return neuron.getBias(neuronOutputTypePos);
+        //final Neuron neuron = this.network.getOutputNeuronArr()[outputTypePos];
+        //final int neuronOutputTypePos = 0; // Default-Output-Type für Output-Neuronen.
+        //return neuron.getBias(neuronOutputTypePos);
+        return this.biasArr[outputTypePos];
     }
 
     @Override
     public void setBias(final int outputTypePos, final double bias) {
-        final Neuron neuron = this.network.getOutputNeuronArr()[outputTypePos];
-        final int neuronOutputTypePos = 0; // Default-Output-Type für Output-Neuronen.
-        neuron.setBias(neuronOutputTypePos, bias);
+        //final Neuron neuron = this.network.getOutputNeuronArr()[outputTypePos];
+        //final int neuronOutputTypePos = 0; // Default-Output-Type für Output-Neuronen.
+        //neuron.setBias(neuronOutputTypePos, bias);
+        this.biasArr[outputTypePos] = bias;
     }
 
     @Override
@@ -159,6 +175,10 @@ public class NeuronNetwork implements NeuronInterface {
         this.deltaArr[outputTypePos] = delta;
     }
 
+    public double getInputSum(final int outputTypePos) {
+        return this.inputSumArr[outputTypePos];
+    }
+
     @Override
     public void backpropagateDelta() {
         for (int outputTypePos = 0; outputTypePos < this.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
@@ -171,12 +191,34 @@ public class NeuronNetwork implements NeuronInterface {
             }
 
             // Berechne Delta für dieses Neuron
-            final double delta = errorSum * this.getActivationFunction().derivative(this.getInputSum(outputTypePos));
+            //final double delta = errorSum * this.getActivationFunction().derivative(this.getInputSum(outputTypePos));
+            final double delta = errorSum * (this.getInputSum(outputTypePos));
             this.setDelta(outputTypePos, delta);
         }
     }
 
-    private Synapse[] getOutputSynapseList(final int outputTypePos) {
-        return null;
+    @Override
+    public List<Synapse> getOutputSynapseList(final int outputTypePos) {
+        return Arrays.asList(this.outputSynapsesList.get(outputTypePos));
+    }
+
+    @Override
+    public Synapse[] getInputSynapseArr(final int inputTypePos) {
+        return this.inputSynapsesList.get(inputTypePos);
+    }
+
+    @Override
+    public void setInputSynapseArr(final int inputTypePos, final Synapse[] inputSynapses) {
+        this.inputSynapsesList.set(inputTypePos, inputSynapses);
+    }
+
+    @Override
+    public double getValue(int outputTypePos) {
+        throw new RuntimeException("Not implemented.");
+    }
+
+    @Override
+    public void setValue(int outputTypePos, double value) {
+        throw new RuntimeException("Not implemented.");
     }
 }

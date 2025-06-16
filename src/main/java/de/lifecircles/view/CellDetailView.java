@@ -387,7 +387,7 @@ public class CellDetailView extends Stage {
         List<Synapse> synapseList = network.getSynapseList();
 
         // Positions-Map für Neuronen erstellen: Speichert die X,Y-Position für jedes Neuron
-        Map<Neuron, double[]> neuronPositions = new HashMap<>();
+        Map<NeuronInterface, double[]> neuronPositions = new HashMap<>();
 
         // Input-Neuronen-Positionen
         int layerIdx = 0;
@@ -415,7 +415,7 @@ public class CellDetailView extends Stage {
 
             Layer currentHiddenLayer = network.getHiddenLayerArr()[li];
             boolean layerIsActive = currentHiddenLayer.isActiveLayer();
-            List<Neuron> neurons = currentHiddenLayer.getNeuronList();
+            List<NeuronInterface> neurons = currentHiddenLayer.getNeuronList();
 
             final int outputTypePos = 0; // Default-Output-Type für Input-Neuronen.
             for (int i = 0; i < layerSize; i++) {
@@ -472,8 +472,8 @@ public class CellDetailView extends Stage {
         gc.setLineWidth(0.02D * screenSizeFactor);
 
         for (Synapse synapse : synapseList) {
-            Neuron source = synapse.getSourceNeuron();
-            Neuron target = synapse.getTargetNeuron();
+            NeuronInterface source = synapse.getSourceNeuron();
+            NeuronInterface target = synapse.getTargetNeuron();
 
             // Positionen der Neuronen abrufen
             double[] sourcePos = neuronPositions.get(source);
@@ -533,7 +533,7 @@ public class CellDetailView extends Stage {
                     Math.min(maxVerticalSpacing, height / (layerSize + 1)));
             layerYOffset = (height - layerSize * vSpacing) / 2;
 
-            List<Neuron> neurons = network.getHiddenLayerArr()[li].getNeuronList();
+            List<NeuronInterface> neurons = network.getHiddenLayerArr()[li].getNeuronList();
 
             for (int i = 0; i < layerSize; i++) {
                 double nodeY = layerYOffset + vSpacing * (i + 0.5);

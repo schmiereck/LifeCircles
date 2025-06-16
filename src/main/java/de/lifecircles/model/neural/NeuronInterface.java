@@ -1,6 +1,8 @@
 package de.lifecircles.model.neural;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 public interface NeuronInterface extends Serializable {
@@ -26,4 +28,16 @@ public interface NeuronInterface extends Serializable {
     void backpropagateDelta();
 
     double getDelta(final int outputTypePos);
+
+    void setInputSynapseArr(final int inputTypePos, final Synapse[] array);
+
+    double getValue(final int outputTypePos);
+
+    void setValue(final int outputTypePos, final double value);
+
+    int getId();
+
+    List<Synapse> getOutputSynapseList(final int outputTypePos);
+
+    Synapse[] getInputSynapseArr(final int outputTypePos);
 }
