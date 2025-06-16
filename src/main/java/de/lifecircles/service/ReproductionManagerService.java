@@ -125,7 +125,7 @@ public class ReproductionManagerService {
             final Layer layer = hiddenLayerList[i];
             layer.setActiveLayer(activeLayers[i]);
             if (!layer.isActiveLayer()) {
-                for (final Neuron neuron : layer.getNeuronsArray()) {
+                for (final Neuron neuron : layer.getNeuronsArr()) {
                     for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
                         childBrainNetwork.writeNeuronValue(neuron, outputTypePos, 0.0D);
                     }

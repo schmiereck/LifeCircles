@@ -8,9 +8,9 @@ import java.io.*;
 public class Synapse implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    private final Neuron sourceNeuron;
+    private final NeuronInterface sourceNeuron;
     private final int sourceOutputTypePos;
-    private final Neuron targetNeuron;
+    private final NeuronInterface targetNeuron;
     private final int targetInputTypePos;
     private double weight;
 
@@ -20,8 +20,8 @@ public class Synapse implements Serializable {
                 targetNeuron, targetInputTypePos,
                 Math.random() * 2.0D - 1.0D); // Random weight between -1 and 1
     }
-    public Synapse(final Neuron sourceNeuron, final int sourceOutputTypePo,
-                   final Neuron targetNeuron, final int targetInputTypePos,
+    public Synapse(final NeuronInterface sourceNeuron, final int sourceOutputTypePo,
+                   final NeuronInterface targetNeuron, final int targetInputTypePos,
                    final double weight) {
         this.sourceNeuron = sourceNeuron;
         this.sourceOutputTypePos = sourceOutputTypePo;
@@ -35,11 +35,11 @@ public class Synapse implements Serializable {
         //System.out.println("Synapse created: " + sourceNeuron + " -> " + targetNeuron);
     }
 
-    public Neuron getSourceNeuron() {
+    public NeuronInterface getSourceNeuron() {
         return sourceNeuron;
     }
 
-    public Neuron getTargetNeuron() {
+    public NeuronInterface getTargetNeuron() {
         return targetNeuron;
     }
 
@@ -86,7 +86,7 @@ public class Synapse implements Serializable {
      */
     public void restoreConnections() {
         if (this.sourceNeuron != null) {
-            this.sourceNeuron.addOutputSynapse(this.sourceOutputTypePos,this);
+            this.sourceNeuron.addOutputSynapse(this.sourceOutputTypePos, this);
         }
         if (this.targetNeuron != null) {
             this.targetNeuron.addInputSynapse(this.targetInputTypePos, this);

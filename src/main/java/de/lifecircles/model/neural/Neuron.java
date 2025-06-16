@@ -3,6 +3,7 @@ package de.lifecircles.model.neural;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Represents a neuron in the neural network.
@@ -38,6 +39,7 @@ public class Neuron implements NeuronInterface {
         this.delta = 0.0;
     }
 
+    @Override
     public void addInputSynapse(final int inputTypePos, final Synapse synapse) {
         // Array vergrößern, falls erforderlich
         Synapse[] newInputSynapses = new Synapse[this.inputSynapseArr.length + 1];
@@ -46,6 +48,14 @@ public class Neuron implements NeuronInterface {
         this.inputSynapseArr = newInputSynapses;
     }
 
+    @Override
+    public void mutateNeuron(final Random random) {
+        // Wähle eine zufällige Aktivierungsfunktion
+        ActivationFunction[] functions = ActivationFunction.values();
+        this.setActivationFunction(functions[random.nextInt(functions.length)]);
+    }
+
+    @Override
     public void addOutputSynapse(final int outputTypePos, final Synapse synapse) {
         this.outputSynapseList.add(synapse);
     }
@@ -88,6 +98,7 @@ public class Neuron implements NeuronInterface {
      * Entfernt eine Input-Synapse.
      * Diese Operation ist langsamer als Zugriffe.
      */
+    @Override
     public void removeInputSynapse(final int inputTypePos, final Synapse synapse) {
         int foundInputSynapsePos = -1;
         for (int inputSynapsePos = 0; inputSynapsePos < this.inputSynapseArr.length; inputSynapsePos++) {
@@ -104,6 +115,7 @@ public class Neuron implements NeuronInterface {
         }
     }
 
+    @Override
     public void removeOutputSynapse(final int outputTypePos, final Synapse synapse) {
         this.getOutputSynapseList(outputTypePos).remove(synapse);
     }
@@ -162,6 +174,7 @@ public class Neuron implements NeuronInterface {
      * Gibt den Delta-Wert für Backpropagation zurück
      * @return Der Delta-Wert
      */
+    @Override
     public double getDelta(final int outputTypePos) {
         return this.delta;
     }
@@ -205,6 +218,7 @@ public class Neuron implements NeuronInterface {
         return this.id;
     }
 
+    @Override
     public NeuronTypeInfoData getNeuronTypeInfoData() {
         return this.neuronTypeInfoData;
     }
@@ -229,5 +243,39 @@ public class Neuron implements NeuronInterface {
             synapseCount += inputSynapseArr.length;
         }
         return synapseCount;
+    }
+
+    @Override
+    public NeuronInterface cloneNeuron(final NeuralNetwork neuralNetwork, final boolean isActiveLayer) {
+        final NeuronValueFunction neuronValueFunction = neuralNetwork.getNeuronValueFunction();
+        final Neuron newNeuron = new Neuron(neuronValueFunction.fetchNextFreeId(neuralNetwork), this.getNeuronTypeInfoData());
+        newNeuron.setActivationFunction(this.getActivationFunction());
+        for (int outputTypePos = 0; outputTypePos < this.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+            newNeuron.setBias(outputTypePos, this.getBias(outputTypePos));
+            if (isActiveLayer) {
+                final double value = neuronValueFunction.readValue(neuralNetwork, this, outputTypePos);
+                neuronValueFunction.writeValue(neuralNetwork, newNeuron, outputTypePos, value);
+            } else {
+                neuronValueFunction.writeValue(neuralNetwork, newNeuron, outputTypePos, 0.0D);
+            }
+        }
+        return newNeuron;
+    }
+
+    @Override
+    public void backpropagateDelta() {
+        for (int outputTypePos = 0; outputTypePos < this.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+            double errorSum = 0.0;
+
+            // Sammle Fehler von allen ausgehenden Verbindungen
+            for (final Synapse synapse : this.getOutputSynapseList(outputTypePos)) {
+                final NeuronInterface targetNeuron = synapse.getTargetNeuron();
+                errorSum += targetNeuron.getDelta(outputTypePos) * synapse.getWeight();
+            }
+
+            // Berechne Delta für dieses Neuron
+            final double delta = errorSum * this.getActivationFunction().derivative(this.getInputSum(outputTypePos));
+            this.setDelta(outputTypePos, delta);
+        }
     }
 }

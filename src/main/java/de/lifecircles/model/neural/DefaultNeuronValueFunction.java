@@ -4,12 +4,12 @@ public class DefaultNeuronValueFunction implements NeuronValueFunction {
     private int lastFreeID = 0;
 
     @Override
-    public double readValue(NeuralNetwork neuralNetwork, final Neuron neuron, int outputTypePos) {
+    public double readValue(NeuralNetwork neuralNetwork, final NeuronInterface neuron, int outputTypePos) {
         return neuron.getValue(outputTypePos);
     }
 
     @Override
-    public void writeValue(NeuralNetwork neuralNetwork, final Neuron neuron, int outputTypePos, double value) {
+    public void writeValue(NeuralNetwork neuralNetwork, final NeuronInterface neuron, int outputTypePos, double value) {
         neuron.setValue(outputTypePos, value);
     }
 
@@ -19,7 +19,7 @@ public class DefaultNeuronValueFunction implements NeuronValueFunction {
     }
 
     @Override
-    public void releaseNeuron(NeuralNetwork neuralNetwork, Neuron neuron) {
+    public void releaseNeuron(NeuralNetwork neuralNetwork, NeuronInterface neuron) {
         // nothing to do here in this implementation
     }
 }

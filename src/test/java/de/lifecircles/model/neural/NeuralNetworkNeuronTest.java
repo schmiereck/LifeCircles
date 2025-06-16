@@ -426,7 +426,7 @@ public class NeuralNetworkNeuronTest {
         int[] architecture = new int[hiddenLayers.length];
         for (int i = 0; i < hiddenLayers.length; i++) {
             final Layer layer = hiddenLayers[i];
-            architecture[i] = layer.getNeurons().size();
+            architecture[i] = layer.getNeuronList().size();
         }
         return architecture;
     }

@@ -71,17 +71,17 @@ public class Cell_writeObject_is_called_Test {
             }
         }
         for (int l = 0; l < origNN.getHiddenLayerArr().length; l++) {
-            Neuron[] origLayer = origNN.getHiddenLayerArr()[l].getNeuronsArray();
-            Neuron[] deserLayer = deserNN.getHiddenLayerArr()[l].getNeuronsArray();
+            NeuronInterface[] origLayer = origNN.getHiddenLayerArr()[l].getNeuronsArr();
+            NeuronInterface[] deserLayer = deserNN.getHiddenLayerArr()[l].getNeuronsArr();
             for (int n = 0; n < origLayer.length; n++) {
-                final Neuron origNeuron = origLayer[n];
+                final NeuronInterface origNeuron = origLayer[n];
                 for (int outputTypePos = 0; outputTypePos < origNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
                     assertEquals(origNeuron.getBias(outputTypePos), deserLayer[n].getBias(outputTypePos), 1e-9, "Hidden-Bias unterschiedlich");
                 }
             }
         }
         for (int i = 0; i < origNN.getOutputNeuronArr().length; i++) {
-            final Neuron origOutputNeuron = origNN.getOutputNeuronArr()[i];
+            final NeuronInterface origOutputNeuron = origNN.getOutputNeuronArr()[i];
             for (int outputTypePos = 0; outputTypePos < origOutputNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
                 assertEquals(origOutputNeuron.getBias(outputTypePos), deserNN.getOutputNeuronArr()[i].getBias(outputTypePos), 1e-9, "Output-Bias unterschiedlich");
             }

@@ -7,14 +7,14 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
     private int lastFreeID = 0;
 
     @Override
-    public double readValue(NeuralNetwork neuralNetwork, final Neuron neuron, int outputTypePos) {
+    public double readValue(NeuralNetwork neuralNetwork, final NeuronInterface neuron, int outputTypePos) {
         final int id = neuron.getId();
         this.checkValueArrSize(id);
         return this.valuesArr[id];
     }
 
     @Override
-    public void writeValue(NeuralNetwork neuralNetwork, final Neuron neuron, int outputTypePos, double value) {
+    public void writeValue(NeuralNetwork neuralNetwork, final NeuronInterface neuron, int outputTypePos, double value) {
         final int id = neuron.getId();
         this.checkValueArrSize(id);
         this.valuesArr[id] = value;
@@ -36,7 +36,7 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
                 existingIds.add(neuron.getId());
             }
             for (final Layer layer : neuralNetwork.getHiddenLayerArr()) {
-                for (final Neuron neuron : layer.getNeuronsArray()) {
+                for (final Neuron neuron : layer.getNeuronsArr()) {
                     existingIds.add(neuron.getId());
                 }
             }
@@ -61,7 +61,7 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
     }
 
     @Override
-    public void releaseNeuron(NeuralNetwork neuralNetwork, Neuron neuron) {
+    public void releaseNeuron(NeuralNetwork neuralNetwork, NeuronInterface neuron) {
         final int id = neuron.getId();
 
         if (this.lowestFreeID > id) {

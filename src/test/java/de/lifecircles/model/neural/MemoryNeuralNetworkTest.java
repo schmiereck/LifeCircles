@@ -483,7 +483,7 @@ public class MemoryNeuralNetworkTest {
             if (epoch % 100 == 0) {
                 // Anzahl der neuronen.
                 final long neuronCount = Arrays.stream(bestNeuralNetwork.getHiddenLayerArr())
-                        .mapToInt(layer -> layer.getNeuronsArray().length).sum();
+                        .mapToInt(layer -> layer.getNeuronsArr().length).sum();
 
                 System.out.printf("Epoche %d, Error: %f, Proc-Synapses: %d / %d, HiddenLayers: %d, neronCount: %d, lossSum: %f, proccesLoss: %f, maxProccessedSynapses: %d%n",
                         epoch, bestTrainResult.getLoss(),

@@ -415,7 +415,7 @@ public class CellDetailView extends Stage {
 
             Layer currentHiddenLayer = network.getHiddenLayerArr()[li];
             boolean layerIsActive = currentHiddenLayer.isActiveLayer();
-            List<Neuron> neurons = currentHiddenLayer.getNeurons();
+            List<Neuron> neurons = currentHiddenLayer.getNeuronList();
 
             final int outputTypePos = 0; // Default-Output-Type für Input-Neuronen.
             for (int i = 0; i < layerSize; i++) {
@@ -533,7 +533,7 @@ public class CellDetailView extends Stage {
                     Math.min(maxVerticalSpacing, height / (layerSize + 1)));
             layerYOffset = (height - layerSize * vSpacing) / 2;
 
-            List<Neuron> neurons = network.getHiddenLayerArr()[li].getNeurons();
+            List<Neuron> neurons = network.getHiddenLayerArr()[li].getNeuronList();
 
             for (int i = 0; i < layerSize; i++) {
                 double nodeY = layerYOffset + vSpacing * (i + 0.5);
