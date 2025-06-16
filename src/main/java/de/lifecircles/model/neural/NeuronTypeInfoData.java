@@ -1,6 +1,8 @@
 package de.lifecircles.model.neural;
 
-public class NeuronTypeInfoData {
+import java.io.Serializable;
+
+public class NeuronTypeInfoData implements Serializable {
     private int inputCount;
     private int outputCount;
     private NeuralNetwork network;

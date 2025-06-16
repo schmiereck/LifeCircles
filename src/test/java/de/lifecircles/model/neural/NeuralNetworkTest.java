@@ -163,15 +163,15 @@ public class NeuralNetworkTest {
         // Training über mehrere Generationen
         for (int generation = 0; generation < 500_000; generation++) {
             // Evaluiere alle Netzwerke
-            List<NetworkScore> scores = new ArrayList<>();
-            for (NeuralNetwork network : population) {
+            final List<NetworkScore> scores = new ArrayList<>();
+            for (final NeuralNetwork network : population) {
                 double totalError = 0;
                 for (int trainPos = 0; trainPos < inputs.length; trainPos++) {
                     network.setInputs(inputs[trainPos]);
-                    double[] output = network.process();
+                    final double[] output = network.process();
                     for (int outPos = 0; outPos < output.length; outPos++) {
                         // Berechne den Fehler für jedes Ausgabe-Neuron
-                        double error = outputs[trainPos][outPos] - output[outPos];
+                        final double error = outputs[trainPos][outPos] - output[outPos];
                         totalError += error * error;
                     }
                 }

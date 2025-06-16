@@ -90,7 +90,8 @@ public class CellBrain implements CellBrainInterface, Serializable {
 
     @Override
     public double getInputValue(int inputNeuronPos) {
-        return this.network.readNeuronValue(this.network.getInputNeuronArr()[inputNeuronPos]);
+        final int outputTypePos = 0; // Default-Output-Type für Input-Neuronen.
+        return this.network.readNeuronValue(this.network.getInputNeuronArr()[inputNeuronPos], outputTypePos);
     }
 
     public NeuralNetwork getNeuralNetwork() {

@@ -66,8 +66,9 @@ public class SerialTest {
         for (Synapse synapse : network.getSynapseList()) {
             Assertions.assertNotNull(synapse.getSourceNeuron());
             Assertions.assertNotNull(synapse.getTargetNeuron());
-            Assertions.assertTrue(synapse.getSourceNeuron().getOutputSynapses().contains(synapse));
-            Assertions.assertTrue(Arrays.asList(synapse.getTargetNeuron().getInputSynapses()).contains(synapse));
+            final int outputTypePos = 0;
+            Assertions.assertTrue(synapse.getSourceNeuron().getOutputSynapseList(outputTypePos).contains(synapse));
+            Assertions.assertTrue(Arrays.asList(synapse.getTargetNeuron().getInputSynapseArr(outputTypePos)).contains(synapse));
         }
 
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
@@ -85,8 +86,9 @@ public class SerialTest {
         for (Synapse synapse : deserializedNetwork.getSynapseList()) {
             Assertions.assertNotNull(synapse.getSourceNeuron());
             Assertions.assertNotNull(synapse.getTargetNeuron());
-            Assertions.assertTrue(synapse.getSourceNeuron().getOutputSynapses().contains(synapse));
-            Assertions.assertTrue(Arrays.asList(synapse.getTargetNeuron().getInputSynapses()).contains(synapse));
+            final int outputTypePos = 0;
+            Assertions.assertTrue(synapse.getSourceNeuron().getOutputSynapseList(outputTypePos).contains(synapse));
+            Assertions.assertTrue(Arrays.asList(synapse.getTargetNeuron().getInputSynapseArr(outputTypePos)).contains(synapse));
         }
     }
 

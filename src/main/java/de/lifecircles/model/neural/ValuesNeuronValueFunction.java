@@ -7,14 +7,14 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
     private int lastFreeID = 0;
 
     @Override
-    public double readValue(NeuralNetwork neuralNetwork, final Neuron neuron) {
+    public double readValue(NeuralNetwork neuralNetwork, final Neuron neuron, int outputTypePos) {
         final int id = neuron.getId();
         this.checkValueArrSize(id);
         return this.valuesArr[id];
     }
 
     @Override
-    public void writeValue(NeuralNetwork neuralNetwork, final Neuron neuron, double value) {
+    public void writeValue(NeuralNetwork neuralNetwork, final Neuron neuron, int outputTypePos, double value) {
         final int id = neuron.getId();
         this.checkValueArrSize(id);
         this.valuesArr[id] = value;

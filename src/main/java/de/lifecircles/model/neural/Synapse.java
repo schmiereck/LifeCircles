@@ -51,6 +51,14 @@ public class Synapse implements Serializable {
         this.weight = weight;
     }
 
+    public int getSourceOutputTypePos() {
+        return this.sourceOutputTypePos;
+    }
+
+    public int getTargetInputTypePos() {
+        return this.targetInputTypePos;
+    }
+
     /**
      * Benutzerdefinierte Serialisierungsmethode.
      * Da die Neuronen-Referenzen bei der Serialisierung zyklische Abhängigkeiten verursachen können,

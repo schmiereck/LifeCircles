@@ -65,17 +65,26 @@ public class Cell_writeObject_is_called_Test {
         assertArrayEquals(origNN.getLayerSizes(), deserNN.getLayerSizes(), "Layergrößen unterschiedlich");
         // Vergleiche Biases der Neuronen
         for (int i = 0; i < origNN.getInputNeuronArr().length; i++) {
-            assertEquals(origNN.getInputNeuronArr()[i].getBias(), deserNN.getInputNeuronArr()[i].getBias(), 1e-9, "Input-Bias unterschiedlich");
+            final Neuron origInputNeuron = origNN.getInputNeuronArr()[i];
+            for (int outputTypePos = 0; outputTypePos < origInputNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                assertEquals(origInputNeuron.getBias(outputTypePos), deserNN.getInputNeuronArr()[i].getBias(outputTypePos), 1e-9, "Input-Bias unterschiedlich");
+            }
         }
         for (int l = 0; l < origNN.getHiddenLayerArr().length; l++) {
             Neuron[] origLayer = origNN.getHiddenLayerArr()[l].getNeuronsArray();
             Neuron[] deserLayer = deserNN.getHiddenLayerArr()[l].getNeuronsArray();
             for (int n = 0; n < origLayer.length; n++) {
-                assertEquals(origLayer[n].getBias(), deserLayer[n].getBias(), 1e-9, "Hidden-Bias unterschiedlich");
+                final Neuron origNeuron = origLayer[n];
+                for (int outputTypePos = 0; outputTypePos < origNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                    assertEquals(origNeuron.getBias(outputTypePos), deserLayer[n].getBias(outputTypePos), 1e-9, "Hidden-Bias unterschiedlich");
+                }
             }
         }
         for (int i = 0; i < origNN.getOutputNeuronArr().length; i++) {
-            assertEquals(origNN.getOutputNeuronArr()[i].getBias(), deserNN.getOutputNeuronArr()[i].getBias(), 1e-9, "Output-Bias unterschiedlich");
+            final Neuron origOutputNeuron = origNN.getOutputNeuronArr()[i];
+            for (int outputTypePos = 0; outputTypePos < origOutputNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                assertEquals(origOutputNeuron.getBias(outputTypePos), deserNN.getOutputNeuronArr()[i].getBias(outputTypePos), 1e-9, "Output-Bias unterschiedlich");
+            }
         }
         // Vergleiche Synapsen-Gewichte
         assertEquals(origNN.getSynapseCount(), deserNN.getSynapseCount(), "Synapsenanzahl unterschiedlich");

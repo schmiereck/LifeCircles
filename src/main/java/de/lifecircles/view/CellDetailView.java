@@ -417,6 +417,7 @@ public class CellDetailView extends Stage {
             boolean layerIsActive = currentHiddenLayer.isActiveLayer();
             List<Neuron> neurons = currentHiddenLayer.getNeurons();
 
+            final int outputTypePos = 0; // Default-Output-Type für Input-Neuronen.
             for (int i = 0; i < layerSize; i++) {
                 double nodeY = layerYOffset + vSpacing * (i + 0.5);
                 if (i < neurons.size()) {
@@ -425,7 +426,7 @@ public class CellDetailView extends Stage {
                 // Aktivierungswert direkt vom Hidden-Neuron holen
                 double activation = 0;
                 if (i < neurons.size()) {
-                    activation = network.readNeuronValue(neurons.get(i));
+                    activation = network.readNeuronValue(neurons.get(i), outputTypePos);
                     activation = Math.max(0, Math.min(1, activation));
                 }
 
@@ -497,13 +498,14 @@ public class CellDetailView extends Stage {
                 Math.min(maxVerticalSpacing, height / (layerSize + 1)));
         layerYOffset = (height - layerSize * vSpacing) / 2;
 
+        final int outputTypePos = 0; // Default-Output-Type für Input-Neuronen.
         for (int layerPos = 0; layerPos < layerSize; layerPos++) {
             double nodeY = layerYOffset + vSpacing * (layerPos + 0.5);
 
             // Aktivierungswert direkt vom Input-Neuron holen
             double activation = 0;
             if (layerPos < network.getInputNeuronArr().length) {
-                activation = network.readNeuronValue(network.getInputNeuronArr()[layerPos]);
+                activation = network.readNeuronValue(network.getInputNeuronArr()[layerPos], outputTypePos);
                 // Aktivierungswert auf den Bereich [0,1] begrenzen
                 activation = Math.max(0, Math.min(1, activation));
             }
@@ -539,7 +541,7 @@ public class CellDetailView extends Stage {
                 // Aktivierungswert direkt vom Hidden-Neuron holen
                 double activation = 0;
                 if (i < neurons.size()) {
-                    activation = network.readNeuronValue(neurons.get(i));
+                    activation = network.readNeuronValue(neurons.get(i), outputTypePos);
                     // Aktivierungswert auf den Bereich [0,1] begrenzen
                     activation = Math.max(0, Math.min(1, activation));
                 }
@@ -573,7 +575,7 @@ public class CellDetailView extends Stage {
             // Aktivierungswert direkt vom Output-Neuron holen
             double activation = 0;
             if (i < network.getOutputNeuronArr().length) {
-                activation = network.readNeuronValue(network.getOutputNeuronArr()[i]);
+                activation = network.readNeuronValue(network.getOutputNeuronArr()[i], outputTypePos);
                 // Aktivierungswert auf den Bereich [0,1] begrenzen
                 activation = Math.max(0, Math.min(1, activation));
             }

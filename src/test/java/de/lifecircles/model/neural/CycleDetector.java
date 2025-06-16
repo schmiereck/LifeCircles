@@ -18,14 +18,14 @@ public class CycleDetector {
             return true; // Zyklus gefunden
         }
         visited.add(obj);
-
+        final int outputTypePos = 0;
         boolean cycleFound = false;
 
         if (obj instanceof Neuron) {
             Neuron neuron = (Neuron) obj;
 
             // Überprüfe Output-Synapsen
-            for (Synapse synapse : neuron.getOutputSynapses()) {
+            for (Synapse synapse : neuron.getOutputSynapseList(outputTypePos)) {
                 if (hasCycle(synapse.getTargetNeuron())) {
                     cycleFound = true;
                     break;
@@ -34,8 +34,8 @@ public class CycleDetector {
 
             // Überprüfe Input-Synapsen
             if (!cycleFound) {
-                for (int i = 0; i < neuron.getInputSynapseCount(); i++) {
-                    Synapse synapse = neuron.getInputSynapses()[i];
+                for (int i = 0; i < neuron.getInputSynapseCount(outputTypePos); i++) {
+                    Synapse synapse = neuron.getInputSynapseArr(outputTypePos)[i];
                     if (hasCycle(synapse.getSourceNeuron())) {
                         cycleFound = true;
                         break;

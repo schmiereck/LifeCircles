@@ -16,12 +16,13 @@ public class OptimizedCycleDetector {
         }
         visited.put(obj, true);
 
+        final int outputTypePos = 0;
         boolean cycleFound = false;
 
         if (obj instanceof Neuron) {
             Neuron neuron = (Neuron) obj;
 
-            for (Synapse synapse : neuron.getOutputSynapses()) {
+            for (Synapse synapse : neuron.getOutputSynapseList(outputTypePos)) {
                 if (hasCycle(synapse.getTargetNeuron())) {
                     cycleFound = true;
                     break;
@@ -29,8 +30,8 @@ public class OptimizedCycleDetector {
             }
 
             if (!cycleFound) {
-                for (int i = 0; i < neuron.getInputSynapseCount(); i++) {
-                    Synapse synapse = neuron.getInputSynapses()[i];
+                for (int i = 0; i < neuron.getInputSynapseCount(outputTypePos); i++) {
+                    Synapse synapse = neuron.getInputSynapseArr(outputTypePos)[i];
                     if (hasCycle(synapse.getSourceNeuron())) {
                         cycleFound = true;
                         break;

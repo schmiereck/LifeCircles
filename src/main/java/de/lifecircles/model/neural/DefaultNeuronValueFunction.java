@@ -1,18 +1,16 @@
 package de.lifecircles.model.neural;
 
-import java.io.Serializable;
-
 public class DefaultNeuronValueFunction implements NeuronValueFunction {
     private int lastFreeID = 0;
 
     @Override
-    public double readValue(NeuralNetwork neuralNetwork, final Neuron neuron) {
-        return neuron.getValue();
+    public double readValue(NeuralNetwork neuralNetwork, final Neuron neuron, int outputTypePos) {
+        return neuron.getValue(outputTypePos);
     }
 
     @Override
-    public void writeValue(NeuralNetwork neuralNetwork, final Neuron neuron, double value) {
-        neuron.setValue(value);
+    public void writeValue(NeuralNetwork neuralNetwork, final Neuron neuron, int outputTypePos, double value) {
+        neuron.setValue(outputTypePos, value);
     }
 
     @Override

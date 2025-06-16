@@ -15,8 +15,8 @@ import java.io.IOException;
 public class NeuralNetwork implements Serializable {
     private static final long serialVersionUID = 1L;
     private final Neuron[] inputNeuronList;
-    private Layer[] hiddenLayerList; // Array statt List
-    private final Neuron[] outputNeuronList;
+    private Layer[] hiddenLayerArr; // Array statt List
+    private final Neuron[] outputNeuronArr;
     // Synapsen als Array statt List
     private Synapse[] synapseArray;
     private static Random random = new Random();
@@ -66,7 +66,7 @@ public class NeuralNetwork implements Serializable {
 
         if (makeCopy) {
             this.inputNeuronList = new Neuron[original.inputNeuronList.length];
-            this.outputNeuronList = new Neuron[original.outputNeuronList.length];
+            this.outputNeuronArr = new Neuron[original.outputNeuronArr.length];
             // Synapsen-Array initialisieren
             this.synapseArray = new Synapse[original.getSynapseList().size()];
 
@@ -76,52 +76,61 @@ public class NeuralNetwork implements Serializable {
             final Map<Neuron, Neuron> neuronMap = new HashMap<>();
 
             // Kopiere Input-Neuronen
-            for (int i = 0; i < original.inputNeuronList.length; i++) {
-                final Neuron originalNeuron = original.inputNeuronList[i];
+            for (int inputNeuronPos = 0; inputNeuronPos < original.inputNeuronList.length; inputNeuronPos++) {
+                final Neuron originalNeuron = original.inputNeuronList[inputNeuronPos];
                 final Neuron newNeuron = new Neuron(this.neuronValueFunction.fetchNextFreeId(this), originalNeuron.getNeuronTypeInfoData());
-                newNeuron.setBias(originalNeuron.getBias());
                 newNeuron.setActivationFunction(originalNeuron.getActivationFunction());
-                this.neuronValueFunction.writeValue(this, newNeuron, this.neuronValueFunction.readValue(this, originalNeuron));
-                this.inputNeuronList[i] = newNeuron;
+                for (int outputTypePos = 0; outputTypePos < originalNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                    newNeuron.setBias(outputTypePos, originalNeuron.getBias(outputTypePos));
+                    final double value = this.neuronValueFunction.readValue(this, originalNeuron, outputTypePos);
+                    this.neuronValueFunction.writeValue(this, newNeuron, outputTypePos, value);
+                }
+                this.inputNeuronList[inputNeuronPos] = newNeuron;
                 neuronMap.put(originalNeuron, newNeuron);
             }
 
             // Kopiere Hidden Layers
-            this.hiddenLayerList = new Layer[original.hiddenLayerList.length];
-            for (int i = 0; i < original.hiddenLayerList.length; i++) {
-                final Layer originalLayer = original.hiddenLayerList[i];
+            this.hiddenLayerArr = new Layer[original.hiddenLayerArr.length];
+            for (int hiddenLayerPos = 0; hiddenLayerPos < original.hiddenLayerArr.length; hiddenLayerPos++) {
+                final Layer originalLayer = original.hiddenLayerArr[hiddenLayerPos];
                 final Layer newLayer = new Layer();
                 newLayer.setActiveLayer(originalLayer.isActiveLayer());
 
                 for (final Neuron originalNeuron : originalLayer.getNeuronsArray()) {
                     final Neuron newNeuron = new Neuron(this.neuronValueFunction.fetchNextFreeId(this), originalNeuron.getNeuronTypeInfoData());
-                    newNeuron.setBias(originalNeuron.getBias());
                     newNeuron.setActivationFunction(originalNeuron.getActivationFunction());
-                    if (newLayer.isActiveLayer()) {
-                        this.neuronValueFunction.writeValue(this, newNeuron, this.neuronValueFunction.readValue(this, originalNeuron));
-                    } else {
-                        this.neuronValueFunction.writeValue(this, newNeuron, 0.0D);
+                    for (int outputTypePos = 0; outputTypePos < originalNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                        newNeuron.setBias(outputTypePos, originalNeuron.getBias(outputTypePos));
+                        if (newLayer.isActiveLayer()) {
+                            final double value = this.neuronValueFunction.readValue(this, originalNeuron, outputTypePos);
+                            this.neuronValueFunction.writeValue(this, newNeuron, outputTypePos, value);
+                        } else {
+                            this.neuronValueFunction.writeValue(this, newNeuron, outputTypePos, 0.0D);
+                        }
                     }
                     newLayer.addNeuron(newNeuron);
                     neuronMap.put(originalNeuron, newNeuron);
                 }
-                this.hiddenLayerList[i] = newLayer;
+                this.hiddenLayerArr[hiddenLayerPos] = newLayer;
             }
 
             // Kopiere Output-Neuronen
-            for (int i = 0; i < original.outputNeuronList.length; i++) {
-                final Neuron originalNeuron = original.outputNeuronList[i];
+            for (int outputNeuronPos = 0; outputNeuronPos < original.outputNeuronArr.length; outputNeuronPos++) {
+                final Neuron originalNeuron = original.outputNeuronArr[outputNeuronPos];
                 final Neuron newNeuron = new Neuron(this.neuronValueFunction.fetchNextFreeId(this), originalNeuron.getNeuronTypeInfoData());
-                newNeuron.setBias(originalNeuron.getBias());
                 newNeuron.setActivationFunction(originalNeuron.getActivationFunction());
-                this.neuronValueFunction.writeValue(this, newNeuron, this.neuronValueFunction.readValue(this, originalNeuron));
+                for (int outputTypePos = 0; outputTypePos < originalNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                    newNeuron.setBias(outputTypePos, originalNeuron.getBias(outputTypePos));
+                    final double value = this.neuronValueFunction.readValue(this, originalNeuron, outputTypePos);
+                    this.neuronValueFunction.writeValue(this, newNeuron, outputTypePos, value);
+                }
                 newNeuron.setOutputNeuron(true); // Markiere als Output-Neuron
-                this.outputNeuronList[i] = newNeuron;
+                this.outputNeuronArr[outputNeuronPos] = newNeuron;
                 neuronMap.put(originalNeuron, newNeuron);
             }
 
             // Erstelle das Array für die Ausgabewerte
-            this.outputArr = new double[this.outputNeuronList.length];
+            this.outputArr = new double[this.outputNeuronArr.length];
 
             // Kopiere alle Synapsen mit den korrekten Verbindungen zwischen den neuen Neuronen
             int synapseIndex = 0;
@@ -130,7 +139,9 @@ public class NeuralNetwork implements Serializable {
                 final Neuron sourceNeuron = neuronMap.get(originalSynapse.getSourceNeuron());
                 final Neuron targetNeuron = neuronMap.get(originalSynapse.getTargetNeuron());
                 if (sourceNeuron != null && targetNeuron != null) {
-                    Synapse newSynapse = new Synapse(sourceNeuron, targetNeuron, originalSynapse.getWeight());
+                    Synapse newSynapse = new Synapse(sourceNeuron, originalSynapse.getSourceOutputTypePos(),
+                            targetNeuron, originalSynapse.getTargetInputTypePos(),
+                            originalSynapse.getWeight());
                     this.synapseArray[synapseIndex++] = newSynapse;
                 }
             }
@@ -141,15 +152,15 @@ public class NeuralNetwork implements Serializable {
             }
         } else {
             this.inputNeuronList = original.inputNeuronList;
-            this.outputNeuronList = original.outputNeuronList;
+            this.outputNeuronArr = original.outputNeuronArr;
             // Synapsen-Array initialisieren
             this.synapseArray = original.synapseArray;
 
             this.fixedHiddenLayerCount = original.fixedHiddenLayerCount;
 
-            this.hiddenLayerList = original.hiddenLayerList;
+            this.hiddenLayerArr = original.hiddenLayerArr;
 
-            this.outputArr = new double[this.outputNeuronList.length];
+            this.outputArr = new double[this.outputNeuronArr.length];
         }
     }
 
@@ -187,7 +198,7 @@ public class NeuralNetwork implements Serializable {
         this.neuronValueFunction = neuronValueFunctionFactory.create();
 
         this.inputNeuronList = new Neuron[inputCount];
-        this.outputNeuronList = new Neuron[outputCount];
+        this.outputNeuronArr = new Neuron[outputCount];
         // Synapsen-Array initialisieren
         this.synapseArray = new Synapse[0];
 
@@ -200,7 +211,7 @@ public class NeuralNetwork implements Serializable {
         }
 
         // create hidden layers
-        this.hiddenLayerList = new Layer[hiddenCounts.length];
+        this.hiddenLayerArr = new Layer[hiddenCounts.length];
         for (int i = 0; i < hiddenCounts.length; i++) {
             int count = hiddenCounts[i];
             Layer layer = new Layer();
@@ -208,25 +219,25 @@ public class NeuralNetwork implements Serializable {
                 layer.addNeuron(new Neuron(this.neuronValueFunction.fetchNextFreeId(this),
                         this.neuronTypeInfoDataList.get(0)));
             }
-            this.hiddenLayerList[i] = layer;
+            this.hiddenLayerArr[i] = layer;
         }
 
         // create output neurons
-        for (int i = 0; i < this.outputNeuronList.length; i++) {
+        for (int i = 0; i < this.outputNeuronArr.length; i++) {
             Neuron outputNeuron = new Neuron(this.neuronValueFunction.fetchNextFreeId(this),
                     this.neuronTypeInfoDataList.get(0));
             outputNeuron.setOutputNeuron(true); // Markiere als Output-Neuron
-            this.outputNeuronList[i] = outputNeuron;
+            this.outputNeuronArr[i] = outputNeuron;
         }
-        this.outputArr = new double[this.outputNeuronList.length];
+        this.outputArr = new double[this.outputNeuronArr.length];
 
         // connect layers sequentially: input -> hidden1 -> ... -> hiddenN -> output
         Neuron[] prev = this.inputNeuronList;
-        for (Layer layer : this.hiddenLayerList) {
+        for (Layer layer : this.hiddenLayerArr) {
             this.connectLayers(prev, layer.getNeuronsArray(), synapseConnectivity);
             prev = layer.getNeuronsArray();
         }
-        this.connectLayers(prev, this.outputNeuronList, synapseConnectivity);
+        this.connectLayers(prev, this.outputNeuronArr, synapseConnectivity);
     }
 
     private void connectLayers(Neuron[] sourceLayer, Neuron[] targetLayer, double connectivity) {
@@ -236,7 +247,9 @@ public class NeuralNetwork implements Serializable {
                 if (connectivity >= 1.0 || this.random.nextDouble() < connectivity) {
                     double limit = Math.sqrt(6.0 / (this.getInputLayerSize() + this.getOutputLayerSize()));
                     final double weight = this.random.nextDouble() * 2.0D * limit - limit;
-                    addSynapse(new Synapse(source, target, weight));
+                    addSynapse(new Synapse(source, this.random.nextInt(source.getNeuronTypeInfoData().getOutputCount()),
+                            target, this.random.nextInt(target.getNeuronTypeInfoData().getInputCount()),
+                            weight));
                 }
             }
         }
@@ -261,8 +274,9 @@ public class NeuralNetwork implements Serializable {
         if (inputArr.length != this.inputNeuronList.length) {
             throw new IllegalArgumentException("Input size mismatch");
         }
+        final int outputTypePos = 0; // Default-Output-Type für Input-Neuronen.
         for (int inputPos = 0; inputPos < inputArr.length; inputPos++) {
-            this.neuronValueFunction.writeValue(this, this.inputNeuronList[inputPos], inputArr[inputPos]);
+            this.neuronValueFunction.writeValue(this, this.inputNeuronList[inputPos], outputTypePos, inputArr[inputPos]);
         }
     }
 
@@ -273,7 +287,7 @@ public class NeuralNetwork implements Serializable {
         this.proccessedSynapses = 0L;
 
         // process hidden layers
-        for (final Layer layer : this.hiddenLayerList) {
+        for (final Layer layer : this.hiddenLayerArr) {
             final Neuron[] neuronArr = layer.getNeuronsArray();
             if (layer.isActiveLayer() || this.disableLayerDeactivation) {
                 for (final Neuron neuron : neuronArr) {
@@ -287,7 +301,7 @@ public class NeuralNetwork implements Serializable {
         }
 
         // process output layer
-        for (Neuron neuron : this.outputNeuronList) {
+        for (Neuron neuron : this.outputNeuronArr) {
             this.proccessedSynapses += this.activate(neuron);
         }
 
@@ -298,25 +312,26 @@ public class NeuralNetwork implements Serializable {
 
         // process hidden layer activation counters (ohne fixed layers)
         if (!disableLayerDeactivation) {
-            for (int layerPos = this.fixedHiddenLayerCount; layerPos < hiddenLayerList.length; layerPos++) {
-                final Layer layer = this.hiddenLayerList[layerPos];
+            for (int layerPos = this.fixedHiddenLayerCount; layerPos < hiddenLayerArr.length; layerPos++) {
+                final Layer layer = this.hiddenLayerArr[layerPos];
                 final Neuron[] neuronArr = layer.getNeuronsArray();
                 if (neuronArr.length > 0) {
-                    final Neuron neuron = neuronArr[0];
-                    final double actValue = Math.max(1.0D / 1000,
-                            layer.getActivationCounter() + this.neuronValueFunction.readValue(this, neuron));
-                    if (actValue >= 1.0D) {
+                    final Neuron activationNeuron = neuronArr[0];
+                    final int activationOutputTypePos = 0; // Default-Output-Type for activation.
+                    final double activationValue = Math.max(1.0D / 1000,
+                            layer.getActivationCounter() + this.neuronValueFunction.readValue(this, activationNeuron, activationOutputTypePos));
+                    if (activationValue >= 1.0D) {
                         layer.setActivationCounter(0.0D);
                         layer.setActiveLayer(true);
                     } else {
-                        layer.setActivationCounter(actValue);
+                        layer.setActivationCounter(activationValue);
                         layer.setActiveLayer(false);
                     }
                 }
             }
         } else {
             // Wenn deaktiviert: alle Layer aktiv lassen
-            for (Layer layer : this.hiddenLayerList) {
+            for (final Layer layer : this.hiddenLayerArr) {
                 layer.setActiveLayer(true);
             }
         }
@@ -327,20 +342,9 @@ public class NeuralNetwork implements Serializable {
     /**
      * Calculates the neuron's output value based on its inputs.
      * Optimized version using array iteration instead of ArrayList.
-     * For output neurons, no activation function is applied.
      */
     public long activate(final Neuron neuron) {
-        double sum = neuron.getBias();
-        // Direkte Array-Iteration für bessere Performance
-        for (int i = 0; i < neuron.getInputSynapses().length; i++) {
-            Synapse synapse = neuron.getInputSynapses()[i];
-            sum += this.neuronValueFunction.readValue(this, synapse.getSourceNeuron()) * synapse.getWeight();
-        }
-
-        neuron.setInputSum(sum); // Speichere die Summe vor Aktivierung für Backpropagation
-        this.writeNeuronValue(neuron, neuron.getActivationFunction().apply(sum));
-
-        return neuron.getInputSynapses().length;
+        return neuron.activate(this);
     }
 
     /**
@@ -348,25 +352,26 @@ public class NeuralNetwork implements Serializable {
      * @return Array mit den Größen der einzelnen Layer
      */
     public int[] getLayerSizes() {
-        int totalLayers = 2 + hiddenLayerList.length; // Input + Hidden + Output
+        int totalLayers = 2 + hiddenLayerArr.length; // Input + Hidden + Output
         int[] sizes = new int[totalLayers];
 
         // Input Layer
         sizes[0] = inputNeuronList.length;
 
         // Hidden Layers
-        for (int i = 0; i < hiddenLayerList.length; i++) {
-            sizes[i + 1] = hiddenLayerList[i].getNeuronsArray().length;
+        for (int i = 0; i < hiddenLayerArr.length; i++) {
+            sizes[i + 1] = hiddenLayerArr[i].getNeuronsArray().length;
         }
 
         // Output Layer
-        sizes[totalLayers - 1] = outputNeuronList.length;
+        sizes[totalLayers - 1] = outputNeuronArr.length;
 
         return sizes;
     }
 
     public double getOutputValue(final int outputNeuronPos) {
-        return this.neuronValueFunction.readValue(this, this.outputNeuronList[outputNeuronPos]);
+        final int outputTypePos = 0; // Default-Output-Type for output neurons.
+        return this.neuronValueFunction.readValue(this, this.outputNeuronArr[outputNeuronPos], outputTypePos);
     }
 
     /**
@@ -392,7 +397,8 @@ public class NeuralNetwork implements Serializable {
         mutated.applyToAllNeurons(neuron -> {
             if (random.nextDouble() < mutationRate) {
                 double mutation = (random.nextDouble() * 2.0D - 1.0D) * mutationStrength;
-                neuron.setBias(neuron.getBias() + mutation);
+                final int outputTypePos = random.nextInt(neuron.getNeuronTypeInfoData().getOutputCount());
+                neuron.setBias(outputTypePos,neuron.getBias(outputTypePos) + mutation);
             }
         });
 
@@ -422,14 +428,14 @@ public class NeuralNetwork implements Serializable {
         }
 
         // Anwenden auf Hidden-Layer-Neuronen
-        for (Layer layer : this.hiddenLayerList) {
+        for (Layer layer : this.hiddenLayerArr) {
             for (Neuron neuron : layer.getNeuronsArray()) {
                 function.accept(neuron);
             }
         }
 
         // Anwenden auf Output-Neuronen
-        for (Neuron neuron : this.outputNeuronList) {
+        for (Neuron neuron : this.outputNeuronArr) {
             function.accept(neuron);
         }
     }
@@ -447,19 +453,19 @@ public class NeuralNetwork implements Serializable {
         }
 
         // Hidden-Layer-Neuronen zuordnen
-        for (int i = 0; i < this.hiddenLayerList.length; i++) {
-            Neuron[] sourceLayer = this.hiddenLayerList[i].getNeuronsArray();
-            Neuron[] targetLayer = target.hiddenLayerList[i].getNeuronsArray();
+        for (int i = 0; i < this.hiddenLayerArr.length; i++) {
+            Neuron[] sourceLayer = this.hiddenLayerArr[i].getNeuronsArray();
+            Neuron[] targetLayer = target.hiddenLayerArr[i].getNeuronsArray();
             for (int j = 0; j < sourceLayer.length; j++) {
                 mapping.put(sourceLayer[j], targetLayer[j]);
             }
         }
 
         // Output-Neuronen zuordnen
-        for (int i = 0; i < this.outputNeuronList.length; i++) {
-            mapping.put(this.outputNeuronList[i], target.outputNeuronList[i]);
+        for (int i = 0; i < this.outputNeuronArr.length; i++) {
+            mapping.put(this.outputNeuronArr[i], target.outputNeuronArr[i]);
             // Stelle sicher, dass Output-Neuronen richtig markiert sind
-            target.outputNeuronList[i].setOutputNeuron(true);
+            target.outputNeuronArr[i].setOutputNeuron(true);
         }
 
         return mapping;
@@ -471,7 +477,7 @@ public class NeuralNetwork implements Serializable {
         double structuralMutationRate = mutationRate * DEFAULT_MUTATION_RATE; // Only 10% of the regular mutation rate
 
         // Möglichkeit, ein komplettes Hidden Layer hinzuzufügen
-        int addLayerRange = (this.hiddenLayerList.length - this.fixedHiddenLayerCount) + 1;
+        int addLayerRange = (this.hiddenLayerArr.length - this.fixedHiddenLayerCount) + 1;
         if (addLayerRange > 0 && this.random.nextDouble() < structuralMutationRate) {
             final int pos = random.nextInt(addLayerRange) + this.fixedHiddenLayerCount;
             // Zufällige Neuronenzahl zwischen 1 und 5
@@ -480,14 +486,14 @@ public class NeuralNetwork implements Serializable {
         }
 
         // Möglichkeit, ein Hidden Layer zu entfernen
-        int removeLayerRange = (this.hiddenLayerList.length - this.fixedHiddenLayerCount);
+        int removeLayerRange = (this.hiddenLayerArr.length - this.fixedHiddenLayerCount);
         if (removeLayerRange > 0 && this.random.nextDouble() < structuralMutationRate * 1.5D) { // Erhöhte Wahrscheinlichkeit
             final int pos = random.nextInt(removeLayerRange) + this.fixedHiddenLayerCount;
             this.removeHiddenLayer(pos);
         }
 
         // Wahrscheinlichkeit, ein Neuron zu einem bestehenden Layer hinzuzufügen
-        int addNeuronLayerCount = this.hiddenLayerList.length - this.fixedHiddenLayerCount;
+        int addNeuronLayerCount = this.hiddenLayerArr.length - this.fixedHiddenLayerCount;
         if (addNeuronLayerCount > 0 &&
                 this.random.nextDouble() < structuralMutationRate * 1.5D) { // Verdoppelte Wahrscheinlichkeit
             int li = this.random.nextInt(addNeuronLayerCount) + this.fixedHiddenLayerCount;
@@ -495,8 +501,8 @@ public class NeuralNetwork implements Serializable {
         }
 
         // Wahrscheinlichkeit, ein Neuron zu entfernen
-        if (this.hiddenLayerList.length > 0 && this.random.nextDouble() < structuralMutationRate) {
-            int li = random.nextInt(this.hiddenLayerList.length);
+        if (this.hiddenLayerArr.length > 0 && this.random.nextDouble() < structuralMutationRate) {
+            int li = random.nextInt(this.hiddenLayerArr.length);
             this.removeNeuronFromHiddenLayer(li);
         }
 
@@ -511,10 +517,10 @@ public class NeuralNetwork implements Serializable {
         }
 
         // Neue Mutation: Aktivierungsfunktion eines zufälligen Neurons ändern
-        if (this.hiddenLayerList.length > 0 &&
+        if (this.hiddenLayerArr.length > 0 &&
                 (this.random.nextDouble() < structuralMutationRate)) {
             // Wähle ein zufälliges Hidden Layer
-            List<Neuron> layer = this.hiddenLayerList[random.nextInt(this.hiddenLayerList.length)].getNeurons();
+            List<Neuron> layer = this.hiddenLayerArr[random.nextInt(this.hiddenLayerArr.length)].getNeurons();
             if (!layer.isEmpty()) {
                 Neuron neuron = layer.get(random.nextInt(layer.size()));
                 // Wähle eine zufällige Aktivierungsfunktion
@@ -532,7 +538,7 @@ public class NeuralNetwork implements Serializable {
      * @param neuronCount Anzahl der Neuronen im neuen Layer
      * @param connectivity Prozentsatz der zu erstellenden Synapsen (0.0-1.0)
      */
-    public void addHiddenLayer(int index, int neuronCount, double connectivity) {
+    public void addHiddenLayer(final int index, final int neuronCount, double connectivity) {
         // Begrenze die Konnektivität auf gültige Werte
         connectivity = Math.max(0.0, Math.min(1.0, connectivity));
 
@@ -546,28 +552,32 @@ public class NeuralNetwork implements Serializable {
         }
 
         // Bestimme die angrenzenden Layer
-        List<Neuron> prevLayer = index == 0 ? Arrays.asList(this.inputNeuronList) : this.hiddenLayerList[index - 1].getNeurons();
-        List<Neuron> nextLayer = index == this.hiddenLayerList.length ? Arrays.asList(this.outputNeuronList) : this.hiddenLayerList[index].getNeurons();
+        final List<Neuron> prevLayer = index == 0 ? Arrays.asList(this.inputNeuronList) : this.hiddenLayerArr[index - 1].getNeurons();
+        final List<Neuron> nextLayer = index == this.hiddenLayerArr.length ? Arrays.asList(this.outputNeuronArr) : this.hiddenLayerArr[index].getNeurons();
 
         // Füge den neuen Layer ein
-        this.hiddenLayerList = insertLayer(this.hiddenLayerList, index, newLayer);
+        this.hiddenLayerArr = insertLayer(this.hiddenLayerArr, index, newLayer);
 
         // Verbinde den vorherigen Layer mit dem neuen Layer
-        for (Neuron srcNeuron : prevLayer) {
-            for (Neuron tgtNeuron : newLayer.getNeuronsArray()) {
-                if (connectivity >= 1.0D || this.random.nextDouble() < connectivity) {
-                    double weight = this.random.nextDouble() * 0.002D - 0.001D;
-                    addSynapse(new Synapse(srcNeuron, tgtNeuron, weight));
+        for (final Neuron srcNeuron : prevLayer) {
+            for (final Neuron tgtNeuron : newLayer.getNeuronsArray()) {
+                if (connectivity >= 1.0D || random.nextDouble() < connectivity) {
+                    final double weight = random.nextDouble() * 0.002D - 0.001D;
+                    addSynapse(new Synapse(srcNeuron, random.nextInt(srcNeuron.getNeuronTypeInfoData().getOutputCount()),
+                            tgtNeuron, random.nextInt(tgtNeuron.getNeuronTypeInfoData().getInputCount()),
+                            weight));
                 }
             }
         }
 
         // Verbinde den neuen Layer mit dem nächsten Layer
-        for (Neuron srcNeuron : newLayer.getNeuronsArray()) {
-            for (Neuron tgtNeuron : nextLayer) {
-                if (connectivity >= 1.0D || this.random.nextDouble() < connectivity) {
-                    double weight = this.random.nextDouble() * 0.002D - 0.001D;
-                    addSynapse(new Synapse(srcNeuron, tgtNeuron, weight));
+        for (final Neuron srcNeuron : newLayer.getNeuronsArray()) {
+            for (final Neuron tgtNeuron : nextLayer) {
+                if (connectivity >= 1.0D || random.nextDouble() < connectivity) {
+                    final double weight = random.nextDouble() * 0.002D - 0.001D;
+                    addSynapse(new Synapse(srcNeuron, random.nextInt(srcNeuron.getNeuronTypeInfoData().getOutputCount()),
+                            tgtNeuron, random.nextInt(tgtNeuron.getNeuronTypeInfoData().getInputCount()),
+                            weight));
                 }
             }
         }
@@ -583,68 +593,76 @@ public class NeuralNetwork implements Serializable {
     }
 
     public void addNeuronToHiddenLayer(final int layerIndex, final double connectivity) {
-        Neuron newN = new Neuron(this.neuronValueFunction.fetchNextFreeId(this),
-                this.neuronTypeInfoDataList.get(this.random.nextInt(this.neuronTypeInfoDataList.size())));
-        this.hiddenLayerList[layerIndex].addNeuron(newN);
-        List<Neuron> prev = layerIndex == 0 ? Arrays.asList(this.inputNeuronList) : this.hiddenLayerList[layerIndex - 1].getNeurons();
-        for (Neuron srcNeuron : prev) {
-            if (connectivity >= 1.0 || this.random.nextDouble() < connectivity) {
-                double weight = this.random.nextDouble() * 0.002D - 0.001D;
-                addSynapse(new Synapse(srcNeuron, newN, weight));
+        final  Neuron newNeuron = new Neuron(this.neuronValueFunction.fetchNextFreeId(this),
+                this.neuronTypeInfoDataList.get(random.nextInt(this.neuronTypeInfoDataList.size())));
+        this.hiddenLayerArr[layerIndex].addNeuron(newNeuron);
+        final List<Neuron> prevNeuronList = layerIndex == 0 ? Arrays.asList(this.inputNeuronList) : this.hiddenLayerArr[layerIndex - 1].getNeurons();
+        for (final Neuron srcNeuron : prevNeuronList) {
+            if (connectivity >= 1.0 || random.nextDouble() < connectivity) {
+                final double weight = random.nextDouble() * 0.002D - 0.001D;
+                this.addSynapse(new Synapse(srcNeuron, random.nextInt(srcNeuron.getNeuronTypeInfoData().getOutputCount()),
+                        newNeuron, random.nextInt(newNeuron.getNeuronTypeInfoData().getInputCount()),
+                        weight));
             }
         }
-        List<Neuron> next = layerIndex == this.hiddenLayerList.length - 1 ? Arrays.asList(this.outputNeuronList) : this.hiddenLayerList[layerIndex + 1].getNeurons();
-        for (Neuron tgtNeuron : next) {
-            if (connectivity >= 1.0 || this.random.nextDouble() < connectivity) {
-                double weight = this.random.nextDouble() * 0.002D - 0.001D;
-                addSynapse(new Synapse(newN, tgtNeuron, weight));
+        final List<Neuron> nextNeuronList = layerIndex == this.hiddenLayerArr.length - 1 ? Arrays.asList(this.outputNeuronArr) : this.hiddenLayerArr[layerIndex + 1].getNeurons();
+        for (final Neuron tgtNeuron : nextNeuronList) {
+            if (connectivity >= 1.0 || random.nextDouble() < connectivity) {
+                final double weight = random.nextDouble() * 0.002D - 0.001D;
+                this.addSynapse(new Synapse(newNeuron, random.nextInt(newNeuron.getNeuronTypeInfoData().getOutputCount()),
+                        tgtNeuron, random.nextInt(tgtNeuron.getNeuronTypeInfoData().getInputCount()),
+                        weight));
             }
         }
     }
 
     private void removeHiddenLayer(final int pos) {
-        final Layer layer = this.hiddenLayerList[pos];
+        final Layer layer = this.hiddenLayerArr[pos];
         if (layer.getNeurons().size() == 1) {
             // Entferne Layer aus Array
-            this.hiddenLayerList = removeLayer(this.hiddenLayerList, pos);
+            this.hiddenLayerArr = removeLayer(this.hiddenLayerArr, pos);
         }
     }
 
     // Hilfsmethode zum Entfernen eines Layers aus einem Array
-    private static Layer[] removeLayer(Layer[] arr, int index) {
-        Layer[] result = new Layer[arr.length - 1];
+    private static Layer[] removeLayer(final Layer[] arr, final int index) {
+        final Layer[] result = new Layer[arr.length - 1];
         System.arraycopy(arr, 0, result, 0, index);
         System.arraycopy(arr, index + 1, result, index, arr.length - index - 1);
         return result;
     }
 
     public void removeNeuronFromHiddenLayer(final int layerIndex) {
-        final Layer layer = this.hiddenLayerList[layerIndex];
+        final Layer layer = this.hiddenLayerArr[layerIndex];
         final List<Neuron> layerNeuronList = layer.getNeurons();
         if (layerNeuronList.size() > 1) {
             // Skip the first neuron to avoid removing activation neurons
-            final int idx = this.random.nextInt(layerNeuronList.size() - 1) + 1;
+            final int idx = random.nextInt(layerNeuronList.size() - 1) + 1;
             this.removeNeuron(layer, idx);
         }
     }
 
-    private void removeNeuron(final Layer layer, final int idx) {
+    private void removeNeuron(final Layer layer, final int neuronIdx) {
         final List<Neuron> layerNeuronList = layer.getNeurons();
-        final Neuron removedNeuron = layerNeuronList.remove(idx);
-        int i = 0;
-        while (i < synapseArray.length) {
-            final Synapse synapse = synapseArray[i];
-            if (synapse.getSourceNeuron() == removedNeuron || synapse.getTargetNeuron() == removedNeuron) {
-                synapse.getSourceNeuron().getOutputSynapses().remove(synapse);
-                if (synapse.getTargetNeuron() == removedNeuron) {
+        final Neuron removedNeuron = layerNeuronList.remove(neuronIdx);
+        int synapsePos = 0;
+        while (synapsePos < this.synapseArray.length) {
+            final Synapse synapse = this.synapseArray[synapsePos];
+            final Neuron sourceNeuron = synapse.getSourceNeuron();
+            final Neuron targetNeuron = synapse.getTargetNeuron();
+            if (sourceNeuron == removedNeuron || targetNeuron == removedNeuron) {
+                final int outputTypePos = synapse.getSourceOutputTypePos();
+                sourceNeuron.removeOutputSynapse(outputTypePos, synapse);
+                if (targetNeuron == removedNeuron) {
                     // Entferne Synapse
-                    removeSynapseAt(i);
+                    removeSynapseAt(synapsePos);
                     continue;
                 }
-                synapse.getTargetNeuron().removeInputSynapse(synapse);
-                removeSynapseAt(i);
+                int inputTypePos = synapse.getTargetInputTypePos();
+                targetNeuron.removeInputSynapse(inputTypePos, synapse);
+                removeSynapseAt(synapsePos);
             } else {
-                i++;
+                synapsePos++;
             }
         }
         this.neuronValueFunction.releaseNeuron(this, removedNeuron);
@@ -662,8 +680,8 @@ public class NeuralNetwork implements Serializable {
         // Wählen Sie zufällige Quelle und Ziel-Layer
         List<List<Neuron>> allLayers = new ArrayList<>();
         allLayers.add(Arrays.asList(this.inputNeuronList));
-        for (Layer l : this.hiddenLayerList) allLayers.add(l.getNeurons());
-        allLayers.add(Arrays.asList(this.outputNeuronList));
+        for (Layer l : this.hiddenLayerArr) allLayers.add(l.getNeurons());
+        allLayers.add(Arrays.asList(this.outputNeuronArr));
 
         int sourceLayerIndex = this.random.nextInt(allLayers.size());
         // Exclude the input layer for the target.
@@ -684,17 +702,19 @@ public class NeuralNetwork implements Serializable {
         Neuron targetNeuron = targetLayer.get(this.random.nextInt(targetLayer.size()));
 
         // Erstellen Sie die Synapse
-        Synapse synapse = new Synapse(sourceNeuron, targetNeuron, random.nextDouble() * 0.002D - 0.001D);
+        Synapse synapse = new Synapse(sourceNeuron, random.nextInt(sourceNeuron.getNeuronTypeInfoData().getOutputCount()),
+                targetNeuron, random.nextInt(targetNeuron.getNeuronTypeInfoData().getInputCount()),
+                random.nextDouble() * 0.002D - 0.001D);
         addSynapse(synapse);
     }
 
     public void removeRandomSynapse() {
         if (this.synapseArray.length == 0) return;
-        int idx = random.nextInt(this.synapseArray.length);
-        Synapse rem = this.synapseArray[idx];
-        rem.getSourceNeuron().getOutputSynapses().remove(rem);
-        rem.getTargetNeuron().removeInputSynapse(rem);
-        removeSynapseAt(idx);
+        final int synapseIdx = random.nextInt(this.synapseArray.length);
+        final Synapse removedSynapse = this.synapseArray[synapseIdx];
+        removedSynapse.getSourceNeuron().getOutputSynapseList(removedSynapse.getSourceOutputTypePos()).remove(removedSynapse);
+        removedSynapse.getTargetNeuron().removeInputSynapse(removedSynapse.getTargetInputTypePos(), removedSynapse);
+        removeSynapseAt(synapseIdx);
     }
 
     // Expose the number of synapses for energy cost calculation
@@ -718,9 +738,9 @@ public class NeuralNetwork implements Serializable {
      * @return the total number of neurons in the network
      */
     public int getAllNeuronsSize() {
-        int count = this.inputNeuronList.length + this.outputNeuronList.length;
+        int count = this.inputNeuronList.length + this.outputNeuronArr.length;
 
-        for (Layer layer : this.hiddenLayerList) {
+        for (Layer layer : this.hiddenLayerArr) {
             count += layer.getNeurons().size();
         }
 
@@ -737,16 +757,16 @@ public class NeuralNetwork implements Serializable {
         // 50% Chance für eine zusätzliche Strukturmutation
         if (random.nextDouble() < 0.5) {
             // Füge ein zusätzliches Hidden Layer hinzu
-            int pos = random.nextInt(mutated.hiddenLayerList.length + 1);
+            int pos = random.nextInt(mutated.hiddenLayerArr.length + 1);
             int neuronCount = 2 + random.nextInt(4); // 2-5 Neuronen
             mutated.addHiddenLayer(pos, neuronCount, 1.0);
         }
 
         // 50% Chance für mehrere zusätzliche Neuronen
-        if (this.random.nextDouble() < 0.5 && !mutated.hiddenLayerList.equals(null)) {
+        if (this.random.nextDouble() < 0.5 && !mutated.hiddenLayerArr.equals(null)) {
             int count = 1 + this.random.nextInt(3); // 1-3 neue Neuronen
             for (int i = 0; i < count; i++) {
-                int layer = this.random.nextInt(mutated.hiddenLayerList.length);
+                int layer = this.random.nextInt(mutated.hiddenLayerArr.length);
                 mutated.addNeuronToHiddenLayer(layer, mutationStrength);
             }
         }
@@ -767,7 +787,7 @@ public class NeuralNetwork implements Serializable {
     }
 
     public int getOutputLayerSize() {
-        return this.outputNeuronList.length;
+        return this.outputNeuronArr.length;
     }
 
     /**
@@ -783,7 +803,7 @@ public class NeuralNetwork implements Serializable {
      * @return Liste der Hidden-Layer
      */
     public Layer[] getHiddenLayerArr() {
-        return this.hiddenLayerList;
+        return this.hiddenLayerArr;
     }
 
     /**
@@ -791,7 +811,7 @@ public class NeuralNetwork implements Serializable {
      * @return Liste der Output-Neuronen
      */
     public Neuron[] getOutputNeuronArr() {
-        return this.outputNeuronList;
+        return this.outputNeuronArr;
     }
 
     public long getProccessedSynapses() {
@@ -834,8 +854,8 @@ public class NeuralNetwork implements Serializable {
      * @param targetOutput Die erwarteten Ausgabewerte
      * @return Der quadratische Fehler des Netzwerks vor dem Training
      */
-    public double backpropagate(double[] targetOutput) {
-        if (targetOutput.length != this.outputNeuronList.length) {
+    public double backpropagate(final double[] targetOutput) {
+        if (targetOutput.length != this.outputNeuronArr.length) {
             throw new IllegalArgumentException("Zielausgabe muss die gleiche Größe haben wie die Ausgabeschicht");
         }
 
@@ -843,40 +863,44 @@ public class NeuralNetwork implements Serializable {
         double error = calculateError(targetOutput);
 
         // 1. Berechne den Fehler für die Ausgabeneuronen
-        for (int i = 0; i < this.outputNeuronList.length; i++) {
-            Neuron outputNeuron = this.outputNeuronList[i];
-            double output = this.neuronValueFunction.readValue(this, outputNeuron);
-            double target = targetOutput[i];
+        for (int outputNeuronPos = 0; outputNeuronPos < this.outputNeuronArr.length; outputNeuronPos++) {
+            final Neuron outputNeuron = this.outputNeuronArr[outputNeuronPos];
+            for (int outputTypePos = 0; outputTypePos < outputNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                final double output = this.neuronValueFunction.readValue(this, outputNeuron, outputTypePos);
+                final double target = targetOutput[outputNeuronPos];
 
-            // Delta = (Ausgabe - Ziel) * Ableitung der Aktivierungsfunktion
-            double delta = (output - target) *
-                    outputNeuron.getActivationFunction().derivative(outputNeuron.getInputSum());
-            outputNeuron.setDelta(delta);
+                // Delta = (Ausgabe - Ziel) * Ableitung der Aktivierungsfunktion
+                final double delta = (output - target) *
+                        outputNeuron.getActivationFunction().derivative(outputNeuron.getInputSum(outputTypePos));
+                outputNeuron.setDelta(outputTypePos, delta);
+            }
         }
 
         // 2. Backpropagiere den Fehler durch alle versteckten Schichten (von hinten nach vorne)
-        for (int l = this.hiddenLayerList.length - 1; l >= 0; l--) {
-            Layer layer = this.hiddenLayerList[l];
+        for (int hiddenLayerPos = this.hiddenLayerArr.length - 1; hiddenLayerPos >= 0; hiddenLayerPos--) {
+            final Layer layer = this.hiddenLayerArr[hiddenLayerPos];
             if (!layer.isActiveLayer() && !disableLayerDeactivation) continue; // Überspringe inaktive Layer
 
-            Neuron[] neurons = layer.getNeuronsArray();
-            for (Neuron neuron : neurons) {
-                double errorSum = 0.0;
+            final Neuron[] neurons = layer.getNeuronsArray();
+            for (final Neuron neuron : neurons) {
+                for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                    double errorSum = 0.0;
 
-                // Sammle Fehler von allen ausgehenden Verbindungen
-                for (Synapse synapse : neuron.getOutputSynapses()) {
-                    Neuron targetNeuron = synapse.getTargetNeuron();
-                    errorSum += targetNeuron.getDelta() * synapse.getWeight();
+                    // Sammle Fehler von allen ausgehenden Verbindungen
+                    for (final Synapse synapse : neuron.getOutputSynapseList(outputTypePos)) {
+                        final Neuron targetNeuron = synapse.getTargetNeuron();
+                        errorSum += targetNeuron.getDelta(outputTypePos) * synapse.getWeight();
+                    }
+
+                    // Berechne Delta für dieses Neuron
+                    final double delta = errorSum * neuron.getActivationFunction().derivative(neuron.getInputSum(outputTypePos));
+                    neuron.setDelta(outputTypePos, delta);
                 }
-
-                // Berechne Delta für dieses Neuron
-                double delta = errorSum * neuron.getActivationFunction().derivative(neuron.getInputSum());
-                neuron.setDelta(delta);
             }
         }
 
         // 3. Aktualisiere Gewichte und Bias-Werte
-        updateWeights();
+        this.updateWeights();
 
         return error;
     }
@@ -889,8 +913,9 @@ public class NeuralNetwork implements Serializable {
      */
     private double calculateError(double[] targetOutput) {
         double error = 0.0;
-        for (int i = 0; i < this.outputNeuronList.length; i++) {
-            double output = this.neuronValueFunction.readValue(this, this.outputNeuronList[i]);
+        final int outputTypePos = 0; // Default-Output-Type für Output-Neuronen.
+        for (int i = 0; i < this.outputNeuronArr.length; i++) {
+            double output = this.neuronValueFunction.readValue(this, this.outputNeuronArr[i], outputTypePos);
             double target = targetOutput[i];
             double diff = output - target;
             error += diff * diff; // Quadratischer Fehler
@@ -909,29 +934,33 @@ public class NeuralNetwork implements Serializable {
         // Input-Neuronen haben normalerweise keinen Bias
 
         // Hidden Layer Neuronen
-        for (Layer layer : this.hiddenLayerList) {
+        for (final Layer layer : this.hiddenLayerArr) {
             if (!layer.isActiveLayer() && !disableLayerDeactivation) continue; // Überspringe inaktive Layer
 
-            Neuron[] neurons = layer.getNeuronsArray();
-            for (Neuron neuron : neurons) {
-                neuron.setBias(neuron.getBias() - this.learningRate * neuron.getDelta());
+            final Neuron[] neurons = layer.getNeuronsArray();
+            for (final Neuron neuron : neurons) {
+                for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                    neuron.setBias(outputTypePos, neuron.getBias(outputTypePos) - this.learningRate * neuron.getDelta(outputTypePos));
+                }
             }
         }
 
         // Output Neuronen
-        for (Neuron neuron : this.outputNeuronList) {
-            neuron.setBias(neuron.getBias() - this.learningRate * neuron.getDelta());
+        for (final Neuron neuron : this.outputNeuronArr) {
+            for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                neuron.setBias(outputTypePos, neuron.getBias(outputTypePos) - this.learningRate * neuron.getDelta(outputTypePos));
+            }
         }
 
         // 2. Aktualisiere alle Synapsengewichte
-        for (Synapse synapse : this.synapseArray) {
-            Neuron targetNeuron = synapse.getTargetNeuron();
-            Neuron sourceNeuron = synapse.getSourceNeuron();
+        for (final Synapse synapse : this.synapseArray) {
+            final Neuron targetNeuron = synapse.getTargetNeuron();
+            final Neuron sourceNeuron = synapse.getSourceNeuron();
 
             // Überspringe Synapsen zu deaktivierten Layern
             if (!this.disableLayerDeactivation) {
                 if (targetNeuron instanceof Neuron && !((Neuron) targetNeuron).isOutputNeuron()) {
-                    Layer targetLayer = findLayerForNeuron(targetNeuron);
+                    final Layer targetLayer = findLayerForNeuron(targetNeuron);
                     if (targetLayer != null && !targetLayer.isActiveLayer()) {
                         continue;
                     }
@@ -939,21 +968,24 @@ public class NeuralNetwork implements Serializable {
             }
 
             // Berechne die Gewichtsänderung: delta * Ausgabe der Quelle * Lernrate
-            double weightChange = targetNeuron.getDelta() * this.neuronValueFunction.readValue(this, sourceNeuron) * this.learningRate;
-            synapse.setWeight(synapse.getWeight() - weightChange);
+            for (int outputTypePos = 0; outputTypePos < sourceNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                final double value = this.neuronValueFunction.readValue(this, sourceNeuron, outputTypePos);
+                final double weightChange = targetNeuron.getDelta(outputTypePos) * value * this.learningRate;
+                synapse.setWeight(synapse.getWeight() - weightChange);
+            }
         }
     }
 
     /**
      * Findet das Layer, zu dem ein bestimmtes Neuron gehört.
      *
-     * @param neuron Das Neuron
-     * @return Das Layer oder null, wenn das Neuron nicht gefunden wurde
+     * @param searchedNeuron ist das gesuchte Neuron.
+     * @return den Layer oder null, wenn das Neuron nicht gefunden wurde.
      */
-    private Layer findLayerForNeuron(Neuron neuron) {
-        for (Layer layer : this.hiddenLayerList) {
-            for (Neuron n : layer.getNeuronsArray()) {
-                if (n == neuron) {
+    private Layer findLayerForNeuron(final Neuron searchedNeuron) {
+        for (final Layer layer : this.hiddenLayerArr) {
+            for (final Neuron neuron : layer.getNeuronsArray()) {
+                if (neuron == searchedNeuron) {
                     return layer;
                 }
             }
@@ -993,6 +1025,7 @@ public class NeuralNetwork implements Serializable {
 
     public double[] calcTrain(double[] trainingInputs, double[] trainingTargets) {
         // Forward pass
+        final int outputTypePos = 0; // Default-Output-Type für Input-Neuronen.
         this.setInputs(trainingInputs);
         double[] outputArray = this.process();
 
@@ -1004,6 +1037,7 @@ public class NeuralNetwork implements Serializable {
 
     public double calcTrainError(double[] trainingInputs, double[] trainingTargets) {
         // Forward pass
+        final int outputTypePos = 0; // Default-Output-Type für Input-Neuronen.
         this.setInputs(trainingInputs);
         this.process();
 
@@ -1018,26 +1052,34 @@ public class NeuralNetwork implements Serializable {
      * @return Eine Map mit den Neuronennamen (IDs) und ihren Aktivierungswerten
      */
     public Map<String, Double> getNeuronActivations() {
-        Map<String, Double> activations = new HashMap<>();
+        final Map<String, Double> activations = new HashMap<>();
 
         // Füge Input-Neuronen hinzu
-        for (int i = 0; i < this.inputNeuronList.length; i++) {
-            activations.put("input_" + i, this.neuronValueFunction.readValue(this, this.inputNeuronList[i]));
+        for (int inputNeuronPos = 0; inputNeuronPos < this.inputNeuronList.length; inputNeuronPos++) {
+            final Neuron neuron = this.inputNeuronList[inputNeuronPos];
+            for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                activations.put("input_" + inputNeuronPos + "_" + outputTypePos, this.neuronValueFunction.readValue(this, neuron, outputTypePos));
+            }
         }
 
         // Füge Hidden-Layer-Neuronen hinzu
-        for (int l = 0; l < this.hiddenLayerList.length; l++) {
-            Layer layer = this.hiddenLayerList[l];
-            for (int i = 0; i < layer.getNeuronsArray().length; i++) {
-                activations.put("hidden_" + l + "_" + i, this.neuronValueFunction.readValue(this, layer.getNeuronsArray()[i]));
+        for (int hiddenLayerPos = 0; hiddenLayerPos < this.hiddenLayerArr.length; hiddenLayerPos++) {
+            final Layer layer = this.hiddenLayerArr[hiddenLayerPos];
+            for (int neuronPos = 0; neuronPos < layer.getNeuronsArray().length; neuronPos++) {
+                final Neuron neuron = layer.getNeuronsArray()[neuronPos];
+                for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                    activations.put("hidden_" + hiddenLayerPos + "_" + neuronPos + "_" + outputTypePos, this.neuronValueFunction.readValue(this, neuron, outputTypePos));
+                }
             }
         }
 
         // Füge Output-Neuronen hinzu
-        for (int i = 0; i < this.outputNeuronList.length; i++) {
-            activations.put("output_" + i, this.neuronValueFunction.readValue(this, this.outputNeuronList[i]));
+        for (int outputNeuronPos = 0; outputNeuronPos < this.outputNeuronArr.length; outputNeuronPos++) {
+            final Neuron neuron = this.outputNeuronArr[outputNeuronPos];
+            for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                activations.put("output_" + outputNeuronPos + "_" + outputTypePos, this.neuronValueFunction.readValue(this, neuron, outputTypePos));
+            }
         }
-
         return activations;
     }
 
@@ -1052,44 +1094,54 @@ public class NeuralNetwork implements Serializable {
         // Alle Neuronen einsammeln
         List<Neuron> allNeurons = new ArrayList<>();
         Collections.addAll(allNeurons, inputNeuronList);
-        for (Layer layer : hiddenLayerList) {
+        for (Layer layer : hiddenLayerArr) {
             Collections.addAll(allNeurons, layer.getNeuronsArray());
         }
-        Collections.addAll(allNeurons, outputNeuronList);
+        Collections.addAll(allNeurons, outputNeuronArr);
         // Für jedes Neuron: Input-Synapsen-Array neu aufbauen
-        for (Neuron neuron : allNeurons) {
-            List<Synapse> inputList = new ArrayList<>();
-            for (Synapse s : this.synapseArray) {
-                if (s.getTargetNeuron() == neuron) {
-                    inputList.add(s);
+        for (final Neuron neuron : allNeurons) {
+            for (int inputTypePos = 0; inputTypePos < neuron.getNeuronTypeInfoData().getInputCount(); inputTypePos++) {
+                final List<Synapse> inputSynapseList = new ArrayList<>();
+                for (final Synapse synapse : this.synapseArray) {
+                    if (synapse.getTargetNeuron() == neuron) {
+                        inputSynapseList.add(synapse);
+                    }
                 }
+                neuron.setInputSynapseArr(inputTypePos, inputSynapseList.toArray(new Synapse[0]));
             }
-            neuron.setInputSynapses(inputList.toArray(new Synapse[0]));
         }
     }
 
     public void rnnClearPreviousState() {
         // Setze alle Neuronen in den Hidden-Layern zurück
-        for (final Layer layer : this.hiddenLayerList) {
+        for (final Layer layer : this.hiddenLayerArr) {
             for (final Neuron neuron : layer.getNeuronsArray()) {
-                this.neuronValueFunction.writeValue(this, neuron, 0.0D);
+                for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                    this.neuronValueFunction.writeValue(this, neuron, outputTypePos, 0.0D);
+                }
             }
         }
         // Setze auch die Output-Neuronen zurück
-        for (final Neuron neuron : this.outputNeuronList) {
-            this.neuronValueFunction.writeValue(this, neuron, 0.0D);
+        for (final Neuron neuron : this.outputNeuronArr) {
+            for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+                this.neuronValueFunction.writeValue(this, neuron, outputTypePos, 0.0D);
+            }
         }
     }
 
-    public double readNeuronValue(final Neuron neuron) {
-        return this.neuronValueFunction.readValue(this, neuron);
+    public double readNeuronValue(final Neuron neuron, final int outputTypePos) {
+        return this.neuronValueFunction.readValue(this, neuron, outputTypePos);
     }
 
-    public void writeNeuronValue(final Neuron neuron, final double value) {
-        this.neuronValueFunction.writeValue(this, neuron, value);
+    public void writeNeuronValue(final Neuron neuron, final int outputTypePos, final double value) {
+        this.neuronValueFunction.writeValue(this, neuron, outputTypePos, value);
     }
 
     public NeuronValueFunctionFactory getNeuronValueFunctionFactory() {
         return this.neuronValueFunctionFactory;
+    }
+
+    public NeuronValueFunction getNeuronValueFunction() {
+        return this.neuronValueFunction;
     }
 }
