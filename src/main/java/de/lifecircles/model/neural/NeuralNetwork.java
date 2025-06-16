@@ -295,13 +295,14 @@ public class NeuralNetwork implements Serializable {
                 }
             } else {
                 if (neuronArr.length > 0) {
+                    // For inactive layers aktivete allwayse the first neuron.
                     this.proccessedSynapses += this.activate(layer.getNeuronsArray()[0]);
                 }
             }
         }
 
         // process output layer
-        for (Neuron neuron : this.outputNeuronArr) {
+        for (final Neuron neuron : this.outputNeuronArr) {
             this.proccessedSynapses += this.activate(neuron);
         }
 
@@ -860,7 +861,7 @@ public class NeuralNetwork implements Serializable {
         }
 
         // Berechne den Fehler vor dem Training
-        double error = calculateError(targetOutput);
+        final double error = calculateError(targetOutput);
 
         // 1. Berechne den Fehler für die Ausgabeneuronen
         for (int outputNeuronPos = 0; outputNeuronPos < this.outputNeuronArr.length; outputNeuronPos++) {
@@ -912,15 +913,15 @@ public class NeuralNetwork implements Serializable {
      * @return Der quadratische Fehler
      */
     private double calculateError(double[] targetOutput) {
-        double error = 0.0;
+        double error = 0.0D;
         final int outputTypePos = 0; // Default-Output-Type für Output-Neuronen.
-        for (int i = 0; i < this.outputNeuronArr.length; i++) {
-            double output = this.neuronValueFunction.readValue(this, this.outputNeuronArr[i], outputTypePos);
-            double target = targetOutput[i];
+        for (int outputNeuronPos = 0; outputNeuronPos < this.outputNeuronArr.length; outputNeuronPos++) {
+            double output = this.neuronValueFunction.readValue(this, this.outputNeuronArr[outputNeuronPos], outputTypePos);
+            double target = targetOutput[outputNeuronPos];
             double diff = output - target;
             error += diff * diff; // Quadratischer Fehler
         }
-        return error / 2.0; // Division durch 2 ist übliche Konvention für MSE
+        return error / 2.0D; // Division durch 2 ist übliche Konvention für MSE
     }
 
     /**
@@ -1012,7 +1013,7 @@ public class NeuralNetwork implements Serializable {
             totalError = 0.0;
 
             for (int i = 0; i < trainingInputs.length; i++) {
-                double error = calcTrainError(trainingInputs[i], trainingTargets[i]);
+                double error = this.calcTrainError(trainingInputs[i], trainingTargets[i]);
                 totalError += error;
             }
 
