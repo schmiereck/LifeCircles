@@ -1,13 +1,7 @@
 package de.lifecircles.model.neural;
 
-import de.lifecircles.service.SimulationConfig;
-
-import java.io.Serial;
 import java.util.*;
-import java.util.function.Consumer;
 import java.io.Serializable;
-import java.io.ObjectInputStream;
-import java.io.IOException;
 
 /**
  * Represents the neural network that controls cell behavior.
@@ -45,7 +39,17 @@ public class NeuralNetwork implements Serializable {
         this.neuronValueFunctionFactory = original.neuronValueFunctionFactory;
         this.neuronValueFunction = neuronValueFunctionFactory.create();
 
-        this.neuralNet = new NeuralNet(original.neuralNet, makeCopy, this.neuronValueFunction);
+        this.neuralNet = new NeuralNet(original.neuralNet, makeCopy, this.neuronValueFunctionFactory, this.neuronValueFunction);
+    }
+
+    /**
+     * Erstellt ein NeuronalNetwork mit dem übergebenen neuronalen NeuralNet.
+     */
+    public NeuralNetwork(final NeuralNet neuralNet, final NeuronValueFunctionFactory neuronValueFunctionFactory) {
+        this.neuronValueFunctionFactory = neuronValueFunctionFactory;
+        this.neuronValueFunction = this.neuronValueFunctionFactory.create();
+
+        this.neuralNet = neuralNet;
     }
 
     /**
@@ -81,7 +85,7 @@ public class NeuralNetwork implements Serializable {
         this.neuronValueFunctionFactory = neuronValueFunctionFactory;
         this.neuronValueFunction = neuronValueFunctionFactory.create();
 
-        this.neuralNet = new NeuralNet(this.neuronValueFunction, inputCount,
+        this.neuralNet = new NeuralNet(neuronValueFunctionFactory, this.neuronValueFunction, inputCount,
                 hiddenCounts, outputCount, synapseConnectivity,
                 fixedHiddenLayerCount);
     }
@@ -122,7 +126,7 @@ public class NeuralNetwork implements Serializable {
         // Verwende den Copy-Konstruktor, um eine exakte Kopie des Netzwerks zu erstellen
         NeuralNetwork mutated = new NeuralNetwork(this);
 
-        mutated.neuralNet.mutate(this.neuronValueFunction, mutationRate, mutationStrength);
+        mutated.neuralNet.mutate(this.getNeuronValueFunctionFactory(), mutated.getNeuronValueFunction(), mutationRate, mutationStrength);
 
         return mutated;
     }
@@ -136,7 +140,7 @@ public class NeuralNetwork implements Serializable {
      * @param connectivity Prozentsatz der zu erstellenden Synapsen (0.0-1.0)
      */
     public void addHiddenLayer(final int index, final int neuronCount, double connectivity) {
-        this.neuralNet.addHiddenLayer(this.neuronValueFunction, index, neuronCount, connectivity);
+        this.neuralNet.addHiddenLayer(neuronValueFunctionFactory, this.neuronValueFunction, index, neuronCount, connectivity);
     }
 
     // Expose the number of synapses for energy cost calculation
@@ -156,7 +160,7 @@ public class NeuralNetwork implements Serializable {
     public NeuralNetwork mutateAggressively(final NeuronValueFunction neuronValueFunction, double mutationRate, double mutationStrength) {
         final NeuralNetwork mutated = this.mutate(mutationRate, mutationStrength);
 
-        mutated.neuralNet.mutateAggressively(neuronValueFunction, mutationRate, mutationStrength);
+        mutated.neuralNet.mutateAggressively(neuronValueFunctionFactory, neuronValueFunction, mutationRate, mutationStrength);
 
         return mutated;
     }
@@ -299,5 +303,9 @@ public class NeuralNetwork implements Serializable {
 
     public double getOutputLayerSize() {
         return this.neuralNet.getOutputLayerSize();
+    }
+
+    public void setEnableNeuronType(final boolean enableNeuronType) {
+        this.neuralNet.setEnableNeuronType(enableNeuronType);
     }
 }

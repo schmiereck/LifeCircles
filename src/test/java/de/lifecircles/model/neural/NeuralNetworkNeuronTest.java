@@ -130,6 +130,7 @@ public class NeuralNetworkNeuronTest {
                     inputCount, architecture, outputCount,
                     synapseConnectivity, 0);
             nn.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+            nn.setEnableNeuronType(true);
             population.add(nn);
         }
 
@@ -223,28 +224,28 @@ public class NeuralNetworkNeuronTest {
             while (nextGeneration.size() < populationSize) {
                 double operationChance = random.nextDouble();
 
-                if (operationChance < 0.7) {  // 70% Crossover + Mutation
-                    // Eltern durch Tournament Selection auswählen
-                    NeuralNetwork parent1 = tournamentSelect(scores, 5, random);
-                    NeuralNetwork parent2 = tournamentSelect(scores, 5, random);
-
-                    // Crossover durchführen
-                    NeuralNetwork child = crossover(parent1, parent2, random);
-
-                    // Mutationsstärke bestimmen
-                    double mutationStrength = isCatastrophe ?
-                            0.1 + random.nextDouble() * 0.3 :  // Stärkere Mutation bei Katastrophe
-                            0.01 + random.nextDouble() * 0.1;  // Normale Mutation
-
-                    // Kind mutieren
-                    child = mutateNetwork(child, mutationRate, mutationStrength, random);
-                    child.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
-                    nextGeneration.add(child);
-                }
-                else if (operationChance < 0.9) { // 20% Nur Mutation
+                //if (operationChance < 0.7) {  // 70% Crossover + Mutation
+                //    // Eltern durch Tournament Selection auswählen
+                //    NeuralNetwork parent1 = tournamentSelect(scores, 5, random);
+                //    NeuralNetwork parent2 = tournamentSelect(scores, 5, random);
+//
+                //    // Crossover durchführen
+                //    NeuralNetwork child = crossover(parent1, parent2, random);
+//
+                //    // Mutationsstärke bestimmen
+                //    double mutationStrength = isCatastrophe ?
+                //            0.1 + random.nextDouble() * 0.3 :  // Stärkere Mutation bei Katastrophe
+                //            0.01 + random.nextDouble() * 0.1;  // Normale Mutation
+//
+                //    // Kind mutieren
+                //    child = mutateNetwork(child, mutationRate, mutationStrength, random);
+                //    child.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+                //    nextGeneration.add(child);
+                //}
+                //else
+                    if (operationChance < 0.9) { // 20% Nur Mutation
                     // Wähle ein Netzwerk durch Tournament Selection
                     NeuralNetwork parent = tournamentSelect(scores, 3, random);
-                    NeuralNetwork child = cloneNetwork(parent);
 
                     // Bestimme Mutationsstärke
                     double mutationStrength = isCatastrophe ?
@@ -252,7 +253,7 @@ public class NeuralNetworkNeuronTest {
                             0.01 + random.nextDouble() * 0.2;
 
                     // Mutiere Kind
-                    child = mutateNetwork(child, mutationRate, mutationStrength, random);
+                    NeuralNetwork child = mutateNetwork(parent, mutationRate, mutationStrength, random);
                     child.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
                     nextGeneration.add(child);
                 }
@@ -377,7 +378,7 @@ public class NeuralNetworkNeuronTest {
 
     // Crossover: Kombiniert zwei Netzwerke zu einem neuen
     private NeuralNetwork crossover(NeuralNetwork parent1, NeuralNetwork parent2, Random random) {
-        NeuralNetwork child = cloneNetwork(parent1);
+        NeuralNetwork child = new NeuralNetwork(parent1);
         List<Synapse> childSynapses = child.getSynapseList();
         List<Synapse> parent2Synapses = parent2.getSynapseList();
 
@@ -417,7 +418,7 @@ public class NeuralNetworkNeuronTest {
     private NeuralNetwork cloneNetwork(NeuralNetwork network) {
         // Falls die Klasse keine clone-Methode hat, diese implementieren
         // Hier wird angenommen, dass network.mutate mit Rate 0 ein Klon erzeugt
-        return network.mutate(0, 0);
+        return new NeuralNetwork(network);
     }
 
     // Hilfsmethode: Gibt die Architektur eines Netzwerks zurück

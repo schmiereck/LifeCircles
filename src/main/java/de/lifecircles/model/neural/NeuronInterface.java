@@ -19,7 +19,7 @@ public interface NeuronInterface extends Serializable {
 
     void addInputSynapse(final int inputTypePos, final Synapse synapse);
 
-    void mutateNeuron(final Random random);
+    void mutateNeuron(final Random random, double mutationRate, double mutationStrength);
 
     void removeOutputSynapse(final int outputTypePos, final Synapse synapse);
     void removeInputSynapse(final int inputTypePos, final Synapse synapse);

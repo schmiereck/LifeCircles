@@ -239,7 +239,7 @@ public class MemoryNeuralNetworkTest {
         }
     }
 
-    //@Test
+    @Test
     public void testBigText() {
         final Random random = new Random(42);
         NeuralNetwork.setRandom(random);

@@ -5,12 +5,12 @@ import java.io.Serializable;
 public class NeuronTypeInfoData implements Serializable {
     private int inputCount;
     private int outputCount;
-    private NeuralNetwork network;
+    private NeuralNet neuralNet;
 
-    public NeuronTypeInfoData(final int inputCount, final int outputCount, final NeuralNetwork network) {
+    public NeuronTypeInfoData(final int inputCount, final int outputCount, final NeuralNet neuralNet) {
         this.inputCount = inputCount;
         this.outputCount = outputCount;
-        this.network = network;
+        this.neuralNet = neuralNet;
     }
 
     public int getInputCount() {
@@ -21,7 +21,7 @@ public class NeuronTypeInfoData implements Serializable {
         return this.outputCount;
     }
 
-    public NeuralNetwork getNetwork() {
-        return this.network;
+    public NeuralNet getNeuralNet() {
+        return this.neuralNet;
     }
 }

@@ -28,7 +28,8 @@ public class NeuronNetwork implements NeuronInterface {
     private double[] inputSumArr;
     private double[] biasArr;
 
-    public NeuronNetwork(final int id, final NeuronTypeInfoData neuronTypeInfoData) {
+    public NeuronNetwork(final int id, final NeuronTypeInfoData neuronTypeInfoData,
+                         final NeuronValueFunctionFactory neuronValueFunctionFactory) {
         this.id = id;
         this.neuronTypeInfoData = neuronTypeInfoData;
         this.inputSynapsesList = new ArrayList<>();
@@ -36,7 +37,7 @@ public class NeuronNetwork implements NeuronInterface {
         this.isOutputNeuron = false; // Standardmäßig kein Output-Neuron
 
         // Dass NN direkt verwenden, nicht als Kopie.
-        this.network = new NeuralNetwork(neuronTypeInfoData.getNetwork(), false);
+        this.network = new NeuralNetwork(neuronTypeInfoData.getNeuralNet(), neuronValueFunctionFactory);
 
         this.deltaArr = new double[this.neuronTypeInfoData.getOutputCount()];
         this.inputSumArr = new double[this.neuronTypeInfoData.getOutputCount()];
@@ -56,7 +57,7 @@ public class NeuronNetwork implements NeuronInterface {
     @Override
     public NeuronInterface cloneNeuron(final NeuralNet neuralNet, final NeuronValueFunction neuronValueFunction, final boolean isActiveLayer) {
         final int newId = neuronValueFunction.fetchNextFreeId(neuralNet);
-        NeuronNetwork newNeuron = new NeuronNetwork(newId, this.neuronTypeInfoData);
+        NeuronNetwork newNeuron = new NeuronNetwork(newId, this.neuronTypeInfoData, this.network.getNeuronValueFunctionFactory());
 
         return newNeuron;
     }
@@ -157,13 +158,26 @@ public class NeuronNetwork implements NeuronInterface {
     }
 
     @Override
-    public void mutateNeuron(final Random random) {
+    public void mutateNeuron(final Random random, double mutationRate, double mutationStrength) {
         // Anpassung der Bias-Werte.
         for (int outputTypePos = 0; outputTypePos < this.neuronTypeInfoData.getOutputCount(); outputTypePos++) {
-            double mutationFactor = random.nextDouble() * 0.1 - 0.05; // Zufällige Mutation zwischen -0.05 und +0.05
-            double newBias = this.getBias(outputTypePos) + mutationFactor;
-            this.setBias(outputTypePos, newBias);
+            if (random.nextDouble() < mutationRate) {
+                double mutationFactor = random.nextDouble() * 0.1 - 0.05; // Zufällige Mutation zwischen -0.05 und +0.05
+                double newBias = this.getBias(outputTypePos) + mutationFactor;
+                this.setBias(outputTypePos, newBias);
+            }
         }
+
+        if (random.nextDouble() < mutationRate) {
+            final NeuralNet neuralNet = this.network.getNeuralNet();
+            neuralNet.mutateNeuronTypeInfoDataList(this.network.getNeuronValueFunctionFactory(), this.network.getNeuronValueFunction(),
+                    random, mutationRate, mutationStrength);
+        }
+
+        //if (random.nextDouble() < mutationRate) {
+        //    final NeuralNet neuralNet = this.network.getNeuralNet();
+        //    neuralNet.mutate(this.network.getNeuronValueFunction(), mutationRate, mutationStrength);
+        //}
     }
 
     @Override

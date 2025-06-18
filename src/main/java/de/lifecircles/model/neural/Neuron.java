@@ -49,7 +49,7 @@ public class Neuron implements NeuronInterface {
     }
 
     @Override
-    public void mutateNeuron(final Random random) {
+    public void mutateNeuron(final Random random, double mutationRate, double mutationStrength) {
         // Wähle eine zufällige Aktivierungsfunktion
         ActivationFunction[] functions = ActivationFunction.values();
         this.setActivationFunction(functions[random.nextInt(functions.length)]);
