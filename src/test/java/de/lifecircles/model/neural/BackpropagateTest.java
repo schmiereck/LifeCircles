@@ -127,7 +127,7 @@ public class BackpropagateTest {
                 hiddenCount
         };
 
-        final Random random = new Random(23);
+        final Random random = new Random(123);
         NeuralNetwork.setRandom(random);
 
         final double mySynapseConnectivity = 1.0D;

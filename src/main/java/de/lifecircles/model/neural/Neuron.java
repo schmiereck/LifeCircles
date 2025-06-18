@@ -26,7 +26,7 @@ public class Neuron implements Serializable {
     public Neuron(final int id) {
         this.id = id;
         this.value = 0.0;
-        this.bias = Math.random() * 2 - 1; // Random bias between -1 and 1
+        this.bias = NeuralNetwork.getRandom().nextDouble() * 2.0D - 1.0D; // Random bias between -1 and 1
         this.inputSynapses = new Synapse[0];
         this.outputSynapses = new ArrayList<>();
         this.activationFunction = ActivationFunction.Sigmoid;

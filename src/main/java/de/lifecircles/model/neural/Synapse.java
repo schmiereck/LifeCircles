@@ -13,7 +13,7 @@ public class Synapse implements Serializable {
     private double weight;
 
     public Synapse(Neuron sourceNeuron, Neuron targetNeuron) {
-        this(sourceNeuron, targetNeuron, Math.random() * 2.0D - 1.0D); // Random weight between -1 and 1
+        this(sourceNeuron, targetNeuron, NeuralNetwork.getRandom().nextDouble() * 2.0D - 1.0D); // Random weight between -1 and 1
     }
     public Synapse(Neuron sourceNeuron, Neuron targetNeuron, final double weight) {
         this.sourceNeuron = sourceNeuron;

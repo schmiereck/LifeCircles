@@ -195,6 +195,10 @@ public class NeuralNetwork implements Serializable {
         this.connectLayers(prev, this.outputNeuronList, synapseConnectivity);
     }
 
+    public static Random getRandom() {
+        return random;
+    }
+
     private void connectLayers(Neuron[] sourceLayer, Neuron[] targetLayer, double connectivity) {
         connectivity = Math.max(0.0, Math.min(1.0, connectivity));
         for (Neuron source : sourceLayer) {
