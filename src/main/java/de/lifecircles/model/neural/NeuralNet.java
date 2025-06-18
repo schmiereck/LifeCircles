@@ -26,7 +26,7 @@ public class NeuralNet implements Serializable {
      */
     private transient boolean disableLayerDeactivation = false;
 
-    private long proccessedSynapses = 0L;
+    private transient long proccessedSynapses = 0L;
 
     /**
      * List of Neuron-Types can be used in this Network.
@@ -50,7 +50,14 @@ public class NeuralNet implements Serializable {
             // Synapsen-Array initialisieren
             this.synapseArray = new Synapse[original.synapseArray.length];
 
+            this.disableLayerDeactivation = original.disableLayerDeactivation;
             this.fixedHiddenLayerCount = original.fixedHiddenLayerCount;
+
+            this.neuronTypeInfoDataList = new ArrayList<>();
+            // Kopiere die NeuronTypeInfoData
+            for (final NeuronTypeInfoData typeInfo : original.neuronTypeInfoDataList) {
+                this.neuronTypeInfoDataList.add(new NeuronTypeInfoData(typeInfo.getInputCount(), typeInfo.getOutputCount(), typeInfo.getNetwork()));
+            }
 
             // Erstelle eine Map, die die Originalneuronen den neuen Neuronen zuordnet
             final Map<NeuronInterface, NeuronInterface> neuronMap = new HashMap<>();
@@ -126,11 +133,14 @@ public class NeuralNet implements Serializable {
             // Synapsen-Array initialisieren
             this.synapseArray = original.synapseArray;
 
+            this.disableLayerDeactivation = original.disableLayerDeactivation;
             this.fixedHiddenLayerCount = original.fixedHiddenLayerCount;
 
             this.hiddenLayerArr = original.hiddenLayerArr;
 
             this.outputArr = new double[this.outputNeuronArr.length];
+
+            this.neuronTypeInfoDataList = original.neuronTypeInfoDataList;
         }
     }
 
@@ -423,8 +433,10 @@ public class NeuralNet implements Serializable {
         NeuronInterface targetNeuron = targetLayer.get(random.nextInt(targetLayer.size()));
 
         // Erstellen Sie die Synapse
-        Synapse synapse = new Synapse(sourceNeuron, random.nextInt(sourceNeuron.getNeuronTypeInfoData().getOutputCount()),
-                targetNeuron, random.nextInt(targetNeuron.getNeuronTypeInfoData().getInputCount()),
+        Synapse synapse = new Synapse(sourceNeuron,
+                sourceNeuron.getNeuronTypeInfoData().getOutputCount() == 1 ? 0 : random.nextInt(sourceNeuron.getNeuronTypeInfoData().getOutputCount()),
+                targetNeuron,
+                targetNeuron.getNeuronTypeInfoData().getInputCount() == 1 ? 0 : random.nextInt(targetNeuron.getNeuronTypeInfoData().getInputCount()),
                 random.nextDouble() * 0.002D - 0.001D);
         addSynapse(synapse);
     }
@@ -464,8 +476,10 @@ public class NeuralNet implements Serializable {
             for (final NeuronInterface tgtNeuron : newLayer.getNeuronsArr()) {
                 if (connectivity >= 1.0D || random.nextDouble() < connectivity) {
                     final double weight = random.nextDouble() * 0.002D - 0.001D;
-                    addSynapse(new Synapse(srcNeuron, random.nextInt(srcNeuron.getNeuronTypeInfoData().getOutputCount()),
-                            tgtNeuron, random.nextInt(tgtNeuron.getNeuronTypeInfoData().getInputCount()),
+                    addSynapse(new Synapse(srcNeuron,
+                            srcNeuron.getNeuronTypeInfoData().getOutputCount() == 1 ? 0 : random.nextInt(srcNeuron.getNeuronTypeInfoData().getOutputCount()),
+                            tgtNeuron,
+                            tgtNeuron.getNeuronTypeInfoData().getInputCount() == 1 ? 0 : random.nextInt(tgtNeuron.getNeuronTypeInfoData().getInputCount()),
                             weight));
                 }
             }
@@ -476,8 +490,10 @@ public class NeuralNet implements Serializable {
             for (final NeuronInterface tgtNeuron : nextLayer) {
                 if (connectivity >= 1.0D || random.nextDouble() < connectivity) {
                     final double weight = random.nextDouble() * 0.002D - 0.001D;
-                    addSynapse(new Synapse(srcNeuron, random.nextInt(srcNeuron.getNeuronTypeInfoData().getOutputCount()),
-                            tgtNeuron, random.nextInt(tgtNeuron.getNeuronTypeInfoData().getInputCount()),
+                    addSynapse(new Synapse(srcNeuron,
+                            srcNeuron.getNeuronTypeInfoData().getOutputCount() == 1 ? 0 : random.nextInt(srcNeuron.getNeuronTypeInfoData().getOutputCount()),
+                            tgtNeuron,
+                            tgtNeuron.getNeuronTypeInfoData().getInputCount() == 1 ? 0 : random.nextInt(tgtNeuron.getNeuronTypeInfoData().getInputCount()),
                             weight));
                 }
             }
@@ -500,8 +516,10 @@ public class NeuralNet implements Serializable {
         for (final NeuronInterface srcNeuron : prevNeuronList) {
             if (connectivity >= 1.0 || random.nextDouble() < connectivity) {
                 final double weight = random.nextDouble() * 0.002D - 0.001D;
-                this.addSynapse(new Synapse(srcNeuron, random.nextInt(srcNeuron.getNeuronTypeInfoData().getOutputCount()),
-                        newNeuron, random.nextInt(newNeuron.getNeuronTypeInfoData().getInputCount()),
+                this.addSynapse(new Synapse(srcNeuron,
+                        srcNeuron.getNeuronTypeInfoData().getOutputCount() == 1 ? 0 : random.nextInt(srcNeuron.getNeuronTypeInfoData().getOutputCount()),
+                        newNeuron,
+                        newNeuron.getNeuronTypeInfoData().getInputCount() == 1 ? 0 : random.nextInt(newNeuron.getNeuronTypeInfoData().getInputCount()),
                         weight));
             }
         }
@@ -509,8 +527,10 @@ public class NeuralNet implements Serializable {
         for (final NeuronInterface tgtNeuron : nextNeuronList) {
             if (connectivity >= 1.0 || random.nextDouble() < connectivity) {
                 final double weight = random.nextDouble() * 0.002D - 0.001D;
-                this.addSynapse(new Synapse(newNeuron, random.nextInt(newNeuron.getNeuronTypeInfoData().getOutputCount()),
-                        tgtNeuron, random.nextInt(tgtNeuron.getNeuronTypeInfoData().getInputCount()),
+                this.addSynapse(new Synapse(newNeuron,
+                                newNeuron.getNeuronTypeInfoData().getOutputCount() == 1 ? 0 : random.nextInt(newNeuron.getNeuronTypeInfoData().getOutputCount()),
+                        tgtNeuron,
+                        tgtNeuron.getNeuronTypeInfoData().getInputCount() == 1 ? 0 : random.nextInt(tgtNeuron.getNeuronTypeInfoData().getInputCount()),
                         weight));
             }
         }
@@ -883,8 +903,10 @@ public class NeuralNet implements Serializable {
                 if (connectivity >= 1.0 || NeuralNetwork.getRandom().nextDouble() < connectivity) {
                     double limit = Math.sqrt(6.0 / (this.getInputLayerSize() + this.getOutputLayerSize()));
                     final double weight = NeuralNetwork.getRandom().nextDouble() * 2.0D * limit - limit;
-                    this.addSynapse(new Synapse(source, NeuralNetwork.getRandom().nextInt(source.getNeuronTypeInfoData().getOutputCount()),
-                            target, NeuralNetwork.getRandom().nextInt(target.getNeuronTypeInfoData().getInputCount()),
+                    this.addSynapse(new Synapse(source,
+                            source.getNeuronTypeInfoData().getOutputCount() == 1 ? 0 : NeuralNetwork.getRandom().nextInt(source.getNeuronTypeInfoData().getOutputCount()),
+                            target,
+                            target.getNeuronTypeInfoData().getInputCount() == 1 ? 0 : NeuralNetwork.getRandom().nextInt(target.getNeuronTypeInfoData().getInputCount()),
                             weight));
                 }
             }
