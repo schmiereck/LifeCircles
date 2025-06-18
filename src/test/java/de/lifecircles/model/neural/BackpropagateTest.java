@@ -107,4 +107,50 @@ public class BackpropagateTest {
             assertArrayEquals(outputs[i], output, THRESHOLD);
         }
     }
+
+    @Test
+    public void testEasy() {
+        final double[][] inputs = {
+            {0},
+            {1}
+        };
+        final double[][] outputs = {
+                {0},
+                {1}
+        };
+
+        // Verschiedene Netzwerkarchitekturen für mehr Diversität
+        final int inputCount = inputs[0].length;
+        final int outputCount = outputs[0].length;
+        final int hiddenCount = inputCount * 2;
+        final int[] architecture = {
+                hiddenCount
+        };
+
+        final Random random = new Random(23);
+        NeuralNetwork.setRandom(random);
+
+        final double mySynapseConnectivity = 1.0D;
+        final NeuronValueFunctionFactory neuronValueFunctionFactory = new DefaultNeuronValueFunctionFactory();
+        NeuralNetwork nn = new NeuralNetwork(neuronValueFunctionFactory,
+                inputCount, architecture, outputCount,
+                mySynapseConnectivity, 0);
+        nn.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+
+        nn.train(inputs, outputs, 25_000);
+
+        // Teste das finale Netzwerk
+        for (int i = 0; i < inputs.length; i++) {
+            nn.setInputs(inputs[i]);
+            double[] output = nn.process();
+
+            System.out.printf("Input %s: \tErwartet: %s \tAusgabe: %s%n",
+                    NeuralNetworkTest.formatArrayToString(inputs[i]),
+                    NeuralNetworkTest.formatArrayToString(outputs[i]),
+                    NeuralNetworkTest.formatArrayToString(output));
+
+            // Überprüfe Ergebnis
+            assertArrayEquals(outputs[i], output, THRESHOLD);
+        }
+    }
 }
