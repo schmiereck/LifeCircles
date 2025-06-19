@@ -24,8 +24,8 @@ public class NeuronNetwork implements NeuronInterface {
 
     private final NeuralNetwork network;
 
-    private double[] deltaArr;
-    private double[] inputSumArr;
+    //private double[] deltaArr;
+    //private double[] inputSumArr;
     private double[] biasArr;
 
     public NeuronNetwork(final int id, final NeuronTypeInfoData neuronTypeInfoData,
@@ -45,8 +45,8 @@ public class NeuronNetwork implements NeuronInterface {
         for (int outputTypePos = 0; outputTypePos < this.neuronTypeInfoData.getOutputCount(); outputTypePos++) {
             this.outputSynapsesList.add(new Synapse[0]);
         }
-        this.deltaArr = new double[this.neuronTypeInfoData.getOutputCount()];
-        this.inputSumArr = new double[this.neuronTypeInfoData.getOutputCount()];
+        //this.deltaArr = new double[this.neuronTypeInfoData.getOutputCount()];
+        //this.inputSumArr = new double[this.neuronTypeInfoData.getOutputCount()];
         this.biasArr = new double[this.neuronTypeInfoData.getOutputCount()];
     }
 
@@ -180,6 +180,33 @@ public class NeuronNetwork implements NeuronInterface {
         //final int neuronOutputTypePos = 0; // Default-Output-Type für Output-Neuronen.
         //neuron.setBias(neuronOutputTypePos, bias);
         this.biasArr[outputTypePos] = bias;
+        this.network.getNeuralNet().getOutputNeuronArr()[outputTypePos].setBias(outputTypePos, bias);
+    }
+
+    @Override
+    public double getDelta(final int outputTypePos) {
+        //return this.deltaArr[outputTypePos];
+        return this.network.getNeuronValueFunction().readDelta(this.network.getNeuralNet(), this, outputTypePos);
+    }
+
+    @Override
+    public void setDelta(final int outputTypePos, final double delta) {
+        //this.deltaArr[outputTypePos] = delta;
+        this.network.getNeuronValueFunction().writeDelta(this.network.getNeuralNet(), this, outputTypePos, delta);
+        this.network.getNeuralNet().getOutputNeuronArr()[outputTypePos].setDelta(outputTypePos, delta);
+    }
+
+    @Override
+    public double getInputSum(final int outputTypePos) {
+        //return this.inputSumArr[outputTypePos];
+        return this.network.getNeuronValueFunction().readInputSum(this.network.getNeuralNet(), this, outputTypePos);
+    }
+
+    @Override
+    public void setInputSum(final int outputTypePos, final double inputSum) {
+        //this.deltaArr[outputTypePos] = delta;
+        this.network.getNeuronValueFunction().writeInputSum(this.network.getNeuralNet(), this, outputTypePos, inputSum);
+        this.network.getNeuralNet().getOutputNeuronArr()[outputTypePos].setInputSum(outputTypePos, inputSum);
     }
 
     @Override
@@ -203,19 +230,6 @@ public class NeuronNetwork implements NeuronInterface {
         //    final NeuralNet neuralNet = this.network.getNeuralNet();
         //    neuralNet.mutate(this.network.getNeuronValueFunction(), mutationRate, mutationStrength);
         //}
-    }
-
-    @Override
-    public double getDelta(final int outputTypePos) {
-        return this.deltaArr[outputTypePos];
-    }
-
-    public void setDelta(final int outputTypePos, final double delta) {
-        this.deltaArr[outputTypePos] = delta;
-    }
-
-    public double getInputSum(final int outputTypePos) {
-        return this.inputSumArr[outputTypePos];
     }
 
     @Override

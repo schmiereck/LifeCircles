@@ -155,6 +155,7 @@ public class Neuron implements NeuronInterface {
      * Gibt den Eingangswert zurück (vor Anwendung der Aktivierungsfunktion)
      * @return Die Eingangssumme vor Aktivierung
      */
+    @Override
     public double getInputSum(final int outputTypePos) {
         return this.inputSum;
     }
@@ -162,16 +163,9 @@ public class Neuron implements NeuronInterface {
     /**
      * Setzt den Eingangswert der Eingangssumme vor Aktivierung.
      */
+    @Override
     public void setInputSum(final int outputTypePos, final double inputSum) {
         this.inputSum = inputSum;
-    }
-
-    /**
-     * Setzt den Delta-Wert für Backpropagation.
-     * @param delta Der Delta-Wert
-     */
-    public void setDelta(final int outputTypePos, double delta) {
-        this.delta = delta;
     }
 
     /**
@@ -181,6 +175,11 @@ public class Neuron implements NeuronInterface {
     @Override
     public double getDelta(final int outputTypePos) {
         return this.delta;
+    }
+
+    @Override
+    public void setDelta(final int outputTypePos, final double delta) {
+        this.delta = delta;
     }
 
     /**

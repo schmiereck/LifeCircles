@@ -27,6 +27,10 @@ public interface NeuronInterface extends Serializable {
     void backpropagateDelta();
 
     double getDelta(final int outputTypePos);
+    void setDelta(final int outputTypePos, final double delta);
+
+    double getInputSum(final int outputTypePos);
+    void setInputSum(final int outputTypePos, final double inputSum);
 
     void setInputSynapseArr(final int inputTypePos, final Synapse[] array);
 

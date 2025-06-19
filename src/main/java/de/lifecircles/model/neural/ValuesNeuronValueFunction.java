@@ -2,6 +2,8 @@ package de.lifecircles.model.neural;
 
 public class ValuesNeuronValueFunction implements NeuronValueFunction {
     private double[] valuesArr = { };
+    private transient double[] inputSumArr = { };
+    private transient double[] deltaArr = { };
 
     private int lowestFreeID = 0;
     private int lastFreeID = 0;
@@ -18,6 +20,34 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
         final int id = neuron.getId();
         this.checkValueArrSize(id);
         this.valuesArr[id] = value;
+    }
+
+    @Override
+    public double readDelta(final NeuralNet neuralNet, final NeuronInterface neuron, final int outputTypePos) {
+        final int id = neuron.getId();
+        this.checkValueArrSize(id);
+        return this.deltaArr[id];
+    }
+
+    @Override
+    public void writeDelta(final NeuralNet neuralNet, final NeuronInterface neuron, final int outputTypePos, final double delta) {
+        final int id = neuron.getId();
+        this.checkValueArrSize(id);
+        this.deltaArr[id] = delta;
+    }
+
+    @Override
+    public double readInputSum(final NeuralNet neuralNet, final NeuronInterface neuron, final int outputTypePos) {
+        final int id = neuron.getId();
+        this.checkValueArrSize(id);
+        return this.inputSumArr[id];
+    }
+
+    @Override
+    public void writeInputSum(final NeuralNet neuralNet, final NeuronInterface neuron, final int outputTypePos, final double inputSum) {
+        final int id = neuron.getId();
+        this.checkValueArrSize(id);
+        this.inputSumArr[id] = inputSum;
     }
 
     @Override
@@ -72,10 +102,22 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
 
     private void checkValueArrSize(final int id) {
         if (id >= this.valuesArr.length) {
-            // Ensure the valuesArr is large enough to hold the neuron's value
-            final double[] newValuesArr = new double[id + 1];
-            System.arraycopy(this.valuesArr, 0, newValuesArr, 0, this.valuesArr.length);
-            this.valuesArr = newValuesArr;
+            {
+                // Ensure the valuesArr is large enough to hold the neuron's value
+                final double[] newValuesArr = new double[id + 1];
+                System.arraycopy(this.valuesArr, 0, newValuesArr, 0, this.valuesArr.length);
+                this.valuesArr = newValuesArr;
+            }
+            {
+                final double[] newDeltaArr = new double[id + 1];
+                System.arraycopy(this.deltaArr, 0, newDeltaArr, 0, this.deltaArr.length);
+                this.deltaArr = newDeltaArr;
+            }
+            {
+                final double[] newInputSumArr = new double[id + 1];
+                System.arraycopy(this.inputSumArr, 0, newInputSumArr, 0, this.inputSumArr.length);
+                this.inputSumArr = newInputSumArr;
+            }
         }
     }
 }

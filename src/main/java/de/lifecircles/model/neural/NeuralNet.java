@@ -855,8 +855,8 @@ public class NeuralNet implements Serializable {
             final Layer layer = this.hiddenLayerArr[hiddenLayerPos];
             if (!layer.isActiveLayer() && !disableLayerDeactivation) continue; // Überspringe inaktive Layer
 
-            final NeuronInterface[] neurons = layer.getNeuronsArr();
-            for (final NeuronInterface neuron : neurons) {
+            final NeuronInterface[] neuronArr = layer.getNeuronsArr();
+            for (final NeuronInterface neuron : neuronArr) {
                 neuron.backpropagateDelta();
             }
         }
@@ -865,24 +865,6 @@ public class NeuralNet implements Serializable {
         this.updateWeights(neuronValueFunction, learningRate);
 
         return error;
-    }
-
-    /**
-     * Berechnet den quadratischen Fehler des Netzwerks
-     *
-     * @param targetOutput Die erwarteten Ausgabewerte
-     * @return Der quadratische Fehler
-     */
-    private double calculateError(final NeuronValueFunction neuronValueFunction, final double[] targetOutput) {
-        double error = 0.0D;
-        final int outputTypePos = 0; // Default-Output-Type für Output-Neuronen.
-        for (int outputNeuronPos = 0; outputNeuronPos < this.outputNeuronArr.length; outputNeuronPos++) {
-            double output = neuronValueFunction.readValue(this, this.outputNeuronArr[outputNeuronPos], outputTypePos);
-            double target = targetOutput[outputNeuronPos];
-            double diff = output - target;
-            error += diff * diff; // Quadratischer Fehler
-        }
-        return error / 2.0D; // Division durch 2 ist übliche Konvention für MSE
     }
 
     /**
@@ -941,6 +923,24 @@ public class NeuralNet implements Serializable {
                 }
             }
         }
+    }
+
+    /**
+     * Berechnet den quadratischen Fehler des Netzwerks
+     *
+     * @param targetOutput Die erwarteten Ausgabewerte
+     * @return Der quadratische Fehler
+     */
+    private double calculateError(final NeuronValueFunction neuronValueFunction, final double[] targetOutput) {
+        double error = 0.0D;
+        final int outputTypePos = 0; // Default-Output-Type für Output-Neuronen.
+        for (int outputNeuronPos = 0; outputNeuronPos < this.outputNeuronArr.length; outputNeuronPos++) {
+            double output = neuronValueFunction.readValue(this, this.outputNeuronArr[outputNeuronPos], outputTypePos);
+            double target = targetOutput[outputNeuronPos];
+            double diff = output - target;
+            error += diff * diff; // Quadratischer Fehler
+        }
+        return error / 2.0D; // Division durch 2 ist übliche Konvention für MSE
     }
 
     /**
