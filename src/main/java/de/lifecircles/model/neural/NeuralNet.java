@@ -16,8 +16,6 @@ public class NeuralNet implements Serializable {
     private Layer[] hiddenLayerArr; // Array statt List
     private Neuron[] outputNeuronArr;
 
-    private double[] outputArr;
-
     private Synapse[] synapseArray;
     private int fixedHiddenLayerCount = SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT;
 
@@ -119,9 +117,6 @@ public class NeuralNet implements Serializable {
                 neuronMap.put(originalNeuron, newNeuron);
             }
 
-            // Erstelle das Array für die Ausgabewerte
-            this.outputArr = new double[this.outputNeuronArr.length];
-
             // Kopiere alle Synapsen mit den korrekten Verbindungen zwischen den neuen Neuronen
             int synapseIndex = 0;
             for (int synapsePos = 0; synapsePos < original.synapseArray.length; synapsePos++) {
@@ -151,8 +146,6 @@ public class NeuralNet implements Serializable {
             this.enableNeuronType = original.enableNeuronType;
 
             this.hiddenLayerArr = original.hiddenLayerArr;
-
-            this.outputArr = new double[this.outputNeuronArr.length];
 
             this.neuronTypeInfoDataList = original.neuronTypeInfoDataList;
         }
@@ -199,7 +192,6 @@ public class NeuralNet implements Serializable {
             outputNeuron.setOutputNeuron(true); // Markiere als Output-Neuron
             this.outputNeuronArr[i] = outputNeuron;
         }
-        this.outputArr = new double[this.outputNeuronArr.length];
 
         // connect layers sequentially: input -> hidden1 -> ... -> hiddenN -> output
         NeuronInterface[] prev = this.inputNeuronArr;
@@ -215,6 +207,7 @@ public class NeuralNet implements Serializable {
      */
     public double[] process(final NeuronValueFunction neuronValueFunction) {
         this.proccessedSynapses = 0L;
+        final double[] outputArr = new double[this.outputNeuronArr.length];
 
         // process hidden layers
         for (final Layer layer : this.hiddenLayerArr) {
@@ -237,13 +230,13 @@ public class NeuralNet implements Serializable {
         }
 
         // Collect outputs
-        for (int outputNeuronPos = 0; outputNeuronPos < this.outputArr.length; outputNeuronPos++) {
+        for (int outputNeuronPos = 0; outputNeuronPos < this.outputNeuronArr.length; outputNeuronPos++) {
             final int outputTypePos = 0; // Default-Output-Type for output neurons.
-            this.outputArr[outputNeuronPos] = neuronValueFunction.readValue(this, this.outputNeuronArr[outputNeuronPos], outputTypePos);
+            outputArr[outputNeuronPos] = neuronValueFunction.readValue(this, this.outputNeuronArr[outputNeuronPos], outputTypePos);
         }
 
         // process hidden layer activation counters (ohne fixed layers)
-        if (!disableLayerDeactivation) {
+        if (!this.disableLayerDeactivation) {
             for (int layerPos = this.fixedHiddenLayerCount; layerPos < hiddenLayerArr.length; layerPos++) {
                 final Layer layer = this.hiddenLayerArr[layerPos];
                 final NeuronInterface[] neuronArr = layer.getNeuronsArr();
@@ -268,7 +261,7 @@ public class NeuralNet implements Serializable {
             }
         }
 
-        return this.outputArr;
+        return outputArr;
     }
 
     /**

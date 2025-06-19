@@ -39,6 +39,12 @@ public class NeuronNetwork implements NeuronInterface {
         // Dass NN direkt verwenden, nicht als Kopie.
         this.network = new NeuralNetwork(neuronTypeInfoData.getNeuralNet(), neuronValueFunctionFactory);
 
+        for (int inputTypePos = 0; inputTypePos < this.neuronTypeInfoData.getInputCount(); inputTypePos++) {
+            this.inputSynapsesList.add(new Synapse[0]);
+        }
+        for (int outputTypePos = 0; outputTypePos < this.neuronTypeInfoData.getOutputCount(); outputTypePos++) {
+            this.outputSynapsesList.add(new Synapse[0]);
+        }
         this.deltaArr = new double[this.neuronTypeInfoData.getOutputCount()];
         this.inputSumArr = new double[this.neuronTypeInfoData.getOutputCount()];
         this.biasArr = new double[this.neuronTypeInfoData.getOutputCount()];
@@ -125,7 +131,10 @@ public class NeuronNetwork implements NeuronInterface {
     }
 
     @Override
-    public long activate(NeuronValueFunction neuronValueFunction, final NeuralNet neuralNet) {
+    public long activate(final NeuronValueFunction neuronValueFunction, final NeuralNet neuralNet) {
+        this.checkInOutSize();
+        //final NeuralNet calcNeuralNet = neuralNet;
+        final NeuralNet calcNeuralNet = this.network.getNeuralNet();
         final double[] inputArr = new double[this.neuronTypeInfoData.getInputCount()];
         for (int inputTypePos = 0; inputTypePos < this.neuronTypeInfoData.getInputCount(); inputTypePos++) {
             final Synapse[] inputSynapseArr = this.inputSynapsesList.get(inputTypePos);
@@ -135,10 +144,26 @@ public class NeuronNetwork implements NeuronInterface {
                 inputArr[inputTypePos] += neuronValueFunction.readValue(neuralNet, synapse.getSourceNeuron(), sourceOutputTypePos) * synapse.getWeight();
             }
         }
+
+        final NeuronValueFunction calcNeuronValueFunction = neuronValueFunction;
+        //final NeuronValueFunction calcNeuronValueFunction = this.network.getNeuronValueFunction();
+
         final int outputTypePos = 0;
-        neuralNet.setInputs(neuronValueFunction, inputArr);
-        neuralNet.process(neuronValueFunction);
-        return neuralNet.getProccessedSynapses();
+        calcNeuralNet.setInputs(calcNeuronValueFunction, inputArr);
+        calcNeuralNet.process(calcNeuronValueFunction);
+        return calcNeuralNet.getProccessedSynapses();
+    }
+
+    private void checkInOutSize() {
+        if (this.neuronTypeInfoData.getInputCount() != this.inputSynapsesList.size()) {
+            // TODO this.inputSynapsesList
+            //this.inputSynapsesList
+
+            //private double[] inputSumArr;
+
+            //private double[] deltaArr;
+            //private double[] biasArr;
+        }
     }
 
     @Override
