@@ -126,7 +126,10 @@ public class NeuralNetwork implements Serializable {
         // Verwende den Copy-Konstruktor, um eine exakte Kopie des Netzwerks zu erstellen
         NeuralNetwork mutated = new NeuralNetwork(this);
 
-        mutated.neuralNet.mutate(this.getNeuronValueFunctionFactory(), mutated.getNeuronValueFunction(), mutationRate, mutationStrength);
+        final boolean mutateNeuronType = true; // Neuronentypen können mutiert werden
+        mutated.neuralNet.mutate(this.getNeuronValueFunctionFactory(), mutated.getNeuronValueFunction(),
+                mutationRate, mutationStrength,
+                mutateNeuronType);
 
         return mutated;
     }

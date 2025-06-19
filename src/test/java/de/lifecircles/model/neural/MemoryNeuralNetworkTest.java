@@ -36,7 +36,7 @@ public class MemoryNeuralNetworkTest {
         }
     }
 
-    final NeuronValueFunctionFactory neuronValueFunctionFactory = new DefaultNeuronValueFunctionFactory();
+    final NeuronValueFunctionFactory neuronValueFunctionFactory = new ValuesNeuronValueFunctionFactory();
 
 
     @Test
@@ -58,6 +58,7 @@ public class MemoryNeuralNetworkTest {
             NeuralNetwork network = new NeuralNetwork(neuronValueFunctionFactory,
                     inputCount, architecture, outputCount, synapseConnectivity, 0);
             network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+            network.setEnableNeuronType(true);
             trainResultList.add(new NNTrainResult(network, 0.0D));
         }
 
@@ -112,6 +113,7 @@ public class MemoryNeuralNetworkTest {
             NeuralNetwork network = new NeuralNetwork(neuronValueFunctionFactory,
                     inputCount, architecture, outputCount, synapseConnectivity, 0);
             network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+            network.setEnableNeuronType(true);
             trainResultList.add(new NNTrainResult(network, 0.0D));
         }
 
@@ -166,6 +168,7 @@ public class MemoryNeuralNetworkTest {
             NeuralNetwork network = new NeuralNetwork(neuronValueFunctionFactory,
                     inputCount, architecture, outputCount, synapseConnectivity, 0);
             network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+            network.setEnableNeuronType(true);
             trainResultList.add(new NNTrainResult(network, 0.0D));
         }
 
@@ -214,13 +217,14 @@ public class MemoryNeuralNetworkTest {
             NeuralNetwork network = new NeuralNetwork(neuronValueFunctionFactory,
                     inputCount, architecture, outputCount, synapseConnectivity, 0);
             network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+            network.setEnableNeuronType(true);
             trainResultList.add(new NNTrainResult(network, 0.0D));
         }
         {
             //String[] patterns = { "Auto fährt. ", "Fahrad fährt. ", "Auto fährt schnell. ", "Fahrrad fährt langsam. " };
             String[] patterns = { "Auto. ", "Boat. ", "Car. ", "Door. ", "drive. ", "swim. " };
             char[] startCharArr = new char[] { 'A', 'B', 'C', 'D', 'd', 's' };
-            int epochs = 8_000;
+            int epochs = 10_000;
             int trainDataSize = 1;
             final int trainCount = 30;
             trainResultList = trainSmallLanguageModel(random, trainResultList, patterns, trainDataSize, epochs, trainCount, startCharArr);
@@ -262,6 +266,7 @@ public class MemoryNeuralNetworkTest {
             NeuralNetwork network = new NeuralNetwork(neuronValueFunctionFactory,
                     inputCount, architecture, outputCount, synapseConnectivity, 0);
             network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+            network.setEnableNeuronType(true);
             trainResultList.add(new NNTrainResult(network, 0.0D));
         }
         {
@@ -416,6 +421,7 @@ public class MemoryNeuralNetworkTest {
             NeuralNetwork network = new NeuralNetwork(neuronValueFunctionFactory,
                     inputCount, architecture, outputCount, synapseConnectivity, 0);
             network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+            network.setEnableNeuronType(true);
             trainResultList.add(new NNTrainResult(network, 0.0D));
         }
         {
@@ -483,6 +489,7 @@ public class MemoryNeuralNetworkTest {
             NeuralNetwork network = new NeuralNetwork(neuronValueFunctionFactory,
                     inputCount, architecture, outputCount, synapseConnectivity, 0);
             network.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
+            network.setEnableNeuronType(true);
             trainResultList.add(new NNTrainResult(network, 0.0D));
         }
         {

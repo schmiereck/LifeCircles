@@ -226,7 +226,9 @@ public class NeuronNetwork implements NeuronInterface {
             // Sammle Fehler von allen ausgehenden Verbindungen
             for (final Synapse synapse : this.getOutputSynapseList(outputTypePos)) {
                 final NeuronInterface targetNeuron = synapse.getTargetNeuron();
-                errorSum += targetNeuron.getDelta(outputTypePos) * synapse.getWeight();
+                for (int targetUutputTypePos = 0; targetUutputTypePos < targetNeuron.getNeuronTypeInfoData().getOutputCount(); targetUutputTypePos++) {
+                    errorSum += targetNeuron.getDelta(targetUutputTypePos) * synapse.getWeight();
+                }
             }
 
             // Berechne Delta für dieses Neuron

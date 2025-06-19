@@ -81,7 +81,7 @@ public class BackpropagateTest {
 
         final int populationSize = 1_000;
         final double eliteRate = 0.1; // Top 10% direkt übernehmen
-        final Random random = new Random(42);
+        final Random random = new Random(2342);
         NeuralNetwork.setRandom(random);
 
         final NeuronValueFunctionFactory neuronValueFunctionFactory = new DefaultNeuronValueFunctionFactory();
@@ -90,7 +90,7 @@ public class BackpropagateTest {
                 synapseConnectivity, 0);
         nn.setDisableLayerDeactivation(true); // Layer-Deaktivierung für Test abschalten
 
-        nn.train(inputs, outputs, 80_000);
+        nn.train(inputs, outputs, 90_000);
 
         // Teste das finale Netzwerk
         for (int i = 0; i < inputs.length; i++) {

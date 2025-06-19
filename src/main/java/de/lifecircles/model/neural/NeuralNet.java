@@ -292,7 +292,9 @@ public class NeuralNet implements Serializable {
      * @param mutationRate               Probability of each weight/bias being mutated
      * @param mutationStrength           Maximum amount of mutation
      */
-    public void mutate(final NeuronValueFunctionFactory neuronValueFunctionFactory, final NeuronValueFunction neuronValueFunction, final double mutationRate, final double mutationStrength) {
+    public void mutate(final NeuronValueFunctionFactory neuronValueFunctionFactory,
+                       final NeuronValueFunction neuronValueFunction,
+                       final double mutationRate, final double mutationStrength, final boolean mutateNeuronType) {
         final Random random = NeuralNetwork.getRandom();
 
         // Mutate weights and biases
@@ -312,18 +314,18 @@ public class NeuralNet implements Serializable {
         }
 
         // Apply structural mutations
-        this.applyStructuralMutations(neuronValueFunctionFactory, neuronValueFunction, mutationRate, mutationStrength);
+        this.applyStructuralMutations(neuronValueFunctionFactory, neuronValueFunction, mutationRate, mutationStrength, mutateNeuronType);
     }
 
     public void applyStructuralMutations(final NeuronValueFunctionFactory neuronValueFunctionFactory, final NeuronValueFunction neuronValueFunction,
-                                         final double mutationRate, final double mutationStrength) {
+                                         final double mutationRate, final double mutationStrength, final boolean mutateNeuronType) {
         // Structural mutations should be much less frequent than weight/bias mutations
         final double structuralMutationRate = mutationRate * DEFAULT_MUTATION_RATE; // Only 10% of the regular mutation rate
 
         final Random random = NeuralNetwork.getRandom();
 
         // Mutiere die Neuronen-Typen.
-        if (this.enableNeuronType && random.nextDouble() < structuralMutationRate) {
+        if (this.enableNeuronType && mutateNeuronType && random.nextDouble() < structuralMutationRate) {
             this.mutateNeuronTypeInfoDataList(neuronValueFunctionFactory, neuronValueFunction, random, mutationRate, structuralMutationRate);
         }
 
@@ -401,14 +403,16 @@ public class NeuralNet implements Serializable {
             final NeuralNet selectedNeuralNet = selectedNeuronTypeInfoData.getNeuralNet();
 
             if (random.nextDouble() < structuralMutationRate) {
-                // Neuron-Typ mutieren:
-                selectedNeuralNet.mutate(neuronValueFunctionFactory, neuronValueFunction, mutationRate, structuralMutationRate);
+                // Existierenden Neuron-Typ mutieren:
+                final boolean mutateNeuronType = false; // Keine strukturelle Mutation des Typs, nur der Neuronen
+                selectedNeuralNet.mutate(neuronValueFunctionFactory, neuronValueFunction, mutationRate, structuralMutationRate, mutateNeuronType);
             } else {
                 // Neuen Neuron-Typ als Mutation des ausgewählten Typs erstellen:
                 final NeuralNet newNeuralNet = new NeuralNet(selectedNeuralNet, true,
                         neuronValueFunctionFactory, neuronValueFunctionFactory.create());
 
-                newNeuralNet.mutate(neuronValueFunctionFactory, neuronValueFunction, mutationRate, structuralMutationRate);
+                final boolean mutateNeuronType = true; // Strukturelle Mutation des Typs
+                newNeuralNet.mutate(neuronValueFunctionFactory, neuronValueFunction, mutationRate, structuralMutationRate, mutateNeuronType);
 
                 if (random.nextDouble() < structuralMutationRate) {
                     final int inputCountChange = random.nextInt(3) - 1;
@@ -925,11 +929,16 @@ public class NeuralNet implements Serializable {
                 }
             }
 
-            // Berechne die Gewichtsänderung: delta * Ausgabe der Quelle * Lernrate
-            for (int outputTypePos = 0; outputTypePos < sourceNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-                final double value = neuronValueFunction.readValue(this, sourceNeuron, outputTypePos);
-                final double weightChange = targetNeuron.getDelta(outputTypePos) * value * learningRate;
-                synapse.setWeight(synapse.getWeight() - weightChange);
+            // Berechne die Gewichtsänderung: delta des Ziels * Ausgabe.Value der Quelle * Lernrate
+            //double weightChange = targetNeuron.getDelta() * this.neuronValueFunction.readValue(this, sourceNeuron) * this.learningRate;
+            //synapse.setWeight(synapse.getWeight() - weightChange);
+            for (int sourceOutputTypePos = 0; sourceOutputTypePos < sourceNeuron.getNeuronTypeInfoData().getOutputCount(); sourceOutputTypePos++) {
+                final double sourceValue = neuronValueFunction.readValue(this, sourceNeuron, sourceOutputTypePos);
+                for (int targetOutputTypePos = 0; targetOutputTypePos < targetNeuron.getNeuronTypeInfoData().getOutputCount(); targetOutputTypePos++) {
+                    final double targetDelta = targetNeuron.getDelta(targetOutputTypePos);
+                    final double weightChange = targetDelta * sourceValue * learningRate;
+                    synapse.setWeight(synapse.getWeight() - weightChange);
+                }
             }
         }
     }
