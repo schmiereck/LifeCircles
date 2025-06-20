@@ -100,7 +100,47 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
         }
     }
 
+    /**
+     * Initialisiert nach dem Deserialisieren die transienten Felder,
+     * um NullPointerExceptions zu vermeiden.
+     *
+     * @param stream ObjectInputStream
+     * @throws java.io.IOException Bei IO-Fehlern
+     * @throws ClassNotFoundException Bei Klassen-Ladefehlern
+     */
+    private void readObject(java.io.ObjectInputStream stream) throws java.io.IOException, ClassNotFoundException {
+        // Standard-Deserialisierung aufrufen
+        stream.defaultReadObject();
+
+        // Transiente Felder initialisieren
+        if (valuesArr != null) {
+            initTransientArrays(valuesArr.length);
+        } else {
+            initTransientArrays(0);
+        }
+    }
+
+    /**
+     * Initialisiert die transienten Arrays mit der gegebenen Größe.
+     *
+     * @param size Die Größe der Arrays
+     */
+    private void initTransientArrays(int size) {
+        if (inputSumArr == null) {
+            inputSumArr = new double[size];
+        }
+
+        if (deltaArr == null) {
+            deltaArr = new double[size];
+        }
+    }
+
     private void checkValueArrSize(final int id) {
+        // Stelle sicher, dass die transienten Arrays initialisiert sind
+        if (inputSumArr == null || deltaArr == null) {
+            initTransientArrays(valuesArr != null ? valuesArr.length : 0);
+        }
+
         if (id >= this.valuesArr.length) {
             {
                 // Ensure the valuesArr is large enough to hold the neuron's value
