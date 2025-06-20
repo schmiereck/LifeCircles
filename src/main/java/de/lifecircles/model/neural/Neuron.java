@@ -182,37 +182,6 @@ public class Neuron implements NeuronInterface {
         this.delta = delta;
     }
 
-    /**
-     * Benutzerdefinierte Serialisierungsmethode.
-     */
-    private void writeObject(ObjectOutputStream oos) throws IOException {
-        oos.defaultWriteObject();
-        // Speichere die Anzahl der Output-Synapsen
-        oos.writeInt(outputSynapseList.size());
-        for (Synapse synapse : outputSynapseList) {
-            oos.writeObject(synapse);
-        }
-    }
-
-    /**
-     * Benutzerdefinierte Deserialisierungsmethode.
-     */
-    @Serial
-    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-        ois.defaultReadObject();
-        // Initialisiere die transienten Felder
-        this.inputSynapseArr = new Synapse[0];
-        this.outputSynapseList = new ArrayList<>(); // Initialisiere die Liste der Output-Synapsen
-        this.inputSum = 0.0;
-        this.delta = 0.0;
-        // Stelle die Output-Synapsen wieder her
-        int outputSynapseCount = ois.readInt();
-        for (int i = 0; i < outputSynapseCount; i++) {
-            Synapse synapse = (Synapse) ois.readObject();
-            this.outputSynapseList.add(synapse);
-        }
-    }
-
     @Override
     public void setInputSynapseArr(final int inputTypePos, Synapse[] inputSynapses) {
         this.inputSynapseArr = inputSynapses;
@@ -286,5 +255,37 @@ public class Neuron implements NeuronInterface {
     @Override
     public void backpropagateExtra(final double learningRate) {
         // Nothing special to do.
+    }
+
+    /**
+     * Benutzerdefinierte Serialisierungsmethode.
+     */
+    @Serial
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.defaultWriteObject();
+        // Speichere die Anzahl der Output-Synapsen
+        oos.writeInt(outputSynapseList.size());
+        for (Synapse synapse : outputSynapseList) {
+            oos.writeObject(synapse);
+        }
+    }
+
+    /**
+     * Benutzerdefinierte Deserialisierungsmethode.
+     */
+    @Serial
+    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        // Initialisiere die transienten Felder
+        this.inputSynapseArr = new Synapse[0];
+        this.outputSynapseList = new ArrayList<>(); // Initialisiere die Liste der Output-Synapsen
+        this.inputSum = 0.0;
+        this.delta = 0.0;
+        // Stelle die Output-Synapsen wieder her
+        int outputSynapseCount = ois.readInt();
+        for (int i = 0; i < outputSynapseCount; i++) {
+            Synapse synapse = (Synapse) ois.readObject();
+            this.outputSynapseList.add(synapse);
+        }
     }
 }

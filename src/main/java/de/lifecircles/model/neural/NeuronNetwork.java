@@ -13,11 +13,11 @@ public class NeuronNetwork implements NeuronInterface {
     /**
      * Input-Synapes for every Input of the Network.
      */
-    private transient List<Synapse[]> inputSynapsesList; // Als transient markiert
+    private List<Synapse[]> inputSynapsesList;
     /**
      * Output-Synapes for every Input of the Network.
      */
-    private transient List<Synapse[]> outputSynapsesList;
+    private List<Synapse[]> outputSynapsesList;
     private boolean isOutputNeuron; // Flag für Output-Neuronen
 
     private final NeuronTypeInfoData neuronTypeInfoData;
@@ -294,3 +294,4 @@ public class NeuronNetwork implements NeuronInterface {
         throw new RuntimeException("Not implemented.");
     }
 }
+

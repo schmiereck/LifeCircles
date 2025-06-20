@@ -77,20 +77,7 @@ public class Synapse implements Serializable {
     @Serial
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
-        // Stelle die Verbindungen wieder her
-        restoreConnections();
-    }
-
-    /**
-     * Methode zur Wiederherstellung der bidirektionalen Referenzen nach der Deserialisierung.
-     */
-    public void restoreConnections() {
-        if (this.sourceNeuron != null) {
-            this.sourceNeuron.addOutputSynapse(this.sourceOutputTypePos, this);
-        }
-        if (this.targetNeuron != null) {
-            this.targetNeuron.addInputSynapse(this.targetInputTypePos, this);
-        }
+        // Die Wiederherstellung der Verbindungen wird von NeuralNet.readObject() übernommen,
+        // um zirkuläre Abhängigkeiten bei der Deserialisierung zu vermeiden.
     }
 }
-

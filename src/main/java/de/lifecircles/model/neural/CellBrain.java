@@ -28,6 +28,7 @@ public class CellBrain implements CellBrainInterface, Serializable {
         this.network = new NeuralNetwork(neuronValueFunctionFactory,
                 inputCount, hiddenCountArr, outputCount,
                 hiddenLayerSynapseConnectivity, SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT);
+        this.network.setEnableNeuronType(true);
 
         this.network.addHiddenLayer(0, inputCount / 4, stateHiddenLayerSynapseConnectivity); // State 0
         this.network.addHiddenLayer(0, inputCount / 4, stateHiddenLayerSynapseConnectivity); // State 1

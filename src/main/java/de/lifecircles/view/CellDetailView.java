@@ -421,13 +421,15 @@ public class CellDetailView extends Stage {
             final int outputTypePos = 0; // Default-Output-Type für Input-Neuronen.
             for (int i = 0; i < layerSize; i++) {
                 double nodeY = layerYOffset + vSpacing * (i + 0.5);
+                NeuronInterface neuron = null;
                 if (i < neurons.size()) {
-                    neuronPositions.put(neurons.get(i), new double[] {layerX, nodeY});
+                    neuron = neurons.get(i);
+                    neuronPositions.put(neuron, new double[] {layerX, nodeY});
                 }
                 // Aktivierungswert direkt vom Hidden-Neuron holen
                 double activation = 0;
-                if (i < neurons.size()) {
-                    activation = network.readNeuronValue(neurons.get(i), outputTypePos);
+                if (neuron != null) {
+                    activation = network.readNeuronValue(neuron, outputTypePos);
                     activation = Math.max(0, Math.min(1, activation));
                 }
 
@@ -451,6 +453,12 @@ public class CellDetailView extends Stage {
                 gc.setStroke(strokeColor);
                 gc.setLineWidth(0.3);
                 gc.strokeOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
+
+                if (neuron instanceof NeuronNetwork) {
+                    gc.setStroke(Color.YELLOW);
+                    gc.setLineWidth(0.5);
+                    gc.strokeRect(layerX - nodeRadius - 2, nodeY - nodeRadius - 2, nodeRadius * 2 + 4, nodeRadius * 2 + 4);
+                }
             }
         }
 
@@ -505,8 +513,10 @@ public class CellDetailView extends Stage {
 
             // Aktivierungswert direkt vom Input-Neuron holen
             double activation = 0;
+            NeuronInterface neuron = null;
             if (layerPos < neuralNet.getInputNeuronArr().length) {
-                activation = network.readNeuronValue(neuralNet.getInputNeuronArr()[layerPos], outputTypePos);
+                neuron = neuralNet.getInputNeuronArr()[layerPos];
+                activation = network.readNeuronValue(neuron, outputTypePos);
                 // Aktivierungswert auf den Bereich [0,1] begrenzen
                 activation = Math.max(0, Math.min(1, activation));
             }
@@ -523,6 +533,12 @@ public class CellDetailView extends Stage {
             gc.fillOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
             gc.setStroke(Color.BLACK);
             gc.strokeOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
+
+            if (neuron instanceof NeuronNetwork) {
+                gc.setStroke(Color.YELLOW);
+                gc.setLineWidth(0.5);
+                gc.strokeRect(layerX - nodeRadius - 2, nodeY - nodeRadius - 2, nodeRadius * 2 + 4, nodeRadius * 2 + 4);
+            }
         }
 
         // Hidden-Layer-Neuronen zeichnen
@@ -541,8 +557,10 @@ public class CellDetailView extends Stage {
 
                 // Aktivierungswert direkt vom Hidden-Neuron holen
                 double activation = 0;
+                NeuronInterface neuron = null;
                 if (i < neurons.size()) {
-                    activation = network.readNeuronValue(neurons.get(i), outputTypePos);
+                    neuron = neurons.get(i);
+                    activation = network.readNeuronValue(neuron, outputTypePos);
                     // Aktivierungswert auf den Bereich [0,1] begrenzen
                     activation = Math.max(0, Math.min(1, activation));
                 }
@@ -559,6 +577,12 @@ public class CellDetailView extends Stage {
                 gc.fillOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
                 gc.setStroke(Color.BLACK);
                 gc.strokeOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
+
+                if (neuron instanceof NeuronNetwork) {
+                    gc.setStroke(Color.YELLOW);
+                    gc.setLineWidth(0.5);
+                    gc.strokeRect(layerX - nodeRadius - 2, nodeY - nodeRadius - 2, nodeRadius * 2 + 4, nodeRadius * 2 + 4);
+                }
             }
         }
 
@@ -575,8 +599,10 @@ public class CellDetailView extends Stage {
 
             // Aktivierungswert direkt vom Output-Neuron holen
             double activation = 0;
+            NeuronInterface neuron = null;
             if (i < neuralNet.getOutputNeuronArr().length) {
-                activation = network.readNeuronValue(neuralNet.getOutputNeuronArr()[i], outputTypePos);
+                neuron = neuralNet.getOutputNeuronArr()[i];
+                activation = network.readNeuronValue(neuron, outputTypePos);
                 // Aktivierungswert auf den Bereich [0,1] begrenzen
                 activation = Math.max(0, Math.min(1, activation));
             }
@@ -593,6 +619,12 @@ public class CellDetailView extends Stage {
             gc.fillOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
             gc.setStroke(Color.BLACK);
             gc.strokeOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
+
+            if (neuron instanceof NeuronNetwork) {
+                gc.setStroke(Color.YELLOW);
+                gc.setLineWidth(0.5);
+                gc.strokeRect(layerX - nodeRadius - 2, nodeY - nodeRadius - 2, nodeRadius * 2 + 4, nodeRadius * 2 + 4);
+            }
         }
 
         // Beschriftungen der Schichten mit dynamischer Schriftgröße

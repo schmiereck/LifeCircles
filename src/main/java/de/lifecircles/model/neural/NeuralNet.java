@@ -1197,7 +1197,7 @@ public class NeuralNet implements Serializable {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         for (Synapse synapse : this.synapseArray) {
-            synapse.restoreConnections();
+            synapse.getSourceNeuron().addOutputSynapse(synapse.getSourceOutputTypePos(), synapse);
         }
         // Nach der Wiederherstellung der Synapsen: Input-Synapsen-Array und Zähler für alle Neuronen korrekt setzen
         // Alle Neuronen einsammeln
