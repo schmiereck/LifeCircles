@@ -43,4 +43,6 @@ public interface NeuronInterface extends Serializable {
     List<Synapse> getOutputSynapseList(final int outputTypePos);
 
     Synapse[] getInputSynapseArr(final int outputTypePos);
+
+    void backpropagateExtra(final double learningRate);
 }

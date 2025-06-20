@@ -282,4 +282,9 @@ public class Neuron implements NeuronInterface {
             this.setDelta(outputTypePos, delta);
         }
     }
+
+    @Override
+    public void backpropagateExtra(final double learningRate) {
+        // Nothing special to do.
+    }
 }

@@ -834,9 +834,31 @@ public class NeuralNet implements Serializable {
         }
 
         // Berechne den Fehler vor dem Training
-        final double error = calculateError(neuronValueFunction, targetOutput);
+        final double error = this.calculateError(neuronValueFunction, targetOutput);
 
         // 1. Berechne den Fehler für die Ausgabeneuronen
+        this.calcOutputNeuronDelta(neuronValueFunction, targetOutput);
+
+        // 2. Backpropagiere den Fehler durch alle versteckten Schichten (von hinten nach vorne)
+        this.backpropagateDelta();
+
+        // 3. Aktualisiere Gewichte und Bias-Werte
+        this.updateBiasAndWeights(neuronValueFunction, learningRate);
+
+        // 4. Backpropagiere die speziellen Neuronen (NeuronNetwork).
+        this.backpropagateExtra(learningRate);
+
+        return error;
+    }
+
+    /**
+     * 1. Berechne den Fehler für die Ausgabeneuronen.
+     * Berechnet die Deltas für die Ausgabeneuronen basierend auf der Differenz zwischen den tatsächlichen und den erwarteten Ausgaben.
+     * Diese Methode wird aufgerufen, nachdem die Ausgaben des Netzwerks berechnet wurden.
+     *
+     * @param targetOutput Die erwarteten Ausgabewerte
+     */
+    private void calcOutputNeuronDelta(final NeuronValueFunction neuronValueFunction, final double[] targetOutput) {
         for (int outputNeuronPos = 0; outputNeuronPos < this.outputNeuronArr.length; outputNeuronPos++) {
             final Neuron outputNeuron = this.outputNeuronArr[outputNeuronPos];
             for (int outputTypePos = 0; outputTypePos < outputNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
@@ -849,8 +871,13 @@ public class NeuralNet implements Serializable {
                 outputNeuron.setDelta(outputTypePos, delta);
             }
         }
+    }
 
-        // 2. Backpropagiere den Fehler durch alle versteckten Schichten (von hinten nach vorne)
+    /**
+     * 2. Backpropagiere den Fehler durch alle versteckten Schichten (von hinten nach vorne).
+     * Diese Methode wird aufgerufen, nachdem die Deltas für die Ausgabeneuronen berechnet wurden.
+     */
+    void backpropagateDelta() {
         for (int hiddenLayerPos = this.hiddenLayerArr.length - 1; hiddenLayerPos >= 0; hiddenLayerPos--) {
             final Layer layer = this.hiddenLayerArr[hiddenLayerPos];
             if (!layer.isActiveLayer() && !disableLayerDeactivation) continue; // Überspringe inaktive Layer
@@ -860,18 +887,13 @@ public class NeuralNet implements Serializable {
                 neuron.backpropagateDelta();
             }
         }
-
-        // 3. Aktualisiere Gewichte und Bias-Werte
-        this.updateWeights(neuronValueFunction, learningRate);
-
-        return error;
     }
 
     /**
-     * Aktualisiert die Gewichte und Bias-Werte basierend auf den berechneten Deltas.
+     * 3. Aktualisiert die Gewichte und Bias-Werte basierend auf den berechneten Deltas.
      * Wird als Teil des Backpropagation-Algorithmus aufgerufen.
      */
-    void updateWeights(final NeuronValueFunction neuronValueFunction, final double learningRate) {
+    void updateBiasAndWeights(final NeuronValueFunction neuronValueFunction, final double learningRate) {
         // Aktualisiere alle Bias-Werte und Gewichte
 
         // 1. Aktualisiere die Bias-Werte in allen Neuronen
@@ -922,6 +944,25 @@ public class NeuralNet implements Serializable {
                     synapse.setWeight(synapse.getWeight() - weightChange);
                 }
             }
+        }
+    }
+
+    /**
+     * 4. Backpropagiere die speziellen Neuronen (NeuronNetwork).
+     */
+    void backpropagateExtra(double learningRate) {
+        for (final Layer layer : this.hiddenLayerArr) {
+            if (!layer.isActiveLayer() && !disableLayerDeactivation) continue; // Überspringe inaktive Layer
+
+            final NeuronInterface[] neurons = layer.getNeuronsArr();
+            for (final NeuronInterface neuron : neurons) {
+                neuron.backpropagateExtra(learningRate);
+            }
+        }
+
+        // Output Neuronen
+        for (final Neuron neuron : this.outputNeuronArr) {
+            neuron.backpropagateExtra(learningRate);
         }
     }
 

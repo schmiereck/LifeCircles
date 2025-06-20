@@ -193,7 +193,7 @@ public class NeuronNetwork implements NeuronInterface {
     public void setDelta(final int outputTypePos, final double delta) {
         //this.deltaArr[outputTypePos] = delta;
         this.network.getNeuronValueFunction().writeDelta(this.network.getNeuralNet(), this, outputTypePos, delta);
-        this.network.getNeuralNet().getOutputNeuronArr()[outputTypePos].setDelta(outputTypePos, delta);
+        //this.network.getNeuralNet().getOutputNeuronArr()[outputTypePos].setDelta(outputTypePos, delta);
     }
 
     @Override
@@ -240,8 +240,8 @@ public class NeuronNetwork implements NeuronInterface {
             // Sammle Fehler von allen ausgehenden Verbindungen
             for (final Synapse synapse : this.getOutputSynapseList(outputTypePos)) {
                 final NeuronInterface targetNeuron = synapse.getTargetNeuron();
-                for (int targetUutputTypePos = 0; targetUutputTypePos < targetNeuron.getNeuronTypeInfoData().getOutputCount(); targetUutputTypePos++) {
-                    errorSum += targetNeuron.getDelta(targetUutputTypePos) * synapse.getWeight();
+                for (int targetOutputTypePos = 0; targetOutputTypePos < targetNeuron.getNeuronTypeInfoData().getOutputCount(); targetOutputTypePos++) {
+                    errorSum += targetNeuron.getDelta(targetOutputTypePos) * synapse.getWeight();
                 }
             }
 
@@ -250,6 +250,23 @@ public class NeuronNetwork implements NeuronInterface {
             final double delta = errorSum * (this.getInputSum(outputTypePos));
             this.setDelta(outputTypePos, delta);
         }
+    }
+
+    @Override
+    public void backpropagateExtra(final double learningRate) {
+        for (int outputTypePos = 0; outputTypePos < this.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
+            final double delta = this.network.getNeuronValueFunction().readDelta(this.network.getNeuralNet(), this, outputTypePos);
+            this.network.getNeuralNet().getOutputNeuronArr()[outputTypePos].setDelta(outputTypePos, delta);
+        }
+
+        // 2. Backpropagiere den Fehler durch alle versteckten Schichten (von hinten nach vorne)
+        this.network.getNeuralNet().backpropagateDelta();
+
+        // 3. Aktualisiere Gewichte und Bias-Werte
+        this.network.getNeuralNet().updateBiasAndWeights(this.network.getNeuronValueFunction(), learningRate);
+
+        // 4. Backpropagiere die speziellen Neuronen (NeuronNetwork).
+        this.network.getNeuralNet().backpropagateExtra(learningRate);
     }
 
     @Override
