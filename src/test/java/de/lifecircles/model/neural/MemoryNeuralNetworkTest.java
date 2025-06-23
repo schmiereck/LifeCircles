@@ -398,8 +398,8 @@ public class MemoryNeuralNetworkTest {
             };
             char[] startCharArr = new char[] { 'B', 'D', 'L', 'D', 'Z', 'a', 'd', 'l', 's' };
             int epochs = 20_000;
-            int trainDataSize = 4;
-            final int trainCount = 35;
+            int trainDataSize = 1;
+            final int trainCount = 25;
 
             // Trainiere mit periodischem Speichern
             trainResultList = trainSmallLanguageModelWithSave(random, trainResultList, patterns, trainDataSize,
@@ -485,7 +485,7 @@ public class MemoryNeuralNetworkTest {
             char[] startCharArr = new char[] { 'D', 'E', 'D', 'E' };
             int epochs = 250_000;
             int trainDataSize = 1;
-            final int trainCount = 30;
+            final int trainCount = 20;
 
             // Trainiere mit periodischem Speichern
             trainResultList = trainSmallLanguageModelWithSave(random, trainResultList, patterns, trainDataSize,
@@ -712,7 +712,7 @@ public class MemoryNeuralNetworkTest {
                 final long neuronCount = Arrays.stream(bestNeuralNetwork.getHiddenLayerArr())
                         .mapToInt(layer -> layer.getNeuronsArr().length).sum();
 
-                System.out.printf("Epoche %d, Error: %f, Proc-Synapses: %d / %d, HiddenLayers: %d, neronCount: %d, lossSum: %f, proccesLoss: %f, maxProccessedSynapses: %d%n",
+                System.out.printf("Epoche %d, Error: %f, Proc-Synapses: %d / %d, HiddenLayers: %d, neuronCount: %d, lossSum: %f, proccesLoss: %f, maxProccessedSynapses: %d%n",
                         epoch, bestTrainResult.getLoss(),
                         bestNeuralNetwork.getProccessedSynapses(),
                         bestNeuralNetwork.getSynapseList().size(),
@@ -848,7 +848,7 @@ public class MemoryNeuralNetworkTest {
                 final long neuronCount = Arrays.stream(bestNeuralNetwork.getHiddenLayerArr())
                         .mapToInt(layer -> layer.getNeuronsArr().length).sum();
 
-                System.out.printf("Epoche %d, Error: %f, Proc-Synapses: %d / %d, HiddenLayers: %d, neronCount: %d, lossSum: %f, proccesLoss: %f, maxProccessedSynapses: %d%n",
+                System.out.printf("Epoche %d, Error: %f, Proc-Synapses: %d / %d, HiddenLayers: %d, neuronCount: %d, lossSum: %f, proccesLoss: %f, maxProccessedSynapses: %d%n",
                         epoch, bestTrainResult.getLoss(),
                         bestNeuralNetwork.getProccessedSynapses(),
                         bestNeuralNetwork.getSynapseList().size(),
@@ -869,10 +869,20 @@ public class MemoryNeuralNetworkTest {
             }
 
             // 20% der besten Netze auswählen und hinzufügen zu den Gewinnern.
+            final int winnerCount = trainResultList.size() / 5;
             final List<NeuralNetwork> winnerNetworkList = new ArrayList<>();
-            for (int winnerPos = 0; winnerPos < trainResultList.size() / 5; winnerPos++) {
+            for (int winnerPos = 0; winnerPos < winnerCount; winnerPos++) {
                 final NNTrainResult trainResult = trainResultList.get(winnerPos);
                 NeuralNetwork winnerNetwork = trainResult.getNetwork();
+                winnerNetwork.rnnClearPreviousState();
+                winnerNetworkList.add(winnerNetwork);
+            }
+
+            // 10% zufällige Netze auswählen und hinzufügen zu den Gewinnern.
+            final int luckyCount = trainResultList.size() / 10;
+            for (int winnerPos = 0; winnerPos < luckyCount; winnerPos++) {
+                final NNTrainResult trainResult = trainResultList.get(winnerCount + random.nextInt(trainResultList.size() - winnerCount));
+                final NeuralNetwork winnerNetwork = trainResult.getNetwork();
                 winnerNetwork.rnnClearPreviousState();
                 winnerNetworkList.add(winnerNetwork);
             }
@@ -881,9 +891,9 @@ public class MemoryNeuralNetworkTest {
 
             // Mutieren der Gewinner, um die nächste Generation aufzufüllen
             while (nextGenerationList.size() < inTrainResultList.size()) {
-                NeuralNetwork winnerNetwork = winnerNetworkList.get(random.nextInt(winnerNetworkList.size()));
+                final NeuralNetwork winnerNetwork = winnerNetworkList.get(random.nextInt(winnerNetworkList.size()));
                 // Mutieren des Netzwerks
-                NeuralNetwork childNetwork = winnerNetwork.mutate(mutationRate, mutationStrengt);
+                final NeuralNetwork childNetwork = winnerNetwork.mutate(mutationRate, mutationStrengt);
                 nextGenerationList.add(childNetwork);
             }
 
