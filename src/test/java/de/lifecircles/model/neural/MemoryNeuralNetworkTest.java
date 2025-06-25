@@ -332,7 +332,7 @@ public class MemoryNeuralNetworkTest {
         };
         final double synapseConnectivity = 0.9D;
         final int networkCount = 12 * 3; // Anzahl der Netzwerke
-        final boolean useBackpropagate = false;
+        final boolean useBackpropagate = true;
 
         List<NNTrainResult> trainResultList = new ArrayList<>();
 
