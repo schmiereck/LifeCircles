@@ -242,11 +242,9 @@ public class NeuralNetwork implements Serializable {
         return totalError;
     }
 
-    public double[] calcTrain(double[] trainingInputs, double[] trainingTargets) {
+    public double[] calcTrain(final double[] trainingInputs, final double[] trainingTargets) {
         // Forward pass
-        final int outputTypePos = 0; // Default-Output-Type für Input-Neuronen.
-        this.setInputs(trainingInputs);
-        double[] outputArray = this.process();
+        final double[] outputArray = this.calcProcess(trainingInputs);
 
         // Backward pass (Backpropagation)
         this.backpropagate(trainingTargets);
@@ -254,9 +252,15 @@ public class NeuralNetwork implements Serializable {
         return outputArray;
     }
 
-    public double calcTrainError(double[] trainingInputs, double[] trainingTargets) {
+    public double[] calcProcess(final double[] trainingInputs) {
+        this.setInputs(trainingInputs);
+        double[] outputArray = this.process();
+
+        return outputArray;
+    }
+
+    public double calcTrainError(final double[] trainingInputs, final double[] trainingTargets) {
         // Forward pass
-        final int outputTypePos = 0; // Default-Output-Type für Input-Neuronen.
         this.setInputs(trainingInputs);
         this.process();
 

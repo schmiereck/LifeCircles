@@ -8,8 +8,8 @@ public interface NeuronInterface extends Serializable {
 
     NeuronTypeInfoData getNeuronTypeInfoData();
 
-    double getBias(final int outputTypePos);
-    void setBias(final int outputTypePos, final double bias);
+    double getBias(final int inputTypePos);
+    void setBias(final int inputTypePos, final double bias);
 
     long activate(NeuronValueFunction neuronValueFunction, final NeuralNet neuralNet);
 
@@ -24,19 +24,9 @@ public interface NeuronInterface extends Serializable {
     void removeOutputSynapse(final int outputTypePos, final Synapse synapse);
     void removeInputSynapse(final int inputTypePos, final Synapse synapse);
 
-    void backpropagateDelta();
-
-    double getDelta(final int outputTypePos);
-    void setDelta(final int outputTypePos, final double delta);
-
-    double getInputSum(final int outputTypePos);
-    void setInputSum(final int outputTypePos, final double inputSum);
+    void backpropagateDelta(final NeuralNet neuralNet, final NeuronValueFunction neuronValueFunction);
 
     void setInputSynapseArr(final int inputTypePos, final Synapse[] array);
-
-    double getValue(final int outputTypePos);
-
-    void setValue(final int outputTypePos, final double value);
 
     int getId();
 

@@ -84,7 +84,7 @@ public class BackpropagateTest {
         final Random random = new Random(2342);
         NeuralNetwork.setRandom(random);
 
-        final NeuronValueFunctionFactory neuronValueFunctionFactory = new DefaultNeuronValueFunctionFactory();
+        final NeuronValueFunctionFactory neuronValueFunctionFactory = new ValuesNeuronValueFunctionFactory();
         NeuralNetwork nn = new NeuralNetwork(neuronValueFunctionFactory,
                 inputCount, architecture, outputCount,
                 synapseConnectivity, 0);

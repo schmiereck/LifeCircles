@@ -17,7 +17,7 @@ public class Cell_writeObject_is_called_Test {
         double hiddenCountFactor = 1.0;
         double stateHiddenLayerSynapseConnectivity = 1.0;
         double synapseConnectivity = 1.0;
-        final NeuronValueFunctionFactory neuronValueFunctionFactory = new DefaultNeuronValueFunctionFactory();
+        final NeuronValueFunctionFactory neuronValueFunctionFactory = new ValuesNeuronValueFunctionFactory();
         CellBrain brain = new CellBrain(neuronValueFunctionFactory,
                 inputCount, outputCount, hiddenCountFactor, stateHiddenLayerSynapseConnectivity, synapseConnectivity);
         Cell cell = new Cell(new Vector2D(1.0, 2.0), 5.0, brain);
@@ -64,10 +64,15 @@ public class Cell_writeObject_is_called_Test {
         // Vergleiche Layergrößen
         assertArrayEquals(origNN.getLayerSizes(), deserNN.getLayerSizes(), "Layergrößen unterschiedlich");
         // Vergleiche Biases der Neuronen
-        for (int i = 0; i < origNN.getInputNeuronArr().length; i++) {
-            final Neuron origInputNeuron = origNN.getInputNeuronArr()[i];
-            for (int outputTypePos = 0; outputTypePos < origInputNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-                assertEquals(origInputNeuron.getBias(outputTypePos), deserNN.getInputNeuronArr()[i].getBias(outputTypePos), 1e-9, "Input-Bias unterschiedlich");
+        for (int inputNeuronPos = 0; inputNeuronPos < origNN.getInputNeuronArr().length; inputNeuronPos++) {
+            final Neuron origInputNeuron = origNN.getInputNeuronArr()[inputNeuronPos];
+            for (int inputTypePos = 0; inputTypePos < origInputNeuron.getNeuronTypeInfoData().getInputCount(); inputTypePos++) {
+                double origInputNeuronBias = origInputNeuron.getBias(inputTypePos);
+
+                Neuron deserInputNeuron = deserNN.getInputNeuronArr()[inputNeuronPos];
+                double deserInputNeuronBias = deserInputNeuron.getBias(inputTypePos);
+
+                assertEquals(origInputNeuronBias, deserInputNeuronBias, 1e-9, "Input-Bias unterschiedlich");
             }
         }
         for (int l = 0; l < origNN.getHiddenLayerArr().length; l++) {
@@ -75,15 +80,17 @@ public class Cell_writeObject_is_called_Test {
             NeuronInterface[] deserLayer = deserNN.getHiddenLayerArr()[l].getNeuronsArr();
             for (int n = 0; n < origLayer.length; n++) {
                 final NeuronInterface origNeuron = origLayer[n];
-                for (int outputTypePos = 0; outputTypePos < origNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-                    assertEquals(origNeuron.getBias(outputTypePos), deserLayer[n].getBias(outputTypePos), 1e-9, "Hidden-Bias unterschiedlich");
+                final NeuronInterface deserNeuron = deserLayer[n];
+                for (int inputTypePos = 0; inputTypePos < origNeuron.getNeuronTypeInfoData().getInputCount(); inputTypePos++) {
+                    assertEquals(origNeuron.getBias(inputTypePos), deserNeuron.getBias(inputTypePos), 1e-9, "Hidden-Bias unterschiedlich");
                 }
             }
         }
         for (int i = 0; i < origNN.getOutputNeuronArr().length; i++) {
             final NeuronInterface origOutputNeuron = origNN.getOutputNeuronArr()[i];
-            for (int outputTypePos = 0; outputTypePos < origOutputNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-                assertEquals(origOutputNeuron.getBias(outputTypePos), deserNN.getOutputNeuronArr()[i].getBias(outputTypePos), 1e-9, "Output-Bias unterschiedlich");
+            final NeuronInterface deserOutputNeuron = deserNN.getOutputNeuronArr()[i];
+            for (int inputTypePos = 0; inputTypePos < origOutputNeuron.getNeuronTypeInfoData().getInputCount(); inputTypePos++) {
+                assertEquals(origOutputNeuron.getBias(inputTypePos), deserOutputNeuron.getBias(inputTypePos), 1e-9, "Output-Bias unterschiedlich");
             }
         }
         // Vergleiche Synapsen-Gewichte

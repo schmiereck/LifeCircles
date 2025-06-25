@@ -47,7 +47,7 @@ public class NeuronNetwork implements NeuronInterface {
         }
         //this.deltaArr = new double[this.neuronTypeInfoData.getOutputCount()];
         //this.inputSumArr = new double[this.neuronTypeInfoData.getOutputCount()];
-        this.biasArr = new double[this.neuronTypeInfoData.getOutputCount()];
+        this.biasArr = new double[this.neuronTypeInfoData.getInputCount()];
     }
 
     @Override
@@ -63,7 +63,11 @@ public class NeuronNetwork implements NeuronInterface {
     @Override
     public NeuronInterface cloneNeuron(final NeuralNet neuralNet, final NeuronValueFunction neuronValueFunction, final boolean isActiveLayer) {
         final int newId = neuronValueFunction.fetchNextFreeId(neuralNet);
-        NeuronNetwork newNeuron = new NeuronNetwork(newId, this.neuronTypeInfoData, this.network.getNeuronValueFunctionFactory());
+        final NeuronNetwork newNeuron = new NeuronNetwork(newId, this.neuronTypeInfoData, this.network.getNeuronValueFunctionFactory());
+
+        for (int inputNeuronPos = 0; inputNeuronPos < newNeuron.getNeuronTypeInfoData().getInputCount(); inputNeuronPos++) {
+            newNeuron.setBias(inputNeuronPos, this.getBias(inputNeuronPos));
+        }
 
         return newNeuron;
     }
@@ -133,24 +137,38 @@ public class NeuronNetwork implements NeuronInterface {
     @Override
     public long activate(final NeuronValueFunction neuronValueFunction, final NeuralNet neuralNet) {
         this.checkInOutSize();
-        //final NeuralNet calcNeuralNet = neuralNet;
-        final NeuralNet calcNeuralNet = this.network.getNeuralNet();
+
         final double[] inputArr = new double[this.neuronTypeInfoData.getInputCount()];
         for (int inputTypePos = 0; inputTypePos < this.neuronTypeInfoData.getInputCount(); inputTypePos++) {
+            double sum = this.getBias(inputTypePos);
             final Synapse[] inputSynapseArr = this.inputSynapsesList.get(inputTypePos);
             for (int inputSynapsePos = 0; inputSynapsePos < inputSynapseArr.length; inputSynapsePos++) {
                 final Synapse synapse = inputSynapseArr[inputSynapsePos];
-                int sourceOutputTypePos = synapse.getSourceOutputTypePos();
-                inputArr[inputTypePos] += neuronValueFunction.readValue(neuralNet, synapse.getSourceNeuron(), sourceOutputTypePos) * synapse.getWeight();
+                final int sourceOutputTypePos = synapse.getSourceOutputTypePos();
+                final double sourceOutputValue = neuronValueFunction.readValue(neuralNet, synapse.getSourceNeuron(), sourceOutputTypePos);
+                sum += sourceOutputValue * synapse.getWeight();
             }
+            inputArr[inputTypePos] = sum;
         }
 
-        final NeuronValueFunction calcNeuronValueFunction = neuronValueFunction;
-        //final NeuronValueFunction calcNeuronValueFunction = this.network.getNeuronValueFunction();
+        //final NeuralNet calcNeuralNet = neuralNet;
+        final NeuralNet calcNeuralNet = this.network.getNeuralNet();
+        //final NeuronValueFunction calcNeuronValueFunction = neuronValueFunction;
+        final NeuronValueFunction calcNeuronValueFunction = this.network.getNeuronValueFunction();
 
-        final int outputTypePos = 0;
         calcNeuralNet.setInputs(calcNeuronValueFunction, inputArr);
         calcNeuralNet.process(calcNeuronValueFunction);
+
+        for (int outputTypePos = 0; outputTypePos < this.neuronTypeInfoData.getOutputCount(); outputTypePos++) {
+            Neuron calcOutputNeuron = calcNeuralNet.getOutputNeuronArr()[outputTypePos];
+            // Kopieren der Werte des internen NeuralNet in das NeuronNetwork:
+            final double calcOutputNeuronInputSum = calcNeuronValueFunction.readInputSum(calcNeuralNet, calcOutputNeuron, outputTypePos);
+            neuronValueFunction.writeInputSum(neuralNet, this, outputTypePos, calcOutputNeuronInputSum);
+
+            final double calcOutputNeuronValue = calcNeuronValueFunction.readValue(calcNeuralNet, calcOutputNeuron, outputTypePos);
+            neuronValueFunction.writeValue(neuralNet, this, outputTypePos, calcOutputNeuronValue);
+        }
+
         return calcNeuralNet.getProccessedSynapses();
     }
 
@@ -167,56 +185,25 @@ public class NeuronNetwork implements NeuronInterface {
     }
 
     @Override
-    public double getBias(final int outputTypePos) {
-        //final Neuron neuron = this.network.getOutputNeuronArr()[outputTypePos];
-        //final int neuronOutputTypePos = 0; // Default-Output-Type für Output-Neuronen.
-        //return neuron.getBias(neuronOutputTypePos);
-        return this.biasArr[outputTypePos];
+    public double getBias(final int inputTypePos) {
+        return this.biasArr[inputTypePos];
+        //return this.network.getNeuralNet().getOutputNeuronArr()[inputTypePos].getBias(inputTypePos);
     }
 
     @Override
-    public void setBias(final int outputTypePos, final double bias) {
-        //final Neuron neuron = this.network.getOutputNeuronArr()[outputTypePos];
-        //final int neuronOutputTypePos = 0; // Default-Output-Type für Output-Neuronen.
-        //neuron.setBias(neuronOutputTypePos, bias);
-        this.biasArr[outputTypePos] = bias;
-        this.network.getNeuralNet().getOutputNeuronArr()[outputTypePos].setBias(outputTypePos, bias);
-    }
-
-    @Override
-    public double getDelta(final int outputTypePos) {
-        //return this.deltaArr[outputTypePos];
-        return this.network.getNeuronValueFunction().readDelta(this.network.getNeuralNet(), this, outputTypePos);
-    }
-
-    @Override
-    public void setDelta(final int outputTypePos, final double delta) {
-        //this.deltaArr[outputTypePos] = delta;
-        this.network.getNeuronValueFunction().writeDelta(this.network.getNeuralNet(), this, outputTypePos, delta);
-        //this.network.getNeuralNet().getOutputNeuronArr()[outputTypePos].setDelta(outputTypePos, delta);
-    }
-
-    @Override
-    public double getInputSum(final int outputTypePos) {
-        //return this.inputSumArr[outputTypePos];
-        return this.network.getNeuronValueFunction().readInputSum(this.network.getNeuralNet(), this, outputTypePos);
-    }
-
-    @Override
-    public void setInputSum(final int outputTypePos, final double inputSum) {
-        //this.deltaArr[outputTypePos] = delta;
-        this.network.getNeuronValueFunction().writeInputSum(this.network.getNeuralNet(), this, outputTypePos, inputSum);
-        this.network.getNeuralNet().getOutputNeuronArr()[outputTypePos].setInputSum(outputTypePos, inputSum);
+    public void setBias(final int inputTypePos, final double bias) {
+        this.biasArr[inputTypePos] = bias;
+        //this.network.getNeuralNet().getOutputNeuronArr()[inputTypePos].setBias(inputTypePos, bias);
     }
 
     @Override
     public void mutateNeuron(final Random random, double mutationRate, double mutationStrength) {
         // Anpassung der Bias-Werte.
-        for (int outputTypePos = 0; outputTypePos < this.neuronTypeInfoData.getOutputCount(); outputTypePos++) {
+        for (int inputTypePos = 0; inputTypePos < this.neuronTypeInfoData.getInputCount(); inputTypePos++) {
             if (random.nextDouble() < mutationRate) {
                 double mutationFactor = random.nextDouble() * 0.1 - 0.05; // Zufällige Mutation zwischen -0.05 und +0.05
-                double newBias = this.getBias(outputTypePos) + mutationFactor;
-                this.setBias(outputTypePos, newBias);
+                double newBias = this.getBias(inputTypePos) + mutationFactor;
+                this.setBias(inputTypePos, newBias);
             }
         }
 
@@ -233,7 +220,7 @@ public class NeuronNetwork implements NeuronInterface {
     }
 
     @Override
-    public void backpropagateDelta() {
+    public void backpropagateDelta(final NeuralNet neuralNet, final NeuronValueFunction neuronValueFunction) {
         for (int outputTypePos = 0; outputTypePos < this.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
             double errorSum = 0.0;
 
@@ -241,32 +228,50 @@ public class NeuronNetwork implements NeuronInterface {
             for (final Synapse synapse : this.getOutputSynapseList(outputTypePos)) {
                 final NeuronInterface targetNeuron = synapse.getTargetNeuron();
                 for (int targetOutputTypePos = 0; targetOutputTypePos < targetNeuron.getNeuronTypeInfoData().getOutputCount(); targetOutputTypePos++) {
-                    errorSum += targetNeuron.getDelta(targetOutputTypePos) * synapse.getWeight();
+                    //final double targetDelta = targetNeuron.getDelta(targetOutputTypePos);
+                    final double targetDelta = neuronValueFunction.readDelta(neuralNet, targetNeuron, outputTypePos);
+                    errorSum += targetDelta * synapse.getWeight();
                 }
             }
 
             // Berechne Delta für dieses Neuron
-            //final double delta = errorSum * this.getActivationFunction().derivative(this.getInputSum(outputTypePos));
-            final double delta = errorSum * (this.getInputSum(outputTypePos));
-            this.setDelta(outputTypePos, delta);
+            //final double inputSum = this.getInputSum(outputTypePos);
+            final double inputSum = neuronValueFunction.readInputSum(neuralNet, this, outputTypePos);
+            //final double delta = errorSum * this.getActivationFunction().derivative(inputSum);
+            final double delta = errorSum * inputSum;
+            //this.setDelta(outputTypePos, delta);
+            neuronValueFunction.writeDelta(neuralNet, this, outputTypePos, delta);
         }
     }
 
     @Override
     public void backpropagateExtra(final double learningRate) {
+        final NeuronValueFunction neuronValueFunction = this.network.getNeuronValueFunction();
+        final NeuralNet neuralNet = this.network.getNeuralNet();
+
         for (int outputTypePos = 0; outputTypePos < this.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-            final double delta = this.network.getNeuronValueFunction().readDelta(this.network.getNeuralNet(), this, outputTypePos);
-            this.network.getNeuralNet().getOutputNeuronArr()[outputTypePos].setDelta(outputTypePos, delta);
+            // Transfer the delta-values of this Neuron to the output neurons of the inner network.
+            final double delta = neuronValueFunction.readDelta(neuralNet, this, outputTypePos);
+            final Neuron outputNeuron = neuralNet.getOutputNeuronArr()[outputTypePos];
+            //outputNeuron.setDelta(outputTypePos, delta);
+            neuronValueFunction.writeDelta(neuralNet, outputNeuron, outputTypePos, delta);
+            //neuronValueFunction.writeDelta(neuralNet, this, outputTypePos, delta);
+
+            // Nicht nötig, da von activate schon berechnet???
+            //final double inputSum = neuronValueFunction.readInputSum(neuralNet, this, outputTypePos);
+            ////outputNeuron.setInputSum(outputTypePos, inputSum);
+            //neuronValueFunction.writeInputSum(neuralNet, outputNeuron, outputTypePos, inputSum);
+            ////neuronValueFunction.writeInputSum(neuralNet, this, outputTypePos, inputSum);
         }
 
         // 2. Backpropagiere den Fehler durch alle versteckten Schichten (von hinten nach vorne)
-        this.network.getNeuralNet().backpropagateDelta();
+        neuralNet.backpropagateDelta(neuronValueFunction);
 
         // 3. Aktualisiere Gewichte und Bias-Werte
-        this.network.getNeuralNet().updateBiasAndWeights(this.network.getNeuronValueFunction(), learningRate);
+        neuralNet.updateBiasAndWeights(neuronValueFunction, learningRate);
 
         // 4. Backpropagiere die speziellen Neuronen (NeuronNetwork).
-        this.network.getNeuralNet().backpropagateExtra(learningRate);
+        neuralNet.backpropagateExtra(learningRate);
     }
 
     @Override
@@ -282,16 +287,6 @@ public class NeuronNetwork implements NeuronInterface {
     @Override
     public void setInputSynapseArr(final int inputTypePos, final Synapse[] inputSynapses) {
         this.inputSynapsesList.set(inputTypePos, inputSynapses);
-    }
-
-    @Override
-    public double getValue(int outputTypePos) {
-        throw new RuntimeException("Not implemented.");
-    }
-
-    @Override
-    public void setValue(int outputTypePos, double value) {
-        throw new RuntimeException("Not implemented.");
     }
 }
 

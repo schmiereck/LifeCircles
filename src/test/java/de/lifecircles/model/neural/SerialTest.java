@@ -58,7 +58,7 @@ public class SerialTest {
 
     @Test
     void testNeuronSynapseConnectionsAfterDeserialization() throws IOException, ClassNotFoundException {
-        final NeuronValueFunctionFactory neuronValueFunctionFactory = new DefaultNeuronValueFunctionFactory();
+        final NeuronValueFunctionFactory neuronValueFunctionFactory = new ValuesNeuronValueFunctionFactory();
         NeuralNetwork network = new NeuralNetwork(neuronValueFunctionFactory,
                 3, 2, 1);
 

@@ -21,8 +21,8 @@ public class Neuron implements NeuronInterface {
     private boolean isOutputNeuron; // Flag für Output-Neuronen
     
     // Für Backpropagation benötigte Felder
-    private transient double inputSum; // Eingangssumme vor Aktivierung
-    private transient double delta; // Delta für Backpropagation
+    //private transient double inputSum; // Eingangssumme vor Aktivierung
+    //private transient double delta; // Delta für Backpropagation
 
     private final NeuronTypeInfoData neuronTypeInfoData;
 
@@ -35,8 +35,8 @@ public class Neuron implements NeuronInterface {
         this.outputSynapseList = new ArrayList<>();
         this.activationFunction = ActivationFunction.Sigmoid;
         this.isOutputNeuron = false; // Standardmäßig kein Output-Neuron
-        this.inputSum = 0.0;
-        this.delta = 0.0;
+        //this.inputSum = 0.0;
+        //this.delta = 0.0;
     }
 
     @Override
@@ -60,21 +60,11 @@ public class Neuron implements NeuronInterface {
         this.outputSynapseList.add(synapse);
     }
 
-    @Override
-    public double getValue(final int outputTypePos) {
-        return this.value;
-    }
-
-    @Override
-    public void setValue(final int outputTypePos, final double value) {
-        this.value = value;
-    }
-
-    public double getBias(final int outputTypePos) {
+    public double getBias(final int inputTypePos) {
         return this.bias;
     }
 
-    public void setBias(final int outputTypePos, final double bias) {
+    public void setBias(final int inputTypePos, final double bias) {
         this.bias = bias;
     }
 
@@ -151,37 +141,6 @@ public class Neuron implements NeuronInterface {
         return this.activationFunction;
     }
 
-    /**
-     * Gibt den Eingangswert zurück (vor Anwendung der Aktivierungsfunktion)
-     * @return Die Eingangssumme vor Aktivierung
-     */
-    @Override
-    public double getInputSum(final int outputTypePos) {
-        return this.inputSum;
-    }
-
-    /**
-     * Setzt den Eingangswert der Eingangssumme vor Aktivierung.
-     */
-    @Override
-    public void setInputSum(final int outputTypePos, final double inputSum) {
-        this.inputSum = inputSum;
-    }
-
-    /**
-     * Gibt den Delta-Wert für Backpropagation zurück
-     * @return Der Delta-Wert
-     */
-    @Override
-    public double getDelta(final int outputTypePos) {
-        return this.delta;
-    }
-
-    @Override
-    public void setDelta(final int outputTypePos, final double delta) {
-        this.delta = delta;
-    }
-
     @Override
     public void setInputSynapseArr(final int inputTypePos, Synapse[] inputSynapses) {
         this.inputSynapseArr = inputSynapses;
@@ -201,7 +160,7 @@ public class Neuron implements NeuronInterface {
         long synapseCount = 0L;
         final int outputTypePos = 0; // This Neuron supports only one output.
         for (int inputTypePos = 0; inputTypePos < this.getNeuronTypeInfoData().getInputCount(); inputTypePos++) {
-            double sum = this.getBias(outputTypePos);
+            double sum = this.getBias(inputTypePos);
             // Direkte Array-Iteration für bessere Performance
             final Synapse[] inputSynapseArr = this.getInputSynapseArr(inputTypePos);
             for (int inputSynapsePos = 0; inputSynapsePos < inputSynapseArr.length; inputSynapsePos++) {
@@ -209,7 +168,10 @@ public class Neuron implements NeuronInterface {
                 sum += neuronValueFunction.readValue(neuralNet, synapse.getSourceNeuron(), outputTypePos) * synapse.getWeight();
             }
 
-            this.setInputSum(inputTypePos, sum); // Speichere die Summe vor Aktivierung für Backpropagation
+            // Speichere die Summe vor Aktivierung für Backpropagation
+            //this.setInputSum(inputTypePos, sum);
+            neuronValueFunction.writeInputSum(neuralNet, this, outputTypePos, sum);
+
             double value = this.getActivationFunction().apply(sum);
             //this.writeNeuronValue(neuron, outputTypePos, value);
             neuronValueFunction.writeValue(neuralNet, this, outputTypePos, value);
@@ -223,8 +185,11 @@ public class Neuron implements NeuronInterface {
     public NeuronInterface cloneNeuron(final NeuralNet neuralNet, final NeuronValueFunction neuronValueFunction, final boolean isActiveLayer) {
         final Neuron newNeuron = new Neuron(neuronValueFunction.fetchNextFreeId(neuralNet), this.getNeuronTypeInfoData());
         newNeuron.setActivationFunction(this.getActivationFunction());
+        for (int inputTypePos = 0; inputTypePos < this.getNeuronTypeInfoData().getInputCount(); inputTypePos++) {
+            newNeuron.setBias(inputTypePos, this.getBias(inputTypePos));
+        }
         for (int outputTypePos = 0; outputTypePos < this.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-            newNeuron.setBias(outputTypePos, this.getBias(outputTypePos));
+            //newNeuron.setBias(outputTypePos, this.getBias(outputTypePos));
             if (isActiveLayer) {
                 final double value = neuronValueFunction.readValue(neuralNet, this, outputTypePos);
                 neuronValueFunction.writeValue(neuralNet, newNeuron, outputTypePos, value);
@@ -236,19 +201,24 @@ public class Neuron implements NeuronInterface {
     }
 
     @Override
-    public void backpropagateDelta() {
+    public void backpropagateDelta(final NeuralNet neuralNet, final NeuronValueFunction neuronValueFunction) {
         for (int outputTypePos = 0; outputTypePos < this.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
             double errorSum = 0.0;
 
             // Sammle Fehler von allen ausgehenden Verbindungen
             for (final Synapse synapse : this.getOutputSynapseList(outputTypePos)) {
                 final NeuronInterface targetNeuron = synapse.getTargetNeuron();
-                errorSum += targetNeuron.getDelta(outputTypePos) * synapse.getWeight();
+                //final double targetDelta = targetNeuron.getDelta(outputTypePos);
+                final double targetDelta = neuronValueFunction.readDelta(neuralNet, targetNeuron, outputTypePos);
+                errorSum += targetDelta * synapse.getWeight();
             }
 
             // Berechne Delta für dieses Neuron
-            final double delta = errorSum * this.getActivationFunction().derivative(this.getInputSum(outputTypePos));
-            this.setDelta(outputTypePos, delta);
+            //final double inputSum = this.getInputSum(outputTypePos);
+            final double inputSum = neuronValueFunction.readInputSum(neuralNet, this, outputTypePos);
+            final double delta = errorSum * this.getActivationFunction().derivative(inputSum);
+            //this.setDelta(outputTypePos, delta);
+            neuronValueFunction.writeDelta(neuralNet, this, outputTypePos, delta);
         }
     }
 
@@ -279,8 +249,8 @@ public class Neuron implements NeuronInterface {
         // Initialisiere die transienten Felder
         this.inputSynapseArr = new Synapse[0];
         this.outputSynapseList = new ArrayList<>(); // Initialisiere die Liste der Output-Synapsen
-        this.inputSum = 0.0;
-        this.delta = 0.0;
+        //this.inputSum = 0.0;
+        //this.delta = 0.0;
         // Stelle die Output-Synapsen wieder her
         int outputSynapseCount = ois.readInt();
         for (int i = 0; i < outputSynapseCount; i++) {
