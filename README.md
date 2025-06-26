@@ -55,9 +55,6 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
-* Memory-tests
-  * Training der Sequenz abbrechen, wenn Fehler zu groß.
-
 * Für das NeuronNetwork einführen, dass es Typen gibt, die 
   * den ersten Input verwenden, um festzulegen ob sie aktiv/inaktiv sind (alalog zu dem inaktiven Layern).
   * den zweiten Input verwenden, um festzulegen, ob eine Backproagation stattfinden soll, oder nicht.
@@ -90,6 +87,9 @@ Das System-Design der Anwendung soll enthalten:
   * Energie von anderer Zelle.
 
 # DONE
+
+* Memory-tests
+  * Training der Sequenz abbrechen, wenn Fehler zu groß.
 
 * handleBlockerCollisions() und Blocker.getNearestPoint():
   Die Zellen bleiben weiter innerhalb des Blockers gefangen und werden an den Innenseiten reflektiert.

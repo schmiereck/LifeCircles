@@ -13,6 +13,9 @@ import java.io.*;
 
 public class MemoryNeuralNetworkTest {
     private static final Logger logger = LoggerFactory.getLogger(MemoryNeuralNetworkTest.class);
+    public static final double MIN_LOOS = 0.005D;
+    public static final double MAX_LOOS = 0.25D;
+    public static final int HIGH_LOOS_COUNT_MAX = 2;
 
     private static final class NNTrainResult {
         private final NeuralNetwork network;
@@ -672,6 +675,7 @@ public class MemoryNeuralNetworkTest {
 
                         // Netzwerk für das nächste Training zurücksetzen
                         network.rnnClearPreviousState();
+                        int highLossCount = 0;
 
                         // Training für die gesamte Sequenz
                         for (int trainDataPos = 0; trainDataPos < trainPatternCount; trainDataPos++) {
@@ -692,8 +696,16 @@ public class MemoryNeuralNetworkTest {
 
                                 long proccessedSynapses = network.getProccessedSynapses();
 
-                                calculateLoss(trainResult, outputArray, expectedOutputArr, proccessedSynapses);
                                 trainedCharacters++;
+                                if (!calculateLoss(trainResult, outputArray, expectedOutputArr, proccessedSynapses)) {
+                                    highLossCount++;
+                                    if (highLossCount > HIGH_LOOS_COUNT_MAX) {
+                                        // Abbrechen, wenn Fehler zu groß.
+                                        break;
+                                    }
+                                } else {
+                                    highLossCount = 0;
+                                }
                             }
                         }
                     }
@@ -705,6 +717,7 @@ public class MemoryNeuralNetworkTest {
 
                         // Netzwerk für das nächste Training zurücksetzen
                         network.rnnClearPreviousState();
+                        int highLossCount = 0;
 
                         for (int charPos = 0; charPos < characters.length - 1; charPos++) {
                             final int currentCharPos = (charPos) % characters.length;
@@ -720,8 +733,16 @@ public class MemoryNeuralNetworkTest {
 
                             long proccessedSynapses = network.getProccessedSynapses();
 
-                            calculateLoss(trainResult, outputArray, expectedOutputArr, proccessedSynapses);
                             trainedCharacters++;
+                            if (!calculateLoss(trainResult, outputArray, expectedOutputArr, proccessedSynapses)) {
+                                highLossCount++;
+                                if (highLossCount > HIGH_LOOS_COUNT_MAX) {
+                                    // Abbrechen, wenn Fehler zu groß.
+                                    break;
+                                }
+                            } else {
+                                highLossCount = 0;
+                            }
                         }
                     }
                 }
@@ -826,6 +847,7 @@ public class MemoryNeuralNetworkTest {
 
                         // Netzwerk für das nächste Training zurücksetzen
                         network.rnnClearPreviousState();
+                        int highLossCount = 0;
 
                         // Training für verschiedene Patterns.
                         for (int trainPatternPos = 0; trainPatternPos < trainPatternCount; trainPatternPos++) {
@@ -846,8 +868,16 @@ public class MemoryNeuralNetworkTest {
 
                                 long proccessedSynapses = network.getProccessedSynapses();
 
-                                calculateLoss(trainResult, outputArray, expectedOutputArr, proccessedSynapses);
                                 trainedCharacters++;
+                                if (!calculateLoss(trainResult, outputArray, expectedOutputArr, proccessedSynapses)) {
+                                    highLossCount++;
+                                    if (highLossCount > HIGH_LOOS_COUNT_MAX) {
+                                        // Abbrechen, wenn Fehler zu groß.
+                                        break;
+                                    }
+                                } else {
+                                    highLossCount = 0;
+                                }
                             }
                         }
                     }
@@ -859,6 +889,7 @@ public class MemoryNeuralNetworkTest {
 
                         // Netzwerk für das nächste Training zurücksetzen
                         network.rnnClearPreviousState();
+                        int highLossCount = 0;
 
                         for (int charPos = 0; charPos < characters.length - 1; charPos++) {
                             final int currentCharPos = (charPos) % characters.length;
@@ -874,8 +905,16 @@ public class MemoryNeuralNetworkTest {
 
                             long proccessedSynapses = network.getProccessedSynapses();
 
-                            calculateLoss(trainResult, outputArray, expectedOutputArr, proccessedSynapses);
                             trainedCharacters++;
+                            if (!calculateLoss(trainResult, outputArray, expectedOutputArr, proccessedSynapses)) {
+                                highLossCount++;
+                                if (highLossCount > HIGH_LOOS_COUNT_MAX) {
+                                    // Abbrechen, wenn Fehler zu groß.
+                                    break;
+                                }
+                            } else {
+                                highLossCount = 0;
+                            }
                         }
                     }
                 }
@@ -899,7 +938,7 @@ public class MemoryNeuralNetworkTest {
                 logger.info("Netzwerk nach Epoche {} gespeichert als {}", epoch, networkFileName);
             }
 
-            if (bestTrainResult.getLoss() < 0.005D) {
+            if (bestTrainResult.getLoss() < MIN_LOOS) {
                 logger.info("Bestes Netzwerk erreicht einen Verlust von {}. Training wird abgebrochen.", bestTrainResult.getLoss());
                 generateText(bestNeuralNetwork, startCharArr);
 
@@ -981,7 +1020,7 @@ public class MemoryNeuralNetworkTest {
     /**
      * Berechnet den Verlust zwischen Vorhersage und Zielwert.
      */
-    private static void calculateLoss(NNTrainResult trainResult, double[] outputArray, double[] expectedOutputArr, long proccessedSynapses) {
+    private static boolean calculateLoss(NNTrainResult trainResult, double[] outputArray, double[] expectedOutputArr, long proccessedSynapses) {
         double loss = 0.0D;
         for (int outputPos = 0; outputPos < outputArray.length; outputPos++) {
             double diff = expectedOutputArr[outputPos] - outputArray[outputPos];
@@ -996,6 +1035,7 @@ public class MemoryNeuralNetworkTest {
         trainResult.proccesLoss += proccesLoss;
 
         //return loss * 0.75 + proccesLoss * 0.25; // 75% Verlust, 25% Proccessed Synapses
+        return loss < MAX_LOOS; // Verlust kleiner als Maximalwert
     }
 
 
