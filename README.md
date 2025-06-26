@@ -55,41 +55,18 @@ Das System-Design der Anwendung soll enthalten:
 
 # TODO
 
-* Neuer Typ Neuron
-  * Intern ein NN das für alle eines Typs gleich ist.
-  * Neuron muss mehrere Input- und Output-Typen haben können die auf Inputs und Outputs des internen NN abgebildet werden.
-  * Nach Berechnung werden die Outputs des internen NN auf die Outputs des Neurons abgebildet.
-  * Jedes Neuron bekommt eine ID. Die neuron-Value wird von einem von der Architektur unabhängigen Objekt (NeuronalnetworkValues) verwaltet.  
-    Der Zugriff erfolgt über die ID.
-    Somit kann die gleiche Netzwerk-Architektur mit verschiedenen Werten verwendet werden.
-  * Die IDs werden in der Reihenfolge der Neuronen im NeuronalNetwork vergeben.  
-    Wird ein Neuron gelöscht wird ein lowestFreeID gesetzt, wenn diese niedriger ist als zuvor.
-    Wird eine neue ID benötigt wird diese auf lowestIDPos gesetzt und dann die nächste Freie ID gesucht.  
-    lastFreeID steht auf der hächten freien ID. Sollten beide gleich sein, muss nicht gesucht werden, da es dann keine Lücke gibt. 
-  * Jede Value eines Neurons kann selbst wiederum NeronValues bereit stellen, die für dessen Berechnung verwendet werden.
-    Dadurch kann eine Hirarchie von NeuronalNetworks aufgebaut werden.
-  
-* Interaktionsradius der Aktor-Forces auf 1.5 oder 2.0 erweitern.
-  * Testen ob damit höhere Buildings möglich sind.
+* Memory-tests
+  * Training der Sequenz abbrechen, wenn Fehler zu groß.
 
-* handleBlockerCollisions() und Blocker.getNearestPoint():
-  Die Zellen bleiben weiter innerhalb des Blockers gefangen und werden an den Innenseiten reflektiert. 
-  Irgend etwas an der Berechnung muss grundlegend falsch sein. Prüfe nochmal alles genau nach.
-  Für mich sieht es so aus, als ob die Logik genau das Gegenteil das gewünschten Verhaltens implementiert, wenn sich der Mittelpunkt der Zelle innerhalb des Blockers befindet.
-
-* ConstantBrain das konstante Ausgänge hat.
-  * Testszenario für Zellabstoßung.
-  * Testszenario für AktorSensor anziehend und abstoßend.
+* Für das NeuronNetwork einführen, dass es Typen gibt, die 
+  * den ersten Input verwenden, um festzulegen ob sie aktiv/inaktiv sind (alalog zu dem inaktiven Layern).
+  * den zweiten Input verwenden, um festzulegen, ob eine Backproagation stattfinden soll, oder nicht.
 
 * Sexuelle Vermehrung.
   * Es müssen zwei Zellen verschiedenen Geschlechts zusammen kommen und beide signalisieren, dass sie sich teilen wollen.
   * Es wird ein Crossover der Netzte gemacht (siehe NeuralNetworkTest).
   * Das geschlecht wird nur als interne Eigenschaft abgelegt und nicht als Outut nach außen getragen. 
     Sie müssen sich also Anhand anderer Merkmale erkennen.
-
-* Jeder Layer kann duch den Wert seines ersten Neurons Aktiv/Inactiv gesetzt werden.
-  * Wenn der Layer aktiv ist, wird er auch bei der Berechnung des Energieverbrauchs berücksichtigt.
-  * Wenn der Layer inaktiv ist, wird er nicht bei der Berechnung des Energieverbrauchs berücksichtigt.
 
 * Jede Zelle hat ein Rechenzeit für ihr CellBrain. 
   * Wenn sie länger braucht, da sie mehr Synapsen und Neuronen hat, werden die Berechnungen weniger oft ausgeführt.
@@ -98,9 +75,6 @@ Das System-Design der Anwendung soll enthalten:
     Wenn zu wenig Energie da ist, kann sie keine Berechnungen mehr durchführen.  
     Dafür braucht es aber wieder ein kleines Master-Brain, das diese Entscheidung fällt.  
     Dieses Master Brain könnte dann auch, wie usprünglich geplant, die Entscheidung treffen, wann welche Cell-Status-Lqyer aktiv werden.
-
-* Füge im SimulationState einen Timestamp hinzu und
-  verwende diesen, um nur dann ein neues DTO-Objekt zu erzeugen, wenn sich die Simulation wirklich geändert hat.
 
 * Berechnungen des CellBrain nur alle n-Steps.
   * Small Manager-Brain als Steuerung wie oft Sub-Brains for special-Tasks are updated.
@@ -115,9 +89,39 @@ Das System-Design der Anwendung soll enthalten:
   * Energie von SunRay.
   * Energie von anderer Zelle.
 
+# DONE
+
+* handleBlockerCollisions() und Blocker.getNearestPoint():
+  Die Zellen bleiben weiter innerhalb des Blockers gefangen und werden an den Innenseiten reflektiert.
+  Irgend etwas an der Berechnung muss grundlegend falsch sein. Prüfe nochmal alles genau nach.
+  Für mich sieht es so aus, als ob die Logik genau das Gegenteil das gewünschten Verhaltens implementiert, wenn sich der Mittelpunkt der Zelle innerhalb des Blockers befindet.
+
+* ConstantBrain das konstante Ausgänge hat.
+  * Testszenario für Zellabstoßung.
+  * Testszenario für AktorSensor anziehend und abstoßend.
+
+* Jeder Layer kann duch den Wert seines ersten Neurons Aktiv/Inactiv gesetzt werden.
+  * Wenn der Layer aktiv ist, wird er auch bei der Berechnung des Energieverbrauchs berücksichtigt.
+  * Wenn der Layer inaktiv ist, wird er nicht bei der Berechnung des Energieverbrauchs berücksichtigt.
+
+* Füge im SimulationState einen Timestamp hinzu und
+  verwende diesen, um nur dann ein neues DTO-Objekt zu erzeugen, wenn sich die Simulation wirklich geändert hat.
+
 * Die Zelle soll mit ihren Sensoren den Kontakt mit Blockern spüren. Vielleicht die Oberfläche mit etwas entsprechenden wie den Aktoren der Zellen ausstatten?
 
-# DONE
+* Neuer Typ Neuron
+  * Intern ein NN das für alle eines Typs gleich ist.
+  * Neuron muss mehrere Input- und Output-Typen haben können die auf Inputs und Outputs des internen NN abgebildet werden.
+  * Nach Berechnung werden die Outputs des internen NN auf die Outputs des Neurons abgebildet.
+  * Jedes Neuron bekommt eine ID. Die neuron-Value wird von einem von der Architektur unabhängigen Objekt (NeuronalnetworkValues) verwaltet.  
+    Der Zugriff erfolgt über die ID.
+    Somit kann die gleiche Netzwerk-Architektur mit verschiedenen Werten verwendet werden.
+  * Die IDs werden in der Reihenfolge der Neuronen im NeuronalNetwork vergeben.  
+    Wird ein Neuron gelöscht wird ein lowestFreeID gesetzt, wenn diese niedriger ist als zuvor.
+    Wird eine neue ID benötigt wird diese auf lowestIDPos gesetzt und dann die nächste Freie ID gesucht.  
+    lastFreeID steht auf der hächten freien ID. Sollten beide gleich sein, muss nicht gesucht werden, da es dann keine Lücke gibt.
+  * Jede Value eines Neurons kann selbst wiederum NeronValues bereit stellen, die für dessen Berechnung verwendet werden.
+    Dadurch kann eine Hirarchie von NeuronalNetworks aufgebaut werden.
 
 * Beim mutieren wächst ständig die Anzahl der HideenLayer un der Neuronen.
   * Ändere den mutate-Agrorithmus, so das weniger sinnlosen Neuronen entstehen und bestehen bleiben.
