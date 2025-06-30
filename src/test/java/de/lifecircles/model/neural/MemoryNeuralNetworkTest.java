@@ -407,7 +407,7 @@ public class MemoryNeuralNetworkTest {
                     ".",
                     " "
             };
-            char[] startCharArr = new char[] { 'B', 'D', 'L', 'D', 'Z', 'a', 'd', 'l', 's' };
+            char[] startCharArr = new char[] { 'B', 'D', 'L', 'D', 'S', 'V', 'Z', 'a', 'd', 'l', 'g', 's', 'i', 'ö' };
             int epochs = 20_000;
             int trainDataSize = 1;
             final int trainCount = 25;
