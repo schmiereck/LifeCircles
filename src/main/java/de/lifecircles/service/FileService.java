@@ -61,7 +61,7 @@ public class FileService {
      */
     @SuppressWarnings("unchecked")
     public List<Cell> loadCellsFromFile(String filePath) throws IOException, ClassNotFoundException {
-        System.out.println("Starte Laden von Zellen aus " + filePath + "...");
+        System.out.println("Starte Laden von Zellen aus " + filePath);
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
             List<Cell> cells = (List<Cell>) ois.readObject();
             System.out.println("Laden abgeschlossen: " + cells.size() + " Zellen geladen");
@@ -74,7 +74,7 @@ public class FileService {
      */
     @SuppressWarnings("unchecked")
     public List<Cell> loadCellsFromFileWithProgress(String filePath) throws IOException, ClassNotFoundException {
-        System.out.println("Starte Laden von Zellen aus " + filePath + "...");
+        System.out.println("Starte Laden von Zellen aus " + filePath);
 
         // Um die Dateigröße für den Fortschritt zu ermitteln
         File file = new File(filePath);
@@ -95,7 +95,7 @@ public class FileService {
      * Lädt Zellen aus einer Datei und fügt sie zum Environment hinzu.
      */
     public void mergeCellsFromFile(String filePath, Environment environment) throws IOException, ClassNotFoundException {
-        System.out.println("Starte Laden und Zusammenführen von Zellen aus " + filePath + "...");
+        System.out.println("Starte Laden und Zusammenführen von Zellen aus " + filePath);
         List<Cell> loadedCells = loadCellsFromFileWithProgress(filePath);
 
         // Anstatt die Zellen zu einer Kopie hinzuzufügen, fügen wir sie direkt zum Environment hinzu
