@@ -30,12 +30,14 @@ public class MainController extends BorderPane {
     private final SimulationView simulationView;
     private final SimulationConfig simulationConfig;
     private final ViewConfig viewConfig;
+    private final FileService fileService;
 
     public MainController() {
         this.simulationConfig = SimulationConfig.getInstance();
         this.viewConfig = ViewConfig.getInstance();
         this.calculationService = new CalculationService();
         this.simulationView = new SimulationView(calculationService);
+        this.fileService = FileService.getInstance();
 
         // Create right side panels
         VBox rightPanels = new VBox(10);
@@ -110,8 +112,8 @@ public class MainController extends BorderPane {
             File file = fileChooser.showSaveDialog(getScene().getWindow());
             if (file != null) {
                 try {
-                    // Verwende den FileService statt direkt Environment
-                    FileService.getInstance().saveCellsToFile(file.getAbsolutePath(), Environment.getInstance().getCells());
+                    // Verwende die neue FileService-Methode mit Fortschrittsanzeige
+                    fileService.saveCellsToFileWithProgress(file.getAbsolutePath(), Environment.getInstance().getCells());
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -130,8 +132,8 @@ public class MainController extends BorderPane {
             File file = fileChooser.showSaveDialog(getScene().getWindow());
             if (file != null) {
                 try {
-                    // Verwende den FileService statt direkt Environment
-                    FileService.getInstance().saveBestCellsToFile(
+                    // Verwende die FileService-Methode, die bereits Fortschrittsausgaben hat
+                    fileService.saveBestCellsToFile(
                         file.getAbsolutePath(),
                         Environment.getInstance().getCells(),
                         Environment.getInstance().getWidth()
@@ -154,10 +156,8 @@ public class MainController extends BorderPane {
             File file = fileChooser.showOpenDialog(getScene().getWindow());
             if (file != null) {
                 try {
-                    // Verwende den FileService statt direkt Environment
-                    Environment.getInstance().resetCells(
-                        FileService.getInstance().loadCellsFromFile(file.getAbsolutePath())
-                    );
+                    // Verwende die neue FileService-Methode, die die Zellen lädt und direkt im Environment setzt
+                    fileService.loadAndSetCells(file.getAbsolutePath(), Environment.getInstance());
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -176,9 +176,8 @@ public class MainController extends BorderPane {
             File file = fileChooser.showOpenDialog(getScene().getWindow());
             if (file != null) {
                 try {
-                    // Verwende den FileService statt direkt Environment
-                    Environment env = Environment.getInstance();
-                    env.getCells().addAll(FileService.getInstance().loadCellsFromFile(file.getAbsolutePath()));
+                    // Verwende die neue FileService-Methode zum Zusammenführen
+                    fileService.mergeCellsFromFile(file.getAbsolutePath(), Environment.getInstance());
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
