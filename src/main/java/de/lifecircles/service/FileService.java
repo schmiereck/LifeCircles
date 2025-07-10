@@ -96,7 +96,7 @@ public class FileService {
      */
     public void mergeCellsFromFile(String filePath, Environment environment) throws IOException, ClassNotFoundException {
         System.out.println("Starte Laden und Zusammenführen von Zellen aus " + filePath + "...");
-        List<Cell> loadedCells = loadCellsFromFile(filePath);
+        List<Cell> loadedCells = loadCellsFromFileWithProgress(filePath);
         List<Cell> existingCells = environment.getCells();
         existingCells.addAll(loadedCells);
         System.out.println("Zusammenführen abgeschlossen: " + loadedCells.size() + " Zellen hinzugefügt");
@@ -167,7 +167,7 @@ public class FileService {
      * Lädt und setzt Zellen im Environment.
      */
     public void loadAndSetCells(String filePath, Environment environment) throws IOException, ClassNotFoundException {
-        List<Cell> cells = loadCellsFromFile(filePath);
+        List<Cell> cells = loadCellsFromFileWithProgress(filePath);
         environment.resetCells(cells);
         System.out.println("Environment mit " + cells.size() + " geladenen Zellen aktualisiert");
     }
