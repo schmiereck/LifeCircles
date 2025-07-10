@@ -15,7 +15,7 @@ public class Environment {
     private static final Random random = new Random();
     private final SimulationConfig config;
     private final EnergySunCalcService energySunCalcService;
-    private final List<SunRay> sunRays;
+    private final List<SunRay> sunRayList;
     private double width;
     private double height;
     private final List<Cell> cellList;
@@ -31,7 +31,7 @@ public class Environment {
         this.cellList = new ArrayList<>();
         this.blockerList = new ArrayList<>();
         this.config = SimulationConfig.getInstance();
-        this.sunRays = new ArrayList<>();
+        this.sunRayList = new ArrayList<>();
         this.energySunCalcService = new EnergySunCalcService();
 
         // Setze diese Instanz als globalen Zugriffspunkt
@@ -48,13 +48,13 @@ public class Environment {
     public void addGroundBlocker() {
         final double extraWidth = this.config.getCellMaxRadiusSize();
         final Blocker ground = new Blocker(
-            new Vector2D((width / 2.0D), height - (GroundBlockerHeight / 2.0D)), // Position at bottom
-            width + (extraWidth * 4.0D),                              // Full width
+            new Vector2D((this.width / 2.0D), this.height - (GroundBlockerHeight / 2.0D)), // Position at bottom
+                this.width + (extraWidth * 4.0D),                              // Full width
                 GroundBlockerHeight,                                 // Height
             javafx.scene.paint.Color.GRAY,      // Color
             Blocker.BlockerType.GROUND          // Type
         );
-        blockerList.add(ground);
+        this.blockerList.add(ground);
     }
 
     public void addSunBlocker(final int xStart, final int yStart, final int blockerWidth) {
@@ -65,7 +65,7 @@ public class Environment {
             javafx.scene.paint.Color.GRAY,      // Color
             Blocker.BlockerType.PLATFORM          // Type
         );
-        blockerList.add(sunBlocker);
+        this.blockerList.add(sunBlocker);
     }
 
     public void addWallBlocker(final double x, final double yTop, final double yBottom) {
@@ -82,27 +82,27 @@ public class Environment {
             javafx.scene.paint.Color.GRAY,      // Color
             Blocker.BlockerType.WALL          // Type
         );
-        blockerList.add(wallBlocker);
+        this.blockerList.add(wallBlocker);
     }
 
     public void addCell(Cell cell) {
-        cellList.add(cell);
+        this.cellList.add(cell);
     }
 
     public List<Cell> getCopyOfCellList() {
-        return new ArrayList<>(cellList);
+        return new ArrayList<>(this.cellList);
     }
 
     public List<Cell> getCellList() {
-        return new ArrayList<>(cellList);
+        return this.cellList;
     }
 
     public List<Blocker> getBlockerList() {
-        return new ArrayList<>(blockerList);
+        return this.blockerList;
     }
 
     public void addBlocker(Blocker blocker) {
-        blockerList.add(blocker);
+        this.blockerList.add(blocker);
     }
 
     /**
@@ -112,19 +112,19 @@ public class Environment {
      */
     public void update(final double deltaTime, final PartitioningStrategy partitioner) {
         // Calculate sun energy rays
-        this.sunRays.clear();
-        this.sunRays.addAll(
+        this.sunRayList.clear();
+        this.sunRayList.addAll(
                 this.energySunCalcService.calculateSunEnergy(
                         this.cellList, this.blockerList, this.width, this.height, this.config, deltaTime
                 )
         );
 
         // Process repulsive forces
-        RepulsionCellCalcService.processRepulsiveForces(cellList, partitioner);
+        RepulsionCellCalcService.processRepulsiveForces(this.cellList, partitioner);
         // Process sensor/actor interactions
-        SensorActorForceCellCalcService.processInteractions(cellList, partitioner);
+        SensorActorForceCellCalcService.processInteractions(this.cellList, partitioner);
         // Process energy transfers between cells
-        EnergyTransferCellCalcService.processEnergyTransfers(cellList);
+        EnergyTransferCellCalcService.processEnergyTransfers(this.cellList);
 
         for (final Cell cell : this.cellList) {
         //this.cells.parallelStream().forEach(cell -> {
@@ -180,14 +180,14 @@ public class Environment {
             }
 
             // Remove cell after configured age.
-            if ((cell.getAge() >= config.getCellDeathAge()) || (cell.getEnergy() <= 0.0D)) {
-                lastDeadCell = cell;
+            if ((cell.getAge() >= this.config.getCellDeathAge()) || (cell.getEnergy() <= 0.0D)) {
+                this.lastDeadCell = cell;
                 iterator.remove();
             }
         }
 
         // Add new cells from reproduction (skip in HIGH_ENERGY mode)
-        cellList.addAll(newCells);
+        this.cellList.addAll(newCells);
 
         // Repopulation (skip in HIGH_ENERGY mode)
         //if (config.getTrainMode() == TrainMode.NONE) {
@@ -195,18 +195,18 @@ public class Environment {
         //}
 
         // Update statistics
-        StatisticsManagerService.getInstance().update(cellList);
+        StatisticsManagerService.getInstance().update(this.cellList);
     }
 
     /**
      * Repopulation: when only REPOPULATION_THRESHOLD_PERCENT of initial cells remain, generate mutated offspring and split energy
      */
     private void calcRepopulationIfNeeded() {
-        int currentCount = cellList.size();
-        int initialCount = config.getInitialCellCount();
+        int currentCount = this.cellList.size();
+        int initialCount = this.config.getInitialCellCount();
         // If all cells are dead, repopulate with random initial cells
         if (currentCount == 0) {
-            if (lastDeadCell != null) {
+            if (this.lastDeadCell != null) {
                 // Repopulate by mutating the last dead cell
                 for (int i = 0; i < initialCount; i++) {
                     final Cell childCell = ReproductionManagerService.reproduce(this.config, this, this.lastDeadCell);
@@ -229,14 +229,14 @@ public class Environment {
             if (currentCount < thresholdCount) {
                 int toSpawn = initialCount - currentCount;
                 for (int i = 0; i < toSpawn; i++) {
-                    Cell parentCell = cellList.get(random.nextInt(cellList.size()));
+                    Cell parentCell = this.cellList.get(random.nextInt(this.cellList.size()));
                     if (Objects.nonNull(parentCell)) {
-                        Cell childCell = ReproductionManagerService.reproduce(config, this, parentCell);
+                        Cell childCell = ReproductionManagerService.reproduce(this.config, this, parentCell);
                         if (Objects.nonNull(childCell)) {
                             childCell.setEnergy(1.0D);
                             childCell.setMutationRateFactor(parentCell.getMutationRateFactor());
                             childCell.setMutationStrengthFactor(parentCell.getMutationStrengthFactor());
-                            cellList.add(childCell);
+                            this.cellList.add(childCell);
                         }
                     }
                 }
@@ -250,12 +250,12 @@ public class Environment {
         double y = pos.getY();
 
         // Wrap horizontally
-        if (x < 0) x += width;
-        if (x >= width) x -= width;
+        if (x < 0) x += this.width;
+        if (x >= this.width) x -= this.width;
 
         // Wrap vertically
-        if (y < 0) y += height;
-        if (y >= height) y -= height;
+        if (y < 0) y += this.height;
+        if (y >= this.height) y -= this.height;
 
         if (x != pos.getX() || y != pos.getY()) {
             cell.setPosition(new Vector2D(x, y));
@@ -263,16 +263,16 @@ public class Environment {
     }
 
     // Getter for current sun ray visuals
-    public List<SunRay> getSunRays() {
-        return new ArrayList<>(sunRays);
+    public List<SunRay> getSunRayList() {
+        return new ArrayList<>(sunRayList);
     }
 
     public double getWidth() {
-        return width;
+        return this.width;
     }
 
     public double getHeight() {
-        return height;
+        return this.height;
     }
 
     public void resetCells() {
@@ -283,8 +283,8 @@ public class Environment {
      * Resets the cell population with the provided new generation.
      */
     public void resetCells(List<Cell> newCells) {
-        cellList.clear();
-        cellList.addAll(newCells);
+        this.cellList.clear();
+        this.cellList.addAll(newCells);
     }
 
     public void setWidth(double width) {

@@ -13,10 +13,10 @@ public class SensorActorForceCellCalcService {
     /**
      * Optimized processing of sensor/actor interactions using a partitioning strategy.
      */
-    public static void processInteractions(final List<Cell> cells, final PartitioningStrategy partitioner) {
+    public static void processInteractions(final List<Cell> cellList, final PartitioningStrategy partitioner) {
         // cache positions for all sensorActors in this simulation step
-        //for (final Cell calcCell : cells) {
-        cells.parallelStream().forEach(calcCell -> {
+        //for (final Cell calcCell : cellList) {
+        cellList.parallelStream().forEach(calcCell -> {
             for (final SensorActor actor : calcCell.getSensorActors()) {
                 actor.updateCachedPosition();
                 actor.setSensedCell(null);
@@ -25,9 +25,9 @@ public class SensorActorForceCellCalcService {
         });
         
         // Prüfe Blocker-Kollisionen
-        checkBlockerCollisions(cells);
+        checkBlockerCollisions(cellList);
         
-        cells.parallelStream().forEach(calcCell -> {
+        cellList.parallelStream().forEach(calcCell -> {
             for (final Cell otherCell : partitioner.getNeighbors(calcCell)) {
                 if (calcCell != otherCell) {
                     processInteraction(calcCell, otherCell);
