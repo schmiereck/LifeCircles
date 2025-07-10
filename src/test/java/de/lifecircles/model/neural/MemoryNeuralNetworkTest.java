@@ -14,7 +14,7 @@ import java.io.*;
 public class MemoryNeuralNetworkTest {
     private static final Logger logger = LoggerFactory.getLogger(MemoryNeuralNetworkTest.class);
     public static final double MIN_LOOS = 0.005D;
-    public static final double MAX_LOOS = 0.25D;
+    public static final double MAX_LOOS = 0.15D;
     public static final int HIGH_LOOS_COUNT_MAX = 2;
 
     private static final class NNTrainResult {
@@ -409,11 +409,11 @@ public class MemoryNeuralNetworkTest {
             };
             char[] startCharArr = new char[] { 'B', 'D', 'L', 'D', 'S', 'V', 'Z', 'a', 'd', 'l', 'g', 's', 'i', 'ö' };
             int epochs = 20_000;
-            int trainDataSize = 1;
+            int trainPatternCount = 1;
             final int trainCount = 25;
 
             // Trainiere mit periodischem Speichern
-            trainResultList = trainSmallLanguageModelWithSave(random, trainResultList, patterns, trainDataSize,
+            trainResultList = trainSmallLanguageModelWithSave(random, trainResultList, patterns, trainPatternCount,
                                                            epochs, trainCount, startCharArr, networkFileName,
                     useBackpropagate);
 
@@ -496,11 +496,11 @@ public class MemoryNeuralNetworkTest {
             };
             char[] startCharArr = new char[] { 'D', 'E', 'D', 'E' };
             int epochs = 250_000;
-            int trainDataSize = 1;
+            int trainPatternCount = 1;
             final int trainCount = 20;
 
             // Trainiere mit periodischem Speichern
-            trainResultList = trainSmallLanguageModelWithSave(random, trainResultList, patterns, trainDataSize,
+            trainResultList = trainSmallLanguageModelWithSave(random, trainResultList, patterns, trainPatternCount,
                                                            epochs, trainCount, startCharArr, networkFileName,
                     useBackpropagate);
 
@@ -847,6 +847,7 @@ public class MemoryNeuralNetworkTest {
 
                         // Netzwerk für das nächste Training zurücksetzen
                         network.rnnClearPreviousState();
+
                         int highLossCount = 0;
 
                         // Training für verschiedene Patterns.

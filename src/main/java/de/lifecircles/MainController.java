@@ -2,6 +2,7 @@ package de.lifecircles;
 
 import de.lifecircles.model.Environment;
 import de.lifecircles.service.CalculationService;
+import de.lifecircles.service.FileService;
 import de.lifecircles.service.SimulationConfig;
 import de.lifecircles.view.ConfigPanel;
 import de.lifecircles.view.SimulationView;
@@ -109,7 +110,8 @@ public class MainController extends BorderPane {
             File file = fileChooser.showSaveDialog(getScene().getWindow());
             if (file != null) {
                 try {
-                    Environment.getInstance().saveCellsToFile(file.getAbsolutePath());
+                    // Verwende den FileService statt direkt Environment
+                    FileService.getInstance().saveCellsToFile(file.getAbsolutePath(), Environment.getInstance().getCells());
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -128,7 +130,12 @@ public class MainController extends BorderPane {
             File file = fileChooser.showSaveDialog(getScene().getWindow());
             if (file != null) {
                 try {
-                    Environment.getInstance().saveBestCellsToFile(file.getAbsolutePath());
+                    // Verwende den FileService statt direkt Environment
+                    FileService.getInstance().saveBestCellsToFile(
+                        file.getAbsolutePath(),
+                        Environment.getInstance().getCells(),
+                        Environment.getInstance().getWidth()
+                    );
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -147,7 +154,10 @@ public class MainController extends BorderPane {
             File file = fileChooser.showOpenDialog(getScene().getWindow());
             if (file != null) {
                 try {
-                    Environment.getInstance().loadCellsFromFile(file.getAbsolutePath());
+                    // Verwende den FileService statt direkt Environment
+                    Environment.getInstance().resetCells(
+                        FileService.getInstance().loadCellsFromFile(file.getAbsolutePath())
+                    );
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -166,7 +176,9 @@ public class MainController extends BorderPane {
             File file = fileChooser.showOpenDialog(getScene().getWindow());
             if (file != null) {
                 try {
-                    Environment.getInstance().loadAndMergeCellsFromFile(file.getAbsolutePath());
+                    // Verwende den FileService statt direkt Environment
+                    Environment env = Environment.getInstance();
+                    env.getCells().addAll(FileService.getInstance().loadCellsFromFile(file.getAbsolutePath()));
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();

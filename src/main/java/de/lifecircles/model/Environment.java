@@ -5,8 +5,6 @@ import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
 
 import java.util.*;
 
-import java.io.*;
-
 /**
  * Represents the simulation environment.
  * Manages physics simulation and cell interactions.
@@ -291,80 +289,5 @@ public class Environment {
 
     public void setHeight(double height) {
         this.height = height;
-    }
-
-    /**
-     * Speichert alle Zellen in eine Datei.
-     */
-    public void saveCellsToFile(String filePath) throws IOException {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
-            oos.writeObject(cells);
-        }
-    }
-
-    /**
-     * Lädt Zellen aus einer Datei und ersetzt die aktuellen Zellen.
-     */
-    @SuppressWarnings("unchecked")
-    public void loadCellsFromFile(String filePath) throws IOException, ClassNotFoundException {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
-            List<Cell> loadedCells = (List<Cell>) ois.readObject();
-            resetCells(loadedCells);
-        }
-    }
-
-    /**
-     * Lädt Zellen aus einer Datei und fügt sie zu den aktuellen Zellen hinzu (Merge).
-     */
-    @SuppressWarnings("unchecked")
-    public void loadAndMergeCellsFromFile(String filePath) throws IOException, ClassNotFoundException {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
-            List<Cell> loadedCells = (List<Cell>) ois.readObject();
-            this.cells.addAll(loadedCells);
-        }
-    }
-
-    /**
-     * Speichert die 100 besten Zellen, verteilt über die Breite (x-Position) des Environments, jeweils mit der höchsten Energie.
-     */
-    public void saveBestCellsToFile(String filePath) throws IOException {
-        if (cells.isEmpty()) return;
-        int numBest = 100;
-        double minX = 0;
-        double maxX = width;
-        double binSize = (maxX - minX) / numBest;
-        List<Cell> bestCells = new ArrayList<>();
-        for (int i = 0; i < numBest; i++) {
-            double binStart = minX + i * binSize;
-            double binEnd = binStart + binSize;
-            Cell best = null;
-            double bestEnergy = Double.NEGATIVE_INFINITY;
-            for (Cell c : cells) {
-                double x = c.getPosition().getX();
-                if (x >= binStart && x < binEnd) {
-                    if (c.getEnergy() > bestEnergy) {
-                        best = c;
-                        bestEnergy = c.getEnergy();
-                    }
-                }
-            }
-            if (best != null) {
-                bestCells.add(best);
-            }
-        }
-        // Falls weniger als 100 gefunden wurden, mit weiteren besten auffüllen
-        if (bestCells.size() < numBest) {
-            List<Cell> sorted = new ArrayList<>(cells);
-            sorted.sort(Comparator.comparingDouble(Cell::getEnergy).reversed());
-            for (Cell c : sorted) {
-                if (!bestCells.contains(c)) {
-                    bestCells.add(c);
-                    if (bestCells.size() >= numBest) break;
-                }
-            }
-        }
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
-            oos.writeObject(bestCells);
-        }
     }
 }
