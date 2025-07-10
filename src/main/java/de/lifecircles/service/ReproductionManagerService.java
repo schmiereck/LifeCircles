@@ -50,7 +50,7 @@ public class ReproductionManagerService {
                         add(direction.multiply(parentCell.getRadiusSize() +
                                 (SimulationConfig.getInstance().getCellMinGrowRadiusSize() * 2.0D)));
 
-                if (!BlockerCellCalcService.checkCellIsInsideBlocker(childPosition, environment.getBlockers())) {
+                if (!BlockerCellCalcService.checkCellIsInsideBlocker(childPosition, environment.getBlockerList())) {
                     // Set initial size (slightly mutated from parentCell's initial size)
                     final double parentSize = parentCell.getRadiusSize();
 

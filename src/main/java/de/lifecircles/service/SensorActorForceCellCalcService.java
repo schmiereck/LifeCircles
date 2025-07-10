@@ -4,7 +4,6 @@ import de.lifecircles.model.*;
 import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Service responsible for processing sensor-actor interactions between cells.
@@ -115,7 +114,7 @@ public class SensorActorForceCellCalcService {
         Environment environment = Environment.getInstance();
         if (environment == null) return;
         
-        List<Blocker> blockers = environment.getBlockers();
+        List<Blocker> blockers = environment.getBlockerList();
         if (blockers == null || blockers.isEmpty()) return;
         
         // Prüfe für jeden Sensor, ob er einen Blocker berührt

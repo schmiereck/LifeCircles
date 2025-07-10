@@ -104,7 +104,7 @@ public class CalculationService implements Runnable {
     }
 
     private void update(final double deltaTime) {
-        final List<Cell> cellList = this.environment.getCells();
+        final List<Cell> cellList = this.environment.getCellList();
 
         // Update all cells with their neighborhood information
         this.partitioner.build(cellList);
@@ -119,7 +119,7 @@ public class CalculationService implements Runnable {
     private void updateState() {
         List<SimulationStateDto.CellStateDto> cellStates = new ArrayList<>();
 
-        for (Cell cell : environment.getCells()) {
+        for (Cell cell : environment.getCellList()) {
             if (Objects.nonNull(cell)) {
                 List<SimulationStateDto.ActorStateDto> actorStateDtos = new ArrayList<>();
 
@@ -149,7 +149,7 @@ public class CalculationService implements Runnable {
         synchronized (this.stateLock) {
             this.latestState = new SimulationStateDto(
                 cellStates,
-                this.environment.getBlockers(),
+                this.environment.getBlockerList(),
                 this.environment.getSunRays(),
                 this.environment.getWidth(),
                 this.environment.getHeight()
@@ -167,7 +167,7 @@ public class CalculationService implements Runnable {
         if (environment == null) return null;
 
         // Durchsuche die Zellen und finde die, die an der Klickposition ist
-        for (Cell cell : environment.getCells()) {
+        for (Cell cell : environment.getCellList()) {
             double distance = new Vector2D(worldX, worldY).distance(cell.getPosition());
             if (distance <= cell.getRadiusSize()) {
                 return cell; // Zelle gefunden

@@ -28,7 +28,7 @@ public class CellSensorVisibilityTest {
         createAndAddCell(environment, 20.03D, new CellType(0.4D, 0.5D, 0.6D));
         config.setInitialCellCount(2);
 
-        final List<Cell> cellList = environment.getCells();
+        final List<Cell> cellList = environment.getCellList();
         //cellList.get(1).setPosition(new Vector2D(20.03D, 8.0D));
 
         calcCellList(cellList);
@@ -54,7 +54,7 @@ public class CellSensorVisibilityTest {
         createAndAddCell(environment, 25.0D, new CellType(0.4D, 0.5D, 0.6D));
         config.setInitialCellCount(2);
 
-        final List<Cell> cellList = environment.getCells();
+        final List<Cell> cellList = environment.getCellList();
 
         calcCellList(cellList);
 

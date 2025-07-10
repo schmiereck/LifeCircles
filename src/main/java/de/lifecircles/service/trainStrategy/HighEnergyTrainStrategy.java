@@ -66,7 +66,7 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
         if (this.stepCounter % GENERATION_STEP != 0) {
             return;
         }
-        List<Cell> cells = environment.getCells();
+        List<Cell> cells = environment.getCellList();
         if (cells.isEmpty()) {
             return;
         }

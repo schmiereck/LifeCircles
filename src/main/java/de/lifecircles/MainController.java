@@ -113,7 +113,7 @@ public class MainController extends BorderPane {
             if (file != null) {
                 try {
                     // Verwende die neue FileService-Methode mit Fortschrittsanzeige
-                    fileService.saveCellsToFileWithProgress(file.getAbsolutePath(), Environment.getInstance().getCells());
+                    fileService.saveCellsToFileWithProgress(file.getAbsolutePath(), Environment.getInstance().getCopyOfCellList());
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -135,7 +135,7 @@ public class MainController extends BorderPane {
                     // Verwende die FileService-Methode, die bereits Fortschrittsausgaben hat
                     fileService.saveBestCellsToFile(
                         file.getAbsolutePath(),
-                        Environment.getInstance().getCells(),
+                        Environment.getInstance().getCopyOfCellList(),
                         Environment.getInstance().getWidth()
                     );
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
