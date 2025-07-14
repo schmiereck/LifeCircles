@@ -53,72 +53,54 @@ public class Vector2D implements Serializable {
         return Math.sqrt(x * x + y * y);
     }
 
-    public Vector2D normalize() {
-        double len = length();
-        if (len > 0) {
-            return new Vector2D(x / len, y / len);
-        }
-        return new Vector2D(0, 0);
-    }
-
-    public double distance(Vector2D other) {
-        double dx = x - other.x;
-        double dy = y - other.y;
-        return Math.sqrt(dx * dx + dy * dy);
-    }
-
-    public static double distance(Vector2D position, Vector2D position1) {
-        return position.distance(position1);
-    }
-
-    public Vector2D rotate(double angleRadians) {
-        double cos = Math.cos(angleRadians);
-        double sin = Math.sin(angleRadians);
-        return new Vector2D(
-            x * cos - y * sin,
-            x * sin + y * cos
-        );
-    }
-
-    /**
-     * Returns a vector perpendicular to this vector.
-     * The result is a 90-degree counterclockwise rotation of this vector.
-     */
-    public Vector2D perpendicular() {
-        return new Vector2D(-y, x);
-    }
-
-    /**
-     * Dot product of this vector with another.
-     */
-    public double dot(Vector2D other) {
-        return x * other.x + y * other.y;
-    }
-
-    /**
-     * Squared length of the vector.
-     */
     public double lengthSquared() {
         return x * x + y * y;
     }
 
+    public Vector2D normalize() {
+        double length = length();
+        return length > 0 ? divide(length) : new Vector2D(0, 0);
+    }
+
+    public double distance(Vector2D other) {
+        return subtract(other).length();
+    }
+
     /**
-     * Projects this vector onto another vector.
-     * @param other The vector to project onto.
-     * @return The projection of this vector onto the other vector.
+     * Berechnet den Richtungsvektor und Abstand zum nächsten Punkt unter Berücksichtigung von Wrap-Around-Grenzen.
+     * @param other Der andere Punkt
+     * @param width Breite der Umgebung
+     * @param height Höhe der Umgebung
+     * @return Ein Vektor, der die kürzeste Richtung unter Berücksichtigung von Wrap-Around angibt
      */
-    public Vector2D projectOnto(Vector2D other) {
-        double dotProduct = this.dot(other);
-        double otherLengthSquared = other.lengthSquared();
-        if (otherLengthSquared == 0) {
-            return new Vector2D(0, 0);
+    public Vector2D getShortestDirectionWithWrapAround(Vector2D other, double width, double height) {
+        // Direkte Differenz
+        double dx = other.x - this.x;
+        double dy = other.y - this.y;
+
+        // Prüfen, ob es über Grenzen hinweg kürzer ist (horizontale Richtung)
+        if (Math.abs(dx) > width / 2) {
+            if (dx > 0) {
+                dx = dx - width;  // andere Zelle ist links über die Grenze hinweg
+            } else {
+                dx = dx + width;  // andere Zelle ist rechts über die Grenze hinweg
+            }
         }
-        double scalar = dotProduct / otherLengthSquared;
-        return other.multiply(scalar);
+
+        // Prüfen, ob es über Grenzen hinweg kürzer ist (vertikale Richtung)
+        if (Math.abs(dy) > height / 2) {
+            if (dy > 0) {
+                dy = dy - height;  // andere Zelle ist oberhalb über die Grenze hinweg
+            } else {
+                dy = dy + height;  // andere Zelle ist unterhalb über die Grenze hinweg
+            }
+        }
+
+        return new Vector2D(dx, dy);
     }
 
     @Override
     public String toString() {
-        return "Vector2D{" + "x=" + x + ", y=" + y + '}';
+        return "Vector2D [x=" + x + ", y=" + y + "]";
     }
 }

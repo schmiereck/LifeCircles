@@ -54,8 +54,15 @@ public class SensorActorForceCellCalcService {
                 //}
 
                 for (final SensorActor otherCellActor : otherCell.getSensorActors()) {
+                    // Hole Umgebungsgröße für Wrap-Around Berechnung
+                    Environment environment = Environment.getInstance();
+                    double envWidth = environment.getWidth();
+                    double envHeight = environment.getHeight();
+
                     // Berechne die Kraft, die der otherCellActor auf calcCellActor ausübt
-                    final Vector2D direction = calcCellActor.getCachedPosition().subtract(otherCellActor.getCachedPosition());
+                    // mit Berücksichtigung des Wrap-Around an Grenzen
+                    final Vector2D direction = calcCellActor.getCachedPosition()
+                            .getShortestDirectionWithWrapAround(otherCellActor.getCachedPosition(), envWidth, envHeight);
                     final double distance = direction.length();
 
                     if (distance > 0.0D) {
