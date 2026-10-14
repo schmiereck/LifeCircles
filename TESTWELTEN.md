@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 107 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 132 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 ## Physikwelten
@@ -67,6 +67,44 @@ Bei `sizeChangeDelay = 100` sind nach 100 ms etwa 63%, nach 300 ms etwa 95% und
 nach 500 ms etwa 99.3% der angeforderten Aenderung erreicht. Es gibt keine Wartefrist
 vor Beginn und keinen exakten Endzeitpunkt; die Zielgroesse wird asymptotisch angenaehert.
 Bei Werten <= 0 wird sie im naechsten positiven Simulationsschritt direkt uebernommen.
+
+## Rotation und Daempfung
+
+Quelle: `src/test/java/de/lifecircles/service/RotationTest.java`.
+
+25 Tests pruefen freie Rotation, Drehmomentimpulse und eine echte Einzelzellwelt.
+Die unabhaengige analytische Referenz lautet fuer eine konstante Daempfungsrate k:
+
+```text
+omega(t) = omega(0) * exp(-k*t)
+theta(t) = theta(0) + omega(0)/k * (1 - exp(-k*t))
+```
+
+Bei k = 0 gilt ungedaempfte Rotation. Winkel werden auf `[0, 2*pi)` normalisiert.
+Geprueft werden beide Drehrichtungen, Stillstand, mehrere volle Umdrehungen sowie
+1, 2, 10, 60 und 600 Schritte pro Simulationssekunde. Winkel und Geschwindigkeit
+muessen bei jedem Zwischenschritt der analytischen Loesung entsprechen. Zuvor war
+nur die Geschwindigkeit exakt gedaempft; der Winkel verwendete noch die ungedaempfte
+Geschwindigkeit fuer den ganzen Schritt. Dadurch haengte die Drehung von der Schrittweite ab.
+
+Weitere Grenzfaelle: keine und sehr kleine Daempfung, starke Daempfung ohne
+Richtungsumkehr, Nullzeitschritt und winzige negative Winkel. Ein negativer Rest
+konnte nach Addition von `2*pi` auf genau `2*pi` runden; dieser Fall wird auf null
+abgebildet. Negative, NaN- und unendliche Daempfungsraten werden am Config-Setter
+abgewiesen, bevor sie die Dynamik beschaedigen.
+
+Die Default-Rate 0.8 hat die Einheit `1/s`: Nach einer Simulationssekunde bleiben
+etwa 44.9% der Winkelgeschwindigkeit uebrig; die Halbwertszeit betraegt etwa 0.866 s.
+Es gibt keine kuenstliche Obergrenze fuer die Winkelgeschwindigkeit.
+
+Drehmomenttests pruefen Kraefte im Mittelpunkt und entlang des Radius (kein Drehmoment),
+gleich grosse Gegenimpulse, Skalierung mit der Simulationszeit, das Leeren des
+Kraftakkumulators und die kleinste Neugeborenengroesse. Weltupdates pruefen auch die
+gecachten Aktorpositionen nach Rotation. Die exakte Schrittweitenunabhaengigkeit gilt
+fuer freie Rotation bei konstantem k. Wechselwirkende Kraefte werden weiterhin als
+diskrete Impulse vor der Rotation angewendet; deren Diskretisierungsfehler sind damit
+nicht beseitigt. Das bestehende angenaeherte Traegheitsmodell proportional zu Radius^2
+bleibt erhalten.
 
 ## Vererbungspruefungen
 
@@ -166,7 +204,8 @@ und die Begrenzung von `HIGH_ENERGY` auf 20 Zellen bei uebergrossen Populationen
 - Feldwirkung nimmt linear zur Reichweitengrenze auf null ab. Bisher stieg sie mit dem Abstand an.
 - Gegenkraefte greifen am Aktor der jeweiligen Zelle an. Jeder parallele Worker schreibt nur seine eigene Zelle.
 - Kraefte bleiben fuer den bisherigen 60-Hz-Schritt gleich skaliert; andere Schrittweiten skalieren den Impuls proportional.
-- Rotationsdaempfung ist exponentiell in der Simulationszeit. Alte Populationen koennen dadurch deutlich anders rotieren.
+- Rotationsdaempfung ist exponentiell in der Simulationszeit; auch der Drehwinkel integriert die abklingende Geschwindigkeit.
+  Die Daempfungsrate ist endlich und nichtnegativ in `1/s`. Alte Populationen koennen dadurch deutlich anders rotieren.
 - `sizeChangeDelay` ist die Zeitkonstante der exponentiellen Groessenannaeherung in Millisekunden.
 - Blocker werden als feste, unelastische Hindernisse behandelt. Ueberlappungen werden nach der Bewegung korrigiert;
   die bisherige `blockerRepulsionStrength` steuert diese geometrische Kontaktaufloesung nicht mehr.

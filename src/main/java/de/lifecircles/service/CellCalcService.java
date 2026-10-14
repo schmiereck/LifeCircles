@@ -44,16 +44,22 @@ public class CellCalcService {
 
         // Update physics
         cell.setPosition(cell.getPosition().add(cell.getVelocity().multiply(deltaTime)));
-        cell.setRotation(cell.getRotation() + cell.getAngularVelocity() * deltaTime);
-        // Apply rotational friction
-        cell.setAngularVelocity(cell.getAngularVelocity() *
-                Math.exp(-SimulationConfig.getInstance().getRotationalFriction() * deltaTime));
+        // Integrate d(omega)/dt = -friction * omega, including its effect on angle.
+        // Forces have already supplied their impulse in updateForces. For free
+        // rotation, both angle and speed are independent of step subdivision.
+        double friction = SimulationConfig.getInstance().getRotationalFriction();
+        double dampingTime = friction * deltaTime;
+        double rotationTime = dampingTime == 0 ? deltaTime : -Math.expm1(-dampingTime) / friction;
+        cell.setRotation(cell.getRotation() + cell.getAngularVelocity() * rotationTime);
+        cell.setAngularVelocity(cell.getAngularVelocity() * Math.exp(-dampingTime));
         
         // Normalize rotation to [0, 2π)
         double rotation = cell.getRotation() % (2 * Math.PI);
         if (rotation < 0) {
             rotation += 2 * Math.PI;
         }
+        // Adding 2*pi to a tiny negative remainder can round to exactly 2*pi.
+        if (rotation >= 2 * Math.PI) rotation = 0;
         cell.setRotation(rotation);
 
         // Update energy and age

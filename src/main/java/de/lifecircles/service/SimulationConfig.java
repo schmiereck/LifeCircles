@@ -17,8 +17,8 @@ public class SimulationConfig {
     // Environment-Cell:
 
     /**
-     * Friction coefficient for cell rotation (damping)
-     * A higher value means less rotation (0.0D to 1.0D).
+     * Nonnegative rotational damping rate in inverse simulation seconds.
+     * omega(t) = omega(0) * exp(-rate * t); zero disables damping.
      */
     private double rotationalFriction = 0.8D;
     /**
@@ -255,16 +255,20 @@ public class SimulationConfig {
     }
 
     /**
-     * Gets the friction coefficient used for cell rotation damping.
+     * Gets the rotational damping rate in inverse simulation seconds.
      */
     public double getRotationalFriction() {
         return this.rotationalFriction;
     }
 
     /**
-     * Sets the friction coefficient used for cell rotation damping.
+     * Sets the finite, nonnegative rotational damping rate (1/s).
+     * @throws IllegalArgumentException if the rate is negative or non-finite
      */
     public void setRotationalFriction(double rotationalFriction) {
+        if (!Double.isFinite(rotationalFriction) || rotationalFriction < 0) {
+            throw new IllegalArgumentException("Rotational damping must be finite and nonnegative");
+        }
         this.rotationalFriction = rotationalFriction;
     }
 
