@@ -36,92 +36,17 @@ public class BlockerCellCalcService {
      */
     public static void handleBlockerCollisions(final Cell cell, final List<Blocker> blockers) {
         if (cell == null || blockers == null) return;
-        final Vector2D cellPos = cell.getPosition();
-        if (cellPos == null) return;
-        final double radius = cell.getRadiusSize();
-        for (final Blocker blocker : blockers) {
+        for (Blocker blocker : blockers) {
             if (blocker == null) continue;
-            // Ersetze die Verwendung von getNearestPoint durch getCellCenterOutside
-            final Vector2D newCellPos = blocker.getCellCenterOutside(cellPos, radius);
-            final Vector2D deltaVec = cellPos.subtract(newCellPos);
-            final double distance = deltaVec.length();
-
-            final Vector2D nearestPoint = blocker.getNearestPoint(cellPos);
-            final Vector2D nearestDeltaVec = cellPos.subtract(nearestPoint);
-            final double nearestDistance = nearestDeltaVec.length();
-
-            // Debugging: Logge die relevanten Werte zur Überprüfung
-            //System.out.println("----------------------------------");
-            //System.out.println("Cell Position: " + cellPos);
-            //System.out.println("New Cell Position: " + newCellPos);
-            //System.out.println("Delta Vector: " + deltaVec);
-            //System.out.println("Distance: " + distance);
-            //System.out.println("Radius: " + radius);
-
-            // Prüfen, ob sich der Mittelpunkt der Zelle innerhalb des Blockers befindet
-            //if (blocker.containsPoint(cellPos)) {
-            //    //System.out.println("Cell center is inside the blocker.");
-            //    // Berechne die Richtung vom Zellmittelpunkt zur Blocker-Oberfläche
-            //    Vector2D direction = nearestPoint.subtract(cellPos).normalize();
-            //    // Verschiebe die Zelle aus dem Blocker heraus
-            //    double epsilon = 0.1; // Ein kleiner Puffer
-            //    Vector2D pushOut = nearestPoint.add(direction.multiply(radius + epsilon));
-            //    cell.setPosition(pushOut);
-            //    // Geschwindigkeit vollständig auf 0 setzen
-            //    //cell.setVelocity(new Vector2D(0, 0));
-            //    // Debugging: Logge die neue Position
-            //    //System.out.println("Cell pushed out to: " + cell.getPosition());
-            //    continue; // Überspringe die weitere Verarbeitung für diese Zelle
-            //}
-
-            // Kollision erkannt: Zelle überlappt mit dem Blocker
-            //if (distance <= radius) {
-            if (nearestDistance <= radius) {
-                //System.out.println("Collision detected: Cell is overlapping with the blocker.");
-                double penetration = radius - nearestDistance;
-
-                // Richtung immer vom Blocker-Oberflächenpunkt zum Zellmittelpunkt
-                Vector2D direction = newCellPos.subtract(cellPos).normalize();
-
-                // Abstoßungskraft anwenden
-                double strength = SimulationConfig.getInstance().getBlockerRepulsionStrength();
-                Vector2D repulsion = direction.multiply(strength * penetration);
-                cell.applyForce(repulsion, cellPos);
-
-                // Debugging: Logge die aktuelle Position und Richtung
-                //System.out.println("Before PushOut - Cell Position: " + cell.getPosition());
-                //System.out.println("Before PushOut - Direction: " + direction);
-
-                // Zelle knapp außerhalb des Blockers positionieren (unter Berücksichtigung des Zellradius)
-                //double epsilon = 0.1; // Ein kleiner Puffer
-                //Vector2D pushOut = newCellPos.add(direction.multiply(radius + epsilon));
-                //cell.setPosition(pushOut);
-
-                // Geschwindigkeit vollständig auf 0 setzen, um erneutes Eindringen zu verhindern
-                //cell.setVelocity(new Vector2D(0, 0));
-
-                // Debugging: Logge die neue Position nach dem Verschieben
-                //System.out.println("After PushOut - Cell Position: " + cell.getPosition());
-                //System.out.println("Adjusted Velocity: " + cell.getVelocity());
-            } else {
-                if (blocker.containsPoint(cellPos)) {
-                    //double penetration = radius - nearestDistance;
-
-                    // Richtung immer vom Blocker-Oberflächenpunkt zum Zellmittelpunkt
-                    Vector2D direction = newCellPos.subtract(cellPos).normalize();
-
-                    // Abstoßungskraft anwenden
-                    double strength = SimulationConfig.getInstance().getBlockerRepulsionStrength();
-                    Vector2D repulsion = direction.multiply(strength);
-                    cell.applyForce(repulsion, cellPos);
-
-                    // Zelle auf dem Rand des Blockers positionieren.
-                    Vector2D pushOut = newCellPos.add(deltaVec.normalize().multiply(nearestDistance));
-                    cell.setPosition(pushOut);
-                } else {
-                    //System.out.println("No collision detected: Cell is outside the blocker.");
-                }
-            }
+            Vector2D position = cell.getPosition();
+            Vector2D corrected = blocker.getCellCenterOutside(position, cell.getRadiusSize());
+            Vector2D correction = corrected.subtract(position);
+            if (correction.lengthSquared() <= 1e-24) continue;
+            Vector2D normal = correction.normalize();
+            cell.setPosition(corrected);
+            Vector2D velocity = cell.getVelocity();
+            double inwardSpeed = velocity.getX() * normal.getX() + velocity.getY() * normal.getY();
+            if (inwardSpeed < 0) cell.setVelocity(velocity.subtract(normal.multiply(inwardSpeed)));
         }
     }
 }

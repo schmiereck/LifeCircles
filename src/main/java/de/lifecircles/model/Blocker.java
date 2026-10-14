@@ -125,50 +125,7 @@ public class Blocker implements SensableActor, SensableCell {
      * @return The new position of the cell's center outside the blocker.
      */
     public Vector2D getCellCenterOutside(final Vector2D cellPos, final double radius) {
-        final double halfWidth = width / 2.0;
-        final double halfHeight = height / 2.0;
-
-        final Vector2D nearestSurfacePoint;
-
-        // Finde den nächsten Punkt auf dem Blocker zur Zellposition
-        //final double x = Math.max(position.getX() - halfWidth - radius, Math.min(cellPos.getX(), position.getX() + halfWidth + radius));
-        //final double y = Math.max(position.getY() - halfHeight - radius, Math.min(cellPos.getY(), position.getY() + halfHeight + radius));
-        //if (Math.abs(x) < Math.abs(y)) {
-        //    nearestSurfacePoint = new Vector2D(x, cellPos.getY());
-        //} else {
-        //    nearestSurfacePoint = new Vector2D(cellPos.getX(), y);
-        //}
-
-        double distToLeft = (cellPos.getX() - (position.getX() - halfWidth - radius));
-        double distToRight = (cellPos.getX() - (position.getX() + halfWidth + radius));
-        double distToTop = (cellPos.getY() - (position.getY() - halfHeight - radius));
-        double distToBottom = (cellPos.getY() - (position.getY() + halfHeight + radius));
-
-        double absDistToLeft = Math.abs(distToLeft);
-        double absDistToRight = Math.abs(distToRight);
-        double absDistToTop = Math.abs(distToTop);
-        double absDistToBottom = Math.abs(distToBottom);
-
-        // Bestimme die kürzeste Distanz zum Rand
-        if (absDistToLeft <= absDistToRight && absDistToLeft <= absDistToTop && absDistToLeft <= absDistToBottom) {
-            // Links ist am nächsten
-            nearestSurfacePoint = new Vector2D(cellPos.getX() - distToLeft, cellPos.getY());
-        } else {
-            if (absDistToRight <= absDistToTop && absDistToRight <= absDistToBottom) {
-                // Rechts ist am nächsten
-                nearestSurfacePoint = new Vector2D(cellPos.getX() - distToRight, cellPos.getY());
-            } else {
-                if (absDistToTop <= absDistToBottom) {
-                    // Oben ist am nächsten
-                    nearestSurfacePoint = new Vector2D(cellPos.getX(), cellPos.getY() - (distToTop));
-                } else {
-                    // Unten ist am nächsten
-                    nearestSurfacePoint = new Vector2D(cellPos.getX(), cellPos.getY() - (distToBottom));
-                }
-            }
-        }
-
-        return nearestSurfacePoint;
+        return getCellCenterOutside_x(cellPos, radius);
     }
 
     /**

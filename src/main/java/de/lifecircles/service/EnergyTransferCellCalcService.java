@@ -1,6 +1,7 @@
 package de.lifecircles.service;
 
 import de.lifecircles.model.Cell;
+import de.lifecircles.model.Environment;
 import de.lifecircles.model.SensableActor;
 import de.lifecircles.model.SensableCell;
 import de.lifecircles.model.SensorActor;
@@ -34,9 +35,11 @@ public class EnergyTransferCellCalcService {
                         double distance = 0.0;
                         double maxSensorRadius = 1.0;
                         if (sensor.getCachedPosition() != null && otherActor.getCachedPosition() != null) {
-                            distance = sensor.getCachedPosition().distance(otherActor.getCachedPosition());
-                            int totalSensors = calcCell.getSensorActors().size();
-                            maxSensorRadius = SensorActorForceCellCalcService.calcSensorRadius(calcCell.getRadiusSize(), totalSensors);
+                            Environment environment = Environment.getInstance();
+                            distance = sensor.getCachedPosition().getShortestDirectionWithWrapAround(
+                                    otherActor.getCachedPosition(), environment.getWidth(), environment.getHeight()).length();
+                            Cell emitter = otherActor instanceof SensorActor actor ? actor.getParentCell() : calcCell;
+                            maxSensorRadius = SensorActorForceCellCalcService.calcSensorRadius(emitter.getRadiusSize(), emitter.getSensorActors().size());
                         }
                         double distFactorDelivery = 1.0;
                         double distFactorAbsorption = 1.0;

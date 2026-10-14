@@ -723,7 +723,7 @@ public class CellDetailView extends Stage {
 
                 // Färbung des Kraftfelds basierend auf der Kraftstärke
                 final Color fieldColor;
-                if (actor.getForceStrength() > 0) {
+                if (actor.getForceStrength() < 0) {
                     // Attraktionskraft - rot
                     fieldColor = Color.color(
                             1.0, 0, 0,

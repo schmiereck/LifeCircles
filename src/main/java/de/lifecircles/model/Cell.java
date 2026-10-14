@@ -35,7 +35,6 @@ public class Cell implements SensableCell, Serializable {
     private int cellState; // Zustand der Zelle, beeinflusst zusätzliche Hidden-Layer
     private double mutationRateFactor; // Faktor für die Mutationsrate
     private double mutationStrengthFactor; // Faktor für die Mutationsstärke
-    private transient long sizeChangeTimestamp = -1; // Zeitstempel für verzögerte Größenänderung
     private transient final Random random = new Random();
     //private int tempThinkHackCounter = SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX;
 
@@ -124,9 +123,6 @@ public class Cell implements SensableCell, Serializable {
     public void setRadiusSize(double radiusSize) {
         this.targetRadiusSize = Math.max(SimulationConfig.getInstance().getCellMinRadiusSize(),
                 Math.min(SimulationConfig.getInstance().getCellMaxRadiusSize(), radiusSize));
-        
-        // Setze den Zeitstempel für die Verzögerung
-        this.sizeChangeTimestamp = System.currentTimeMillis();
     }
 
     public void setRealRadiusSize(double radiusSize) {
@@ -158,18 +154,13 @@ public class Cell implements SensableCell, Serializable {
 
     // Neue Methode, um die verzögerte Größenänderung zu prüfen und anzuwenden
     public void applyDelayedSizeChange() {
-        if (this.sizeChangeTimestamp > 0) {
-            long elapsedTime = System.currentTimeMillis() - this.sizeChangeTimestamp;
-            if (elapsedTime >= SimulationConfig.getInstance().getSizeChangeDelay()) {
-                this.radiusSize = this.targetRadiusSize;
-                this.sizeChangeTimestamp = -1; // Zurücksetzen des Zeitstempels
-            } else {
-                // Berechne den Fortschritt der Verzögerung
-                double progress = (double) elapsedTime / SimulationConfig.getInstance().getSizeChangeDelay();
-                // Interpolieren zwischen der aktuellen Größe und der Zielgröße
-                this.radiusSize = this.radiusSize + (this.targetRadiusSize - this.radiusSize) * progress;
-            }
-        }
+        applyDelayedSizeChange(SimulationConfig.getInstance().getCalcTimeStep());
+    }
+
+    public void applyDelayedSizeChange(double deltaTime) {
+        double duration = SimulationConfig.getInstance().getSizeChangeDelay() / 1000.0;
+        double progress = duration <= 0 ? 1 : -Math.expm1(-deltaTime / duration);
+        this.radiusSize += (this.targetRadiusSize - this.radiusSize) * progress;
     }
 
     @Override
@@ -225,8 +216,15 @@ public class Cell implements SensableCell, Serializable {
      * angularVelocityForce to angularVelocity
      */
     public void updateForce() {
-        this.velocity = this.velocity.add(this.velocityForce);
-        this.angularVelocity += this.angularVelocityForce;
+        updateForce(SimulationConfig.getInstance().getCalcTimeStep());
+    }
+
+    public void updateForce(double deltaTime) {
+        // Force strengths were calibrated for 60 Hz; retain that scale while
+        // integrating proportionally to simulation time at other step sizes.
+        double stepScale = deltaTime * SimulationConfig.initialCalcFps;
+        this.velocity = this.velocity.add(this.velocityForce.multiply(stepScale));
+        this.angularVelocity += this.angularVelocityForce * stepScale;
 
         this.velocityForce = new Vector2D(0, 0);
         this.angularVelocityForce = 0.0D;
@@ -350,7 +348,7 @@ public class Cell implements SensableCell, Serializable {
      * @return Index of the topmost sensor (0-11)
      */
     public int getTopSensorIndex() {
-        double maxY = Double.NEGATIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY;
         int topSensorIndex = 0; // Default to first sensor if positions aren't calculated yet
 
         for (int i = 0; i < this.sensorActors.size(); i++) {
@@ -359,8 +357,8 @@ public class Cell implements SensableCell, Serializable {
 
             if (cachedPosition != null) {
                 double sensorY = cachedPosition.getY();
-                if (sensorY > maxY) {
-                    maxY = sensorY;
+                if (sensorY < minY) {
+                    minY = sensorY;
                     topSensorIndex = i;
                 }
             }

@@ -14,16 +14,12 @@ public class CellCalcService {
      * @param deltaTime Time step in seconds
      */
     public static void updateCell(final Cell cell, final double deltaTime) {
-        // Update neural network
-        final boolean useSynapseEnergyCost;
-        //if (cell.getTempThinkHackCounter() >= SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX) {
-            CellBrainService.think(cell);
-            useSynapseEnergyCost = true;
-        //    cell.setTempThinkHackCounter(0);
-        //} else {
-        //    useSynapseEnergyCost = false;
-        //    cell.incTempThinkHackCounter();
-        //}
+        updateCell(cell, deltaTime, CellBrainService.generateInputs(cell));
+    }
+
+    public static void updateCell(final Cell cell, final double deltaTime, final double[] inputs) {
+        CellBrainService.think(cell, inputs);
+        final boolean useSynapseEnergyCost = true;
 
         // Update size if cell is growing
         if (cell.isGrowing()) {
@@ -43,15 +39,15 @@ public class CellCalcService {
 
         // Verzögerte Größenänderung nur anwenden, wenn die Zelle nicht wächst
         if (!cell.isGrowing()) {
-            cell.applyDelayedSizeChange();
+            cell.applyDelayedSizeChange(deltaTime);
         }
 
         // Update physics
         cell.setPosition(cell.getPosition().add(cell.getVelocity().multiply(deltaTime)));
         cell.setRotation(cell.getRotation() + cell.getAngularVelocity() * deltaTime);
         // Apply rotational friction
-        cell.setAngularVelocity(cell.getAngularVelocity() * 
-                (1.0D - SimulationConfig.getInstance().getRotationalFriction()) * deltaTime);
+        cell.setAngularVelocity(cell.getAngularVelocity() *
+                Math.exp(-SimulationConfig.getInstance().getRotationalFriction() * deltaTime));
         
         // Normalize rotation to [0, 2π)
         double rotation = cell.getRotation() % (2 * Math.PI);
@@ -72,5 +68,9 @@ public class CellCalcService {
      */
     public static void updateForces(final Cell cell) {
         cell.updateForce();
+    }
+
+    public static void updateForces(final Cell cell, final double deltaTime) {
+        cell.updateForce(deltaTime);
     }
 }

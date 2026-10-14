@@ -2,140 +2,60 @@ package de.lifecircles.service;
 
 import de.lifecircles.model.*;
 import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
-
 import java.util.List;
 
-/**
- * Service responsible for processing sensor-actor interactions between cells.
- */
+/** Sensor fields use negative strength for attraction and positive strength for repulsion. */
 public class SensorActorForceCellCalcService {
-
-    /**
-     * Optimized processing of sensor/actor interactions using a partitioning strategy.
-     */
-    public static void processInteractions(final List<Cell> cellList, final PartitioningStrategy partitioner) {
-        // cache positions for all sensorActors in this simulation step
-        //for (final Cell calcCell : cellList) {
-        cellList.parallelStream().forEach(calcCell -> {
-            for (final SensorActor actor : calcCell.getSensorActors()) {
+    public static void processInteractions(final List<Cell> cells, final PartitioningStrategy partitioner) {
+        final Environment environment = Environment.getInstance();
+        final double width = environment.getWidth();
+        final double height = environment.getHeight();
+        cells.parallelStream().forEach(cell -> {
+            for (SensorActor actor : cell.getSensorActors()) {
                 actor.updateCachedPosition();
                 actor.setSensedCell(null);
                 actor.setSensedActor(null);
             }
         });
-        
-        // Prüfe Blocker-Kollisionen
-        checkBlockerCollisions(cellList);
-        
-        cellList.parallelStream().forEach(calcCell -> {
-            for (final Cell otherCell : partitioner.getNeighbors(calcCell)) {
-                if (calcCell != otherCell) {
-                    processInteraction(calcCell, otherCell);
-                }
-            }
-        });
-    }
 
-    /**
-     * Berechne die Kraft, die der otherCellActor auf calcCellActor ausübt.
-     */
-    private static void processInteraction(final Cell calcCell, final Cell otherCell) {
-        //final Vector2D delta = calcCell.getPosition().subtract(otherCell.getPosition());
-        //final double cellDistance = delta.length();
-        //final double combinedRadius = Math.max(otherCell.getRadiusSize(), calcCell.getRadiusSize());
-        // Nur ausführen, wenn die Zellen sich nicht inneinander befinden.
-        //if (cellDistance > combinedRadius) {
-
-            // Process interactions in one direction only
-            for (final SensorActor calcCellActor : calcCell.getSensorActors()) {
-                // Wenn der Sensor bereits etwas wahrnimmt (z.B. einen Blocker), überspringen
-                //if (calcCellActor.getSensedCell() != null) {
-                //    continue;
-                //}
-
-                for (final SensorActor otherCellActor : otherCell.getSensorActors()) {
-                    // Hole Umgebungsgröße für Wrap-Around Berechnung
-                    Environment environment = Environment.getInstance();
-                    double envWidth = environment.getWidth();
-                    double envHeight = environment.getHeight();
-
-                    // Berechne die Kraft, die der otherCellActor auf calcCellActor ausübt
-                    // mit Berücksichtigung des Wrap-Around an Grenzen
-                    final Vector2D direction = calcCellActor.getCachedPosition()
-                            .getShortestDirectionWithWrapAround(otherCellActor.getCachedPosition(), envWidth, envHeight);
-                    final double distance = direction.length();
-
-                    if (distance > 0.0D) {
-                        // sense(SensorActor sensorActor, SensorActor otherSensorActor)
-                        //double distance = otherCellActor.getCachedPosition().distance(calcCellActor.getCachedPosition());
-                        final int totalSensors = otherCellActor.getParentCell().getSensorActors().size();
-                        final double maxSensorRadius = calcSensorRadius(otherCellActor.getParentCell().getRadiusSize(), totalSensors);
-                        if (distance <= maxSensorRadius) {
-                            final double senseForceValue = (distance / maxSensorRadius);
-
-                            // Kraft von otherCellActor auf calcCellActor
-                            final double otherForceStrength = otherCellActor.getForceStrength(); // Kraftstärke (positiv/negativ)
-                            final double totalForceStrength = senseForceValue * otherForceStrength; // Berücksichtige Richtung und Stärke
-
-                            if ((senseForceValue != 0.0D)) {// && (Math.abs(totalForceStrength) > Math.abs(foundForceStrength))) {
-                                calcCellActor.setSensedCell(otherCell);
-                                calcCellActor.setSensedActor(otherCellActor);
-
-                                final double calcCellForceStrength = calcCell.getRadiusSize() / SimulationConfig.getInstance().getCellMaxRadiusSize();
-                                final double otherCellForceStrength = otherCell.getRadiusSize() / SimulationConfig.getInstance().getCellMaxRadiusSize();
-
-                                final Vector2D forceOnCalcCell = direction.normalize().multiply(totalForceStrength *
-                                        calcCellForceStrength * otherCellForceStrength);
-                                final Vector2D forceOnOtherCell = direction.normalize().multiply(-totalForceStrength *
-                                        otherCellForceStrength * calcCellForceStrength);
-
-                                calcCell.applyForce(forceOnCalcCell, calcCellActor.getCachedPosition());
-                                otherCell.applyForce(forceOnOtherCell, calcCellActor.getCachedPosition());
-                            }
-                        }
+        // Workers write only their own cell. Reverse traversal computes the
+        // equal and opposite reaction at the other cell's own actor.
+        cells.parallelStream().forEach(cell -> {
+            final double ownRange = calcSensorRadius(cell.getRadiusSize(), cell.getSensorActors().size());
+            for (SensorActor actor : cell.getSensorActors()) {
+                double nearest = Double.POSITIVE_INFINITY;
+                for (Blocker blocker : environment.getBlockerList()) {
+                    if (blocker.containsPoint(actor.getCachedPosition())) {
+                        actor.setSensedCell(blocker);
+                        actor.setSensedActor(blocker);
+                        nearest = -1; // A touching blocker has sensing priority.
+                        break;
                     }
                 }
-            //}
-//            if (Objects.nonNull(foundOtherCellActor)) {
-//                foundCalcCellActor.setSensedActor(foundOtherCellActor);
-//                foundCalcCellActor.setSensedCell(otherCell);
-//
-//                final double usedForceStrength;
-//                //// Abstoßung?
-//                //if (foundForceStrength > 0.0D) {
-//                //    usedForceStrength = foundForceStrength * 1.75D;
-//                //} else {
-//                    usedForceStrength = foundForceStrength;
-//                //}
-//                Vector2D forceOnCalcCell = foundDirection.normalize().multiply(usedForceStrength);
-//                calcCell.applyForce(forceOnCalcCell, foundCalcCellActor.getCachedPosition(), deltaTime);
-//            }
-        }
-    }
-
-    /**
-     * Überprüft, ob Sensoren mit Blockern kollidieren und setzt entsprechende Sensable-Objekte
-     */
-    private static void checkBlockerCollisions(List<Cell> cells) {
-        // Hole die Blocker aus der Environment-Instanz
-        Environment environment = Environment.getInstance();
-        if (environment == null) return;
-        
-        List<Blocker> blockers = environment.getBlockerList();
-        if (blockers == null || blockers.isEmpty()) return;
-        
-        // Prüfe für jeden Sensor, ob er einen Blocker berührt
-        cells.parallelStream().forEach(cell -> {
-            for (final SensorActor sensor : cell.getSensorActors()) {
-                final Vector2D sensorPos = sensor.getCachedPosition();
-                if (sensorPos != null) {
-                    for (Blocker blocker : blockers) {
-                        if (blocker.containsPoint(sensorPos)) {
-                            // Setze den Blocker als wahrgenommenes Objekt
-                            // Der SensorActor nimmt Blocker als Zelle wahr
-                            sensor.setSensedCell(blocker);
-                            sensor.setSensedActor(blocker);
-                            break;
+                for (Cell other : partitioner.getNeighbors(cell)) {
+                    if (other == cell) continue;
+                    final double otherRange = calcSensorRadius(other.getRadiusSize(), other.getSensorActors().size());
+                    final double cutoff = cell.getRadiusSize() + other.getRadiusSize() + Math.max(ownRange, otherRange);
+                    if (cell.getPosition().getShortestDirectionWithWrapAround(other.getPosition(), width, height)
+                            .lengthSquared() > cutoff * cutoff) continue;
+                    final double scale = cell.getRadiusSize() * other.getRadiusSize()
+                            / Math.pow(SimulationConfig.getInstance().getCellMaxRadiusSize(), 2);
+                    for (SensorActor otherActor : other.getSensorActors()) {
+                        final Vector2D direction = actor.getCachedPosition().getShortestDirectionWithWrapAround(
+                                otherActor.getCachedPosition(), width, height);
+                        final double distance = direction.length();
+                        if (distance <= otherRange && distance < nearest) {
+                            nearest = distance;
+                            actor.setSensedCell(other);
+                            actor.setSensedActor(otherActor);
+                        }
+                        if (distance <= 1e-12) continue;
+                        // Received field plus the reaction to our emitted field.
+                        double strength = 0;
+                        if (distance < otherRange) strength += otherActor.getForceStrength() * (1 - distance / otherRange);
+                        if (distance < ownRange) strength += actor.getForceStrength() * (1 - distance / ownRange);
+                        if (strength != 0) {
+                            cell.applyForce(direction.multiply(-strength * scale / distance), actor.getCachedPosition());
                         }
                     }
                 }
@@ -144,7 +64,6 @@ public class SensorActorForceCellCalcService {
     }
 
     public static double calcSensorRadius(final double radiusSize, final int totalSensors) {
-        // Berechnung der vollen Sehnenlänge zwischen zwei benachbarten Sensoren
         return 2.0D * radiusSize * Math.sin(Math.PI / totalSensors) * SimulationConfig.cellActorMaxFieldRadiusFactor;
     }
 }

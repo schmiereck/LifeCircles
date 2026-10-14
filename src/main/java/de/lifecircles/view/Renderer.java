@@ -233,7 +233,7 @@ public class Renderer {
             double radius = chord * camera.getScale();
 
             final Color baseColor;
-            if (actor.getForceStrength() > 0.0D) {
+            if (actor.getForceStrength() < 0.0D) {
                 // Attractive force - inward gradient
                 baseColor = Color.color(
                         1.0D, 0, 0,

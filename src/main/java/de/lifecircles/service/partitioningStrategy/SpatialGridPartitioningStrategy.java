@@ -16,7 +16,6 @@ public class SpatialGridPartitioningStrategy implements PartitioningStrategy {
 
     @Override
     public void build(List<Cell> cells) {
-        grid.clear();
         grid.addCells(cells);
     }
 

@@ -16,7 +16,7 @@ public class SensorActor implements SensableActor, Serializable {
     private final double cosAngleOnCell;
     private final double sinAngleOnCell;
     private CellType type;
-    private double forceStrength; // Positive for attraction, negative for repulsion
+    private double forceStrength; // Negative for attraction, positive for repulsion
     // temporarily stores the sensed actor and its cell
     private transient SensableActor sensedActor; // Nicht serialisierbar
     private transient SensableCell sensedCell;  // Nicht serialisierbar

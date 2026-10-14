@@ -1,10 +1,13 @@
 package de.lifecircles.service;
 
 import de.lifecircles.model.Cell;
+import de.lifecircles.model.Environment;
 import de.lifecircles.model.Vector2D;
 import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
 
 import java.util.List;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 /**
  * Service responsible for calculating repulsive forces between cells.
@@ -14,12 +17,15 @@ public class RepulsionCellCalcService {
      * Optimized repulsion using partitioning strategy.
      */
     public static void processRepulsiveForces(final List<Cell> cells, final PartitioningStrategy partitioner) {
-        //for (final Cell cell1 : cells) {
+        final Environment environment = Environment.getInstance();
+        final Map<Cell, Integer> order = new IdentityHashMap<>();
+        for (int i = 0; i < cells.size(); i++) order.put(cells.get(i), i);
         cells.parallelStream().forEach(cell1 -> {
             final List<Cell> neighbors = partitioner.getNeighbors(cell1);
             for (final Cell cell2 : neighbors) {
                 if (cell2 != cell1) {
-                    final Vector2D delta = cell2.getPosition().subtract(cell1.getPosition());
+                    final Vector2D delta = cell1.getPosition().getShortestDirectionWithWrapAround(
+                            cell2.getPosition(), environment.getWidth(), environment.getHeight());
                     final double distance = delta.length();
                     final double combinedRadius = cell1.getRadiusSize() + cell2.getRadiusSize();
                     if (distance < combinedRadius) {
@@ -27,7 +33,10 @@ public class RepulsionCellCalcService {
                         final double forceMagnitude = SimulationConfig.getInstance().getCellRepulsionStrength() * overlap;
                         //final Vector2D direction = delta.divide(distance);
                         //final Vector2D force = direction.multiply(forceMagnitude);
-                        final Vector2D force1 = delta.multiply(-forceMagnitude / distance);
+                        // Opposite deterministic directions also separate coincident centers.
+                        final Vector2D force1 = distance > 1e-12
+                                ? delta.multiply(-forceMagnitude / distance)
+                                : new Vector2D(order.get(cell1) < order.get(cell2) ? -forceMagnitude : forceMagnitude, 0);
                         //final Vector2D force2 = delta.multiply(forceMagnitude / distance);
                         //cell1.applyForce(force1, cell1.getPosition());
                         cell1.applyForce(force1);

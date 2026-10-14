@@ -12,6 +12,8 @@ import java.util.function.Consumer;
 import static de.lifecircles.model.neural.NeuralNetwork.DEFAULT_MUTATION_RATE;
 
 public class NeuralNet implements Serializable {
+    private static final long serialVersionUID = -1847201268253122334L;
+    private transient Map<NeuronTypeInfoData, NeuronTypeInfoData> copiedTypes = new IdentityHashMap<>();
     private Neuron[] inputNeuronArr;
     private Layer[] hiddenLayerArr; // Array statt List
     private Neuron[] outputNeuronArr;
@@ -39,7 +41,7 @@ public class NeuralNet implements Serializable {
     };
 
     /**
-     * Copy-Konstruktor: Erstellt eine exakte Kopie des übergebenen neuronalen Netzwerks
+     * Copies the genotype into independent neurons and modules with fresh activations.
      *
      * @param original Das zu kopierende neuronale Netzwerk
      */
@@ -58,14 +60,7 @@ public class NeuralNet implements Serializable {
             this.neuronTypeInfoDataList = new ArrayList<>();
             // Kopiere die NeuronTypeInfoData
             for (final NeuronTypeInfoData typeInfo : original.neuronTypeInfoDataList) {
-                final NeuralNet newNeuralNet;
-                final NeuralNet typeInfoNeuralNet = typeInfo.getNeuralNet();
-                if (Objects.nonNull(typeInfoNeuralNet)) {
-                    newNeuralNet = new NeuralNet(typeInfoNeuralNet, true, neuronValueFunctionFactory, neuronValueFunctionFactory.create());
-                } else {
-                    newNeuralNet = null; // Kein Neuron-Typ, daher null
-                }
-                this.neuronTypeInfoDataList.add(new NeuronTypeInfoData(typeInfo.getInputCount(), typeInfo.getOutputCount(), newNeuralNet));
+                this.neuronTypeInfoDataList.add(copyNeuronType(typeInfo, neuronValueFunctionFactory));
             }
 
             // Erstelle eine Map, die die Originalneuronen den neuen Neuronen zuordnet
@@ -74,17 +69,7 @@ public class NeuralNet implements Serializable {
             // Kopiere Input-Neuronen
             for (int inputNeuronPos = 0; inputNeuronPos < original.inputNeuronArr.length; inputNeuronPos++) {
                 final Neuron originalNeuron = original.inputNeuronArr[inputNeuronPos];
-                //final NeuronInterface newNeuron = createNewNeuron(neuronValueFunctionFactory, neuronValueFunction, originalNeuron.getNeuronTypeInfoData());
-                //newNeuron.setActivationFunction(originalNeuron.getActivationFunction());
-
                 final Neuron newNeuron = (Neuron) originalNeuron.cloneNeuron(this, neuronValueFunction, true);
-                //newNeuron.setBias(inputNeuronPos, originalNeuron.getBias(inputNeuronPos));
-
-                for (int outputTypePos = 0; outputTypePos < originalNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-                    final double value = neuronValueFunction.readValue(this, originalNeuron, outputTypePos);
-                    //newNeuron.setBias(outputTypePos, originalNeuron.getBias(outputTypePos));
-                    neuronValueFunction.writeValue(this, newNeuron, outputTypePos, value);
-                }
                 this.inputNeuronArr[inputNeuronPos] = newNeuron;
                 neuronMap.put(originalNeuron, newNeuron);
             }
@@ -107,14 +92,8 @@ public class NeuralNet implements Serializable {
             // Kopiere Output-Neuronen
             for (int outputNeuronPos = 0; outputNeuronPos < original.outputNeuronArr.length; outputNeuronPos++) {
                 final Neuron originalNeuron = original.outputNeuronArr[outputNeuronPos];
-                //final Neuron newNeuron = createNewNeuron(neuronValueFunction, originalNeuron.getNeuronTypeInfoData());
-                //newNeuron.setActivationFunction(originalNeuron.getActivationFunction());
                 final Neuron newNeuron = (Neuron) originalNeuron.cloneNeuron(this, neuronValueFunction, true);
-                for (int outputTypePos = 0; outputTypePos < originalNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-                    //newNeuron.setBias(outputTypePos, originalNeuron.getBias(inputTypePos));
-                    final double value = neuronValueFunction.readValue(this, originalNeuron, outputTypePos);
-                    neuronValueFunction.writeValue(this, newNeuron, outputTypePos, value);
-                }
+
                 newNeuron.setOutputNeuron(true); // Markiere als Output-Neuron
                 this.outputNeuronArr[outputNeuronPos] = newNeuron;
                 neuronMap.put(originalNeuron, newNeuron);
@@ -152,6 +131,19 @@ public class NeuralNet implements Serializable {
 
             this.neuronTypeInfoDataList = original.neuronTypeInfoDataList;
         }
+        this.copiedTypes = null; // Do not retain references to the parent genotype.
+    }
+
+    NeuronTypeInfoData copyNeuronType(NeuronTypeInfoData original, NeuronValueFunctionFactory factory) {
+        if (copiedTypes == null) copiedTypes = new IdentityHashMap<>();
+        NeuronTypeInfoData copy = copiedTypes.get(original);
+        if (copy == null) {
+            NeuralNet inner = original.getNeuralNet();
+            copy = new NeuronTypeInfoData(original.getInputCount(), original.getOutputCount(),
+                    inner == null ? null : new NeuralNet(inner, true, factory, factory.create()));
+            copiedTypes.put(original, copy);
+        }
+        return copy;
     }
 
     /**
@@ -213,15 +205,23 @@ public class NeuralNet implements Serializable {
         final double[] outputArr = new double[this.outputNeuronArr.length];
 
         // process hidden layers
-        for (final Layer layer : this.hiddenLayerArr) {
+        for (int layerIndex = 0; layerIndex < this.hiddenLayerArr.length; layerIndex++) {
+            final Layer layer = this.hiddenLayerArr[layerIndex];
             final NeuronInterface[] neuronArr = layer.getNeuronsArr();
             if (layer.isActiveLayer() || this.disableLayerDeactivation) {
                 for (final NeuronInterface neuron : neuronArr) {
                     this.proccessedSynapses += this.activate(neuronValueFunction, neuron);
                 }
             } else {
-                if (neuronArr.length > 0) {
-                    // For inactive layers aktivete allwayse the first neuron.
+                if (layerIndex < fixedHiddenLayerCount) {
+                    // Cell-state layers are fully disabled, including their first neuron.
+                    for (NeuronInterface neuron : neuronArr) {
+                        for (int port = 0; port < neuron.getNeuronTypeInfoData().getOutputCount(); port++) {
+                            neuronValueFunction.writeValue(this, neuron, port, 0);
+                        }
+                    }
+                } else if (neuronArr.length > 0) {
+                    // Dynamic layers still evaluate their scheduling neuron.
                     this.proccessedSynapses += this.activate(neuronValueFunction, layer.getNeuronsArr()[0]);
                 }
             }
@@ -1218,9 +1218,6 @@ public class NeuralNet implements Serializable {
     @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        for (Synapse synapse : this.synapseArray) {
-            synapse.getSourceNeuron().addOutputSynapse(synapse.getSourceOutputTypePos(), synapse);
-        }
         // Nach der Wiederherstellung der Synapsen: Input-Synapsen-Array und Zähler für alle Neuronen korrekt setzen
         // Alle Neuronen einsammeln
         List<NeuronInterface> allNeurons = new ArrayList<>();
@@ -1229,12 +1226,24 @@ public class NeuralNet implements Serializable {
             Collections.addAll(allNeurons, layer.getNeuronsArr());
         }
         Collections.addAll(allNeurons, outputNeuronArr);
+        // Serialized neuron lists may already contain these edges. Rebuild once
+        // from the canonical graph instead of appending duplicate connections.
+        for (NeuronInterface neuron : allNeurons) {
+            for (int port = 0; port < neuron.getNeuronTypeInfoData().getOutputCount(); port++) {
+                for (Synapse synapse : new ArrayList<>(neuron.getOutputSynapseList(port))) {
+                    neuron.removeOutputSynapse(port, synapse);
+                }
+            }
+        }
+        for (Synapse synapse : this.synapseArray) {
+            synapse.getSourceNeuron().addOutputSynapse(synapse.getSourceOutputTypePos(), synapse);
+        }
         // Für jedes Neuron: Input-Synapsen-Array neu aufbauen
         for (final NeuronInterface neuron : allNeurons) {
             for (int inputTypePos = 0; inputTypePos < neuron.getNeuronTypeInfoData().getInputCount(); inputTypePos++) {
                 final List<Synapse> inputSynapseList = new ArrayList<>();
                 for (final Synapse synapse : this.synapseArray) {
-                    if (synapse.getTargetNeuron() == neuron) {
+                    if (synapse.getTargetNeuron() == neuron && synapse.getTargetInputTypePos() == inputTypePos) {
                         inputSynapseList.add(synapse);
                     }
                 }

@@ -1,6 +1,11 @@
 package de.lifecircles.model.neural;
 
 public class ValuesNeuronValueFunction implements NeuronValueFunction {
+    private static final long serialVersionUID = 1177906211537918699L;
+    // Keep port zero's serialized representation compatible with existing saves.
+    private double[][] extraValues = new double[0][];
+    private transient double[][] extraDeltas = new double[0][];
+    private transient double[][] extraInputSums = new double[0][];
     private double[] valuesArr = { };
     private transient double[] inputSumArr = { };
     private transient double[] deltaArr = { };
@@ -12,46 +17,56 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
     public double readValue(final NeuralNet neuralNet, final NeuronInterface neuron, final int outputTypePos) {
         final int id = neuron.getId();
         this.checkValueArrSize(id);
-        return this.valuesArr[id];
+        this.ensureChannels(outputTypePos);
+        return outputTypePos == 0 ? this.valuesArr[id] : channel(extraValues, outputTypePos, id)[id];
     }
 
     @Override
     public void writeValue(final NeuralNet neuralNet, final NeuronInterface neuron, final int outputTypePos, final double value) {
         final int id = neuron.getId();
         this.checkValueArrSize(id);
-        this.valuesArr[id] = value;
+        this.ensureChannels(outputTypePos);
+        if (outputTypePos == 0) this.valuesArr[id] = value;
+        else channel(extraValues, outputTypePos, id)[id] = value;
     }
 
     @Override
     public double readDelta(final NeuralNet neuralNet, final NeuronInterface neuron, final int outputTypePos) {
         final int id = neuron.getId();
         this.checkValueArrSize(id);
-        return this.deltaArr[id];
+        this.ensureChannels(outputTypePos);
+        return outputTypePos == 0 ? this.deltaArr[id] : channel(extraDeltas, outputTypePos, id)[id];
     }
 
     @Override
     public void writeDelta(final NeuralNet neuralNet, final NeuronInterface neuron, final int outputTypePos, final double delta) {
         final int id = neuron.getId();
         this.checkValueArrSize(id);
-        this.deltaArr[id] = delta;
+        this.ensureChannels(outputTypePos);
+        if (outputTypePos == 0) this.deltaArr[id] = delta;
+        else channel(extraDeltas, outputTypePos, id)[id] = delta;
     }
 
     @Override
     public double readInputSum(final NeuralNet neuralNet, final NeuronInterface neuron, final int outputTypePos) {
         final int id = neuron.getId();
         this.checkValueArrSize(id);
-        return this.inputSumArr[id];
+        this.ensureChannels(outputTypePos);
+        return outputTypePos == 0 ? this.inputSumArr[id] : channel(extraInputSums, outputTypePos, id)[id];
     }
 
     @Override
     public void writeInputSum(final NeuralNet neuralNet, final NeuronInterface neuron, final int outputTypePos, final double inputSum) {
         final int id = neuron.getId();
         this.checkValueArrSize(id);
-        this.inputSumArr[id] = inputSum;
+        this.ensureChannels(outputTypePos);
+        if (outputTypePos == 0) this.inputSumArr[id] = inputSum;
+        else channel(extraInputSums, outputTypePos, id)[id] = inputSum;
     }
 
     @Override
     public int fetchNextFreeId(final NeuralNet neuralNet) {
+        ensureChannels(0);
         final int currentLowestFreeID = this.lowestFreeID;
         final int currentLastFreeID = this.lastFreeID;
 
@@ -87,6 +102,14 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
                 this.lastFreeID = searchId;
             }
         }
+        if (currentLowestFreeID < valuesArr.length) {
+            valuesArr[currentLowestFreeID] = 0;
+            if (deltaArr != null) deltaArr[currentLowestFreeID] = 0;
+            if (inputSumArr != null) inputSumArr[currentLowestFreeID] = 0;
+            for (double[] channel : extraValues) if (channel != null && currentLowestFreeID < channel.length) channel[currentLowestFreeID] = 0;
+            for (double[] channel : extraDeltas) if (channel != null && currentLowestFreeID < channel.length) channel[currentLowestFreeID] = 0;
+            for (double[] channel : extraInputSums) if (channel != null && currentLowestFreeID < channel.length) channel[currentLowestFreeID] = 0;
+        }
         return currentLowestFreeID;
     }
 
@@ -111,6 +134,7 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
     private void readObject(java.io.ObjectInputStream stream) throws java.io.IOException, ClassNotFoundException {
         // Standard-Deserialisierung aufrufen
         stream.defaultReadObject();
+        ensureChannels(0);
 
         // Transiente Felder initialisieren
         if (valuesArr != null) {
@@ -135,29 +159,33 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
         }
     }
 
-    private void checkValueArrSize(final int id) {
-        // Stelle sicher, dass die transienten Arrays initialisiert sind
-        if (inputSumArr == null || deltaArr == null) {
-            initTransientArrays(valuesArr != null ? valuesArr.length : 0);
-        }
+    private void ensureChannels(int port) {
+        if (port < 0) throw new IllegalArgumentException("Negative port");
+        if (extraValues == null) extraValues = new double[0][];
+        if (extraDeltas == null) extraDeltas = new double[0][];
+        if (extraInputSums == null) extraInputSums = new double[0][];
+        if (port > extraValues.length) extraValues = java.util.Arrays.copyOf(extraValues, port);
+        if (port > extraDeltas.length) extraDeltas = java.util.Arrays.copyOf(extraDeltas, port);
+        if (port > extraInputSums.length) extraInputSums = java.util.Arrays.copyOf(extraInputSums, port);
+    }
 
-        if (id >= this.valuesArr.length) {
-            {
-                // Ensure the valuesArr is large enough to hold the neuron's value
-                final double[] newValuesArr = new double[id + 1];
-                System.arraycopy(this.valuesArr, 0, newValuesArr, 0, this.valuesArr.length);
-                this.valuesArr = newValuesArr;
-            }
-            {
-                final double[] newDeltaArr = new double[id + 1];
-                System.arraycopy(this.deltaArr, 0, newDeltaArr, 0, this.deltaArr.length);
-                this.deltaArr = newDeltaArr;
-            }
-            {
-                final double[] newInputSumArr = new double[id + 1];
-                System.arraycopy(this.inputSumArr, 0, newInputSumArr, 0, this.inputSumArr.length);
-                this.inputSumArr = newInputSumArr;
-            }
+    private double[] channel(double[][] channels, int port, int id) {
+        int index = port - 1;
+        if (channels[index] == null) channels[index] = new double[Math.max(16, id + 1)];
+        else if (id >= channels[index].length) {
+            channels[index] = java.util.Arrays.copyOf(channels[index], Math.max(id + 1, channels[index].length * 2));
+        }
+        return channels[index];
+    }
+
+    private void checkValueArrSize(final int id) {
+        if (id < 0) throw new IllegalArgumentException("Negative neuron ID");
+        initTransientArrays(valuesArr.length);
+        if (id >= valuesArr.length) {
+            int size = Math.max(id + 1, Math.max(16, valuesArr.length * 2));
+            valuesArr = java.util.Arrays.copyOf(valuesArr, size);
+            deltaArr = java.util.Arrays.copyOf(deltaArr, size);
+            inputSumArr = java.util.Arrays.copyOf(inputSumArr, size);
         }
     }
 }

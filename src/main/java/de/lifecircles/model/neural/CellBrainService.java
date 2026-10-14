@@ -115,9 +115,11 @@ public class CellBrainService {
         double dist = 0.0D;
         double maxDist = 1.0D;
         if (maActor.getCachedPosition() != null && sensedActor != null && sensedActor.getCachedPosition() != null) {
-            dist = maActor.getCachedPosition().distance(sensedActor.getCachedPosition());
-            int totalSensors = maActor.getParentCell().getSensorActors().size();
-            maxDist = de.lifecircles.service.SensorActorForceCellCalcService.calcSensorRadius(maActor.getParentCell().getRadiusSize(), totalSensors);
+            Environment environment = Environment.getInstance();
+            dist = maActor.getCachedPosition().getShortestDirectionWithWrapAround(
+                    sensedActor.getCachedPosition(), environment.getWidth(), environment.getHeight()).length();
+            Cell emitter = sensedActor instanceof SensorActor actor ? actor.getParentCell() : maActor.getParentCell();
+            maxDist = de.lifecircles.service.SensorActorForceCellCalcService.calcSensorRadius(emitter.getRadiusSize(), emitter.getSensorActors().size());
         }
         double distanceFactor = 1.0 - Math.min(dist / maxDist, 1.0D); // 1.0 = nah, 0.0 = fern
         return distanceFactor;
@@ -188,9 +190,11 @@ public class CellBrainService {
      * Updates the cell's behavior based on its current state and environment.
      */
     public static void think(final Cell cell) {
-        final CellBrainInterface cellBrain = cell.getBrain();
+        think(cell, generateInputs(cell));
+    }
 
-        final double[] inputs = CellBrainService.generateInputs(cell);
+    public static void think(final Cell cell, final double[] inputs) {
+        final CellBrainInterface cellBrain = cell.getBrain();
         cellBrain.setInputs(inputs);
 
         final double[] outputs = cellBrain.process();

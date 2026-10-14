@@ -50,15 +50,21 @@ public class ReproductionManagerService {
                         add(direction.multiply(parentCell.getRadiusSize() +
                                 (SimulationConfig.getInstance().getCellMinGrowRadiusSize() * 2.0D)));
 
-                if (!BlockerCellCalcService.checkCellIsInsideBlocker(childPosition, environment.getBlockerList())) {
+                childPosition = new Vector2D(
+                        ((childPosition.getX() % environment.getWidth()) + environment.getWidth()) % environment.getWidth(),
+                        ((childPosition.getY() % environment.getHeight()) + environment.getHeight()) % environment.getHeight());
+                final Vector2D spawnPosition = childPosition;
+                final double childRadius = config.getCellMinGrowRadiusSize();
+                if (environment.getBlockerList().stream().noneMatch(blocker ->
+                        blocker.getCellCenterOutside(spawnPosition, childRadius).distance(spawnPosition) > 1e-12)) {
                     // Set initial size (slightly mutated from parentCell's initial size)
                     final double parentSize = parentCell.getRadiusSize();
 
                     // Create mutated brain for child
                     final CellBrainInterface parentBrain = parentCell.getBrain();
                     final NeuralNetwork childBrainNetwork = parentBrain.mutate(
-                            config.getMutationRate(),
-                            config.getMutationStrength()
+                            Math.min(1.0D, config.getMutationRate() * parentCell.getMutationRateFactor()),
+                            config.getMutationStrength() * parentCell.getMutationStrengthFactor()
                     );
 
                     final CellBrain childCellBrain = new CellBrain(childBrainNetwork);
@@ -71,6 +77,8 @@ public class ReproductionManagerService {
 
                     // Übernehme die Rotation der Mutter-Zelle
                     childCell.setRotation(parentCell.getRotation());
+                    childCell.setAngularVelocity(parentCell.getAngularVelocity());
+                    childCell.setVelocity(new Vector2D(parentCell.getVelocity().getX(), parentCell.getVelocity().getY()));
 
                     // Inherit and mutate type
                     final CellType parentType = parentCell.getType();
@@ -90,15 +98,14 @@ public class ReproductionManagerService {
                     // Inherit and increment generation counter
                     childCell.setGeneration(parentCell.getGeneration() + 1);
 
-                    // Ensure child's neural network outputs are set by running think once
-                    CellBrainService.think(childCell);
-
                     final int childState = chosenActor.getReproductionState();
 
                     childCell.setCellState(childState);
 
                     // Set active layers in the child's brain based on the cell state
                     calcActiveLayersByState(childCell);
+                    for (SensorActor actor : childCell.getSensorActors()) actor.updateCachedPosition();
+                    CellBrainService.think(childCell);
 
                     // Mutate mutationRateFactor and mutationStrengthFactor
                     childCell.setMutationRateFactor(parentCell.getMutationRateFactor());

@@ -165,7 +165,7 @@ public class Neuron implements NeuronInterface {
             final Synapse[] inputSynapseArr = this.getInputSynapseArr(inputTypePos);
             for (int inputSynapsePos = 0; inputSynapsePos < inputSynapseArr.length; inputSynapsePos++) {
                 final Synapse synapse = inputSynapseArr[inputSynapsePos];
-                sum += neuronValueFunction.readValue(neuralNet, synapse.getSourceNeuron(), outputTypePos) * synapse.getWeight();
+                sum += neuronValueFunction.readValue(neuralNet, synapse.getSourceNeuron(), synapse.getSourceOutputTypePos()) * synapse.getWeight();
             }
 
             // Speichere die Summe vor Aktivierung für Backpropagation
@@ -188,15 +188,7 @@ public class Neuron implements NeuronInterface {
         for (int inputTypePos = 0; inputTypePos < this.getNeuronTypeInfoData().getInputCount(); inputTypePos++) {
             newNeuron.setBias(inputTypePos, this.getBias(inputTypePos));
         }
-        for (int outputTypePos = 0; outputTypePos < this.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-            //newNeuron.setBias(outputTypePos, this.getBias(outputTypePos));
-            if (isActiveLayer) {
-                final double value = neuronValueFunction.readValue(neuralNet, this, outputTypePos);
-                neuronValueFunction.writeValue(neuralNet, newNeuron, outputTypePos, value);
-            } else {
-                neuronValueFunction.writeValue(neuralNet, newNeuron, outputTypePos, 0.0D);
-            }
-        }
+        // Activations are runtime state, not inherited genetic information.
         return newNeuron;
     }
 

@@ -22,7 +22,7 @@ public class NeuralNetwork implements Serializable {
     private final NeuralNet neuralNet;
 
     /**
-     * Copy-Konstruktor: Erstellt eine exakte Kopie des übergebenen neuronalen Netzwerks
+     * Copies the genotype; activations and recurrent memory start empty.
      *
      * @param original Das zu kopierende neuronale Netzwerk
      */
@@ -31,7 +31,7 @@ public class NeuralNetwork implements Serializable {
     }
 
     /**
-     * Copy-Konstruktor: Erstellt eine exakte Kopie des übergebenen neuronalen Netzwerks
+     * Copies the genotype; activations and recurrent memory start empty.
      *
      * @param original Das zu kopierende neuronale Netzwerk
      */

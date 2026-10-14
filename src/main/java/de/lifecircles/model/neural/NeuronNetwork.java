@@ -63,7 +63,7 @@ public class NeuronNetwork implements NeuronInterface {
     @Override
     public NeuronInterface cloneNeuron(final NeuralNet neuralNet, final NeuronValueFunction neuronValueFunction, final boolean isActiveLayer) {
         final int newId = neuronValueFunction.fetchNextFreeId(neuralNet);
-        final NeuronNetwork newNeuron = new NeuronNetwork(newId, this.neuronTypeInfoData, this.network.getNeuronValueFunctionFactory());
+        final NeuronNetwork newNeuron = new NeuronNetwork(newId, neuralNet.copyNeuronType(this.neuronTypeInfoData, this.network.getNeuronValueFunctionFactory()), this.network.getNeuronValueFunctionFactory());
 
         for (int inputNeuronPos = 0; inputNeuronPos < newNeuron.getNeuronTypeInfoData().getInputCount(); inputNeuronPos++) {
             newNeuron.setBias(inputNeuronPos, this.getBias(inputNeuronPos));
@@ -162,10 +162,10 @@ public class NeuronNetwork implements NeuronInterface {
         for (int outputTypePos = 0; outputTypePos < this.neuronTypeInfoData.getOutputCount(); outputTypePos++) {
             Neuron calcOutputNeuron = calcNeuralNet.getOutputNeuronArr()[outputTypePos];
             // Kopieren der Werte des internen NeuralNet in das NeuronNetwork:
-            final double calcOutputNeuronInputSum = calcNeuronValueFunction.readInputSum(calcNeuralNet, calcOutputNeuron, outputTypePos);
+            final double calcOutputNeuronInputSum = calcNeuronValueFunction.readInputSum(calcNeuralNet, calcOutputNeuron, 0);
             neuronValueFunction.writeInputSum(neuralNet, this, outputTypePos, calcOutputNeuronInputSum);
 
-            final double calcOutputNeuronValue = calcNeuronValueFunction.readValue(calcNeuralNet, calcOutputNeuron, outputTypePos);
+            final double calcOutputNeuronValue = calcNeuronValueFunction.readValue(calcNeuralNet, calcOutputNeuron, 0);
             neuronValueFunction.writeValue(neuralNet, this, outputTypePos, calcOutputNeuronValue);
         }
 

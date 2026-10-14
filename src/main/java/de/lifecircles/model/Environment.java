@@ -1,6 +1,8 @@
 package de.lifecircles.model;
 
 import de.lifecircles.service.*;
+import de.lifecircles.model.neural.CellBrainService;
+import java.util.stream.IntStream;
 import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
 
 import java.util.*;
@@ -111,6 +113,8 @@ public class Environment {
      * @param partitioner Pre-built partitioning strategy for interactions
      */
     public void update(final double deltaTime, final PartitioningStrategy partitioner) {
+        // Sun contact describes this step, not whether the cell was ever illuminated.
+        for (Cell cell : this.cellList) cell.resetSunRayHit();
         // Calculate sun energy rays
         this.sunRayList.clear();
         this.sunRayList.addAll(
@@ -137,20 +141,23 @@ public class Environment {
             //cell.applyForce(SimulationConfig.GRAVITY_VECTOR.multiply(cell.getRadiusSize()), cell.getPosition(), deltaTime);
             cell.applyForce(SimulationConfig.GRAVITY_VECTOR, cell.getPosition());
 
-            // Handle blocker collisions after force application
-            BlockerCellCalcService.handleBlockerCollisions(cell, this.blockerList);
+
         }
         //);
 
         this.cellList.parallelStream().forEach(cell -> {
-            CellCalcService.updateForces(cell);
+            CellCalcService.updateForces(cell, deltaTime);
         });
 
-        // Parallel execution of neural networks and cell updates
-        this.cellList.parallelStream().forEach(cell -> {
-            CellCalcService.updateCell(cell, deltaTime);
-            // Wrap position around environment boundaries
+        // Freeze all sensed inputs before any worker changes energy, age or outputs.
+        final List<double[]> brainInputs = this.cellList.stream().map(CellBrainService::generateInputs).toList();
+        IntStream.range(0, this.cellList.size()).parallel().forEach(i -> {
+            Cell cell = this.cellList.get(i);
+            CellCalcService.updateCell(cell, deltaTime, brainInputs.get(i));
             this.wrapPosition(cell);
+            BlockerCellCalcService.handleBlockerCollisions(cell, this.blockerList);
+            this.wrapPosition(cell);
+            for (SensorActor actor : cell.getSensorActors()) actor.updateCachedPosition();
         });
 
         // Update cells and handle reproduction
@@ -250,12 +257,10 @@ public class Environment {
         double y = pos.getY();
 
         // Wrap horizontally
-        if (x < 0) x += this.width;
-        if (x >= this.width) x -= this.width;
+        x = ((x % this.width) + this.width) % this.width;
 
         // Wrap vertically
-        if (y < 0) y += this.height;
-        if (y >= this.height) y -= this.height;
+        y = ((y % this.height) + this.height) % this.height;
 
         if (x != pos.getX() || y != pos.getY()) {
             cell.setPosition(new Vector2D(x, y));

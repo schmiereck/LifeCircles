@@ -79,22 +79,10 @@ public class Vector2D implements Serializable {
         double dy = other.y - this.y;
 
         // Prüfen, ob es über Grenzen hinweg kürzer ist (horizontale Richtung)
-        if (Math.abs(dx) > width / 2) {
-            if (dx > 0) {
-                dx = dx - width;  // andere Zelle ist links über die Grenze hinweg
-            } else {
-                dx = dx + width;  // andere Zelle ist rechts über die Grenze hinweg
-            }
-        }
+        dx -= width * Math.rint(dx / width);
 
         // Prüfen, ob es über Grenzen hinweg kürzer ist (vertikale Richtung)
-        if (Math.abs(dy) > height / 2) {
-            if (dy > 0) {
-                dy = dy - height;  // andere Zelle ist oberhalb über die Grenze hinweg
-            } else {
-                dy = dy + height;  // andere Zelle ist unterhalb über die Grenze hinweg
-            }
-        }
+        dy -= height * Math.rint(dy / height);
 
         return new Vector2D(dx, dy);
     }
