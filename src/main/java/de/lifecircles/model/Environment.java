@@ -16,6 +16,8 @@ public class Environment {
 
     private final SimulationConfig config;
     private final EnergySunCalcService energySunCalcService;
+    private final SimulationProfiler profiler = new SimulationProfiler();
+    public SimulationProfiler getProfiler() { return profiler; }
     private final List<SunRay> sunRayList;
     private double width;
     private double height;
@@ -111,6 +113,7 @@ public class Environment {
      * @param partitioner Pre-built partitioning strategy for interactions
      */
     public void update(final double deltaTime, final PartitioningStrategy partitioner) {
+        long phaseStart = profiler.start();
         // Calculate sun energy rays
         this.sunRayList.clear();
         this.sunRayList.addAll(
@@ -119,12 +122,20 @@ public class Environment {
                 )
         );
 
+        profiler.finish(SimulationProfiler.Phase.SUN, phaseStart);
+        phaseStart = profiler.start();
         // Process repulsive forces
         RepulsionCellCalcService.processRepulsiveForces(this.cellList, partitioner, this);
+        profiler.finish(SimulationProfiler.Phase.REPULSION, phaseStart);
+        phaseStart = profiler.start();
         // Process sensor/actor interactions
         SensorActorForceCellCalcService.processInteractions(this.cellList, partitioner, this);
+        profiler.finish(SimulationProfiler.Phase.INTERACTIONS, phaseStart);
+        phaseStart = profiler.start();
         // Process energy transfers between cells
         EnergyTransferCellCalcService.processEnergyTransfers(this.cellList, this);
+        profiler.finish(SimulationProfiler.Phase.TRANSFER, phaseStart);
+        phaseStart = profiler.start();
 
         for (final Cell cell : this.cellList) {
         //this.cells.parallelStream().forEach(cell -> {
@@ -145,17 +156,27 @@ public class Environment {
             CellCalcService.updateForces(cell, deltaTime);
         });
 
+        profiler.finish(SimulationProfiler.Phase.INTEGRATION, phaseStart);
+        phaseStart = profiler.start();
         // Freeze all sensed inputs before any worker changes energy, age or outputs.
         final List<double[]> brainInputs = this.cellList.stream().map(cell -> CellBrainService.generateInputs(cell, this)).toList();
+        profiler.finish(SimulationProfiler.Phase.INPUTS, phaseStart);
+        phaseStart = profiler.start();
+        IntStream.range(0, this.cellList.size()).parallel().forEach(i ->
+                CellBrainService.think(this.cellList.get(i), brainInputs.get(i)));
+        profiler.finish(SimulationProfiler.Phase.BRAINS, phaseStart);
+        phaseStart = profiler.start();
         IntStream.range(0, this.cellList.size()).parallel().forEach(i -> {
             Cell cell = this.cellList.get(i);
-            CellCalcService.updateCell(cell, deltaTime, brainInputs.get(i));
+            CellCalcService.advanceCell(cell, deltaTime);
             this.wrapPosition(cell);
             BlockerCellCalcService.handleBlockerCollisions(cell, this.blockerList, this);
             this.wrapPosition(cell);
             for (SensorActor actor : cell.getSensorActors()) actor.updateCachedPosition();
         });
 
+        profiler.finish(SimulationProfiler.Phase.INTEGRATION, phaseStart);
+        phaseStart = profiler.start();
         // Update cells and handle reproduction
         final List<Cell> newCells = new ArrayList<>();
         final Iterator<Cell> iterator = this.cellList.iterator();
@@ -192,9 +213,12 @@ public class Environment {
 
         // Population growth comes only from regular, energy-sharing reproduction.
         this.cellList.addAll(newCells);
+        profiler.finish(SimulationProfiler.Phase.REPRODUCTION, phaseStart);
+        phaseStart = profiler.start();
 
         // Update statistics
         StatisticsManagerService.getInstance().update(this.cellList);
+        profiler.finish(SimulationProfiler.Phase.STATISTICS, phaseStart);
     }
 
     private void wrapPosition(Cell cell) {

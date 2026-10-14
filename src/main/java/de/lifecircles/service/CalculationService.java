@@ -132,13 +132,17 @@ public class CalculationService implements Runnable {
             final List<Cell> cellList = this.environment.getCellList();
 
             // Update all cells with their neighborhood information
+            long phaseStart = environment.getProfiler().start();
             this.partitioner.build(cellList);
+            environment.getProfiler().finish(SimulationProfiler.Phase.GRID, phaseStart);
 
             // Update environment physics
             this.environment.update(deltaTime, this.partitioner);
 
             // Strategy-based selection/mutation
+            phaseStart = environment.getProfiler().start();
             this.trainStrategy.selectAndMutate(this.environment);
+            environment.getProfiler().finish(SimulationProfiler.Phase.SELECTION, phaseStart);
             this.stepCount.incrementAndGet();
             stateVersion++;
             stateReadable = true;
@@ -147,6 +151,7 @@ public class CalculationService implements Runnable {
 
     /** Caller holds simulationLock across the complete capture, not just publication. */
     private void updateState() {
+        long phaseStart = environment.getProfiler().start();
         final List<SimulationStateDto.CellStateDto> cellStates = new ArrayList<>();
 
         for (final Cell cell : this.environment.getCopyOfCellList()) {
@@ -184,6 +189,7 @@ public class CalculationService implements Runnable {
                 this.environment.getHeight()
             );
         snapshotVersion = stateVersion;
+        environment.getProfiler().finish(SimulationProfiler.Phase.SNAPSHOT, phaseStart);
     }
     /**
      * Findet eine Zelle an der angegebenen Position in der Simulation.

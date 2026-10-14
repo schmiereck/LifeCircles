@@ -19,6 +19,11 @@ public class CellCalcService {
 
     public static void updateCell(final Cell cell, final double deltaTime, final double[] inputs) {
         CellBrainService.think(cell, inputs);
+        advanceCell(cell, deltaTime);
+    }
+
+    /** Advance physics/metabolism after all cells have made their decisions. */
+    public static void advanceCell(final Cell cell, final double deltaTime) {
         final boolean useSynapseEnergyCost = true;
 
         // Newborns grow linearly toward the current brain target during their first

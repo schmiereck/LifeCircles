@@ -36,7 +36,7 @@ public class ReproductionManagerService {
                 parentCell.getRadiusSize() + config.getCellMinGrowRadiusSize() * 2)), environment);
         if (!isFreePosition(environment, childPosition, config.getCellMinGrowRadiusSize())) return null;
         double energy = parentCell.getEnergy() * chosenActor.getReproductionEnergyShareOutput();
-        Cell child = createMutatedChild(config, parentCell, childPosition, chosenActor.getReproductionState(), energy);
+        Cell child = createMutatedChild(config, environment, parentCell, childPosition, chosenActor.getReproductionState(), energy);
         parentCell.setEnergy(parentCell.getEnergy() - energy);
         return child;
     }
@@ -46,7 +46,7 @@ public class ReproductionManagerService {
                                                final Cell parent, final Vector2D position, final int state) {
         Vector2D spawn = wrap(position, environment);
         if (!isFreePosition(environment, spawn, config.getCellMinGrowRadiusSize())) return null;
-        return createMutatedChild(config, parent, spawn, state, SimulationConfig.CELL_MAX_ENERGY);
+        return createMutatedChild(config, environment, parent, spawn, state, SimulationConfig.CELL_MAX_ENERGY);
     }
 
     public static boolean isFreePosition(Environment environment, Vector2D position, double radius) {
@@ -59,13 +59,15 @@ public class ReproductionManagerService {
         return position.wrapped(environment.getWidth(), environment.getHeight());
     }
 
-    private static Cell createMutatedChild(SimulationConfig config, Cell parent, Vector2D position, int state, double energy) {
+    private static Cell createMutatedChild(SimulationConfig config, Environment environment, Cell parent, Vector2D position, int state, double energy) {
         // The parent's factors control this birth's genetic mutation, for both
         // biological reproduction and training. Changes to the child's own
         // factors below affect its future descendants, not its current genome.
         double effectiveMutationRate = Math.min(1.0D, config.getMutationRate() * parent.getMutationRateFactor());
         double effectiveMutationStrength = config.getMutationStrength() * parent.getMutationStrengthFactor();
+        long mutationStart = environment.getProfiler().start();
         NeuralNetwork network = parent.getBrain().mutate(effectiveMutationRate, effectiveMutationStrength);
+        environment.getProfiler().finish(SimulationProfiler.Phase.MUTATION, mutationStart);
         Cell child = new Cell(position, parent.getRadiusSize(), new CellBrain(network));
         child.startGrowthProcess();
         child.setRotation(parent.getRotation());
