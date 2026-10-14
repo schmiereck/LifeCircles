@@ -53,7 +53,10 @@ public abstract class TestTrainStrategyUtils {
 
                 this.output = new double[outputCount];
 
-                this.output[GlobalOutputFeature.SIZE.ordinal()] = radiusSize;
+                SimulationConfig config = SimulationConfig.getInstance();
+                this.output[GlobalOutputFeature.SIZE.ordinal()] = Math.max(0, Math.min(1,
+                        (radiusSize - config.getCellMinRadiusSize())
+                                / (config.getCellMaxRadiusSize() - config.getCellMinRadiusSize())));
 
                 final int offset = GlobalOutputFeature.values().length;
 
@@ -124,7 +127,7 @@ public abstract class TestTrainStrategyUtils {
 
             @Override
             public void setInputs(double[] inputs) {
-
+                System.arraycopy(inputs, 0, this.inputs, 0, this.inputs.length);
             }
 
             @Override
@@ -139,7 +142,7 @@ public abstract class TestTrainStrategyUtils {
         };
 
         final Cell cell = new Cell(new Vector2D(x, y), radiusSize, cellBrain);
-
+        CellBrainService.think(cell);
         environment.addCell(cell);
     }
 }
