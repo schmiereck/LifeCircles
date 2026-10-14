@@ -28,13 +28,16 @@ public class SensorActorForceCellCalcService {
             final double ownRange = calcSensorRadius(cell.getRadiusSize(), cell.getSensorActors().size());
             for (SensorActor actor : cell.getSensorActors()) {
                 double nearest = Double.POSITIVE_INFINITY;
+                Blocker touchingBlocker = null;
                 for (Blocker blocker : environment.getBlockerList()) {
-                    if (blocker.containsPoint(actor.getCachedPosition(), width, height)) {
-                        actor.setSensedCell(blocker);
-                        actor.setSensedActor(blocker);
-                        nearest = -1; // A touching blocker has sensing priority.
-                        break;
+                    if (blocker.containsPoint(actor.getCachedPosition(), width, height)
+                            && (touchingBlocker == null || blocker.getSensingId() < touchingBlocker.getSensingId())) {
+                        touchingBlocker = blocker;
                     }
+                }
+                if (touchingBlocker != null) {
+                    actor.setSensedCell(touchingBlocker);
+                    actor.setSensedActor(touchingBlocker);
                 }
                 for (Cell other : partitioner.getNeighbors(cell)) {
                     if (other == cell) continue;
@@ -48,7 +51,8 @@ public class SensorActorForceCellCalcService {
                         final Vector2D direction = actor.getCachedPosition().getShortestDirectionWithWrapAround(
                                 otherActor.getCachedPosition(), width, height);
                         final double distance = direction.length();
-                        if (distance <= otherRange && distance < nearest) {
+                        if (touchingBlocker == null && distance <= otherRange
+                                && isBetterTarget(distance, nearest, other, otherActor, actor)) {
                             nearest = distance;
                             actor.setSensedCell(other);
                             actor.setSensedActor(otherActor);
@@ -69,5 +73,17 @@ public class SensorActorForceCellCalcService {
 
     public static double calcSensorRadius(final double radiusSize, final int totalSensors) {
         return 2.0D * radiusSize * Math.sin(Math.PI / totalSensors) * SimulationConfig.cellActorMaxFieldRadiusFactor;
+    }
+
+    /** Total ordering: distance, then stable cell identity, then fixed actor angle. */
+    private static boolean isBetterTarget(double distance, double nearest, Cell candidateCell,
+                                          SensorActor candidateActor, SensorActor sensor) {
+        int byDistance = Double.compare(distance, nearest);
+        if (byDistance != 0) return byDistance < 0;
+        if (!(sensor.getSensedCell() instanceof Cell currentCell)) return true;
+        int byCell = Long.compare(candidateCell.getSensingId(), currentCell.getSensingId());
+        if (byCell != 0) return byCell < 0;
+        return Double.compare(candidateActor.getAngleOnCell(),
+                ((SensorActor) sensor.getSensedActor()).getAngleOnCell()) < 0;
     }
 }

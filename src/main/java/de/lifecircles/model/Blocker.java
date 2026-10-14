@@ -1,6 +1,7 @@
 package de.lifecircles.model;
 
 import javafx.scene.paint.Color;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Represents a static blocking element in the environment.
@@ -8,6 +9,11 @@ import javafx.scene.paint.Color;
  * that cells can interact with.
  */
 public class Blocker implements SensableActor, SensableCell {
+    private static final AtomicLong NEXT_SENSING_ID = new AtomicLong();
+    private final long sensingId = NEXT_SENSING_ID.getAndIncrement();
+
+    /** Stable runtime identity used only to resolve overlapping blocker contacts. */
+    public long getSensingId() { return sensingId; }
     private final Vector2D position;
     private final double width;
     private final double height;

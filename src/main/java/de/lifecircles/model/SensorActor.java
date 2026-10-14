@@ -73,6 +73,8 @@ public class SensorActor implements SensableActor, Serializable {
         return cosAngleOnCell * sinRotation + sinAngleOnCell * cosRotation;
     }
 
+    public double getAngleOnCell() { return angleOnCell; }
+
     public CellType getType() {
         return type;
     }

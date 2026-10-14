@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 226 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 236 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 ## Physikwelten
@@ -262,6 +262,42 @@ Startbedingungen: Gewinner und Trainingsnachkommen erhalten dort volle Startener
 Die vorhandenen Trainingsregressionen pruefen diese Regel weiterhin getrennt von der
 Energiebilanz der biologischen Welt. Fuer die entfernte automatische Wiederbesiedlung
 gibt es keine Kompatibilitaetsoption und keine Teilungsbelohnung.
+
+## Stabile Sensorzielauswahl
+
+Quelle: `src/test/java/de/lifecircles/service/SensorTargetSelectionTest.java`.
+
+Zehn Tests pruefen eine feste Rangfolge fuer die einzelne Zielreferenz eines Sensors:
+
+1. Ein beruehrter Blocker hat Vorrang vor Zellaktoren.
+2. Unter Zellaktoren innerhalb ihrer Senderreichweite gewinnt der kleinste periodische Abstand.
+3. Bei exakt gleichem Abstand gewinnt die Zelle mit der kleineren laufzeitstabilen ID.
+4. Innerhalb derselben Zelle entscheidet der kleinere feste Aktorwinkel.
+
+Bei mehreren beruehrten Blockern entscheidet deren kleinere laufzeitstabile ID.
+Der naechste Zellaktor und Blockervorrang waren bereits im ersten Physik-Fix
+enthalten; hinzugekommen ist die vollstaendige Aufloesung der Gleichstaende.
+Es wird ohne Abstandstoleranz verglichen, damit die Rangfolge transitiv bleibt.
+Winzige echte Abstandsveraenderungen duerfen daher weiterhin das naechste Ziel wechseln;
+eine zeitliche Hysterese ist nicht Bestandteil dieser Auswahlregel.
+
+Die IDs werden bei der Objekterzeugung threadsicher vergeben und nur zur Zielauswahl
+bei Gleichstand verwendet. Zell-IDs sind transient und werden beim Laden neu vergeben,
+damit auch mehrfach geladene Kopien desselben Objekts unterscheidbar bleiben.
+Listenumsortierung aendert keine ID. Bei exakten Gleichstaenden kann sich die Auswahl
+nach erneutem Laden aendern; eine ueber Speicherzyklen persistente Objektidentitaet
+wird hier nicht eingefuehrt. Innerhalb einer laufenden Welt ist die Auswahl stabil.
+
+Geprueft werden unterschiedliche Abstaende, 100 zufaellige Umordnungen von Welt- und
+Nachbarlisten, ein exakter Aktor-Gleichstand, ueberlappende Blocker und deren Entfernung.
+Raster und Quadtree muessen am periodischen Rand dasselbe Ziel liefern. Energie wird
+an denselben Gewinner uebertragen; nicht mehr sichtbare Ziele werden im naechsten
+Durchlauf geloescht. Wiederholtes Laden liefert verschiedene Laufzeit-IDs.
+
+Die Zielentscheidung beeinflusst nur Sensorinformationen und zielgerichtete
+Energieuebertragung. Feldkraefte werden weiterhin von allen relevanten Aktorpaaren
+berechnet, auch wenn ein Blocker das Sensorziel ist. Ein eigener Test prueft dabei
+die entgegengesetzten Kraefte und den erhaltenen Gesamtimpuls.
 
 ## Vererbungspruefungen
 

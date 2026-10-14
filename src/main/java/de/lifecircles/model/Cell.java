@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Represents a cell in the simulation.
@@ -14,6 +15,11 @@ import java.util.Random;
  */
 public class Cell implements SensableCell, Serializable {
     private static final long serialVersionUID = 1L;
+    private static final AtomicLong NEXT_SENSING_ID = new AtomicLong();
+    private transient long sensingId = NEXT_SENSING_ID.getAndIncrement();
+
+    /** Stable runtime identity used only to resolve exact sensing ties. */
+    public long getSensingId() { return sensingId; }
 
     private Vector2D position;
     private Vector2D velocity;
@@ -431,6 +437,8 @@ public class Cell implements SensableCell, Serializable {
     @Serial
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
+        // A loaded object is a new instance, including repeated loads of one saved cell.
+        this.sensingId = NEXT_SENSING_ID.getAndIncrement();
         this.velocityForce = new Vector2D(0, 0);
         this.angularVelocityForce = 0.0D;
         // Setze parentCell in allen SensorActor-Instanzen
