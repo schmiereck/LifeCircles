@@ -16,6 +16,10 @@ public class SpatialGrid {
     private final int cols;
     private final int rows;
     private final List<Cell>[][] grid; // 2D array for faster access
+    private final List<Cell>[][] bucketNeighbors;
+    private final long[][] neighborVersion;
+    private long buildVersion;
+    private final List<List<Cell>> usedNeighbors = new ArrayList<>();
 
     // Neue Map für vorberechnete Nachbarn
     private final Map<Cell, List<Cell>> cellNeighbors = new HashMap<>();
@@ -34,10 +38,15 @@ public class SpatialGrid {
         this.cellWidth = width / cols;
         this.cellHeight = height / rows;
         this.grid = new ArrayList[rows][cols];
+        this.bucketNeighbors = new ArrayList[rows][cols];
+        this.neighborVersion = new long[rows][cols];
         clear();
     }
 
     public void clear() {
+        for (List<Cell> neighbors : usedNeighbors) neighbors.clear();
+        usedNeighbors.clear();
+        buildVersion++;
         for (int row = 0; row < this.rows; row++) {
             for (int col = 0; col < this.cols; col++) {
                 if (this.grid[row][col] == null) this.grid[row][col] = new ArrayList<>(4);
@@ -70,7 +79,11 @@ public class SpatialGrid {
         col = (col % this.cols + this.cols) % this.cols;
         row = (row % this.rows + this.rows) % this.rows;
 
-        List<Cell> neighbors = new ArrayList<>(16);
+        if (neighborVersion[row][col] == buildVersion) return bucketNeighbors[row][col];
+        List<Cell> neighbors = bucketNeighbors[row][col];
+        if (neighbors == null) bucketNeighbors[row][col] = neighbors = new ArrayList<>(16);
+        neighborVersion[row][col] = buildVersion;
+        usedNeighbors.add(neighbors);
         for (int dRow = -1; dRow < Math.min(3, rows) - 1; dRow++) {
             for (int dCol = -1; dCol < Math.min(3, cols) - 1; dCol++) {
                 int nRow = (row + dRow + this.rows) % this.rows;

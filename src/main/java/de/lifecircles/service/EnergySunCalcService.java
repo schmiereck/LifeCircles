@@ -7,6 +7,8 @@ import de.lifecircles.model.Vector2D;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Service handling generation of sun energy rays,
@@ -16,13 +18,34 @@ public class EnergySunCalcService {
     private double rayAccumulator = 0.0;
     private double timeInCycle = 0.0; // Tracks time within the day/night cycle
     private final Random random;
+    private final boolean indexed;
 
     public EnergySunCalcService() {
         this(new Random());
     }
 
     EnergySunCalcService(Random random) {
+        this(random, true);
+    }
+
+    /** Brute-force mode is retained for exact differential tests. */
+    EnergySunCalcService(Random random, boolean indexed) {
         this.random = random;
+        this.indexed = indexed;
+    }
+
+    /** All rays in a step are parallel: their perpendicular coordinate is constant. */
+    private static final class Strips<T> {
+        private final Map<Long, List<T>> buckets = new HashMap<>();
+        void add(T item, double center, double extent) {
+            double padding = Math.max(1e-9, 8 * Math.ulp(Math.abs(center) + extent));
+            long first = (long) Math.floor((center - extent - padding) / 64);
+            long last = (long) Math.floor((center + extent + padding) / 64);
+            for (long bin = first; bin <= last; bin++) buckets.computeIfAbsent(bin, unused -> new ArrayList<>()).add(item);
+        }
+        List<T> candidates(double coordinate) {
+            return buckets.getOrDefault((long) Math.floor(coordinate / 64), List.of());
+        }
     }
 
     public List<SunRay> calculateSunEnergy(
@@ -83,6 +106,17 @@ public class EnergySunCalcService {
         double margin = width * 2.0;
         minX = Math.max(minX, -margin);
         maxX = Math.min(maxX, width + margin);
+        Strips<Cell> cellStrips = null;
+        Strips<Blocker> blockerStrips = null;
+        // For a few rays/cells, scanning avoids index construction overhead.
+        if (indexed && numRays >= 8 && cells.size() + blockers.size() >= 256) {
+            cellStrips = new Strips<>(); blockerStrips = new Strips<>();
+            for (Cell cell : cells) cellStrips.add(cell,
+                    cell.getPosition().getX() * dirY - cell.getPosition().getY() * dirX, cell.getRadiusSize());
+            for (Blocker blocker : blockers) blockerStrips.add(blocker,
+                    blocker.getPosition().getX() * dirY - blocker.getPosition().getY() * dirX,
+                    (Math.abs(dirY) * blocker.getWidth() + Math.abs(dirX) * blocker.getHeight()) / 2);
+        }
         for (int rayNo = 0; rayNo < numRays; rayNo++) {
             // Strahlen gleichmäßig (aber zufällig) im erweiterten Bereich verteilen
             final double rayStartX = minX + random.nextDouble() * (maxX - minX);
@@ -108,7 +142,7 @@ public class EnergySunCalcService {
             // Schnitt mit Zellen und Blockern wie gehabt, aber entlang der Strahlrichtung
             double nearestCellHitT = Double.POSITIVE_INFINITY;
             Cell hitCell = null;
-            for (Cell cell : cells) {
+            for (Cell cell : cellStrips == null ? cells : cellStrips.candidates(rayStartX * dirY)) {
                 // Ray-Circle-Intersection
                 Vector2D c = cell.getPosition();
                 double r = cell.getRadiusSize();
@@ -130,7 +164,7 @@ public class EnergySunCalcService {
                 }
             }
             double nearestBlockerHitT = Double.POSITIVE_INFINITY;
-            for (Blocker blocker : blockers) {
+            for (Blocker blocker : blockerStrips == null ? blockers : blockerStrips.candidates(rayStartX * dirY)) {
                 // Ray-AABB-Intersection
                 double bx = blocker.getPosition().getX() - blocker.getWidth() / 2;
                 double by = blocker.getPosition().getY() - blocker.getHeight() / 2;
