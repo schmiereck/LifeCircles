@@ -21,6 +21,7 @@ public class CalculationService implements Runnable {
     private final Object simulationLock = new Object();
     private long stateVersion;
     private long snapshotVersion = -1;
+    private boolean snapshotIncludesActors = true;
     private boolean stateReadable = true;
     private final SimulationConfig config;
     private final TrainStrategy trainStrategy;
@@ -151,6 +152,10 @@ public class CalculationService implements Runnable {
 
     /** Caller holds simulationLock across the complete capture, not just publication. */
     private void updateState() {
+        updateState(true);
+    }
+
+    private void updateState(boolean includeActors) {
         long phaseStart = environment.getProfiler().start();
         final List<SimulationStateDto.CellStateDto> cellStates = new ArrayList<>();
 
@@ -158,7 +163,7 @@ public class CalculationService implements Runnable {
             if (Objects.nonNull(cell)) {
                 final List<SimulationStateDto.ActorStateDto> actorStateDtos = new ArrayList<>();
 
-                for (final SensorActor actor : cell.getSensorActors()) {
+                if (includeActors) for (final SensorActor actor : cell.getSensorActors()) {
                     final CellType actorType = actor.getType();
                     actorStateDtos.add(new SimulationStateDto.ActorStateDto(
                             actor.calcPosition(),
@@ -189,6 +194,7 @@ public class CalculationService implements Runnable {
                 this.environment.getHeight()
             );
         snapshotVersion = stateVersion;
+        snapshotIncludesActors = includeActors;
         environment.getProfiler().finish(SimulationProfiler.Phase.SNAPSHOT, phaseStart);
     }
     /**
@@ -212,8 +218,14 @@ public class CalculationService implements Runnable {
     }
 
     public SimulationStateDto getLatestState() {
+        return getLatestState(true);
+    }
+
+    /** Overview snapshots omit actor payload; full snapshots remain the default API. */
+    public SimulationStateDto getLatestState(boolean includeActors) {
         synchronized (this.simulationLock) {
-            if (stateReadable && snapshotVersion != stateVersion) this.updateState();
+            if (stateReadable && (snapshotVersion != stateVersion || snapshotIncludesActors != includeActors))
+                this.updateState(includeActors);
             return this.latestState;
         }
     }

@@ -67,6 +67,39 @@ class SimulationSnapshotTest {
         assertGeometry(before); assertGeometry(after);
     }
 
+    @Test void overviewSnapshotsOmitActorsAndRestoreDetailsWithoutAdvancingSimulation() {
+        Environment world = new Environment(300, 300); Cell cell = cell(100); world.addCell(cell);
+        CalculationService service = service(world, new Strategy());
+        world.getProfiler().setEnabled(true); world.getProfiler().reset();
+        var overview = service.getLatestState(false);
+        assertTrue(overview.getCells().getFirst().getActors().isEmpty());
+        assertSame(overview, service.getLatestState(false));
+        assertEquals(1, world.getProfiler().snapshot().get(SimulationProfiler.Phase.SNAPSHOT).calls());
+        var full = service.getLatestState();
+        assertGeometry(full); assertSame(full, service.getLatestState());
+        assertTrue(overview.getCells().getFirst().getActors().isEmpty());
+        assertEquals(0, service.getStepCount());
+        service.update(.1);
+        var nextOverview = service.getLatestState(false);
+        assertNotSame(overview, nextOverview); assertEquals(.1, nextOverview.getCells().getFirst().getAge());
+        assertTrue(nextOverview.getCells().getFirst().getActors().isEmpty());
+        assertGeometry(service.getLatestState());
+    }
+
+    @Test void profilingIsOptionalAndCountsCompletePhases() {
+        Environment world = new Environment(300, 300); world.addCell(cell(100));
+        CalculationService service = service(world, new Strategy());
+        world.getProfiler().setEnabled(false); world.getProfiler().reset();
+        service.update(.01); service.getLatestState();
+        assertTrue(world.getProfiler().snapshot().values().stream().allMatch(t -> t.calls() == 0));
+        world.getProfiler().setEnabled(true); service.update(.01); service.getLatestState();
+        for (var phase : new SimulationProfiler.Phase[]{SimulationProfiler.Phase.GRID, SimulationProfiler.Phase.SUN,
+                SimulationProfiler.Phase.BRAINS, SimulationProfiler.Phase.INTERACTIONS, SimulationProfiler.Phase.SNAPSHOT}) {
+            var timing = world.getProfiler().snapshot().get(phase);
+            assertEquals(1, timing.calls()); assertTrue(timing.nanos() > 0);
+        }
+    }
+
     @Test void dtoCopiesMutablePositionsOnInputAndOutputAndColorsOnOutput() {
         Vector2D cellPos = new Vector2D(10, 20), actorPos = new Vector2D(30, 40);
         double[] rgb = {0.1, 0.2, 0.3};

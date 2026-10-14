@@ -14,6 +14,7 @@ public interface PartitioningStrategy {
 
     /**
      * Returns neighbors of the given cell based on the strategy.
+     * The returned list is borrowed and read-only to callers, valid until the next build.
      */
     List<Cell> getNeighbors(Cell cell);
 }

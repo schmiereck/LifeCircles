@@ -170,7 +170,7 @@ public class SimulationView extends Pane {
                 // Prüfen, ob genügend Zeit seit dem letzten Frame vergangen ist
                 if (now - lastFrameTime >= FRAME_TIME_NANOS) {
                     // Aktualisiere die Ansicht mit den neuesten Daten
-                    SimulationStateDto simulationStateDto = calculationService.getLatestState();
+                    SimulationStateDto simulationStateDto = calculationService.getLatestState(renderer.requiresActorDetails());
                     if (Objects.nonNull(simulationStateDto)) {
                         GraphicsContext gc = canvas.getGraphicsContext2D();
                         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());

@@ -36,8 +36,10 @@ public class Renderer {
             this.renderBlocker(blocker);
         }
         
-        for (SimulationStateDto.CellStateDto cell : simulationStateDto.getCells()) {
-            if (config.isShowForceFields()) {
+        if (config.isShowForceFields() && camera.getScale() > .5) {
+            for (SimulationStateDto.CellStateDto cell : simulationStateDto.getCells()) {
+                double fieldRadius = SensorActorForceCellCalcService.calcSensorRadius(cell.getRadiusSize(), SimulationConfig.CELL_SENSOR_ACTOR_COUNT);
+                if (cell.getRadiusSize() * camera.getScale() < 8 || !visible(cell, fieldRadius)) continue;
                 this.drawForceFields(cell);
             }
         }
@@ -75,6 +77,18 @@ public class Renderer {
         gc.strokeRoundRect(x, y, w, h, arc, arc);
     }
 
+    public boolean requiresActorDetails() {
+        return camera.getScale() > .5 && (config.isShowActors() || config.isShowForceFields());
+    }
+
+    private boolean visible(SimulationStateDto.CellStateDto cell, double extraRadius) {
+        Point2D position = camera.worldToScreen(cell.getPosition());
+        double margin = (cell.getRadiusSize() + extraRadius) * camera.getScale() + 10;
+        return position.getX() + margin >= 0 && position.getY() + margin >= 0
+                && position.getX() - margin <= gc.getCanvas().getWidth()
+                && position.getY() - margin <= gc.getCanvas().getHeight();
+    }
+
     private void clear() {
         gc.setFill(config.getBackgroundColor());
         gc.fillRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
@@ -99,6 +113,7 @@ public class Renderer {
     }
 
     private void renderCell(SimulationStateDto.CellStateDto cell) {
+        if (!visible(cell, 0)) return;
         Point2D screenCellPos = this.camera.worldToScreen(cell.getPosition());
         double screenCellRadius = cell.getRadiusSize() * this.camera.getScale();
 
@@ -127,17 +142,17 @@ public class Renderer {
                 screenCellRadius * 2.0D
             );
 
-            if (config.isShowActors() && (this.camera.getScale() > 0.5D)) {
+            if (config.isShowActors() && screenCellRadius >= 8 && (this.camera.getScale() > 0.5D)) {
                 this.drawActors(cell);
             }
 
             // Draw cell state as a number in the center of the cell
-            if (this.config.isShowSpecialization() && (this.camera.getScale() > 0.5D)) {
+            if (this.config.isShowSpecialization() && screenCellRadius >= 10 && (this.camera.getScale() > 0.5D)) {
                 this.drawCellState(cell, screenCellPos, rgb);
             }
 
             // Draw energy bar
-            if (this.config.isShowEnergy() && (this.camera.getScale() > 0.5D)) {
+            if (this.config.isShowEnergy() && screenCellRadius >= 8 && (this.camera.getScale() > 0.5D)) {
                 double energyBarWidth = screenCellRadius * 0.8;
                 double energyBarHeight = screenCellRadius * 0.1;
                 double energyLevel = cell.getEnergy();
@@ -160,7 +175,7 @@ public class Renderer {
             }
 
             // Draw age indicator
-            if (this.config.isShowAge() && (this.camera.getScale() > 0.5D)) {
+            if (this.config.isShowAge() && screenCellRadius >= 8 && (this.camera.getScale() > 0.5D)) {
                 double maxAge = 60.0; // 1 minute
                 double normalizedAge = Math.min(cell.getAge() / maxAge, 1.0);
                 double ageBarWidth = screenCellRadius * 0.8;

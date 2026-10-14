@@ -9,11 +9,16 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=TissueMechanicsTest,MechanicalFixtureTest,MechanicsRegressionTest,ForceSignTest,SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=PerformanceEquivalenceTest,TissueMechanicsTest,MechanicalFixtureTest,MechanicsRegressionTest,ForceSignTest,SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 274 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 278 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
+
+Die Performance-Äquivalenztests vergleichen die beschleunigte Sonne mit dem Vollscan
+und prüfen wiederverwendete Nachbarlisten bei Bewegung, Tod und periodischen Nähten.
+Snapshottests sichern vollständige und kompakte Ansichten sowie die optionale
+Phasenprofilierung ab. Kurze Laufzeitmessungen und ihre Grenzen: [PERFORMANCE.md](PERFORMANCE.md).
 
 `TissueMechanicsTest` ergänzt zwölf Prüfungen für ein- bis dreischichtige Kugelpackungen,
 eine bewegliche Brücke und aktive Größenzyklen gegen Gegenlast. Biegesteifigkeit,
