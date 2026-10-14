@@ -1,17 +1,14 @@
 package de.lifecircles.service.trainStrategy;
 
 import de.lifecircles.model.*;
-import de.lifecircles.service.ReproductionManagerService;
 import de.lifecircles.service.SimulationConfig;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 /**
  * Training-Strategie: HighEnergy.
- * Startet mit 20 Zellen, selektiert alle 500 Schritte die Top-20% nach Energie,
+ * Startet mit 20 Zellen, selektiert alle 2500 Schritte die Top-20% nach Energie,
  * erzeugt mutierte Nachkommen und ersetzt die Population.
  */
 public class HighEnergyTrainStrategy implements TrainStrategy {
@@ -29,6 +26,7 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
 
     @Override
     public void initialize(Environment environment) {
+        this.stepCounter = 0;
         // Add ground blocker by default
         environment.addGroundBlocker();
         final int sunBlockerXPos = (1024 * 2 / 4);
@@ -70,31 +68,10 @@ public class HighEnergyTrainStrategy implements TrainStrategy {
         if (cells.isEmpty()) {
             return;
         }
-        int winnersCount = Math.max(1, (int) (cells.size() * SELECTION_PERCENT));
-        cells.sort((c1, c2) -> Double.compare(c2.getEnergy(), c1.getEnergy()));
-        List<Cell> winners = new ArrayList<>(cells.subList(0, winnersCount));
-        winners.forEach(cell -> cell.setEnergy(SimulationConfig.CELL_MAX_ENERGY));
-        // Elites unverändert übernehmen
-        List<Cell> nextGen = new ArrayList<>();
-        nextGen.addAll(winners);
-        Random random = new Random();
-        // Fülle Population bis INITIAL_COUNT mit mutierten Nachkommen auf
-        while (nextGen.size() < INITIAL_COUNT) {
-            Cell parentCell = winners.get(random.nextInt(winnersCount));
-            Cell childCell = ReproductionManagerService.reproduce(this.config, environment, parentCell);
-            if (Objects.nonNull(childCell)) {
-                //childCell.setType(new CellType(
-                //        random.nextDouble(),
-                //        random.nextDouble(),
-                //        random.nextDouble()
-                //));
-                //childCell.setCellState(0);
-                //ReproductionManagerService.calcActiveLayersByState(childCell);
-                childCell.setAge(0.0D);
-                childCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
-                nextGen.add(childCell);
-            }
-        }
-        environment.resetCells(nextGen);
+        int winnersCount = Math.min(INITIAL_COUNT, Math.max(1, (int) (cells.size() * SELECTION_PERCENT)));
+        List<Cell> winners = cells.stream().sorted((a, b) -> Double.compare(b.getEnergy(), a.getEnergy()))
+                .limit(winnersCount).toList();
+        TrainingPopulationBuilder.build(environment, winners, INITIAL_COUNT, false, random)
+                .ifPresent(environment::resetCells);
     }
 }

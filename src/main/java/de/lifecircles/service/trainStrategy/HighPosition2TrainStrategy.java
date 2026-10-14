@@ -1,7 +1,6 @@
 package de.lifecircles.service.trainStrategy;
 
 import de.lifecircles.model.*;
-import de.lifecircles.service.ReproductionManagerService;
 import de.lifecircles.service.SimulationConfig;
 
 import java.util.*;
@@ -41,6 +40,7 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
 
     @Override
     public void initialize(Environment environment) {
+        this.stepCounter = 0;
         // Add ground blocker by default
         environment.addGroundBlocker();
         //environment.addSunBlocker();
@@ -84,7 +84,7 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
         if (cells.isEmpty()) {
             return;
         }
-        double xSpace = (config.getWidth() / SeperatorCount);
+        double xSpace = (environment.getWidth() / SeperatorCount);
 
         final double minHeight = cells.stream().
                 min((c1, c2) -> Double.compare(c1.getPosition().getY(), c2.getPosition().getY()))
@@ -150,37 +150,12 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
             }
         }
 
-        List<Cell> nextGen = new ArrayList<>();
-
-        nextGen.addAll(winners);
-
-        // nextGen auffüllen, wenn zu klein:
-        while (nextGen.size() < SeperatorCount) {
-            final Cell parentCell = winners.get(random.nextInt(winners.size()));
-            parentCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
-            final Cell childCell = ReproductionManagerService.reproduce(config, environment, parentCell);
-            if (Objects.nonNull(childCell)) {
-                nextGen.add(childCell);
-                childCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
+        TrainingPopulationBuilder.build(environment, winners, SeperatorCount, true, random).ifPresent(generation -> {
+            for (Cell cell : generation) {
+                cell.setType(new CellType(random.nextDouble(), random.nextDouble(), random.nextDouble()));
+                de.lifecircles.model.neural.CellBrainService.think(cell);
             }
-        }
-
-        // nextGen initalisieren.
-        for (int posX = 0; posX < nextGen.size(); posX++) {
-            final Cell cell = nextGen.get(posX);
-            final double x = xSpace * posX + xSpace / 2.0D;
-            final double y = config.getHeight() - Environment.GroundBlockerHeight - config.getCellMaxRadiusSize();
-            cell.setType(new CellType(
-                    random.nextDouble(),
-                    random.nextDouble(),
-                    random.nextDouble()
-            ));
-            cell.setCellState(0);
-            ReproductionManagerService.calcActiveLayersByState(cell);
-            cell.setAge(0.0D);
-            cell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
-            cell.setPosition(new Vector2D(x, y));
-        }
-        environment.resetCells(nextGen);
+            environment.resetCells(generation);
+        });
     }
 }

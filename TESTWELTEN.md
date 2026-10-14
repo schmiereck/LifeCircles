@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 69 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 86 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 ## Physikwelten
@@ -101,6 +101,35 @@ Ausfuehrungsansichten (`makeCopy=false` bzw. Bindung an ein vorhandenes `NeuralN
 teilen bewusst die Gene, besitzen aber getrennte Laufzeitzustaende. Die Standardkopie
 und `mutate()` kopieren dagegen den gesamten Genotyp. Rekursive Typzyklen werden beim
 Kopieren mit einer klaren Fehlermeldung abgelehnt, da sie nicht endlich ausfuehrbar sind.
+
+## Begrenzte Trainingswechsel
+
+Quelle: `src/test/java/de/lifecircles/service/trainStrategy/TrainingGenerationTest.java`.
+
+17 Tests pruefen alle drei selektierenden Strategien: `HIGH_ENERGY`, `HIGH_POSITION`
+und `HIGH_POSITION2`. Trainingsnachkommen werden direkt aus den Gewinnern mutiert;
+Teilungsbereitschaft, Alter, Energie und gecachte Aktorpositionen sind dafuer keine
+Voraussetzung. Die biologische Zellteilung verwendet weiterhin ihre normalen
+Entscheidungen und teilt die Elternenergie. Training stattet Nachkommen explizit
+mit voller Energie aus und entzieht den Gewinnern dafuer keine Energie.
+
+Zuerst werden alle Positionen gegen Blocker geprueft. Pro Platz sind hoechstens
+64 Versuche erlaubt, beginnend mit der bevorzugten Position. Ersatzpositionen werden
+bei den Hoehenstrategien innerhalb des jeweiligen Abschnitts gesucht, bei der
+Energiestrategie innerhalb der gesamten Welt. Die Suche ist begrenzt und garantiert
+keine vollstaendige Untersuchung jeder moeglichen freien Position.
+
+Kann ein Platz nicht gefunden werden, wird der Generationenwechsel mit einer
+protokollierten Meldung uebersprungen. Die bisherige Population einschliesslich
+Reihenfolge, Positionen, Zustaenden und Energien bleibt dabei erhalten. Erst nach
+erfolgreicher Planung werden die Nachkommen erzeugt und die Gewinner zurueckgesetzt.
+
+Abgedeckt sind Gewinner ohne jede Teilungsbereitschaft, vollstaendig blockierte
+Welten ueber wiederholte Auswahlrunden, blockierte bevorzugte Positionen mit freiem
+Ausweichraum, leere Populationen und leere Abschnitts-Gewinnerlisten. Ein spaeter
+Fehler beim zweiten Platz darf weder Gewinner veraendern noch bereits Nachkommen
+mutieren. Weitere Tests pruefen den ehemals fehlenden 16. Platz bei `HIGH_POSITION`
+und die Begrenzung von `HIGH_ENERGY` auf 20 Zellen bei uebergrossen Populationen.
 
 ## Veraenderte Modellregeln
 

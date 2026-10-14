@@ -4,7 +4,6 @@ import de.lifecircles.model.*;
 import de.lifecircles.model.neural.*;
 
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -28,99 +27,61 @@ public class ReproductionManagerService {
      * The child inherits traits from the parentCell with mutations.
      */
     public static Cell reproduce(final SimulationConfig config, final Environment environment, final Cell parentCell) {
-        final Cell childCell;
-
-        // Calculate child position slightly offset from parentCell
-        //double angle = random.nextDouble() * 2 * Math.PI;
-        //Vector2D offset = new Vector2D(
-        //    Math.cos(angle) * (parentCell.getRadiusSize() * 0.3D),
-        //    Math.sin(angle) * (parentCell.getRadiusSize() * 0.3D)
-        //);
-        //Vector2D childPosition = parentCell.getPosition().add(offset);
-
         SensorActor chosenActor = parentCell.getSensorActors().stream()
-                .filter(sensorActor -> sensorActor.getReproductionDesire() >= config.getReproductionDesireThreshold())
-                .max(Comparator.comparingDouble(SensorActor::getReproductionDesire))
-                .orElse(null);
+                .filter(actor -> actor.getReproductionDesire() >= config.getReproductionDesireThreshold())
+                .max(Comparator.comparingDouble(SensorActor::getReproductionDesire)).orElse(null);
+        if (chosenActor == null) return null;
+        Vector2D direction = chosenActor.calcPosition().subtract(parentCell.getPosition()).normalize();
+        Vector2D childPosition = wrap(parentCell.getPosition().add(direction.multiply(
+                parentCell.getRadiusSize() + config.getCellMinGrowRadiusSize() * 2)), environment);
+        if (!isFreePosition(environment, childPosition, config.getCellMinGrowRadiusSize())) return null;
+        double energy = parentCell.getEnergy() * chosenActor.getReproductionEnergyShareOutput();
+        Cell child = createMutatedChild(config, parentCell, childPosition, chosenActor.getReproductionState(), energy);
+        parentCell.setEnergy(parentCell.getEnergy() - energy);
+        return child;
+    }
 
-        if (Objects.nonNull(chosenActor)) {
-            Vector2D direction = chosenActorDirection(parentCell, chosenActor);
-            if (Objects.nonNull(direction)) {
-                Vector2D childPosition = parentCell.getPosition().
-                        add(direction.multiply(parentCell.getRadiusSize() +
-                                (SimulationConfig.getInstance().getCellMinGrowRadiusSize() * 2.0D)));
+    /** Training selection creates offspring independently of biological reproduction decisions. */
+    public static Cell createTrainingOffspring(final SimulationConfig config, final Environment environment,
+                                               final Cell parent, final Vector2D position, final int state) {
+        Vector2D spawn = wrap(position, environment);
+        if (!isFreePosition(environment, spawn, config.getCellMinGrowRadiusSize())) return null;
+        return createMutatedChild(config, parent, spawn, state, SimulationConfig.CELL_MAX_ENERGY);
+    }
 
-                childPosition = new Vector2D(
-                        ((childPosition.getX() % environment.getWidth()) + environment.getWidth()) % environment.getWidth(),
-                        ((childPosition.getY() % environment.getHeight()) + environment.getHeight()) % environment.getHeight());
-                final Vector2D spawnPosition = childPosition;
-                final double childRadius = config.getCellMinGrowRadiusSize();
-                if (environment.getBlockerList().stream().noneMatch(blocker ->
-                        blocker.getCellCenterOutside(spawnPosition, childRadius).distance(spawnPosition) > 1e-12)) {
-                    // Set initial size (slightly mutated from parentCell's initial size)
-                    final double parentSize = parentCell.getRadiusSize();
+    public static boolean isFreePosition(Environment environment, Vector2D position, double radius) {
+        if (position == null || !Double.isFinite(position.getX()) || !Double.isFinite(position.getY())) return false;
+        return environment.getBlockerList().stream().noneMatch(blocker ->
+                blocker.getCellCenterOutside(position, radius).distance(position) > 1e-12);
+    }
 
-                    // Create mutated brain for child
-                    final CellBrainInterface parentBrain = parentCell.getBrain();
-                    final NeuralNetwork childBrainNetwork = parentBrain.mutate(
-                            Math.min(1.0D, config.getMutationRate() * parentCell.getMutationRateFactor()),
-                            config.getMutationStrength() * parentCell.getMutationStrengthFactor()
-                    );
+    private static Vector2D wrap(Vector2D position, Environment environment) {
+        return new Vector2D(((position.getX() % environment.getWidth()) + environment.getWidth()) % environment.getWidth(),
+                ((position.getY() % environment.getHeight()) + environment.getHeight()) % environment.getHeight());
+    }
 
-                    final CellBrain childCellBrain = new CellBrain(childBrainNetwork);
-
-                    // Create child cell
-                    childCell = new Cell(childPosition, parentSize, childCellBrain);
-
-                    // Starte den Wachstumsprozess der neuen Zelle
-                    childCell.startGrowthProcess();
-
-                    // Übernehme die Rotation der Mutter-Zelle
-                    childCell.setRotation(parentCell.getRotation());
-                    childCell.setAngularVelocity(parentCell.getAngularVelocity());
-                    childCell.setVelocity(new Vector2D(parentCell.getVelocity().getX(), parentCell.getVelocity().getY()));
-
-                    // Inherit and mutate type
-                    final CellType parentType = parentCell.getType();
-                    final CellType childType = new CellType(
-                            mutateValue(parentType.getRed(), typeMutationStrength / 10.0D),
-                            mutateValue(parentType.getGreen(), typeMutationStrength / 10.0D),
-                            mutateValue(parentType.getBlue(), typeMutationStrength / 10.0D)
-                    );
-                    childCell.setType(childType);
-
-                    // Share energy based on the actor's energy share percentage
-                    final double energySharePercentage = chosenActor.getReproductionEnergyShareOutput();
-                    final double energyForChild = parentCell.getEnergy() * energySharePercentage;
-                    parentCell.setEnergy(parentCell.getEnergy() - energyForChild);
-                    childCell.setEnergy(energyForChild);
-
-                    // Inherit and increment generation counter
-                    childCell.setGeneration(parentCell.getGeneration() + 1);
-
-                    final int childState = chosenActor.getReproductionState();
-
-                    childCell.setCellState(childState);
-
-                    // Set active layers in the child's brain based on the cell state
-                    calcActiveLayersByState(childCell);
-                    for (SensorActor actor : childCell.getSensorActors()) actor.updateCachedPosition();
-                    CellBrainService.think(childCell);
-
-                    // Mutate mutationRateFactor and mutationStrengthFactor
-                    childCell.setMutationRateFactor(parentCell.getMutationRateFactor());
-                    childCell.setMutationStrengthFactor(parentCell.getMutationStrengthFactor());
-                    childCell.mutateMutationFactors(config.getMutationRate(), config.getMutationStrength());
-                } else {
-                    childCell = null;
-                }
-            } else {
-                childCell = null;
-            }
-        } else {
-            childCell = null;
-        }
-        return childCell;
+    private static Cell createMutatedChild(SimulationConfig config, Cell parent, Vector2D position, int state, double energy) {
+        NeuralNetwork network = parent.getBrain().mutate(
+                Math.min(1.0D, config.getMutationRate() * parent.getMutationRateFactor()),
+                config.getMutationStrength() * parent.getMutationStrengthFactor());
+        Cell child = new Cell(position, parent.getRadiusSize(), new CellBrain(network));
+        child.startGrowthProcess();
+        child.setRotation(parent.getRotation());
+        child.setAngularVelocity(parent.getAngularVelocity());
+        child.setVelocity(new Vector2D(parent.getVelocity().getX(), parent.getVelocity().getY()));
+        CellType type = parent.getType();
+        child.setType(new CellType(mutateValue(type.getRed(), typeMutationStrength / 10),
+                mutateValue(type.getGreen(), typeMutationStrength / 10), mutateValue(type.getBlue(), typeMutationStrength / 10)));
+        child.setEnergy(energy);
+        child.setGeneration(parent.getGeneration() + 1);
+        child.setCellState(state);
+        calcActiveLayersByState(child);
+        for (SensorActor actor : child.getSensorActors()) actor.updateCachedPosition();
+        CellBrainService.think(child);
+        child.setMutationRateFactor(parent.getMutationRateFactor());
+        child.setMutationStrengthFactor(parent.getMutationStrengthFactor());
+        child.mutateMutationFactors(config.getMutationRate(), config.getMutationStrength());
+        return child;
     }
 
     public static void calcActiveLayersByState(final Cell cell) {
@@ -147,16 +108,4 @@ public class ReproductionManagerService {
         return Math.max(0.0, Math.min(1.0, value + mutation));
     }
 
-    private static double mutateValue(double value, double strength, double max) {
-        double mutation = (random.nextDouble() * 2 - 1) * strength;
-        return Math.max(Math.max(0.0, Math.min(max, value + mutation)), max);
-    }
-
-    private static Vector2D chosenActorDirection(Cell parent, SensorActor chosenActor) {
-        if (Objects.nonNull(chosenActor.getCachedPosition())) {
-            return chosenActor.getCachedPosition().subtract(parent.getPosition()).normalize();
-        } else {
-            return null;
-        }
-    }
 }

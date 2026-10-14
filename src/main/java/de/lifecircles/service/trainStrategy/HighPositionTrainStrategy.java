@@ -4,14 +4,13 @@ import de.lifecircles.model.Cell;
 import de.lifecircles.model.CellFactory;
 import de.lifecircles.model.Environment;
 import de.lifecircles.model.Vector2D;
-import de.lifecircles.service.ReproductionManagerService;
 import de.lifecircles.service.SimulationConfig;
 
 import java.util.*;
 
 /**
  * Training-Strategie: HighPosition.
- * Start mit 60 Zellen, selektiert alle 3000 Schritte die Top-20% nach Höhe über dem Boden,
+ * Start mit 16 Zellen, selektiert alle 10000 Schritte die besten 16 nach Höhe über dem Boden,
  * erzeugt mutierte Nachkommen und ersetzt die Population.
  */
 public class HighPositionTrainStrategy implements TrainStrategy {
@@ -37,6 +36,7 @@ public class HighPositionTrainStrategy implements TrainStrategy {
 
     @Override
     public void initialize(Environment environment) {
+        this.stepCounter = 0;
         // Add ground blocker by default
         environment.addGroundBlocker();
         //environment.addSunBlocker();
@@ -74,35 +74,10 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         if (cells.isEmpty()) {
             return;
         }
-        // Sortiere nach Y-Koordinate aufsteigend (höhere Zellen oben)
-        //cells.sort(Comparator.comparingDouble((Cell c) -> c.getPosition().getY()).reversed());
-        cells.sort(Comparator.comparingDouble((Cell c) -> c.getPosition().getY()));
-
         int winnersCount = Math.min(SeperatorCount, cells.size());
-        List<Cell> winners = new ArrayList<>(cells.subList(0, winnersCount));
-        winners.forEach(cell -> cell.setEnergy(SimulationConfig.CELL_MAX_ENERGY));
-
-        List<Cell> nextGen = new ArrayList<>();
-        nextGen.addAll(winners);
-        while (nextGen.size() < (SeperatorCount - 1)) {
-            final Cell parent = winners.get(random.nextInt(winnersCount));
-            final Cell childCell = ReproductionManagerService.reproduce(config, environment, parent);
-            if (Objects.nonNull(childCell)) {
-                nextGen.add(childCell);
-                childCell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
-            }
-        }
-        for (int posX = 0; posX < SeperatorCount; posX++) {
-            final Cell cell = nextGen.get(posX);
-            final double xSpace = (config.getWidth() / SeperatorCount);
-            final double x = xSpace * posX + xSpace / 2.0D;
-            final double y = config.getHeight() - Environment.GroundBlockerHeight - config.getCellMaxRadiusSize();
-            cell.setCellState(0);
-            cell.setAge(0.0D);
-            cell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
-            cell.setPosition(new Vector2D(x, y));
-        }
-
-        environment.resetCells(nextGen);
+        List<Cell> winners = cells.stream().sorted(Comparator.comparingDouble(c -> c.getPosition().getY()))
+                .limit(winnersCount).toList();
+        TrainingPopulationBuilder.build(environment, winners, SeperatorCount, true, random)
+                .ifPresent(environment::resetCells);
     }
 }
