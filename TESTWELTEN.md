@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 44 Tests. Die langen Lernexperimente der anderen Testklassen
+Die Auswahl umfasst 57 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 ## Physikwelten
@@ -55,6 +55,25 @@ Quelle: `src/test/java/de/lifecircles/model/neural/InheritanceRegressionTest.jav
 - Zellteilung setzt den Kindzustand vor dem ersten Denken, teilt Energie und uebernimmt Bewegung und Generation.
 - Vererbte Mutationsfaktoren beeinflussen die tatsaechlich verwendete Mutationsrate und -staerke.
 - Kinder werden an den Weltrand zurueckgefuehrt; gespeicherte Modulnetze behalten ihre Portverbindungen beim Laden.
+
+## Mehrere Ein- und Ausgangsports
+
+Quelle: `src/test/java/de/lifecircles/model/neural/MultiPortNeuronTest.java`.
+
+Zehn Tests pruefen getrennte Werte, Deltas und Eingangssummen fuer sieben Ausgaenge
+auch nach Wachstum des Speichers. Beim Lernen wird jede Synapse genau einmal anhand
+ihres Quellausgangs und Zieleingangs aktualisiert. Modul-Eingangsgradienten werden
+getrennt von den Fehlern der Modulausgaenge berechnet; die Ableitung der inneren
+Ausgabeneuronen wird dabei genau einmal angewendet.
+
+Numerische Ableitungen der Verlustfunktion dienen als unabhaengiger Vergleich fuer
+alle Gewichte und Biases der kleinen Testnetze. Abgedeckt sind vorgeschaltete skalare
+Neuronen, ungleiche Portzahlen (1/3, 3/1, 2/3), gekreuzte Verbindungen und ein
+verschachteltes Modul. Ein weiterer Test prueft, dass ein nicht am Fehler beteiligter
+Modulausgang durch das Lernen am anderen Ausgang unveraendert bleibt.
+
+Die drei vorhandenen `BackpropagateTest`-Versuche fuer XOR, AND und Bitzaehlung
+sind ebenfalls Teil des gezielten Regressionslaufs.
 
 ## Veraenderte Modellregeln
 

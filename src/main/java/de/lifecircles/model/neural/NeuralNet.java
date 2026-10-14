@@ -912,12 +912,7 @@ public class NeuralNet implements Serializable {
             final NeuronInterface[] neurons = layer.getNeuronsArr();
             for (final NeuronInterface neuron : neurons) {
                 for (int inputTypePos = 0; inputTypePos < neuron.getNeuronTypeInfoData().getInputCount(); inputTypePos++) {
-                    double biasDelta = 0.0D;
-                    for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-                        //final double delta = neuron.getDelta(outputTypePos);
-                        final double delta = neuronValueFunction.readDelta(this, neuron, outputTypePos);
-                        biasDelta += learningRate * delta;
-                    }
+                    double biasDelta = learningRate * neuron.getInputDelta(this, neuronValueFunction, inputTypePos);
                     final double bias = neuron.getBias(inputTypePos);
                     neuron.setBias(inputTypePos, bias - biasDelta);
                 }
@@ -927,13 +922,7 @@ public class NeuralNet implements Serializable {
         // Output Neuronen
         for (final Neuron neuron : this.outputNeuronArr) {
             for (int inputTypePos = 0; inputTypePos < neuron.getNeuronTypeInfoData().getInputCount(); inputTypePos++) {
-                double biasDelta = 0.0D;
-                for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-                    //final double delta = neuron.getDelta(outputTypePos);
-                    final double delta = neuronValueFunction.readDelta(this, neuron, outputTypePos);
-                    //neuron.setBias(outputTypePos, neuron.getBias(outputTypePos) - learningRate * delta);
-                    biasDelta += learningRate * delta;
-                }
+                double biasDelta = learningRate * neuron.getInputDelta(this, neuronValueFunction, inputTypePos);
                 final double bias = neuron.getBias(inputTypePos);
                 neuron.setBias(inputTypePos, bias - biasDelta);
             }
@@ -946,7 +935,7 @@ public class NeuralNet implements Serializable {
 
             // Überspringe Synapsen zu deaktivierten Layern
             if (!this.disableLayerDeactivation) {
-                if (targetNeuron instanceof Neuron && !((Neuron) targetNeuron).isOutputNeuron()) {
+                if (!(targetNeuron instanceof Neuron scalar) || !scalar.isOutputNeuron()) {
                     final Layer targetLayer = this.findLayerForNeuron(targetNeuron);
                     if (targetLayer != null && !targetLayer.isActiveLayer()) {
                         continue;
@@ -954,18 +943,10 @@ public class NeuralNet implements Serializable {
                 }
             }
 
-            // Berechne die Gewichtsänderung: delta des Ziels * Ausgabe.Value der Quelle * Lernrate
-            //double weightChange = targetNeuron.getDelta() * this.neuronValueFunction.readValue(this, sourceNeuron) * this.learningRate;
-            //synapse.setWeight(synapse.getWeight() - weightChange);
-            for (int sourceOutputTypePos = 0; sourceOutputTypePos < sourceNeuron.getNeuronTypeInfoData().getOutputCount(); sourceOutputTypePos++) {
-                final double sourceValue = neuronValueFunction.readValue(this, sourceNeuron, sourceOutputTypePos);
-                for (int targetOutputTypePos = 0; targetOutputTypePos < targetNeuron.getNeuronTypeInfoData().getOutputCount(); targetOutputTypePos++) {
-                    //final double targetDelta = targetNeuron.getDelta(targetOutputTypePos);
-                    final double targetDelta = neuronValueFunction.readDelta(this, targetNeuron, targetOutputTypePos);
-                    final double weightChange = targetDelta * sourceValue * learningRate;
-                    synapse.setWeight(synapse.getWeight() - weightChange);
-                }
-            }
+            // A synapse connects exactly one source output to one target input.
+            final double sourceValue = neuronValueFunction.readValue(this, sourceNeuron, synapse.getSourceOutputTypePos());
+            final double targetDelta = targetNeuron.getInputDelta(this, neuronValueFunction, synapse.getTargetInputTypePos());
+            synapse.setWeight(synapse.getWeight() - learningRate * sourceValue * targetDelta);
         }
     }
 

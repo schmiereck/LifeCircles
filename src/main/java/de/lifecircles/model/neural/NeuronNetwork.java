@@ -27,6 +27,7 @@ public class NeuronNetwork implements NeuronInterface {
     //private double[] deltaArr;
     //private double[] inputSumArr;
     private double[] biasArr;
+    private transient double[] inputDeltaArr;
 
     public NeuronNetwork(final int id, final NeuronTypeInfoData neuronTypeInfoData,
                          final NeuronValueFunctionFactory neuronValueFunctionFactory) {
@@ -220,58 +221,51 @@ public class NeuronNetwork implements NeuronInterface {
     }
 
     @Override
-    public void backpropagateDelta(final NeuralNet neuralNet, final NeuronValueFunction neuronValueFunction) {
-        for (int outputTypePos = 0; outputTypePos < this.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-            double errorSum = 0.0;
-
-            // Sammle Fehler von allen ausgehenden Verbindungen
-            for (final Synapse synapse : this.getOutputSynapseList(outputTypePos)) {
-                final NeuronInterface targetNeuron = synapse.getTargetNeuron();
-                for (int targetOutputTypePos = 0; targetOutputTypePos < targetNeuron.getNeuronTypeInfoData().getOutputCount(); targetOutputTypePos++) {
-                    //final double targetDelta = targetNeuron.getDelta(targetOutputTypePos);
-                    final double targetDelta = neuronValueFunction.readDelta(neuralNet, targetNeuron, outputTypePos);
-                    errorSum += targetDelta * synapse.getWeight();
-                }
+    public void backpropagateDelta(final NeuralNet neuralNet, final NeuronValueFunction values) {
+        final NeuralNet inner = this.network.getNeuralNet();
+        final NeuronValueFunction innerValues = this.network.getNeuronValueFunction();
+        for (int port = 0; port < this.neuronTypeInfoData.getOutputCount(); port++) {
+            double outputGradient = 0;
+            for (Synapse edge : this.getOutputSynapseList(port)) {
+                outputGradient += edge.getWeight() * edge.getTargetNeuron().getInputDelta(
+                        neuralNet, values, edge.getTargetInputTypePos());
             }
+            // The module exposes output values. Its nonlinear derivatives are
+            // applied inside the module, once, at each scalar output neuron.
+            values.writeDelta(neuralNet, this, port, outputGradient);
+            Neuron output = inner.getOutputNeuronArr()[port];
+            double sum = innerValues.readInputSum(inner, output, 0);
+            innerValues.writeDelta(inner, output, 0,
+                    outputGradient * output.getActivationFunction().derivative(sum));
+        }
+        inner.backpropagateDelta(innerValues);
 
-            // Berechne Delta für dieses Neuron
-            //final double inputSum = this.getInputSum(outputTypePos);
-            final double inputSum = neuronValueFunction.readInputSum(neuralNet, this, outputTypePos);
-            //final double delta = errorSum * this.getActivationFunction().derivative(inputSum);
-            final double delta = errorSum * inputSum;
-            //this.setDelta(outputTypePos, delta);
-            neuronValueFunction.writeDelta(neuralNet, this, outputTypePos, delta);
+        // Inputs and outputs need not have the same count or matching indices.
+        // Finish all input derivatives before any outer or inner weight changes.
+        if (inputDeltaArr == null || inputDeltaArr.length != this.neuronTypeInfoData.getInputCount()) {
+            inputDeltaArr = new double[this.neuronTypeInfoData.getInputCount()];
+        } else {
+            Arrays.fill(inputDeltaArr, 0);
+        }
+        for (int port = 0; port < inputDeltaArr.length; port++) {
+            Neuron input = inner.getInputNeuronArr()[port];
+            for (Synapse edge : input.getOutputSynapseList(0)) {
+                inputDeltaArr[port] += edge.getWeight() * edge.getTargetNeuron().getInputDelta(
+                        inner, innerValues, edge.getTargetInputTypePos());
+            }
         }
     }
 
     @Override
+    public double getInputDelta(final NeuralNet neuralNet, final NeuronValueFunction values, final int inputTypePos) {
+        return inputDeltaArr == null ? 0 : inputDeltaArr[inputTypePos];
+    }
+
+    @Override
     public void backpropagateExtra(final double learningRate) {
-        final NeuronValueFunction neuronValueFunction = this.network.getNeuronValueFunction();
-        final NeuralNet neuralNet = this.network.getNeuralNet();
-
-        for (int outputTypePos = 0; outputTypePos < this.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-            // Transfer the delta-values of this Neuron to the output neurons of the inner network.
-            final double delta = neuronValueFunction.readDelta(neuralNet, this, outputTypePos);
-            final Neuron outputNeuron = neuralNet.getOutputNeuronArr()[outputTypePos];
-            //outputNeuron.setDelta(outputTypePos, delta);
-            neuronValueFunction.writeDelta(neuralNet, outputNeuron, outputTypePos, delta);
-            //neuronValueFunction.writeDelta(neuralNet, this, outputTypePos, delta);
-
-            // Nicht nötig, da von activate schon berechnet???
-            //final double inputSum = neuronValueFunction.readInputSum(neuralNet, this, outputTypePos);
-            ////outputNeuron.setInputSum(outputTypePos, inputSum);
-            //neuronValueFunction.writeInputSum(neuralNet, outputNeuron, outputTypePos, inputSum);
-            ////neuronValueFunction.writeInputSum(neuralNet, this, outputTypePos, inputSum);
-        }
-
-        // 2. Backpropagiere den Fehler durch alle versteckten Schichten (von hinten nach vorne)
-        neuralNet.backpropagateDelta(neuronValueFunction);
-
-        // 3. Aktualisiere Gewichte und Bias-Werte
-        neuralNet.updateBiasAndWeights(neuronValueFunction, learningRate);
-
-        // 4. Backpropagiere die speziellen Neuronen (NeuronNetwork).
-        neuralNet.backpropagateExtra(learningRate);
+        final NeuralNet inner = this.network.getNeuralNet();
+        inner.updateBiasAndWeights(this.network.getNeuronValueFunction(), learningRate);
+        inner.backpropagateExtra(learningRate);
     }
 
     @Override

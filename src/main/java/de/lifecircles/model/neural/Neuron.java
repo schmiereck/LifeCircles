@@ -201,7 +201,8 @@ public class Neuron implements NeuronInterface {
             for (final Synapse synapse : this.getOutputSynapseList(outputTypePos)) {
                 final NeuronInterface targetNeuron = synapse.getTargetNeuron();
                 //final double targetDelta = targetNeuron.getDelta(outputTypePos);
-                final double targetDelta = neuronValueFunction.readDelta(neuralNet, targetNeuron, outputTypePos);
+                final double targetDelta = targetNeuron.getInputDelta(neuralNet, neuronValueFunction,
+                        synapse.getTargetInputTypePos());
                 errorSum += targetDelta * synapse.getWeight();
             }
 

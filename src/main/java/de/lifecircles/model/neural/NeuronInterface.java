@@ -26,6 +26,11 @@ public interface NeuronInterface extends Serializable {
 
     void backpropagateDelta(final NeuralNet neuralNet, final NeuronValueFunction neuronValueFunction);
 
+    /** Derivative of the loss with respect to the weighted sum at one input. */
+    default double getInputDelta(final NeuralNet neuralNet, final NeuronValueFunction values, final int inputTypePos) {
+        return values.readDelta(neuralNet, this, inputTypePos);
+    }
+
     void setInputSynapseArr(final int inputTypePos, final Synapse[] array);
 
     int getId();
