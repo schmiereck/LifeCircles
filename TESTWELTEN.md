@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 86 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 107 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 ## Physikwelten
@@ -38,6 +38,35 @@ Quelle: `src/test/java/de/lifecircles/service/PhysicsRegressionTest.java`.
 Tests decken exakte Ueberlagerung, sehr kleine Abstaende bis `Double.MIN_VALUE`,
 periodisch identische Positionen und fuenf deckungsgleiche Zellen ueber 60 Schritte ab.
 Kraefte muessen endlich, entgegengesetzt und ohne doppelte Paarzaehlung sein.
+
+## Groessensteuerung im Denk- und Weltablauf
+
+Quelle: `src/test/java/de/lifecircles/service/SizeChangeTest.java`.
+
+21 Tests pruefen die Gehirnausgaben ueber `CellBrainService` und `CellCalcService`.
+Ein analytischer Vergleich verwendet `Ziel + (Start - Ziel) * exp(-Zeit / 0.1)`.
+1, 2, 6, 60 und 600 Denk-/Physikschritte ueber insgesamt 100 ms muessen denselben
+Radius liefern. Wiederholte identische Ausgaben verschieben keine Groessenaenderung.
+Wechselnde Ziele setzen am aktuellen Radius an; Wachsen und Schrumpfen bleiben
+innerhalb der Grenzen. Sehr kleine und sehr grosse Schritte werden ebenfalls geprueft.
+
+Reines Denken bewegt weder Radius noch Wachstumsalter. Ohne Simulationszeit aendert
+sich der adulte Radius auch bei deaktivierter Glaettung nicht (dieser Randfall schlug vor
+der Korrektur fuer `sizeChangeDelay = 0` und `-1` fehl). Speichern/Laden setzt die
+Annaeherung am gespeicherten Radius fort. Eine Einzelzellwelt ueber 60 echte
+Weltupdates prueft zusaetzlich die gecachten Aktorpositionen auf dem aktuellen Zellrand.
+
+Die bestehende Neugeborenenregel bleibt erhalten: Start bei 0.5, lineares Wachstum
+ueber eine Simulationssekunde zur jeweils aktuellen Zielgroesse. Geprueft werden
+1, 4 und 64 Schritte sowie wechselnde Ziele und der Uebergang zur adulten Glaettung.
+Ein Zielwechsel waehrend dieser Phase kann weiterhin einen Groessensprung verursachen,
+weil die lineare Interpolation das aktuelle Ziel verwendet. Er startet die Wachstumszeit
+aber nicht neu. Eine Glaettung auch dieser Sonderphase waere eine weitere Modellregel.
+
+Bei `sizeChangeDelay = 100` sind nach 100 ms etwa 63%, nach 300 ms etwa 95% und
+nach 500 ms etwa 99.3% der angeforderten Aenderung erreicht. Es gibt keine Wartefrist
+vor Beginn und keinen exakten Endzeitpunkt; die Zielgroesse wird asymptotisch angenaehert.
+Bei Werten <= 0 wird sie im naechsten positiven Simulationsschritt direkt uebernommen.
 
 ## Vererbungspruefungen
 

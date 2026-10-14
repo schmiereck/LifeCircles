@@ -141,7 +141,7 @@ public class SimulationConfig {
     public static double stateHiddenLayerSynapseConnectivityDefault = 0.005D;
     public static double hiddenCountFactorDefault = 1.4D;
 
-    // Verzögerung für Größenänderung in Millisekunden
+    // Zeitkonstante der Groessenglaettung in Simulations-Millisekunden; <= 0: sofort im naechsten Zeitschritt
     private long sizeChangeDelay = 100;
 
     //-------------------------------------------------------------------------

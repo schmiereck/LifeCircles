@@ -21,7 +21,8 @@ public class CellCalcService {
         CellBrainService.think(cell, inputs);
         final boolean useSynapseEnergyCost = true;
 
-        // Update size if cell is growing
+        // Newborns grow linearly toward the current brain target during their first
+        // simulation second. Thinking may change that target, but never growthAge.
         if (cell.isGrowing()) {
             cell.incGrowthAge(deltaTime);
             if (cell.getGrowthAge() >= SimulationConfig.CELL_GROWTH_DURATION) {
@@ -31,13 +32,12 @@ public class CellCalcService {
             } else {
                 // Lineare Interpolation zwischen Startgröße und Zielgröße
                 double growthProgress = cell.getGrowthAge() / SimulationConfig.CELL_GROWTH_DURATION;
-                //double minSize = SimulationConfig.getInstance().getCellMinRadiusSize();
                 double minSize = SimulationConfig.getInstance().getCellMinGrowRadiusSize();
                 cell.setRealGrowRadiusSize(minSize + (cell.getTargetRadiusSize() - minSize) * growthProgress);
             }
         }
 
-        // Verzögerte Größenänderung nur anwenden, wenn die Zelle nicht wächst
+        // Adult smoothing advances once per simulation step, independently of thinking.
         if (!cell.isGrowing()) {
             cell.applyDelayedSizeChange(deltaTime);
         }

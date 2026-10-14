@@ -22,7 +22,7 @@ public class Cell implements SensableCell, Serializable {
     private double angularVelocity;
     private transient double angularVelocityForce;
     private double radiusSize;
-    private double targetRadiusSize; // Zielgröße nach dem Wachstum
+    private double targetRadiusSize; // Aktueller Groessenwunsch des Gehirns, auch waehrend des Wachstums
     private double growthAge; // Alter seit der Zellteilung für das Wachstum
     private boolean isGrowing; // Flag ob die Zelle sich im Wachstumsprozess befindet
     private CellType type;
@@ -120,6 +120,7 @@ public class Cell implements SensableCell, Serializable {
         return this.radiusSize;
     }
 
+    /** Sets the desired adult radius. Repeated brain commands do not restart a timer. */
     public void setRadiusSize(double radiusSize) {
         this.targetRadiusSize = Math.max(SimulationConfig.getInstance().getCellMinRadiusSize(),
                 Math.min(SimulationConfig.getInstance().getCellMaxRadiusSize(), radiusSize));
@@ -152,12 +153,20 @@ public class Cell implements SensableCell, Serializable {
         return this.isGrowing;
     }
 
-    // Neue Methode, um die verzögerte Größenänderung zu prüfen und anzuwenden
+    /** Advances adult size by one configured simulation step (no wall-clock time). */
     public void applyDelayedSizeChange() {
         applyDelayedSizeChange(SimulationConfig.getInstance().getCalcTimeStep());
     }
 
+    /**
+     * Exponential approach from the current radius to the latest desired radius.
+     * sizeChangeDelay is the time constant in milliseconds: after that amount of
+     * simulation time, about 63% of a constant requested change is complete.
+     * The exact exponential makes subdividing a step equivalent for a constant
+     * target. Newborn growth is handled separately by CellCalcService.
+     */
     public void applyDelayedSizeChange(double deltaTime) {
+        if (deltaTime == 0) return;
         double duration = SimulationConfig.getInstance().getSizeChangeDelay() / 1000.0;
         double progress = duration <= 0 ? 1 : -Math.expm1(-deltaTime / duration);
         this.radiusSize += (this.targetRadiusSize - this.radiusSize) * progress;
