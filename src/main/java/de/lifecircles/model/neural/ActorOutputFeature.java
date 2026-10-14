@@ -4,6 +4,7 @@ public enum ActorOutputFeature {
     TYPE_RED,
     TYPE_GREEN,
     TYPE_BLUE,
+    /** 0 = maximum attraction, 0.5 = no field, 1 = maximum repulsion. */
     FORCE,
     ENERGY_ABSORPTION,
     ENERGY_DELIVERY,

@@ -234,14 +234,14 @@ public class Renderer {
 
             final Color baseColor;
             if (actor.getForceStrength() < 0.0D) {
-                // Attractive force - inward gradient
+                // Negative field strength: attraction, shown in red.
                 baseColor = Color.color(
                         1.0D, 0, 0,
                         config.getForceFieldOpacity() * Math.abs(actor.getForceStrength() /
                                 (SimulationConfig.getInstance().getCellActorMaxAttractiveForceStrength()))
                 );
             } else {
-                // Repulsive force - outward gradient
+                // Positive field strength: repulsion, shown in green.
                 baseColor = Color.color(
                         0, 1.0D, 0,
                         config.getForceFieldOpacity() * Math.abs(actor.getForceStrength() /

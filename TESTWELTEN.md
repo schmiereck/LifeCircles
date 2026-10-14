@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=ForceSignTest,SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 236 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 243 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 ## Physikwelten
@@ -298,6 +298,45 @@ Die Zielentscheidung beeinflusst nur Sensorinformationen und zielgerichtete
 Energieuebertragung. Feldkraefte werden weiterhin von allen relevanten Aktorpaaren
 berechnet, auch wenn ein Blocker das Sensorziel ist. Ein eigener Test prueft dabei
 die entgegengesetzten Kraefte und den erhaltenen Gesamtimpuls.
+
+## Vorzeichen der Aktorfelder
+
+Quelle: `src/test/java/de/lifecircles/service/ForceSignTest.java`.
+
+Die Konvention gilt durchgaengig fuer Gehirnausgabe, gespeicherte Feldstaerke,
+Feldkraft, Kommentare sowie Haupt- und Detaildarstellung:
+
+| Gehirnausgabe FORCE | Feldstaerke | Wirkung | Darstellung |
+| --- | --- | --- | --- |
+| 0 | -maximale Anziehungsstaerke | Anziehung | rot |
+| 0.5 | 0 | neutral | transparent |
+| 1 | +maximale Abstossungsstaerke | Abstossung | gruen |
+
+Zwischenwerte skalieren auf der jeweiligen Seite linear. Die Maximalbetraege sind
+getrennt konfigurierbar (Default: Anziehung 90, Abstossung 150). Werte ausserhalb
+des vorgesehenen Ausgabebereichs werden am Aktor auf die jeweilige Grenze begrenzt.
+
+Der periodische Richtungsvektor `towardOtherActor` zeigt vom eigenen Aktor ZUM
+anderen Aktor. Die tatsaechliche Kraft verwendet dessen negatives Vielfaches:
+
+```text
+F = -effektiveFeldstaerke * Groessenskalierung * towardOtherActor / Abstand
+```
+
+Deshalb wirkt eine negative Feldstaerke in Richtung des anderen Aktors, eine
+positive dagegen entgegengesetzt. Die effektive Feldstaerke enthaelt das empfangene
+Feld und die Reaktion auf das eigene Feld, jeweils mit linearem Reichweitenabfall.
+Der fehlende Vorzeichenwechsel der urspruenglichen Implementierung wurde bereits
+im ersten Physik-Fix korrigiert. Die aktuelle Pruefung aendert diese Physik nicht.
+Die frueheren Renderer-Kommentare zu Gradienten wurden durch die tatsaechliche
+Farbcodierung ersetzt; die Felder werden als gefuellte Kreise dargestellt.
+
+Sieben parametrisierte Tests pruefen Ausgaben -0.5, 0, 0.25, 0.5, 0.75, 1 und 1.5
+ueber die gesamte Kette `think()` -> Output-Abbildung -> Feldkraft -> Geschwindigkeit.
+Jede Ausgabe wird auf beiden Achsen, im Inneren und ueber die periodische Naht sowie
+mit beiden moeglichen Sendern geprueft (56 kleine Versuche). Ein isoliertes Aktorpaar
+erlaubt den analytischen Vergleich des Impulsbetrags inklusive Reichweitenabfall und
+Groessenskalierung. Die Reaktionen bleiben gleich gross und entgegengesetzt.
 
 ## Vererbungspruefungen
 

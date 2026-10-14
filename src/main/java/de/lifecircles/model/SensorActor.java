@@ -87,6 +87,7 @@ public class SensorActor implements SensableActor, Serializable {
         return this.forceStrength;
     }
 
+    /** Signed field strength: negative attracts, positive repels, zero is neutral. */
     public void setForceStrength(double forceStrength) {
         if (forceStrength < 0.0D) {
             this.forceStrength = Math.max(-SimulationConfig.getInstance().getCellActorMaxAttractiveForceStrength(), forceStrength);

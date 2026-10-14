@@ -160,6 +160,8 @@ public class CellBrainService {
             //        SimulationConfig.getInstance().getCellActorMaxForceStrength() * 2.0D) -
             //        SimulationConfig.getInstance().getCellActorMaxForceStrength());
 
+            // NN output [0, .5, 1] -> signed field [-attraction, 0, +repulsion].
+            // Attraction and repulsion have separate configurable maximum magnitudes.
             final double force = outputs[index + ActorOutputFeature.FORCE.ordinal()] * 2.0D - 1.0D;
             final double forceStrength;
             if (force < 0.0D) {

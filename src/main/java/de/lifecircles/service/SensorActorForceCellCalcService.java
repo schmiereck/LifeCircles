@@ -48,9 +48,9 @@ public class SensorActorForceCellCalcService {
                     final double scale = cell.getRadiusSize() * other.getRadiusSize()
                             / Math.pow(SimulationConfig.getInstance().getCellMaxRadiusSize(), 2);
                     for (SensorActor otherActor : other.getSensorActors()) {
-                        final Vector2D direction = actor.getCachedPosition().getShortestDirectionWithWrapAround(
+                        final Vector2D towardOtherActor = actor.getCachedPosition().getShortestDirectionWithWrapAround(
                                 otherActor.getCachedPosition(), width, height);
-                        final double distance = direction.length();
+                        final double distance = towardOtherActor.length();
                         if (touchingBlocker == null && distance <= otherRange
                                 && isBetterTarget(distance, nearest, other, otherActor, actor)) {
                             nearest = distance;
@@ -63,7 +63,9 @@ public class SensorActorForceCellCalcService {
                         if (distance < otherRange) strength += otherActor.getForceStrength() * (1 - distance / otherRange);
                         if (distance < ownRange) strength += actor.getForceStrength() * (1 - distance / ownRange);
                         if (strength != 0) {
-                            cell.applyForce(direction.multiply(-strength * scale / distance), actor.getCachedPosition());
+                            // towardOtherActor points TO the other actor. The minus sign
+                            // makes negative strength attract and positive strength repel.
+                            cell.applyForce(towardOtherActor.multiply(-strength * scale / distance), actor.getCachedPosition());
                         }
                     }
                 }
