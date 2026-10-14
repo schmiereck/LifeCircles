@@ -14,6 +14,7 @@ public class SensorActorForceCellCalcService {
                                            final Environment environment) {
         final double width = environment.getWidth();
         final double height = environment.getHeight();
+        final double softening = SimulationConfig.getInstance().getActorFieldSofteningFraction();
         cells.parallelStream().forEach(cell -> {
             for (SensorActor actor : cell.getSensorActors()) {
                 actor.updateCachedPosition();
@@ -60,12 +61,16 @@ public class SensorActorForceCellCalcService {
                         if (distance <= 1e-12) continue;
                         // Received field plus the reaction to our emitted field.
                         double strength = 0;
-                        if (distance < otherRange) strength += otherActor.getForceStrength() * (1 - distance / otherRange);
-                        if (distance < ownRange) strength += actor.getForceStrength() * (1 - distance / ownRange);
+                        if (distance < otherRange) strength += otherActor.getForceStrength() * (1 - distance / otherRange)
+                                / Math.max(distance, otherRange * softening);
+                        if (distance < ownRange) strength += actor.getForceStrength() * (1 - distance / ownRange)
+                                / Math.max(distance, ownRange * softening);
                         if (strength != 0) {
                             // towardOtherActor points TO the other actor. The minus sign
                             // makes negative strength attract and positive strength repel.
-                            cell.applyForce(towardOtherActor.multiply(-strength * scale / distance), actor.getCachedPosition());
+                            // A finite linear core removes the direction jump at contact.
+                            // Each emitter uses its own range, preserving pair symmetry.
+                            cell.applyForce(towardOtherActor.multiply(-strength * scale), actor.getCachedPosition());
                         }
                     }
                 }

@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=ForceSignTest,SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=MechanicalFixtureTest,MechanicsRegressionTest,ForceSignTest,SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 243 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 262 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 ## Physikwelten
@@ -326,6 +326,9 @@ F = -effektiveFeldstaerke * Groessenskalierung * towardOtherActor / Abstand
 Deshalb wirkt eine negative Feldstaerke in Richtung des anderen Aktors, eine
 positive dagegen entgegengesetzt. Die effektive Feldstaerke enthaelt das empfangene
 Feld und die Reaktion auf das eigene Feld, jeweils mit linearem Reichweitenabfall.
+Mit der neuen Kontaktglaettung wird jeder Beitrag zusaetzlich mit
+`min(1, Abstand / (Senderreichweite * actorFieldSofteningFraction))` skaliert;
+bei Glaettungsanteil null bleibt die fruehere Kraftform erhalten.
 Der fehlende Vorzeichenwechsel der urspruenglichen Implementierung wurde bereits
 im ersten Physik-Fix korrigiert. Die aktuelle Pruefung aendert diese Physik nicht.
 Die frueheren Renderer-Kommentare zu Gradienten wurden durch die tatsaechliche
@@ -337,6 +340,27 @@ Jede Ausgabe wird auf beiden Achsen, im Inneren und ueber die periodische Naht s
 mit beiden moeglichen Sendern geprueft (56 kleine Versuche). Ein isoliertes Aktorpaar
 erlaubt den analytischen Vergleich des Impulsbetrags inklusive Reichweitenabfall und
 Groessenskalierung. Die Reaktionen bleiben gleich gross und entgegengesetzt.
+
+## Mechanisches Labor und Kontaktglaettung
+
+Details, Messdaten, Abbildungen und Reproduktionsbefehle: [MECHANIK.md](MECHANIK.md).
+
+Sieben `MechanicalFixtureTest`-Pruefungen sichern Radien, initiale Kraftausgaben,
+aktuelle Gehirneingaben und TEST_A-Positionen anhand der echten Welthoehe ab.
+Zwoelf `MechanicsRegressionTest`-Pruefungen sichern stetige Aktorkraefte nahe Kontakt,
+unveraenderte Kraefte ausserhalb der Kontaktzone, Parametergrenzen, den Schneemann
+mit und ohne fallende Zellen, Kette, Dreiecksstreifen, reversiblen Aktuatorhub,
+Beweglichkeit, Wiederholbarkeit und Zeitschrittkonvergenz ab.
+
+Der Default `actorFieldSofteningFraction = 0.25` gibt Aktorfeldern eine lineare
+Kernzone. Dort geht der Kraftbetrag kontinuierlich gegen null. Das Vorzeichen
+bleibt unveraendert; ausserhalb gilt die vorherige Kraftform.
+`MechanicsPreset.BALANCED` kombiniert dies mit Rotationsdaempfung 3 und wird von
+TEST_A beim Initialisieren der Umgebung angewendet. `LEGACY` erlaubt Vergleichslaeufe.
+
+`MechanicsSweepTest` laeuft nur mit `-Dmechanics.sweep=true`; die 318 dokumentierten
+Weltlaeufe sind nicht Bestandteil der 262 normalen Regressionstests. Die Studie
+verwendet feste Gehirnausgaben und beweist keine selbstentstehende Gewebedifferenzierung.
 
 ## Vererbungspruefungen
 

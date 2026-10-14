@@ -5,6 +5,7 @@ import de.lifecircles.model.Environment;
 import de.lifecircles.model.Vector2D;
 import de.lifecircles.model.neural.*;
 import de.lifecircles.service.SimulationConfig;
+import de.lifecircles.service.MechanicsPreset;
 
 import static de.lifecircles.service.trainStrategy.TestTrainStrategyUtils.createAndAddCell;
 
@@ -16,6 +17,7 @@ public class TestATrainStrategy implements TrainStrategy {
 
     @Override
     public Environment initializeEnvironment() {
+        MechanicsPreset.BALANCED.apply(config);
         //config.setWidth(1600 * 3);
         this.config.setWidth(1000 * 1.4D);
         this.config.setHeight(800);
@@ -37,7 +39,7 @@ public class TestATrainStrategy implements TrainStrategy {
 
         final double radiusSize = this.config.getCellMaxRadiusSize();
 
-        final double yTopTop = this.config.getHeight() - (Environment.GroundBlockerHeight);
+        final double yTopTop = environment.getHeight() - Environment.GroundBlockerHeight;
         final double yTop = yTopTop - 80.0D;
 
         // Anziehung:

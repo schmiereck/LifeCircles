@@ -3,6 +3,7 @@ package de.lifecircles.service;
 import de.lifecircles.model.*;
 import de.lifecircles.model.neural.*;
 import de.lifecircles.service.trainStrategy.TestTrainStrategyUtils;
+import de.lifecircles.service.trainStrategy.TestATrainStrategy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -10,6 +11,12 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MechanicalFixtureTest {
+    @Test void snowmanUsesActualWorldHeightInsteadOfGlobalConfiguration() {
+        Environment world = new Environment(1400, 800);
+        new TestATrainStrategy().initialize(world);
+        assertEquals(510, world.getCellList().getFirst().getPosition().getY());
+        assertEquals(350, world.getCellList().get(15).getPosition().getY());
+    }
     @ParameterizedTest @ValueSource(doubles = {6, 10, 12, 16, 20})
     void prescribedRadiusSurvivesThinkingAndSizeSmoothing(double radius) {
         Environment world = new Environment(300, 300);

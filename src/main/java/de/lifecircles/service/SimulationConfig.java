@@ -27,7 +27,10 @@ public class SimulationConfig {
      */
     private double viscosity = 0.8D;
 
-    private static final double CELL_REPULSION_STRENGTH = 125.0;
+    private double cellRepulsionStrength = 125.0;
+    // Fraction of the emitting actor's field radius with a linear force core.
+    // Zero reproduces the former direction discontinuity at coincident actors.
+    private double actorFieldSofteningFraction = 0.25;
 
     // --- Neue Konstanten für Distanzfaktoren bei Energieübertragung ---
     /**
@@ -297,7 +300,32 @@ public class SimulationConfig {
     }
 
     public double getCellRepulsionStrength() {
-        return CELL_REPULSION_STRENGTH;
+        return cellRepulsionStrength;
+    }
+
+    /** Maximum attractive actor-field magnitude, independently tunable from contact stiffness. */
+    public void setCellActorMaxAttractiveForceStrength(double strength) {
+        if (!Double.isFinite(strength) || strength <= 0) {
+            throw new IllegalArgumentException("Maximum attraction must be finite and positive");
+        }
+        cellActorMaxAttractiveForceStrength = strength;
+    }
+
+    /** Contact stiffness, independently tunable from attractive actor fields. */
+    public void setCellRepulsionStrength(double strength) {
+        if (!Double.isFinite(strength) || strength < 0) {
+            throw new IllegalArgumentException("Cell repulsion strength must be finite and nonnegative");
+        }
+        cellRepulsionStrength = strength;
+    }
+
+    public double getActorFieldSofteningFraction() { return actorFieldSofteningFraction; }
+
+    public void setActorFieldSofteningFraction(double fraction) {
+        if (!Double.isFinite(fraction) || fraction < 0 || fraction > 1) {
+            throw new IllegalArgumentException("Actor field softening must be in [0, 1]");
+        }
+        actorFieldSofteningFraction = fraction;
     }
 
     public double getReproductionEnergyThreshold() {
