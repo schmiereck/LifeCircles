@@ -9,11 +9,18 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=MechanicalFixtureTest,MechanicsRegressionTest,ForceSignTest,SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=TissueMechanicsTest,MechanicalFixtureTest,MechanicsRegressionTest,ForceSignTest,SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 262 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 274 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
+
+`TissueMechanicsTest` ergänzt zwölf Prüfungen für ein- bis dreischichtige Kugelpackungen,
+eine bewegliche Brücke und aktive Größenzyklen gegen Gegenlast. Biegesteifigkeit,
+Rückstellung, Zugbruch, Einknicken bei gestörtem Druck und Zeitschrittabhängigkeit
+werden ohne Fenster gemessen. Die 238 separat ausgeführten Weltläufe und ihre Grenzen
+sind in [GEWEBEPROBEN.md](GEWEBEPROBEN.md) dokumentiert. `TissueMechanicsSweepTest`
+läuft ausschließlich mit `-Dtissue.sweep=true` und gehört nicht zur Routineauswahl.
 
 ## Physikwelten
 

@@ -169,6 +169,12 @@ von ihrer Erhaltung in einer Konkurrenzwelt und vermeidet kostenlose Energie als
 
 ## Reproduzieren
 
+Die Folgeuntersuchung [GEWEBEPROBEN.md](GEWEBEPROBEN.md) prüft zwei- und dreischichtige
+Packungen, Zug, Druck mit seitlicher Störung, eine schmale bewegliche Brücke und drei
+aktive Größenzyklen unter Gegenlast. Sie untersucht ausschließlich die mechanischen
+Möglichkeiten mit vorgeschriebenen Gehirnausgaben. Mehrschichtige Geometrien reichen
+bereits für steife, rückstellende Teile; neue Verbindungsregeln sind dafür keine Voraussetzung.
+
 Normale Regressionen: [TESTWELTEN.md](TESTWELTEN.md). Die Studie läuft nur explizit:
 
 ```powershell
