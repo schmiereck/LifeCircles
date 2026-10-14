@@ -15,7 +15,15 @@ import java.util.Random;
 public class EnergySunCalcService {
     private double rayAccumulator = 0.0;
     private double timeInCycle = 0.0; // Tracks time within the day/night cycle
-    private final Random random = new Random();
+    private final Random random;
+
+    public EnergySunCalcService() {
+        this(new Random());
+    }
+
+    EnergySunCalcService(Random random) {
+        this.random = random;
+    }
 
     public List<SunRay> calculateSunEnergy(
             final List<Cell> cells,
@@ -24,6 +32,9 @@ public class EnergySunCalcService {
             final double height,
             final SimulationConfig config,
             final double deltaTime) {
+        // This call calculates one step's sunlight, not lifetime exposure.
+        // Reset even when the accumulator produces no rays or all rays are blocked.
+        for (Cell cell : cells) cell.resetSunRayHit();
         final List<SunRay> rays = new ArrayList<>();
 
         // Update time in the day/night cycle

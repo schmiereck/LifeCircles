@@ -93,7 +93,7 @@ public class Cell implements SensableCell, Serializable {
     }
 
     /**
-     * Notifies the cell that it has been hit by a SunRay.
+     * Notifies the cell that it has been hit by a SunRay in the current step.
      * This method can be used to trigger cell behavior changes when hit by sunlight.
      */
     public void notifySunRayHit() {

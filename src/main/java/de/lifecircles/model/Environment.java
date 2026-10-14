@@ -113,8 +113,6 @@ public class Environment {
      * @param partitioner Pre-built partitioning strategy for interactions
      */
     public void update(final double deltaTime, final PartitioningStrategy partitioner) {
-        // Sun contact describes this step, not whether the cell was ever illuminated.
-        for (Cell cell : this.cellList) cell.resetSunRayHit();
         // Calculate sun energy rays
         this.sunRayList.clear();
         this.sunRayList.addAll(

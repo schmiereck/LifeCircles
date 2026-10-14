@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 196 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 201 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 ## Physikwelten
@@ -216,6 +216,22 @@ Beide Seiten der Umschaltgrenze zwischen zwei Sensoren sind separat geprueft.
 Vor der Korrektur scheiterten 22 der 24 neuen Pruefungen. Netze, die das bisherige
 falsche Signal bei fehlenden oder veralteten Caches ausgenutzt haben, erhalten jetzt
 die tatsaechliche obere Orientierung; eine Kompatibilitaetsumschaltung gibt es nicht.
+
+## Sonnenkontakt pro Schritt
+
+Quelle: `src/test/java/de/lifecircles/service/SunContactTest.java`.
+
+Fuenf Tests pruefen tatsaechliche Strahlentreffer mit fest vorgegebener Strahlposition:
+Treffer, mehrere dunkle Schritte und erneute Treffer; Abschattung durch ein Hindernis;
+getroffene und verfehlte Zellen im selben Schritt; sowie einen Strahlenakkumulator,
+der noch keinen ganzen Strahl erzeugt. Kontakt und Gehirneingabe muessen den aktuellen
+Schritt beschreiben. Ohne Treffer wird keine Sonnenenergie hinzugefuegt.
+
+Der Reset war seit dem ersten Physik-Fix im Weltupdate vorhanden. Er liegt jetzt
+direkt am Anfang von `EnergySunCalcService.calculateSunEnergy()`, damit auch direkte
+Aufrufer keinen alten Kontakt behalten. Alle Zellflags werden zuerst geloescht und
+nur bei einem tatsaechlichen Treffer erneut gesetzt. Ein weiterer Test prueft im
+vollstaendigen Weltupdate, dass das Gehirn schon im selben Schritt null erhaelt.
 
 ## Vererbungspruefungen
 
