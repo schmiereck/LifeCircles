@@ -221,4 +221,48 @@ public class Blocker implements SensableActor, SensableCell {
                 point.getY() >= (position.getY() - halfHeight - tolerance) &&
                 point.getY() <= (position.getY() + halfHeight + tolerance);
     }
+
+    /** Tests the union of all periodic images, including blockers spanning a full axis. */
+    public boolean containsPoint(Vector2D point, double worldWidth, double worldHeight) {
+        if (point == null) return false;
+        Vector2D local = position.getShortestDirectionWithWrapAround(point, worldWidth, worldHeight);
+        return Math.abs(local.getX()) <= width / 2 && Math.abs(local.getY()) <= height / 2;
+    }
+
+    /** Circle overlap with the periodic rectangle; exact tangency is allowed. */
+    public boolean overlapsCircle(Vector2D point, double radius, double worldWidth, double worldHeight) {
+        Vector2D local = position.getShortestDirectionWithWrapAround(point, worldWidth, worldHeight);
+        double dx = Math.max(0, Math.abs(local.getX()) - width / 2);
+        double dy = Math.max(0, Math.abs(local.getY()) - height / 2);
+        return containsPoint(point, worldWidth, worldHeight) || Math.hypot(dx, dy) < radius;
+    }
+
+    /**
+     * Resolves contact in a local periodic image, returning an unwrapped center.
+     * A rectangle covering a full axis has no escapable edge on that axis.
+     */
+    public Vector2D getCellCenterOutside(Vector2D point, double radius, double worldWidth, double worldHeight) {
+        Vector2D local = position.getShortestDirectionWithWrapAround(point, worldWidth, worldHeight);
+        double halfX = width >= worldWidth ? Double.POSITIVE_INFINITY : width / 2;
+        double halfY = height >= worldHeight ? Double.POSITIVE_INFINITY : height / 2;
+        double x = local.getX(), y = local.getY();
+        double nearestX = Math.max(-halfX, Math.min(x, halfX));
+        double nearestY = Math.max(-halfY, Math.min(y, halfY));
+        double dx = x - nearestX, dy = y - nearestY;
+        double distance = Math.hypot(dx, dy);
+        if (Math.abs(x) <= halfX && Math.abs(y) <= halfY) {
+            // A completely blocked torus has no outside position to project to.
+            if (Double.isInfinite(halfX) && Double.isInfinite(halfY)) return point;
+            double left = x + halfX, right = halfX - x;
+            double top = y + halfY, bottom = halfY - y;
+            if (left <= right && left <= top && left <= bottom) dx = -left - radius;
+            else if (right <= top && right <= bottom) dx = right + radius;
+            else if (top <= bottom) dy = -top - radius;
+            else dy = bottom + radius;
+            return point.add(new Vector2D(dx, dy));
+        }
+        if (distance >= radius) return point;
+        double correction = (radius - distance) / distance;
+        return point.add(new Vector2D(dx * correction, dy * correction));
+    }
 }

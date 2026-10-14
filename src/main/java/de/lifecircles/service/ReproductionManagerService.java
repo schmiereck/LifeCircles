@@ -52,12 +52,11 @@ public class ReproductionManagerService {
     public static boolean isFreePosition(Environment environment, Vector2D position, double radius) {
         if (position == null || !Double.isFinite(position.getX()) || !Double.isFinite(position.getY())) return false;
         return environment.getBlockerList().stream().noneMatch(blocker ->
-                blocker.getCellCenterOutside(position, radius).distance(position) > 1e-12);
+                blocker.overlapsCircle(position, radius, environment.getWidth(), environment.getHeight()));
     }
 
     private static Vector2D wrap(Vector2D position, Environment environment) {
-        return new Vector2D(((position.getX() % environment.getWidth()) + environment.getWidth()) % environment.getWidth(),
-                ((position.getY() % environment.getHeight()) + environment.getHeight()) % environment.getHeight());
+        return position.wrapped(environment.getWidth(), environment.getHeight());
     }
 
     private static Cell createMutatedChild(SimulationConfig config, Cell parent, Vector2D position, int state, double energy) {

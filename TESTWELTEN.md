@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 132 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 163 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 ## Physikwelten
@@ -105,6 +105,56 @@ fuer freie Rotation bei konstantem k. Wechselwirkende Kraefte werden weiterhin a
 diskrete Impulse vor der Rotation angewendet; deren Diskretisierungsfehler sind damit
 nicht beseitigt. Das bestehende angenaeherte Traegheitsmodell proportional zu Radius^2
 bleibt erhalten.
+
+## Periodische Zellgeometrie
+
+Quelle: `src/test/java/de/lifecircles/service/PeriodicWorldTest.java`.
+
+31 Tests vergleichen Situationen im Inneren mit Verschiebungen ueber den horizontalen
+Rand, den vertikalen Rand und beide gleichzeitig. Feldkraefte, Drehmomente,
+Sensorentfernungen und Energieuebertragung muessen gleich bleiben. Ganze Welten mit
+Abstossung, Schwerkraft, Reibung und Rotation werden ueber 60 Schritte verglichen.
+Die gleichen Vergleiche laufen mit Raster und Quadtree.
+
+Nachbarsuchen werden in Welten mit Breiten 15, 25, 105 und 300 gegen alle Zellpaare
+geprueft, auch bei Suchradien groesser als die Welt und bei nichtkanonischen Positionen
+mehrere Milliarden Weltbreiten entfernt. Das Raster darf zusaetzliche Kandidaten
+liefern; der Quadtree liefert genau die Treffer innerhalb des Radius. Beide duerfen
+keine Nachbarn uebersehen oder doppelt liefern. Der Quadtree fragt passende periodische
+Abbilder ab, ohne Zellen zu verschieben; 500 deckungsgleiche Zellen pruefen seine
+begrenzte raeumliche Unterteilung.
+
+`Vector2D.wrapped()` fuehrt Positionen einheitlich nach `[0, Breite) x [0, Hoehe)`
+zurueck. Bereits kanonische Koordinaten bleiben unveraendert, auch sehr nahe am Rand.
+Beim exakt halben Weltabstand wird die gleich lange Richtung anhand kanonischer
+Koordinaten gewaehlt: ganze Weltverschiebungen aendern sie nicht, die Gegenrichtung
+bleibt entgegengesetzt. Weltlaengen und Suchradien muessen positiv und endlich sein;
+die Partitionierer weisen ungueltige Abmessungen ab.
+
+Hinderniskontakte, Hindernissensoren und die Freiplatzpruefung fuer biologische und
+Trainingsnachkommen beruecksichtigen periodische Abbilder. Kontakt liefert ein volles
+Sensorsignal statt einer Abschwaechung anhand des entfernten Rechteckmittelpunkts.
+Der Kollisionsimpuls verwendet die lokale Kontaktnormale; nur die hinein gerichtete
+Geschwindigkeit wird entfernt. Danach werden Zellposition und Aktorpositionen erneuert.
+
+Ein Hindernis, das eine ganze Achse abdeckt, hat auf dieser Achse keinen seitlichen
+Ausgang. Der weltbreite Boden setzt sich dadurch ohne kuenstliche Seitenkante ueber
+den horizontalen Rand fort. Weil auch die Y-Achse periodisch ist, ist seine Unterseite
+am oberen Weltrand erreichbar: Eine Zelle bei y=5 mit Radius 10 beruehrt den Boden
+bei y=300 von der anderen Seite. Das wird jetzt auch bei Teilungspositionen erkannt.
+Eine vollstaendig blockierte Welt bietet keinen gueltigen Ausweg; Nachkommen werden
+abgewiesen, vorhandene Zellen werden nicht auf unendliche Koordinaten projiziert.
+
+Weltupdates reichen die eigene Umgebung explizit an Kraefte, Sensoren, Energie und
+Gehirneingaben weiter. Eine spaeter erzeugte Welt kann damit nicht versehentlich die
+Periodenlaengen oder Hindernisse einer bereits bestehenden Welt ersetzen. Die alten
+Service-Einstiegspunkte bleiben fuer bestehende Aufrufer erhalten; sie verwenden
+weiterhin die globale Umgebung, die neuen Ueberladungen erlauben explizite Welten.
+
+Die Sonne bleibt die bestehende externe Lichtquelle mit Strahlen von oben im endlichen
+Darstellungsfenster. Diese Tests pruefen die periodische Zell- und Kontaktphysik;
+sie definieren kein umlaufendes periodisches Strahlenmodell. Die diskrete
+Hindernisprojektion verhindert weiterhin kein Durchtunneln bei sehr grossen Schritten.
 
 ## Vererbungspruefungen
 

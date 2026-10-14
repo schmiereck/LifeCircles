@@ -9,6 +9,10 @@ import de.lifecircles.service.SimulationConfig;
 public class CellBrainService {
 
     public static double[] generateInputs(final Cell cell) {
+        return generateInputs(cell, Environment.getInstance());
+    }
+
+    public static double[] generateInputs(final Cell cell, final Environment environment) {
         final List<SensorActor> myActorList = cell.getSensorActors();
         final int actorCount = myActorList.size();
         final CellBrainInterface cellBrain = cell.getBrain();
@@ -56,7 +60,7 @@ public class CellBrainService {
                 final CellType sensedCellType = sensedCell.getType();
 
                 SensableActor sensedActor = maActor.getSensedActor();
-                double distanceFactor = calcDistanceFactor(maActor, sensedActor);
+                double distanceFactor = calcDistanceFactor(maActor, sensedActor, environment);
                 // Werte mit Distanzfaktor multiplizieren
                 sensedCellTypeR = sensedCellType.getRed() * distanceFactor;
                 sensedCellTypeG = sensedCellType.getGreen() * distanceFactor;
@@ -111,11 +115,16 @@ public class CellBrainService {
     }
 
     public static double calcDistanceFactor(SensorActor maActor, SensableActor sensedActor) {
+        return calcDistanceFactor(maActor, sensedActor, Environment.getInstance());
+    }
+
+    public static double calcDistanceFactor(SensorActor maActor, SensableActor sensedActor, Environment environment) {
+        if (sensedActor instanceof Blocker blocker
+                && blocker.containsPoint(maActor.getCachedPosition(), environment.getWidth(), environment.getHeight())) return 1;
         // --- Entfernung berechnen (0.0 = fern, 1.0 = nah) ---
         double dist = 0.0D;
         double maxDist = 1.0D;
         if (maActor.getCachedPosition() != null && sensedActor != null && sensedActor.getCachedPosition() != null) {
-            Environment environment = Environment.getInstance();
             dist = maActor.getCachedPosition().getShortestDirectionWithWrapAround(
                     sensedActor.getCachedPosition(), environment.getWidth(), environment.getHeight()).length();
             Cell emitter = sensedActor instanceof SensorActor actor ? actor.getParentCell() : maActor.getParentCell();

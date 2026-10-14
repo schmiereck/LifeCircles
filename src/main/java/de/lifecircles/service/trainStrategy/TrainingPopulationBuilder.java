@@ -42,8 +42,7 @@ final class TrainingPopulationBuilder {
                 Vector2D candidate = attempt == 0 ? preferred : new Vector2D(
                         sections ? sectionWidth * (slot + random.nextDouble()) : random.nextDouble() * world.getWidth(),
                         random.nextDouble() * world.getHeight());
-                candidate = new Vector2D(((candidate.getX() % world.getWidth()) + world.getWidth()) % world.getWidth(),
-                        ((candidate.getY() % world.getHeight()) + world.getHeight()) % world.getHeight());
+                candidate = candidate.wrapped(world.getWidth(), world.getHeight());
                 if (ReproductionManagerService.isFreePosition(world, candidate, radius)) {
                     chosen = candidate;
                     break;

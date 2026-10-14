@@ -13,6 +13,7 @@ public class QuadTree {
     private final Boundary boundary;
     private final int capacity;
     private final List<Cell> points;
+    private final List<Vector2D> positions = new ArrayList<>();
     private boolean divided;
     private QuadTree northeast;
     private QuadTree northwest;
@@ -31,21 +32,32 @@ public class QuadTree {
     }
 
     public boolean insert(Cell cell) {
-        Vector2D pos = cell.getPosition();
+        return insert(cell, cell.getPosition());
+    }
+
+    /** Indexed coordinates may be a periodic image; the Cell itself is never moved. */
+    public boolean insert(Cell cell, Vector2D pos) {
         if (!boundary.contains(pos)) {
             return false;
         }
         if (points.size() < capacity) {
             points.add(cell);
+            positions.add(pos);
             return true;
         } else {
             if (!divided) {
                 subdivide();
             }
-            if (northeast.insert(cell)) return true;
-            if (northwest.insert(cell)) return true;
-            if (southeast.insert(cell)) return true;
-            if (southwest.insert(cell)) return true;
+            // Stop subdividing when floating-point coordinates cannot distinguish children.
+            if (boundary.halfWidth < 1e-10 || boundary.halfHeight < 1e-10) {
+                points.add(cell);
+                positions.add(pos);
+                return true;
+            }
+            if (northeast.insert(cell, pos)) return true;
+            if (northwest.insert(cell, pos)) return true;
+            if (southeast.insert(cell, pos)) return true;
+            if (southwest.insert(cell, pos)) return true;
         }
         return false;
     }
@@ -67,9 +79,9 @@ public class QuadTree {
         if (!boundary.intersectsCircle(center.getX(), center.getY(), radius)) {
             return found;
         }
-        for (Cell p : points) {
-            if (p.getPosition().distance(center) <= radius) {
-                found.add(p);
+        for (int i = 0; i < points.size(); i++) {
+            if (positions.get(i).distance(center) <= radius) {
+                found.add(points.get(i));
             }
         }
         if (divided) {

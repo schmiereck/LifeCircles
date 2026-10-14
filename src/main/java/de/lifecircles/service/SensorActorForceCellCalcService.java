@@ -7,7 +7,11 @@ import java.util.List;
 /** Sensor fields use negative strength for attraction and positive strength for repulsion. */
 public class SensorActorForceCellCalcService {
     public static void processInteractions(final List<Cell> cells, final PartitioningStrategy partitioner) {
-        final Environment environment = Environment.getInstance();
+        processInteractions(cells, partitioner, Environment.getInstance());
+    }
+
+    public static void processInteractions(final List<Cell> cells, final PartitioningStrategy partitioner,
+                                           final Environment environment) {
         final double width = environment.getWidth();
         final double height = environment.getHeight();
         cells.parallelStream().forEach(cell -> {
@@ -25,7 +29,7 @@ public class SensorActorForceCellCalcService {
             for (SensorActor actor : cell.getSensorActors()) {
                 double nearest = Double.POSITIVE_INFINITY;
                 for (Blocker blocker : environment.getBlockerList()) {
-                    if (blocker.containsPoint(actor.getCachedPosition())) {
+                    if (blocker.containsPoint(actor.getCachedPosition(), width, height)) {
                         actor.setSensedCell(blocker);
                         actor.setSensedActor(blocker);
                         nearest = -1; // A touching blocker has sensing priority.

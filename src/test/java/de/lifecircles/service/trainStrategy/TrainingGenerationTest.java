@@ -81,9 +81,9 @@ class TrainingGenerationTest {
         class CountingBlocker extends Blocker {
             int checks;
             CountingBlocker() { super(new Vector2D(3200, 600), 6600, 1400, Color.GRAY, BlockerType.WALL); }
-            @Override public Vector2D getCellCenterOutside(Vector2D position, double radius) {
+            @Override public boolean overlapsCircle(Vector2D position, double radius, double width, double height) {
                 checks++;
-                return super.getCellCenterOutside(position, radius);
+                return super.overlapsCircle(position, radius, width, height);
             }
         }
         CountingBlocker blocker = new CountingBlocker(); world.addBlocker(blocker);

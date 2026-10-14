@@ -25,6 +25,10 @@ public class EnergyTransferCellCalcService {
      * @param cells list of cells in the environment
      */
     public static void processEnergyTransfers(final List<Cell> cells) {
+        processEnergyTransfers(cells, Environment.getInstance());
+    }
+
+    public static void processEnergyTransfers(final List<Cell> cells, final Environment environment) {
         for (final Cell calcCell : cells) {
             for (final SensorActor sensor : calcCell.getSensorActors()) {
                 final SensableActor otherActor = sensor.getSensedActor();
@@ -35,7 +39,6 @@ public class EnergyTransferCellCalcService {
                         double distance = 0.0;
                         double maxSensorRadius = 1.0;
                         if (sensor.getCachedPosition() != null && otherActor.getCachedPosition() != null) {
-                            Environment environment = Environment.getInstance();
                             distance = sensor.getCachedPosition().getShortestDirectionWithWrapAround(
                                     otherActor.getCachedPosition(), environment.getWidth(), environment.getHeight()).length();
                             Cell emitter = otherActor instanceof SensorActor actor ? actor.getParentCell() : calcCell;

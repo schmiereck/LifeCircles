@@ -1,6 +1,7 @@
 package de.lifecircles.service.partitioningStrategy;
 
 import de.lifecircles.model.Cell;
+import de.lifecircles.model.Vector2D;
 import java.util.*;
 
 /**
@@ -8,6 +9,8 @@ import java.util.*;
  * Allows neighbor lookups in constant time per cell, reducing interaction computation.
  */
 public class SpatialGrid {
+    private final double width;
+    private final double height;
     private final double cellWidth;
     private final double cellHeight;
     private final int cols;
@@ -19,10 +22,13 @@ public class SpatialGrid {
 
     @SuppressWarnings("unchecked")
     public SpatialGrid(double width, double height, double interactionRadius) {
-        if (!(width > 0) || !(height > 0) || !(interactionRadius > 0)) {
+        if (!Double.isFinite(width) || !Double.isFinite(height) || !Double.isFinite(interactionRadius)
+                || !(width > 0) || !(height > 0) || !(interactionRadius > 0)) {
             throw new IllegalArgumentException("World and interaction dimensions must be positive");
         }
         // Equal buckets cover the whole torus; no narrow remainder bucket at the seam.
+        this.width = width;
+        this.height = height;
         this.cols = Math.max(1, (int) Math.floor(width / interactionRadius));
         this.rows = Math.max(1, (int) Math.floor(height / interactionRadius));
         this.cellWidth = width / cols;
@@ -44,8 +50,8 @@ public class SpatialGrid {
     public void addCells(List<Cell> cells) {
         this.clear();
         for (Cell cell : cells) {
-            int col = (int) Math.floor(cell.getPosition().getX() / this.cellWidth);
-            int row = (int) Math.floor(cell.getPosition().getY() / this.cellHeight);
+            int col = column(cell);
+            int row = row(cell);
             // wrap around boundaries
             col = (col % this.cols + this.cols) % this.cols;
             row = (row % this.rows + this.rows) % this.rows;
@@ -59,8 +65,8 @@ public class SpatialGrid {
 
     // Hilfsmethode zum Berechnen der Nachbarn einer Zelle
     private List<Cell> computeNeighbors(Cell cell) {
-        int col = (int) Math.floor(cell.getPosition().getX() / this.cellWidth);
-        int row = (int) Math.floor(cell.getPosition().getY() / this.cellHeight);
+        int col = column(cell);
+        int row = row(cell);
         col = (col % this.cols + this.cols) % this.cols;
         row = (row % this.rows + this.rows) % this.rows;
 
@@ -78,5 +84,13 @@ public class SpatialGrid {
     public List<Cell> getNeighbors(Cell cell) {
         // Gibt die vorberechnete Nachbarliste zurück, falls vorhanden
         return cellNeighbors.getOrDefault(cell, Collections.emptyList());
+    }
+
+    private int column(Cell cell) {
+        return Math.min(cols - 1, (int) (Vector2D.wrapCoordinate(cell.getPosition().getX(), width) / cellWidth));
+    }
+
+    private int row(Cell cell) {
+        return Math.min(rows - 1, (int) (Vector2D.wrapCoordinate(cell.getPosition().getY(), height) / cellHeight));
     }
 }

@@ -84,7 +84,24 @@ public class Vector2D implements Serializable {
         // Prüfen, ob es über Grenzen hinweg kürzer ist (vertikale Richtung)
         dy -= height * Math.rint(dy / height);
 
+        // At exactly half a period there are two equally short paths. Choose by
+        // canonical coordinates, so translating a point by whole periods cannot
+        // flip the direction; reversing a pair still reverses the force.
+        if (Math.abs(dx) == width / 2) dx = wrapCoordinate(other.x, width) - wrapCoordinate(x, width);
+        if (Math.abs(dy) == height / 2) dy = wrapCoordinate(other.y, height) - wrapCoordinate(y, height);
+
         return new Vector2D(dx, dy);
+    }
+
+    /** Canonical coordinate in [0, period), preserving already canonical values. */
+    public static double wrapCoordinate(double coordinate, double period) {
+        double wrapped = coordinate % period;
+        if (wrapped < 0) wrapped += period;
+        return wrapped >= period ? 0 : wrapped;
+    }
+
+    public Vector2D wrapped(double width, double height) {
+        return new Vector2D(wrapCoordinate(x, width), wrapCoordinate(y, height));
     }
 
     @Override

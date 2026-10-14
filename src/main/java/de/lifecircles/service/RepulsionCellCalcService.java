@@ -17,6 +17,11 @@ public class RepulsionCellCalcService {
         processRepulsiveForces(cells, partitioner, false);
     }
 
+    public static void processRepulsiveForces(final List<Cell> cells, final PartitioningStrategy partitioner,
+                                              final Environment environment) {
+        processRepulsiveForces(cells, partitioner, false, environment);
+    }
+
     /** Legacy linear entry point; time integration is performed by Cell.updateForce. */
     public static void processRepulsiveForces_x(final List<Cell> cells, final double deltaTime,
                                                final PartitioningStrategy partitioner) {
@@ -30,7 +35,11 @@ public class RepulsionCellCalcService {
 
     private static void processRepulsiveForces(final List<Cell> cells, final PartitioningStrategy partitioner,
                                                final boolean nonLinear) {
-        final Environment environment = Environment.getInstance();
+        processRepulsiveForces(cells, partitioner, nonLinear, Environment.getInstance());
+    }
+
+    private static void processRepulsiveForces(final List<Cell> cells, final PartitioningStrategy partitioner,
+                                               final boolean nonLinear, final Environment environment) {
         final Map<Cell, Integer> order = new IdentityHashMap<>();
         for (int i = 0; i < cells.size(); i++) order.put(cells.get(i), i);
         cells.parallelStream().forEach(cell -> {

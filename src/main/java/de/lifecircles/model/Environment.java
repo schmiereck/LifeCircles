@@ -124,11 +124,11 @@ public class Environment {
         );
 
         // Process repulsive forces
-        RepulsionCellCalcService.processRepulsiveForces(this.cellList, partitioner);
+        RepulsionCellCalcService.processRepulsiveForces(this.cellList, partitioner, this);
         // Process sensor/actor interactions
-        SensorActorForceCellCalcService.processInteractions(this.cellList, partitioner);
+        SensorActorForceCellCalcService.processInteractions(this.cellList, partitioner, this);
         // Process energy transfers between cells
-        EnergyTransferCellCalcService.processEnergyTransfers(this.cellList);
+        EnergyTransferCellCalcService.processEnergyTransfers(this.cellList, this);
 
         for (final Cell cell : this.cellList) {
         //this.cells.parallelStream().forEach(cell -> {
@@ -150,12 +150,12 @@ public class Environment {
         });
 
         // Freeze all sensed inputs before any worker changes energy, age or outputs.
-        final List<double[]> brainInputs = this.cellList.stream().map(CellBrainService::generateInputs).toList();
+        final List<double[]> brainInputs = this.cellList.stream().map(cell -> CellBrainService.generateInputs(cell, this)).toList();
         IntStream.range(0, this.cellList.size()).parallel().forEach(i -> {
             Cell cell = this.cellList.get(i);
             CellCalcService.updateCell(cell, deltaTime, brainInputs.get(i));
             this.wrapPosition(cell);
-            BlockerCellCalcService.handleBlockerCollisions(cell, this.blockerList);
+            BlockerCellCalcService.handleBlockerCollisions(cell, this.blockerList, this);
             this.wrapPosition(cell);
             for (SensorActor actor : cell.getSensorActors()) actor.updateCachedPosition();
         });
@@ -257,10 +257,10 @@ public class Environment {
         double y = pos.getY();
 
         // Wrap horizontally
-        x = ((x % this.width) + this.width) % this.width;
+        x = Vector2D.wrapCoordinate(x, this.width);
 
         // Wrap vertically
-        y = ((y % this.height) + this.height) % this.height;
+        y = Vector2D.wrapCoordinate(y, this.height);
 
         if (x != pos.getX() || y != pos.getY()) {
             cell.setPosition(new Vector2D(x, y));
