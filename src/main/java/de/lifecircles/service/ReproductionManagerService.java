@@ -60,9 +60,12 @@ public class ReproductionManagerService {
     }
 
     private static Cell createMutatedChild(SimulationConfig config, Cell parent, Vector2D position, int state, double energy) {
-        NeuralNetwork network = parent.getBrain().mutate(
-                Math.min(1.0D, config.getMutationRate() * parent.getMutationRateFactor()),
-                config.getMutationStrength() * parent.getMutationStrengthFactor());
+        // The parent's factors control this birth's genetic mutation, for both
+        // biological reproduction and training. Changes to the child's own
+        // factors below affect its future descendants, not its current genome.
+        double effectiveMutationRate = Math.min(1.0D, config.getMutationRate() * parent.getMutationRateFactor());
+        double effectiveMutationStrength = config.getMutationStrength() * parent.getMutationStrengthFactor();
+        NeuralNetwork network = parent.getBrain().mutate(effectiveMutationRate, effectiveMutationStrength);
         Cell child = new Cell(position, parent.getRadiusSize(), new CellBrain(network));
         child.startGrowthProcess();
         child.setRotation(parent.getRotation());
@@ -79,6 +82,7 @@ public class ReproductionManagerService {
         CellBrainService.think(child);
         child.setMutationRateFactor(parent.getMutationRateFactor());
         child.setMutationStrengthFactor(parent.getMutationStrengthFactor());
+        // Meta-mutation deliberately uses global settings, avoiding self-amplification.
         child.mutateMutationFactors(config.getMutationRate(), config.getMutationStrength());
         return child;
     }

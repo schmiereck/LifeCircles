@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 214 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 226 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 ## Physikwelten
@@ -279,6 +279,31 @@ Quelle: `src/test/java/de/lifecircles/model/neural/InheritanceRegressionTest.jav
 - Zellteilung setzt den Kindzustand vor dem ersten Denken, teilt Energie und uebernimmt Bewegung und Generation.
 - Vererbte Mutationsfaktoren beeinflussen die tatsaechlich verwendete Mutationsrate und -staerke.
 - Kinder werden an den Weltrand zurueckgefuehrt; gespeicherte Modulnetze behalten ihre Portverbindungen beim Laden.
+
+## Wirksame Mutationsfaktoren
+
+Quelle: `src/test/java/de/lifecircles/service/MutationFactorsTest.java`.
+
+Die Beruecksichtigung der Elternfaktoren wurde bereits im ersten Vererbungs-Fix
+eingebaut. Zwoelf zusaetzliche Pruefungen sichern biologische Teilung und
+Trainingsnachkommen ueber denselben Kind-Erzeugungspfad ab:
+
+```text
+effektive Rate    = min(1, globale Rate * Eltern-Ratenfaktor)
+effektive Staerke = globale Staerke * Eltern-Staerkefaktor
+```
+
+Die Tests erfassen die Parameter am Gehirn und pruefen zusaetzlich echte Kindgene.
+Ein festgelegter Zufallswert 0.75 fuehrt bei effektiver Rate 0.25 zu keiner Mutation,
+bei Rate 1 dagegen zur Mutation. Mit demselben Mutationszug aendert sich ein Bias
+bei Staerkefaktor 0.5 um 0.05 und bei Faktor 2 um 0.2 (globale Staerke 0.2).
+Dabei bleiben Eltern-Biases unveraendert. Weitere Pruefungen decken die Begrenzung
+der Rate, die Faktorgrenzen 0.1 bis 2 und exakte Faktorvererbung bei globaler Rate 0 ab.
+
+Die Faktoren des Elternteils bestimmen die aktuelle Netzmutation. Anschliessend
+erbt das Kind die Faktoren; deren eigene Mutation verwendet die globalen Einstellungen.
+Veraenderte Kindfaktoren wirken erst auf seine spaeteren Nachkommen. Diese Trennung
+verhindert, dass die aktuelle Netzmutation von bereits veraenderten Kindfaktoren abhaengt.
 
 ## Mehrere Ein- und Ausgangsports
 
