@@ -183,7 +183,7 @@ public class Neuron implements NeuronInterface {
 
     @Override
     public NeuronInterface cloneNeuron(final NeuralNet neuralNet, final NeuronValueFunction neuronValueFunction, final boolean isActiveLayer) {
-        final Neuron newNeuron = new Neuron(neuronValueFunction.fetchNextFreeId(neuralNet), this.getNeuronTypeInfoData());
+        final Neuron newNeuron = new Neuron(neuronValueFunction.fetchNextFreeId(neuralNet), neuralNet.copyScalarType(this.getNeuronTypeInfoData()));
         newNeuron.setActivationFunction(this.getActivationFunction());
         for (int inputTypePos = 0; inputTypePos < this.getNeuronTypeInfoData().getInputCount(); inputTypePos++) {
             newNeuron.setBias(inputTypePos, this.getBias(inputTypePos));
@@ -216,7 +216,7 @@ public class Neuron implements NeuronInterface {
     }
 
     @Override
-    public void backpropagateExtra(final double learningRate) {
+    public void backpropagateExtra(final NeuralNet neuralNet, final NeuronValueFunction values, final double learningRate) {
         // Nothing special to do.
     }
 

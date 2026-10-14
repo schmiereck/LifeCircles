@@ -27,7 +27,6 @@ public class NeuronNetwork implements NeuronInterface {
     //private double[] deltaArr;
     //private double[] inputSumArr;
     private double[] biasArr;
-    private transient double[] inputDeltaArr;
 
     public NeuronNetwork(final int id, final NeuronTypeInfoData neuronTypeInfoData,
                          final NeuronValueFunctionFactory neuronValueFunctionFactory) {
@@ -37,7 +36,8 @@ public class NeuronNetwork implements NeuronInterface {
         this.outputSynapsesList = new ArrayList<>();
         this.isOutputNeuron = false; // Standardmäßig kein Output-Neuron
 
-        // Dass NN direkt verwenden, nicht als Kopie.
+        // Keep the definition/factory here. Actual execution state belongs to
+        // the enclosing value store, separately for every instance and level.
         this.network = new NeuralNetwork(neuronTypeInfoData.getNeuralNet(), neuronValueFunctionFactory);
 
         for (int inputTypePos = 0; inputTypePos < this.neuronTypeInfoData.getInputCount(); inputTypePos++) {
@@ -49,6 +49,10 @@ public class NeuronNetwork implements NeuronInterface {
         //this.deltaArr = new double[this.neuronTypeInfoData.getOutputCount()];
         //this.inputSumArr = new double[this.neuronTypeInfoData.getOutputCount()];
         this.biasArr = new double[this.neuronTypeInfoData.getInputCount()];
+    }
+
+    ModuleExecutionState createExecutionState() {
+        return new ModuleExecutionState(this.neuronTypeInfoData.getNeuralNet(), this.network.getNeuronValueFunctionFactory());
     }
 
     @Override
@@ -152,10 +156,9 @@ public class NeuronNetwork implements NeuronInterface {
             inputArr[inputTypePos] = sum;
         }
 
-        //final NeuralNet calcNeuralNet = neuralNet;
-        final NeuralNet calcNeuralNet = this.network.getNeuralNet();
-        //final NeuronValueFunction calcNeuronValueFunction = neuronValueFunction;
-        final NeuronValueFunction calcNeuronValueFunction = this.network.getNeuronValueFunction();
+        final NeuralNetwork execution = neuronValueFunction.getModuleState(this, true).network;
+        final NeuralNet calcNeuralNet = execution.getNeuralNet();
+        final NeuronValueFunction calcNeuronValueFunction = execution.getNeuronValueFunction();
 
         calcNeuralNet.setInputs(calcNeuronValueFunction, inputArr);
         calcNeuralNet.process(calcNeuronValueFunction);
@@ -222,8 +225,9 @@ public class NeuronNetwork implements NeuronInterface {
 
     @Override
     public void backpropagateDelta(final NeuralNet neuralNet, final NeuronValueFunction values) {
-        final NeuralNet inner = this.network.getNeuralNet();
-        final NeuronValueFunction innerValues = this.network.getNeuronValueFunction();
+        final ModuleExecutionState state = values.getModuleState(this);
+        final NeuralNet inner = state.network.getNeuralNet();
+        final NeuronValueFunction innerValues = state.network.getNeuronValueFunction();
         for (int port = 0; port < this.neuronTypeInfoData.getOutputCount(); port++) {
             double outputGradient = 0;
             for (Synapse edge : this.getOutputSynapseList(port)) {
@@ -242,11 +246,8 @@ public class NeuronNetwork implements NeuronInterface {
 
         // Inputs and outputs need not have the same count or matching indices.
         // Finish all input derivatives before any outer or inner weight changes.
-        if (inputDeltaArr == null || inputDeltaArr.length != this.neuronTypeInfoData.getInputCount()) {
-            inputDeltaArr = new double[this.neuronTypeInfoData.getInputCount()];
-        } else {
-            Arrays.fill(inputDeltaArr, 0);
-        }
+        final double[] inputDeltaArr = state.inputDeltas;
+        Arrays.fill(inputDeltaArr, 0);
         for (int port = 0; port < inputDeltaArr.length; port++) {
             Neuron input = inner.getInputNeuronArr()[port];
             for (Synapse edge : input.getOutputSynapseList(0)) {
@@ -258,14 +259,15 @@ public class NeuronNetwork implements NeuronInterface {
 
     @Override
     public double getInputDelta(final NeuralNet neuralNet, final NeuronValueFunction values, final int inputTypePos) {
-        return inputDeltaArr == null ? 0 : inputDeltaArr[inputTypePos];
+        return values.getModuleState(this).inputDeltas[inputTypePos];
     }
 
     @Override
-    public void backpropagateExtra(final double learningRate) {
-        final NeuralNet inner = this.network.getNeuralNet();
-        inner.updateBiasAndWeights(this.network.getNeuronValueFunction(), learningRate);
-        inner.backpropagateExtra(learningRate);
+    public void backpropagateExtra(final NeuralNet neuralNet, final NeuronValueFunction values, final double learningRate) {
+        final NeuralNetwork execution = values.getModuleState(this).network;
+        final NeuralNet inner = execution.getNeuralNet();
+        inner.updateBiasAndWeights(execution.getNeuronValueFunction(), learningRate);
+        inner.backpropagateExtra(execution.getNeuronValueFunction(), learningRate);
     }
 
     @Override

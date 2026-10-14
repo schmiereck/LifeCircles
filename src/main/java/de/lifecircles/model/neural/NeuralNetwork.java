@@ -36,20 +36,23 @@ public class NeuralNetwork implements Serializable {
      * @param original Das zu kopierende neuronale Netzwerk
      */
     public NeuralNetwork(final NeuralNetwork original, final boolean makeCopy) {
+        this.learningRate = original.learningRate;
         this.neuronValueFunctionFactory = original.neuronValueFunctionFactory;
         this.neuronValueFunction = neuronValueFunctionFactory.create();
 
         this.neuralNet = new NeuralNet(original.neuralNet, makeCopy, this.neuronValueFunctionFactory, this.neuronValueFunction);
+        if (!makeCopy) this.neuronValueFunction.reserveExistingIds(this.neuralNet);
     }
 
     /**
-     * Erstellt ein NeuronalNetwork mit dem übergebenen neuronalen NeuralNet.
+     * Binds shared genes to independent values and layer scheduling state.
      */
     public NeuralNetwork(final NeuralNet neuralNet, final NeuronValueFunctionFactory neuronValueFunctionFactory) {
         this.neuronValueFunctionFactory = neuronValueFunctionFactory;
         this.neuronValueFunction = this.neuronValueFunctionFactory.create();
 
-        this.neuralNet = neuralNet;
+        this.neuralNet = new NeuralNet(neuralNet, false, neuronValueFunctionFactory, this.neuronValueFunction);
+        this.neuronValueFunction.reserveExistingIds(this.neuralNet);
     }
 
     /**
@@ -163,7 +166,7 @@ public class NeuralNetwork implements Serializable {
     public NeuralNetwork mutateAggressively(final NeuronValueFunction neuronValueFunction, double mutationRate, double mutationStrength) {
         final NeuralNetwork mutated = this.mutate(mutationRate, mutationStrength);
 
-        mutated.neuralNet.mutateAggressively(neuronValueFunctionFactory, neuronValueFunction, mutationRate, mutationStrength);
+        mutated.neuralNet.mutateAggressively(neuronValueFunctionFactory, mutated.getNeuronValueFunction(), mutationRate, mutationStrength);
 
         return mutated;
     }

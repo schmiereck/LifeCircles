@@ -16,4 +16,15 @@ public interface NeuronValueFunction extends Serializable {
 
     void releaseNeuron(final NeuralNet neuralNet, final NeuronInterface neuron);
 
+    default ModuleExecutionState getModuleState(final NeuronNetwork module) {
+        return getModuleState(module, false);
+    }
+
+    ModuleExecutionState getModuleState(final NeuronNetwork module, final boolean checkTopology);
+
+    void clearModuleStates();
+
+    /** Initialize an execution store attached to a graph with pre-existing IDs. */
+    void reserveExistingIds(final NeuralNet neuralNet);
+
 }

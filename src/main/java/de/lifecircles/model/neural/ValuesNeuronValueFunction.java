@@ -12,6 +12,30 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
 
     private int lowestFreeID = 0;
     private int lastFreeID = 0;
+    private java.util.Map<NeuronNetwork, ModuleExecutionState> moduleStates = new java.util.IdentityHashMap<>();
+
+    @Override
+    public ModuleExecutionState getModuleState(final NeuronNetwork module, final boolean checkTopology) {
+        if (moduleStates == null) moduleStates = new java.util.IdentityHashMap<>();
+        ModuleExecutionState state = moduleStates.get(module);
+        if (state == null || (checkTopology && !state.network.getNeuralNet().hasSameTopology(module.getNeuronTypeInfoData().getNeuralNet()))) {
+            state = module.createExecutionState();
+            moduleStates.put(module, state);
+        }
+        return state;
+    }
+
+    @Override
+    public void clearModuleStates() {
+        if (moduleStates != null) moduleStates.clear();
+    }
+
+    @Override
+    public void reserveExistingIds(final NeuralNet neuralNet) {
+        final int[] next = {0};
+        neuralNet.applyToAllNeurons(neuron -> next[0] = Math.max(next[0], neuron.getId() + 1));
+        lowestFreeID = lastFreeID = next[0];
+    }
 
     @Override
     public double readValue(final NeuralNet neuralNet, final NeuronInterface neuron, final int outputTypePos) {
@@ -116,6 +140,7 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
     @Override
     public void releaseNeuron(NeuralNet neuralNet, NeuronInterface neuron) {
         final int id = neuron.getId();
+        if (moduleStates != null) moduleStates.remove(neuron);
 
         if (this.lowestFreeID > id) {
             // If the neuron ID is less than to the lowest free ID, we can update it

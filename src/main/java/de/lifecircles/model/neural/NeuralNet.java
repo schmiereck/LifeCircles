@@ -13,7 +13,7 @@ import static de.lifecircles.model.neural.NeuralNetwork.DEFAULT_MUTATION_RATE;
 
 public class NeuralNet implements Serializable {
     private static final long serialVersionUID = -1847201268253122334L;
-    private transient Map<NeuronTypeInfoData, NeuronTypeInfoData> copiedTypes = new IdentityHashMap<>();
+    private transient CopyContext copyContext;
     private Neuron[] inputNeuronArr;
     private Layer[] hiddenLayerArr; // Array statt List
     private Neuron[] outputNeuronArr;
@@ -47,7 +47,16 @@ public class NeuralNet implements Serializable {
      */
     public NeuralNet(final NeuralNet original, final boolean makeCopy,
                      final NeuronValueFunctionFactory neuronValueFunctionFactory, final NeuronValueFunction neuronValueFunction) {
+        this(original, makeCopy, neuronValueFunctionFactory, neuronValueFunction, new CopyContext(neuronValueFunctionFactory));
+    }
+
+    private NeuralNet(final NeuralNet original, final boolean makeCopy,
+                      final NeuronValueFunctionFactory neuronValueFunctionFactory, final NeuronValueFunction neuronValueFunction,
+                      final CopyContext context) {
+        this.copyContext = context;
         if (makeCopy) {
+            context.networks.put(original, this);
+            context.visiting.add(original);
             this.inputNeuronArr = new Neuron[original.inputNeuronArr.length];
             this.outputNeuronArr = new Neuron[original.outputNeuronArr.length];
             // Synapsen-Array initialisieren
@@ -79,7 +88,7 @@ public class NeuralNet implements Serializable {
             for (int hiddenLayerPos = 0; hiddenLayerPos < original.hiddenLayerArr.length; hiddenLayerPos++) {
                 final Layer originalLayer = original.hiddenLayerArr[hiddenLayerPos];
                 final Layer newLayer = new Layer();
-                newLayer.setActiveLayer(originalLayer.isActiveLayer());
+                newLayer.setActiveLayer(hiddenLayerPos >= original.fixedHiddenLayerCount || originalLayer.isActiveLayer());
 
                 for (final NeuronInterface originalNeuron : originalLayer.getNeuronsArr()) {
                     final NeuronInterface newNeuron = originalNeuron.cloneNeuron(this, neuronValueFunction, newLayer.isActiveLayer());
@@ -127,23 +136,59 @@ public class NeuralNet implements Serializable {
             this.fixedHiddenLayerCount = original.fixedHiddenLayerCount;
             this.enableNeuronType = original.enableNeuronType;
 
-            this.hiddenLayerArr = original.hiddenLayerArr;
-
+            // Execution views share genes but own their scheduling flags/counters.
+            this.hiddenLayerArr = new Layer[original.hiddenLayerArr.length];
+            for (int i = 0; i < hiddenLayerArr.length; i++) {
+                this.hiddenLayerArr[i] = Layer.executionView(original.hiddenLayerArr[i],
+                        i >= original.fixedHiddenLayerCount || original.hiddenLayerArr[i].isActiveLayer());
+            }
             this.neuronTypeInfoDataList = original.neuronTypeInfoDataList;
         }
-        this.copiedTypes = null; // Do not retain references to the parent genotype.
+        context.visiting.remove(original);
+        this.copyContext = null; // Never retain the parent's graph after copying.
+    }
+
+    private static final class CopyContext {
+        final NeuronValueFunctionFactory factory;
+        final Map<NeuronTypeInfoData, NeuronTypeInfoData> types = new IdentityHashMap<>();
+        final Map<NeuralNet, NeuralNet> networks = new IdentityHashMap<>();
+        final Set<NeuralNet> visiting = Collections.newSetFromMap(new IdentityHashMap<>());
+        CopyContext(NeuronValueFunctionFactory factory) { this.factory = factory; }
+
+        NeuronTypeInfoData copyType(NeuronTypeInfoData original) {
+            NeuronTypeInfoData copy = types.get(original);
+            if (copy == null) {
+                NeuralNet inner = original.getNeuralNet();
+                NeuralNet copiedInner = null;
+                if (inner != null) {
+                    if (visiting.contains(inner)) throw new IllegalArgumentException("Recursive neuron types cannot be executed");
+                    copiedInner = networks.get(inner);
+                    if (copiedInner == null) copiedInner = new NeuralNet(inner, true, factory, factory.create(), this);
+                }
+                copy = new NeuronTypeInfoData(original.getInputCount(), original.getOutputCount(), copiedInner);
+                types.put(original, copy);
+            }
+            return copy;
+        }
     }
 
     NeuronTypeInfoData copyNeuronType(NeuronTypeInfoData original, NeuronValueFunctionFactory factory) {
-        if (copiedTypes == null) copiedTypes = new IdentityHashMap<>();
-        NeuronTypeInfoData copy = copiedTypes.get(original);
-        if (copy == null) {
-            NeuralNet inner = original.getNeuralNet();
-            copy = new NeuronTypeInfoData(original.getInputCount(), original.getOutputCount(),
-                    inner == null ? null : new NeuralNet(inner, true, factory, factory.create()));
-            copiedTypes.put(original, copy);
+        return (copyContext == null ? new CopyContext(factory) : copyContext).copyType(original);
+    }
+
+    NeuronTypeInfoData copyScalarType(NeuronTypeInfoData original) {
+        if (original.getNeuralNet() != null) throw new IllegalArgumentException("Scalar type has an inner network");
+        return copyContext == null ? new NeuronTypeInfoData(original.getInputCount(), original.getOutputCount(), null)
+                : copyContext.copyType(original);
+    }
+
+    boolean hasSameTopology(NeuralNet genotype) {
+        if (inputNeuronArr != genotype.inputNeuronArr || outputNeuronArr != genotype.outputNeuronArr
+                || synapseArray != genotype.synapseArray || hiddenLayerArr.length != genotype.hiddenLayerArr.length) return false;
+        for (int i = 0; i < hiddenLayerArr.length; i++) {
+            if (hiddenLayerArr[i].getNeuronsArr() != genotype.hiddenLayerArr[i].getNeuronsArr()) return false;
         }
-        return copy;
+        return true;
     }
 
     /**
@@ -849,7 +894,7 @@ public class NeuralNet implements Serializable {
         this.updateBiasAndWeights(neuronValueFunction, learningRate);
 
         // 4. Backpropagiere die speziellen Neuronen (NeuronNetwork).
-        this.backpropagateExtra(learningRate);
+        this.backpropagateExtra(neuronValueFunction, learningRate);
 
         return error;
     }
@@ -953,19 +998,19 @@ public class NeuralNet implements Serializable {
     /**
      * 4. Backpropagiere die speziellen Neuronen (NeuronNetwork).
      */
-    void backpropagateExtra(double learningRate) {
+    void backpropagateExtra(NeuronValueFunction neuronValueFunction, double learningRate) {
         for (final Layer layer : this.hiddenLayerArr) {
             if (!layer.isActiveLayer() && !disableLayerDeactivation) continue; // Überspringe inaktive Layer
 
             final NeuronInterface[] neurons = layer.getNeuronsArr();
             for (final NeuronInterface neuron : neurons) {
-                neuron.backpropagateExtra(learningRate);
+                neuron.backpropagateExtra(this, neuronValueFunction, learningRate);
             }
         }
 
         // Output Neuronen
         for (final Neuron neuron : this.outputNeuronArr) {
-            neuron.backpropagateExtra(learningRate);
+            neuron.backpropagateExtra(this, neuronValueFunction, learningRate);
         }
     }
 
@@ -1071,6 +1116,7 @@ public class NeuralNet implements Serializable {
     }
 
     public void rnnClearPreviousState(final NeuronValueFunction neuronValueFunction) {
+        neuronValueFunction.clearModuleStates();
         // Setze alle Neuronen in den Hidden-Layern zurück
         for (final Layer layer : this.hiddenLayerArr) {
             for (final NeuronInterface neuron : layer.getNeuronsArr()) {

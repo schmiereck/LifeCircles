@@ -20,6 +20,14 @@ public class Layer implements Serializable {
         this.isActiveLayer = true; // Default to active
     }
 
+    /** Shares the neuron definitions, but starts with its own scheduling state. */
+    static Layer executionView(Layer original, boolean active) {
+        Layer view = new Layer();
+        view.neuronArr = original.neuronArr;
+        view.isActiveLayer = active;
+        return view;
+    }
+
     /**
      * Gibt die Neuronen als Array zurück (Performance-Variante).
      * Gibt das interne Array zurück.

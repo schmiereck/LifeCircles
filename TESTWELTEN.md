@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 57 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 69 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 ## Physikwelten
@@ -74,6 +74,33 @@ Modulausgang durch das Lernen am anderen Ausgang unveraendert bleibt.
 
 Die drei vorhandenen `BackpropagateTest`-Versuche fuer XOR, AND und Bitzaehlung
 sind ebenfalls Teil des gezielten Regressionslaufs.
+
+## Verschachtelte Vererbung und Instanzzustand
+
+Quelle: `src/test/java/de/lifecircles/model/neural/NestedInheritanceTest.java`.
+
+Zwoelf Tests pruefen die Trennung bis zu drei Verschachtelungsebenen:
+
+- Eltern, Kinder und Geschwister teilen keine veraenderbaren Genotypobjekte,
+  einschliesslich Typmetadaten, Neuronen, Layern und Synapsen.
+- Eine mehrfach verwendete Typdefinition wird im gesamten Kindgraphen genau einmal
+  kopiert, auch wenn sie auf verschiedenen Ebenen vorkommt.
+- Jede Ausfuehrungsinstanz hat eigene Werte, Eingangsgradienten und Layer-Zaehler.
+  Gemeinsame Typdefinitionen koppeln damit nicht das Gedaechtnis ihrer Instanzen.
+- Tiefe Mutation und Lernen am Kind lassen Eltern und Geschwister unveraendert.
+  Auch aggressive Mutation verwendet ausschliesslich den Wertespeicher des Kindes.
+- Numerische Gradienten pruefen Lernen bei mehrfach verwendeten verschachtelten Typen.
+- Acht Kindnetze lernen parallel genauso wie acht getrennt ausgefuehrte Vergleichsnetze.
+- Strukturaenderungen eines Kindtyps erneuern dessen Ausfuehrungsansicht. Das Loeschen
+  des Gedaechtnisses setzt auch die verschachtelten Instanzen zurueck.
+- Speichern und Laden erhaelt die getrennten Instanzen; die Netze koennen identisch weiterlernen.
+
+Genetische Kopien starten mit frischen Aktivierungen und dynamischen Layer-Zaehlern;
+Zellzustand-Layer behalten ihre Aktivierung bis zur expliziten Festlegung des Kindzustands.
+Ausfuehrungsansichten (`makeCopy=false` bzw. Bindung an ein vorhandenes `NeuralNet`)
+teilen bewusst die Gene, besitzen aber getrennte Laufzeitzustaende. Die Standardkopie
+und `mutate()` kopieren dagegen den gesamten Genotyp. Rekursive Typzyklen werden beim
+Kopieren mit einer klaren Fehlermeldung abgelehnt, da sie nicht endlich ausfuehrbar sind.
 
 ## Veraenderte Modellregeln
 
