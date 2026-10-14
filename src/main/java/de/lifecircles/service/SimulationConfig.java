@@ -61,8 +61,8 @@ public class SimulationConfig {
     // Training mode configuration
     private TrainMode trainMode = TrainMode.NONE;
 
+    // Used by explicit initialization/reset, never a population floor during simulation.
     private int initialCellCount = 30;
-    public static final double REPOPULATION_THRESHOLD_PERCENT = 0.25;
 
     //-------------------------------------------------------------------------
     // Sun:

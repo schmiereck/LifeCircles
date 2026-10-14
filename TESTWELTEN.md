@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 201 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 214 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 ## Physikwelten
@@ -232,6 +232,36 @@ direkt am Anfang von `EnergySunCalcService.calculateSunEnergy()`, damit auch dir
 Aufrufer keinen alten Kontakt behalten. Alle Zellflags werden zuerst geloescht und
 nur bei einem tatsaechlichen Treffer erneut gesetzt. Ein weiterer Test prueft im
 vollstaendigen Weltupdate, dass das Gehirn schon im selben Schritt null erhaelt.
+
+## Population ohne automatische Energiesubvention
+
+Quelle: `src/test/java/de/lifecircles/service/PopulationEnergyTest.java`.
+
+13 Tests pruefen kleine Populationen mit `initialCellCount = 20` und ausgeschaltetem
+Sonnenlicht, also deutlich unterhalb der frueheren Wiederbesiedlungsschwelle.
+Die automatische Wiederbesiedlung ist entfernt: keine Auffuellung von Kindenergie
+auf 1.0, keine erzwungenen Teilungen unter Umgehung von Alter/Energieschwelle und
+kein Neustart aus der zuletzt gestorbenen Zelle oder aus zufaellig erzeugten Zellen.
+`initialCellCount` steuert nur die explizite Initialisierung bzw. den Reset.
+
+Die Population waechst ausschliesslich durch regulaere Teilung lebender Zellen.
+Das Kind erhaelt den gewaehlten Anteil der verfuegbaren Elternenergie; die Summe
+bleibt gleich. Getestet sind Anteile 0.1, 0.25 und 0.5 sowie die Energiebilanz nach
+Stoffwechselkosten. Wiederholte Teilung mit Anteil 0.1 reduziert einen Elternteil
+mit Energie 0.8 nach sieben Geburten unter die Schwelle 0.4; die Gesamtenergie
+bleibt 0.8 und es wird nicht weiter auf die konfigurierte Anfangszahl aufgefuellt.
+
+Zu junge, erschoepfte oder nicht teilungswillige Zellen werden nicht zur Teilung
+gezwungen. Ein blockierter Geburtsort entzieht keine Energie. Die Todespruefung
+liegt vor der Teilung: Zellen am Hoechstalter koennen keine letzten Kinder mehr
+erzeugen. Ausgestorbene und anfangs leere Welten bleiben leer, auch ueber weitere
+Updates. Ein Neustart erfolgt bewusst ueber die bestehende Reset-/Initialisierungsfunktion.
+
+Das selektierende Training ist weiterhin ein explizites Experiment mit vorgegebenen
+Startbedingungen: Gewinner und Trainingsnachkommen erhalten dort volle Startenergie.
+Die vorhandenen Trainingsregressionen pruefen diese Regel weiterhin getrennt von der
+Energiebilanz der biologischen Welt. Fuer die entfernte automatische Wiederbesiedlung
+gibt es keine Kompatibilitaetsoption und keine Teilungsbelohnung.
 
 ## Vererbungspruefungen
 

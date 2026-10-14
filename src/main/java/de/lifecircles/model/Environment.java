@@ -14,7 +14,6 @@ import java.util.*;
 public class Environment {
     public static double GroundBlockerHeight = 50.0D;
 
-    private static final Random random = new Random();
     private final SimulationConfig config;
     private final EnergySunCalcService energySunCalcService;
     private final List<SunRay> sunRayList;
@@ -22,7 +21,6 @@ public class Environment {
     private double height;
     private final List<Cell> cellList;
     private final List<Blocker> blockerList;
-    private Cell lastDeadCell;
 
     // Singleton-Instanz für einfachen Zugriff
     private static Environment instance;
@@ -176,7 +174,13 @@ public class Environment {
             // Update position, rotation, and neural network
             //cell.updateWithNeighbors(deltaTime, nearbyTypes);
 
-            // Handle reproduction.
+            // Dead cells cannot reproduce or serve as an automatic restart seed.
+            if ((cell.getAge() >= this.config.getCellDeathAge()) || (cell.getEnergy() <= 0.0D)) {
+                iterator.remove();
+                continue;
+            }
+
+            // Living cells reproduce using only their available energy.
             if (ReproductionManagerService.canReproduce(this.config, cell)) {
                 final Cell childCell = ReproductionManagerService.reproduce(this.config, this, cell);
                 if (Objects.nonNull(childCell)) {
@@ -184,69 +188,13 @@ public class Environment {
                 }
             }
 
-            // Remove cell after configured age.
-            if ((cell.getAge() >= this.config.getCellDeathAge()) || (cell.getEnergy() <= 0.0D)) {
-                this.lastDeadCell = cell;
-                iterator.remove();
-            }
         }
 
-        // Add new cells from reproduction (skip in HIGH_ENERGY mode)
+        // Population growth comes only from regular, energy-sharing reproduction.
         this.cellList.addAll(newCells);
-
-        // Repopulation (skip in HIGH_ENERGY mode)
-        //if (config.getTrainMode() == TrainMode.NONE) {
-        this.calcRepopulationIfNeeded();
-        //}
 
         // Update statistics
         StatisticsManagerService.getInstance().update(this.cellList);
-    }
-
-    /**
-     * Repopulation: when only REPOPULATION_THRESHOLD_PERCENT of initial cells remain, generate mutated offspring and split energy
-     */
-    private void calcRepopulationIfNeeded() {
-        int currentCount = this.cellList.size();
-        int initialCount = this.config.getInitialCellCount();
-        // If all cells are dead, repopulate with random initial cells
-        if (currentCount == 0) {
-            if (this.lastDeadCell != null) {
-                // Repopulate by mutating the last dead cell
-                for (int i = 0; i < initialCount; i++) {
-                    final Cell childCell = ReproductionManagerService.reproduce(this.config, this, this.lastDeadCell);
-                    if (Objects.nonNull(childCell)) {
-                        childCell.setEnergy(1.0D);
-                        childCell.setMutationRateFactor(this.lastDeadCell.getMutationRateFactor());
-                        childCell.setMutationStrengthFactor(this.lastDeadCell.getMutationStrengthFactor());
-                        cellList.add(childCell);
-                    }
-                }
-            } else {
-                for (int i = 0; i < initialCount; i++) {
-                    Vector2D pos = new Vector2D(this.random.nextDouble() * this.width, random.nextDouble() * this.height);
-                    Cell newCell = CellFactory.createCell(pos, this.config.getCellMaxRadiusSize() / 2.0D);
-                    cellList.add(newCell);
-                }
-            }
-        } else {
-            int thresholdCount = (int) Math.ceil(initialCount * SimulationConfig.REPOPULATION_THRESHOLD_PERCENT);
-            if (currentCount < thresholdCount) {
-                int toSpawn = initialCount - currentCount;
-                for (int i = 0; i < toSpawn; i++) {
-                    Cell parentCell = this.cellList.get(random.nextInt(this.cellList.size()));
-                    if (Objects.nonNull(parentCell)) {
-                        Cell childCell = ReproductionManagerService.reproduce(this.config, this, parentCell);
-                        if (Objects.nonNull(childCell)) {
-                            childCell.setEnergy(1.0D);
-                            childCell.setMutationRateFactor(parentCell.getMutationRateFactor());
-                            childCell.setMutationStrengthFactor(parentCell.getMutationStrengthFactor());
-                            this.cellList.add(childCell);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private void wrapPosition(Cell cell) {
