@@ -68,6 +68,11 @@ public class SensorActor implements SensableActor, Serializable {
         return new Vector2D(x, y);
     }
 
+    /** Vertical component of this actor's rotated unit direction, without position/cache rounding. */
+    public double getRotatedUnitY(double cosRotation, double sinRotation) {
+        return cosAngleOnCell * sinRotation + sinAngleOnCell * cosRotation;
+    }
+
     public CellType getType() {
         return type;
     }

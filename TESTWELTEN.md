@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 172 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 196 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 ## Physikwelten
@@ -192,6 +192,30 @@ der zuletzt erfasste Snapshot sichtbar; Live-Detailzugriffe werden unterdrueckt.
 Dies setzt den Simulationszustand selbst nicht zurueck und ist keine Fehlerbehebung
 fuer die Ursache des abgebrochenen Schritts. JavaFX-Zeichenoperationen werden durch
 diese Headless-Tests nicht visuell geprueft.
+
+## Oberer Sensor
+
+Quelle: `src/test/java/de/lifecircles/service/TopSensorTest.java`.
+
+24 Tests pruefen `getTopSensorIndex()` und das Gehirneingabesignal
+`MY_ACTOR_TOP_POSITION`. Positive Welt-Y-Richtung zeigt nach unten; oben ist daher
+die kleinste vertikale Komponente. Bei Rotation null ist Sensor 9 oben, Sensor 3 unten.
+Die Umkehr von maximalem zu minimalem Y war bereits im ersten Physik-Fix enthalten.
+Die Auswahl wird jetzt zusaetzlich von Positions-Caches unabhaengig gemacht:
+Sie verwendet die rotierte Einheitsrichtung des jeweiligen Sensors.
+
+Geprueft werden frische Zellen ohne Cache, alle zwoelf Ausrichtungen mit veralteten
+und absichtlich falschen Caches, Neugeborene und grosse Zellen sowie Positionen an
+beiden Seiten des periodischen Randes und bei sehr grossen Koordinaten. Auch negative
+Rotationen und mehrere volle Umdrehungen liefern dieselbe obere Richtung. Es wird
+genau ein Gehirneingang markiert. Die Auswahl schreibt keine Aktor-Caches.
+
+Bei gleicher Hoehe gewinnt der kleinere Index; Differenzen bis `1e-14` in der
+vertikalen Einheitskomponente werden als numerischer Gleichstand behandelt.
+Beide Seiten der Umschaltgrenze zwischen zwei Sensoren sind separat geprueft.
+Vor der Korrektur scheiterten 22 der 24 neuen Pruefungen. Netze, die das bisherige
+falsche Signal bei fehlenden oder veralteten Caches ausgenutzt haben, erhalten jetzt
+die tatsaechliche obere Orientierung; eine Kompatibilitaetsumschaltung gibt es nicht.
 
 ## Vererbungspruefungen
 

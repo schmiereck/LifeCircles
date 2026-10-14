@@ -353,23 +353,24 @@ public class Cell implements SensableCell, Serializable {
     }
 
     /**
-     * Returns the index of the sensor that is currently at the top position.
+     * Returns the sensor pointing furthest upward (negative world Y).
+     * Uses current orientation, independently of cached or wrapped positions.
+     * Numerically equal directions select the lowest index.
      * @return Index of the topmost sensor (0-11)
      */
     public int getTopSensorIndex() {
         double minY = Double.POSITIVE_INFINITY;
-        int topSensorIndex = 0; // Default to first sensor if positions aren't calculated yet
+        int topSensorIndex = 0;
+        double cosRotation = Math.cos(rotation);
+        double sinRotation = Math.sin(rotation);
 
         for (int i = 0; i < this.sensorActors.size(); i++) {
             SensorActor sensor = this.sensorActors.get(i);
-            Vector2D cachedPosition = sensor.getCachedPosition();
-
-            if (cachedPosition != null) {
-                double sensorY = cachedPosition.getY();
-                if (sensorY < minY) {
-                    minY = sensorY;
-                    topSensorIndex = i;
-                }
+            double sensorY = sensor.getRotatedUnitY(cosRotation, sinRotation);
+            // Roundoff at a geometric tie must not randomly favor the later sensor.
+            if (sensorY < minY - 1e-14) {
+                minY = sensorY;
+                topSensorIndex = i;
             }
         }
 
