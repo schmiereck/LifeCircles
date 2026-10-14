@@ -17,8 +17,11 @@ public class CalculationService implements Runnable {
     private final Environment environment;
     private final AtomicBoolean running;
     private final AtomicBoolean paused;
-    private volatile SimulationStateDto latestState;
-    private final Object stateLock = new Object();
+    private SimulationStateDto latestState;
+    private final Object simulationLock = new Object();
+    private long stateVersion;
+    private long snapshotVersion = -1;
+    private boolean stateReadable = true;
     private final SimulationConfig config;
     private final TrainStrategy trainStrategy;
     private int updateFpsCount = 0;
@@ -54,14 +57,35 @@ public class CalculationService implements Runnable {
     }
 
     public void resetSimulation() {
-        this.environment.resetCells();
-        this.trainStrategy.initialize(environment);
-        this.updateState();
+        synchronized (simulationLock) {
+            stateReadable = false;
+            this.environment.resetCells();
+            this.trainStrategy.initialize(environment);
+            stateVersion++;
+            stateReadable = true;
+            this.updateState();
+        }
     }
 
     public void initializeSimulation() {
-        this.trainStrategy.initialize(this.environment);
-        this.updateState();
+        synchronized (simulationLock) {
+            stateReadable = false;
+            this.trainStrategy.initialize(this.environment);
+            stateVersion++;
+            stateReadable = true;
+            this.updateState();
+        }
+    }
+
+    // Deterministic headless worlds use the same update/snapshot path as the application.
+    CalculationService(Environment environment, TrainStrategy strategy, PartitioningStrategy partitioner) {
+        this.environment = environment;
+        this.trainStrategy = strategy;
+        this.partitioner = partitioner;
+        this.config = SimulationConfig.getInstance();
+        this.running = new AtomicBoolean(false);
+        this.paused = new AtomicBoolean(false);
+        this.initializeSimulation();
     }
 
     @Override
@@ -81,7 +105,6 @@ public class CalculationService implements Runnable {
 
                     // FPS tracking
                     this.updateFpsCount++;
-                    this.stepCount.incrementAndGet();
                     long nowFps = System.nanoTime();
                     if (nowFps - this.lastFpsTime >= 1_000_000_000L) {
                         this.fps = this.updateFpsCount / ((nowFps - this.lastFpsTime) / 1_000_000_000.0D);
@@ -103,19 +126,26 @@ public class CalculationService implements Runnable {
         }
     }
 
-    private void update(final double deltaTime) {
-        final List<Cell> cellList = this.environment.getCellList();
+    void update(final double deltaTime) {
+        synchronized (simulationLock) {
+            stateReadable = false;
+            final List<Cell> cellList = this.environment.getCellList();
 
-        // Update all cells with their neighborhood information
-        this.partitioner.build(cellList);
+            // Update all cells with their neighborhood information
+            this.partitioner.build(cellList);
 
-        // Update environment physics
-        this.environment.update(deltaTime, this.partitioner);
+            // Update environment physics
+            this.environment.update(deltaTime, this.partitioner);
 
-        // Strategy-based selection/mutation
-        this.trainStrategy.selectAndMutate(this.environment);
+            // Strategy-based selection/mutation
+            this.trainStrategy.selectAndMutate(this.environment);
+            this.stepCount.incrementAndGet();
+            stateVersion++;
+            stateReadable = true;
+        }
     }
 
+    /** Caller holds simulationLock across the complete capture, not just publication. */
     private void updateState() {
         final List<SimulationStateDto.CellStateDto> cellStates = new ArrayList<>();
 
@@ -146,15 +176,14 @@ public class CalculationService implements Runnable {
             }
         }
 
-        synchronized (this.stateLock) {
-            this.latestState = new SimulationStateDto(
+        this.latestState = new SimulationStateDto(
                 cellStates,
                 this.environment.getBlockerList(),
                 this.environment.getSunRayList(),
                 this.environment.getWidth(),
                 this.environment.getHeight()
             );
-        }
+        snapshotVersion = stateVersion;
     }
     /**
      * Findet eine Zelle an der angegebenen Position in der Simulation.
@@ -163,24 +192,30 @@ public class CalculationService implements Runnable {
      * @return Die gefundene Zelle oder null, wenn keine Zelle an der Position ist
      */
     public Cell findCellAt(double worldX, double worldY) {
-        // Zugriff auf das Environment und die Zellen
-        if (environment == null) return null;
-
-        // Durchsuche die Zellen und finde die, die an der Klickposition ist
-        for (Cell cell : environment.getCellList()) {
-            double distance = new Vector2D(worldX, worldY).distance(cell.getPosition());
-            if (distance <= cell.getRadiusSize()) {
-                return cell; // Zelle gefunden
+        synchronized (simulationLock) {
+            if (!stateReadable) return null;
+            for (Cell cell : environment.getCellList()) {
+                double distance = new Vector2D(worldX, worldY).getShortestDirectionWithWrapAround(
+                        cell.getPosition(), environment.getWidth(), environment.getHeight()).length();
+                if (distance <= cell.getRadiusSize()) {
+                    return cell;
+                }
             }
+            return null;
         }
-
-        return null; // Keine Zelle gefunden
     }
 
     public SimulationStateDto getLatestState() {
-        synchronized (this.stateLock) {
-            this.updateState();
-           return this.latestState;
+        synchronized (this.simulationLock) {
+            if (stateReadable && snapshotVersion != stateVersion) this.updateState();
+            return this.latestState;
+        }
+    }
+
+    /** Reads live detail/network data between complete simulation steps. Do not mutate it. */
+    public void readSimulationState(Runnable reader) {
+        synchronized (simulationLock) {
+            if (stateReadable) reader.run();
         }
     }
 

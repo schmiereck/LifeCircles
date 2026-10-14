@@ -4,14 +4,14 @@ import de.lifecircles.model.Blocker;
 import de.lifecircles.model.SunRay;
 import de.lifecircles.model.Vector2D;
 import javafx.scene.paint.Color;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Thread-safe Data Transfer Object for simulation state.
+ * Detached, immutable values for one complete simulation state.
+ * Capture must be protected from concurrent writes to the source model.
  * Used to transfer state between calculation and visualization threads.
  */
 public class SimulationStateDto {
@@ -22,7 +22,7 @@ public class SimulationStateDto {
     private final double height;
 
     public SimulationStateDto(List<CellStateDto> cells, List<Blocker> blockers, List<SunRay> sunRays, double width, double height) {
-        this.cells = new ArrayList<>(cells);
+        this.cells = List.copyOf(cells);
         this.blockers = blockers.stream()
             .map(BlockerStateDto::new)
             .collect(Collectors.toList());
@@ -64,11 +64,11 @@ public class SimulationStateDto {
         public CellStateDto(Vector2D position, double rotation, double radiusSize,
                             double[] typeRGB, List<ActorStateDto> actors, double energy, double age, int cellState) {
 
-            this.position = position;
+            this.position = new Vector2D(position.getX(), position.getY());
             this.rotation = rotation;
             this.radiusSize = radiusSize;
             this.typeRGB = typeRGB.clone();
-            this.actors = new ArrayList<>(actors);
+            this.actors = List.copyOf(actors);
             this.energy = energy;
             this.age = age;
             this.cellState = cellState; // Setze Zell-Zustand
@@ -87,7 +87,7 @@ public class SimulationStateDto {
         }
 
         public double[] getTypeRGB() {
-            return typeRGB;
+            return typeRGB.clone();
         }
 
         public List<ActorStateDto> getActors() {
@@ -113,7 +113,7 @@ public class SimulationStateDto {
         private final double forceStrength;
 
         public ActorStateDto(Vector2D position, double[] typeRGB, double forceStrength) {
-            this.position = position;
+            this.position = new Vector2D(position.getX(), position.getY());
             this.typeRGB = typeRGB.clone();
             this.forceStrength = forceStrength;
         }
@@ -123,7 +123,7 @@ public class SimulationStateDto {
         }
 
         public double[] getTypeRGB() {
-            return typeRGB;
+            return typeRGB.clone();
         }
 
         public double getForceStrength() {

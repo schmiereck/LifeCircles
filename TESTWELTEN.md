@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 163 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 172 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 ## Physikwelten
@@ -155,6 +155,43 @@ Die Sonne bleibt die bestehende externe Lichtquelle mit Strahlen von oben im end
 Darstellungsfenster. Diese Tests pruefen die periodische Zell- und Kontaktphysik;
 sie definieren kein umlaufendes periodisches Strahlenmodell. Die diskrete
 Hindernisprojektion verhindert weiterhin kein Durchtunneln bei sehr grossen Schritten.
+
+## Konsistente Darstellungszustaende
+
+Quelle: `src/test/java/de/lifecircles/service/SimulationSnapshotTest.java`.
+
+Neun Tests pruefen die Uebergabe zwischen Simulation und Darstellung ohne JavaFX-Fenster.
+Der gleiche Lock schuetzt jetzt den gesamten Physik-/Trainingsschritt, Initialisierung,
+Reset und die vollstaendige Snapshot-Erfassung. Zuvor wurde nur die fertige DTO-Zuweisung
+geschuetzt; die Kopie der Zellliste enthielt weiterhin parallel veraenderte Zellen.
+
+Ein Snapshot wird bei Bedarf nach dem letzten abgeschlossenen Schritt erstellt.
+Wiederholte Abfragen ohne Zustandsaenderung liefern dasselbe Objekt. Die Hauptansicht
+zeichnet anschliessend ausserhalb des Locks aus vollstaendig abgetrennten DTOs.
+Positionen und Farbarrays werden bei Uebernahme kopiert; Getter geben ebenfalls
+Kopien zurueck. Listen sind von den Quelldaten getrennt und nicht veraenderbar.
+Blocker- und Strahlendaten enthalten nur feste Werte. Alte Snapshots bleiben auch
+nach weiteren Schritten oder Reset unveraendert.
+
+Die Detailansicht liest das lebende Zell-/Neuronennetz unter demselben Lock.
+Sie berechnet Aktorpositionen lokal und schreibt nicht mehr in Simulations-Caches.
+Klicksuche verwendet ebenfalls den Lock und beruecksichtigt periodische Zellabbilder.
+Snapshot-Erfassung und Detailzeichnung koennen einen Simulationsschritt kurzzeitig
+aufhalten; es wird dafuer kein komplettes Neuronennetz je Weltframe kopiert.
+
+Nebenlaeufigkeitstests verwenden Latches, um den Schreiber gezielt mitten im
+Trainingswechsel anzuhalten. Snapshot und Reset muessen auf dessen Abschluss warten;
+umgekehrt darf ein Schritt nicht waehrend eines geschuetzten Detailzugriffs beginnen.
+Ein paralleler Lauf mit 300 Updates und 500 Snapshot-Abfragen prueft gleiche Zellalter
+sowie die zu Radius und Rotation passenden Aktorpositionen. Weitere Tests manipulieren
+Quellvektoren, Quelllisten und zurueckgegebene Farbarrays, ohne den Snapshot zu veraendern.
+
+Ein absichtlich fehlschlagender Schritt darf keinen teilweise veraenderten Zustand
+als neue Ansicht liefern: Bis zum naechsten erfolgreichen Schritt oder Reset bleibt
+der zuletzt erfasste Snapshot sichtbar; Live-Detailzugriffe werden unterdrueckt.
+Dies setzt den Simulationszustand selbst nicht zurueck und ist keine Fehlerbehebung
+fuer die Ursache des abgebrochenen Schritts. JavaFX-Zeichenoperationen werden durch
+diese Headless-Tests nicht visuell geprueft.
 
 ## Vererbungspruefungen
 

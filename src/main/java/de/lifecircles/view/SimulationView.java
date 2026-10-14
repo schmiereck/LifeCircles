@@ -153,7 +153,7 @@ public class SimulationView extends Pane {
         if (selectedCell != null) {
             // Zelle gefunden, öffne Detailansicht
             if (cellDetailView == null || !cellDetailView.isShowing()) {
-                cellDetailView = new CellDetailView();
+                cellDetailView = new CellDetailView(calculationService);
             }
             cellDetailView.showCell(selectedCell);
         }

@@ -4,6 +4,7 @@ import de.lifecircles.model.Cell;
 import de.lifecircles.model.SensorActor;
 import de.lifecircles.model.Vector2D;
 import de.lifecircles.model.neural.*;
+import de.lifecircles.service.CalculationService;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -27,6 +28,7 @@ import java.util.Map;
  * Ein Fenster, das detaillierte Informationen zu einer ausgewählten Zelle anzeigt.
  */
 public class CellDetailView extends Stage {
+    private final CalculationService calculationService;
 
     private Cell currentCell;
     private final Canvas brainCanvas;
@@ -50,7 +52,8 @@ public class CellDetailView extends Stage {
     private long lastBrainUpdate = 0;
     private static final long BRAIN_UPDATE_INTERVAL = 1_000_000_000; // 1 Sekunde in Nanosekunden
 
-    public CellDetailView() {
+    public CellDetailView(CalculationService calculationService) {
+        this.calculationService = calculationService;
         setTitle("Zelldetails");
 
         // Haupt-Layout erstellen
@@ -291,6 +294,10 @@ public class CellDetailView extends Stage {
      * Aktualisiert die Zellinformationen ohne das Netzwerk neu zu zeichnen
      */
     private void updateCellInfo() {
+        calculationService.readSimulationState(this::updateCellInfoFromState);
+    }
+
+    private void updateCellInfoFromState() {
         if (currentCell == null) return;
 
         // Zelleigenschaften aktualisieren
@@ -325,6 +332,10 @@ public class CellDetailView extends Stage {
      * Visualisiert das neuronale Netzwerk der Zelle
      */
     private void renderBrain() {
+        calculationService.readSimulationState(this::renderBrainFromState);
+    }
+
+    private void renderBrainFromState() {
         if (currentCell == null) return;
 
         GraphicsContext gc = brainCanvas.getGraphicsContext2D();
@@ -646,6 +657,10 @@ public class CellDetailView extends Stage {
      * Visualisiert die Zelle mit allen SensorActors und ihren Feldern
      */
     private void renderCell() {
+        calculationService.readSimulationState(this::renderCellFromState);
+    }
+
+    private void renderCellFromState() {
         if (currentCell == null) return;
 
         GraphicsContext gc = cellCanvas.getGraphicsContext2D();
@@ -709,8 +724,7 @@ public class CellDetailView extends Stage {
         // Zeichne zuerst alle Kraftfelder
         for (SensorActor actor : sensorActors) {
             // SensorActor Position berechnen
-            actor.updateCachedPosition(); // Stelle sicher, dass die Position aktuell ist
-            Vector2D actorPos = actor.getCachedPosition();
+            Vector2D actorPos = actor.calcPosition();
 
             if (actorPos != null) {
                 // Umrechnen in das Canvas-Koordinatensystem (relativ zum Mittelpunkt)
@@ -752,7 +766,7 @@ public class CellDetailView extends Stage {
 
         // Zeichne dann die SensorActors
         for (SensorActor actor : sensorActors) {
-            Vector2D actorPos = actor.getCachedPosition();
+            Vector2D actorPos = actor.calcPosition();
 
             if (actorPos != null) {
                 // Umrechnen in das Canvas-Koordinatensystem (relativ zum Mittelpunkt)
@@ -819,8 +833,7 @@ public class CellDetailView extends Stage {
                 // Verbindung zu erkanntem Aktor zeichnen
                 if (actor.getSensedActor() != null && actor.getSensedActor() instanceof SensorActor) {
                     SensorActor sensedActor = (SensorActor) actor.getSensedActor();
-                    sensedActor.updateCachedPosition();
-                    Vector2D sensedActorPos = sensedActor.getCachedPosition();
+                    Vector2D sensedActorPos = sensedActor.calcPosition();
 
                     if (sensedActorPos != null) {
                         // Verbindungslinie zeichnen
@@ -938,8 +951,7 @@ public class CellDetailView extends Stage {
         // SensorActors der Nachbarzelle zeichnen
         List<SensorActor> neighborActors = neighborCell.getSensorActors();
         for (SensorActor actor : neighborActors) {
-            actor.updateCachedPosition();
-            Vector2D actorPos = actor.getCachedPosition();
+            Vector2D actorPos = actor.calcPosition();
 
             if (actorPos != null) {
                 // Position relativ zur aktuellen Zelle
