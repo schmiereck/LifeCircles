@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 32 Tests. Die langen Lernexperimente der anderen Testklassen
+Die Auswahl umfasst 44 Tests. Die langen Lernexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 ## Physikwelten
@@ -32,6 +32,12 @@ Quelle: `src/test/java/de/lifecircles/service/PhysicsRegressionTest.java`.
 | Aktor beruehrt Blocker neben einer anderen Zelle | Blockerkontakt behaelt Vorrang vor weiterer Sensorerkennung. |
 | 24 Zellen mit protokollierten Eingaben | Alle Gehirne lesen den gleichen abgeschlossenen Simulationsschritt. |
 | Einzelzelle ohne Sonnenstrahlen | Oberer Sensor hat den kleinsten Y-Wert; Sonnenkontakt gilt nur fuer den aktuellen Schritt. |
+
+`CoincidentCellCentersTest` prueft zusaetzlich alle drei oeffentlichen Abstoßungsvarianten
+(linear, bisherige experimentelle lineare Variante, nichtlinear). Die zwoelf parametrisierten
+Tests decken exakte Ueberlagerung, sehr kleine Abstaende bis `Double.MIN_VALUE`,
+periodisch identische Positionen und fuenf deckungsgleiche Zellen ueber 60 Schritte ab.
+Kraefte muessen endlich, entgegengesetzt und ohne doppelte Paarzaehlung sein.
 
 ## Vererbungspruefungen
 

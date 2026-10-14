@@ -5,93 +5,54 @@ import de.lifecircles.model.Environment;
 import de.lifecircles.model.Vector2D;
 import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
 
-import java.util.List;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 
-/**
- * Service responsible for calculating repulsive forces between cells.
- */
+/** Calculates cell repulsion without writing to neighboring cells. */
 public class RepulsionCellCalcService {
-    /**
-     * Optimized repulsion using partitioning strategy.
-     */
+    private static final double MIN_DIRECTION_DISTANCE = 1e-12;
+
     public static void processRepulsiveForces(final List<Cell> cells, final PartitioningStrategy partitioner) {
+        processRepulsiveForces(cells, partitioner, false);
+    }
+
+    /** Legacy linear entry point; time integration is performed by Cell.updateForce. */
+    public static void processRepulsiveForces_x(final List<Cell> cells, final double deltaTime,
+                                               final PartitioningStrategy partitioner) {
+        processRepulsiveForces(cells, partitioner, false);
+    }
+
+    public static void processRepulsiveForces_nonLin(final List<Cell> cells, final double deltaTime,
+                                                    final PartitioningStrategy partitioner) {
+        processRepulsiveForces(cells, partitioner, true);
+    }
+
+    private static void processRepulsiveForces(final List<Cell> cells, final PartitioningStrategy partitioner,
+                                               final boolean nonLinear) {
         final Environment environment = Environment.getInstance();
         final Map<Cell, Integer> order = new IdentityHashMap<>();
         for (int i = 0; i < cells.size(); i++) order.put(cells.get(i), i);
-        cells.parallelStream().forEach(cell1 -> {
-            final List<Cell> neighbors = partitioner.getNeighbors(cell1);
-            for (final Cell cell2 : neighbors) {
-                if (cell2 != cell1) {
-                    final Vector2D delta = cell1.getPosition().getShortestDirectionWithWrapAround(
-                            cell2.getPosition(), environment.getWidth(), environment.getHeight());
-                    final double distance = delta.length();
-                    final double combinedRadius = cell1.getRadiusSize() + cell2.getRadiusSize();
-                    if (distance < combinedRadius) {
-                        final double overlap = combinedRadius - distance;
-                        final double forceMagnitude = SimulationConfig.getInstance().getCellRepulsionStrength() * overlap;
-                        //final Vector2D direction = delta.divide(distance);
-                        //final Vector2D force = direction.multiply(forceMagnitude);
-                        // Opposite deterministic directions also separate coincident centers.
-                        final Vector2D force1 = distance > 1e-12
-                                ? delta.multiply(-forceMagnitude / distance)
-                                : new Vector2D(order.get(cell1) < order.get(cell2) ? -forceMagnitude : forceMagnitude, 0);
-                        //final Vector2D force2 = delta.multiply(forceMagnitude / distance);
-                        //cell1.applyForce(force1, cell1.getPosition());
-                        cell1.applyForce(force1);
-                        //cell2.applyForce(force2, cell2.getPosition());
-                        //cell2.applyForce(force2);
-                    }
-                }
+        cells.parallelStream().forEach(cell -> {
+            for (Cell other : partitioner.getNeighbors(cell)) {
+                if (other == cell) continue;
+                final Vector2D delta = cell.getPosition().getShortestDirectionWithWrapAround(
+                        other.getPosition(), environment.getWidth(), environment.getHeight());
+                final double distance = Math.hypot(delta.getX(), delta.getY());
+                final double combinedRadius = cell.getRadiusSize() + other.getRadiusSize();
+                if (distance >= combinedRadius) continue;
+                double magnitude = SimulationConfig.getInstance().getCellRepulsionStrength()
+                        * (combinedRadius - distance);
+                if (nonLinear) magnitude *= 0.5 + 3.5 * (1 - distance / combinedRadius);
+
+                // A zero (or numerically negligible) delta has no usable normal.
+                // The stable list order gives the reverse pair the opposite normal,
+                // preserving momentum and actively separating coincident cells.
+                final Vector2D force = distance > MIN_DIRECTION_DISTANCE
+                        ? new Vector2D(-delta.getX() / distance * magnitude, -delta.getY() / distance * magnitude)
+                        : new Vector2D(order.get(cell) < order.get(other) ? -magnitude : magnitude, 0);
+                cell.applyForce(force);
             }
         });
-    }
-
-    public static void processRepulsiveForces_x(final List<Cell> cells, final double deltaTime, final PartitioningStrategy partitioner) {
-        final double epsilon = 1e-6 * 10.0D; // Minimaler Abstand, um Division durch null zu vermeiden
-
-        for (final Cell cell1 : cells) {
-            final List<Cell> neighbors = partitioner.getNeighbors(cell1);
-            for (final Cell cell2 : neighbors) {
-                if (cell2 == cell1) continue;
-                final Vector2D delta = cell2.getPosition().subtract(cell1.getPosition());
-                double distance = delta.length();
-                distance = Math.max(distance, epsilon); // Sicherstellen, dass distance >= epsilon
-                final double combinedRadius = cell1.getRadiusSize() + cell2.getRadiusSize();
-                if (distance < combinedRadius) {
-                    final double overlap = combinedRadius - distance;
-                    final double forceMagnitude = SimulationConfig.getInstance().getCellRepulsionStrength() * overlap;
-                    final Vector2D direction = delta.divide(distance);
-                    final Vector2D force = direction.multiply(forceMagnitude);
-                    cell1.applyForce(force.multiply(-1), cell1.getPosition());
-                    cell2.applyForce(force, cell2.getPosition());
-                }
-            }
-        }
-    }
-    public static void processRepulsiveForces_nonLin(final List<Cell> cells, final double deltaTime, final PartitioningStrategy partitioner) {
-        for (final Cell cell1 : cells) {
-            final List<Cell> neighbors = partitioner.getNeighbors(cell1);
-            for (final Cell cell2 : neighbors) {
-                if (cell2 == cell1) continue;
-                final Vector2D delta = cell2.getPosition().subtract(cell1.getPosition());
-                final double distance = delta.length();
-                final double combinedRadius = cell1.getRadiusSize() + cell2.getRadiusSize();
-                if (distance < combinedRadius) {
-                    final double overlap = combinedRadius - distance;
-                    final double baseForceMagnitude = SimulationConfig.getInstance().getCellRepulsionStrength() * overlap;
-
-                    // Nicht-lineare Skalierung der Kraft
-                    final double scalingFactor = 0.5 + 3.5 * (1 - (distance / combinedRadius));
-                    final double forceMagnitude = baseForceMagnitude * scalingFactor;
-
-                    final Vector2D direction = delta.divide(distance);
-                    final Vector2D force = direction.multiply(forceMagnitude);
-                    cell1.applyForce(force.multiply(-1), cell1.getPosition());
-                    cell2.applyForce(force, cell2.getPosition());
-                }
-            }
-        }
     }
 }
