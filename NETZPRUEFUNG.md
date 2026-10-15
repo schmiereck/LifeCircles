@@ -38,6 +38,14 @@ deterministische Versuche und Codeanalyse; keine langen Evolutions- oder Sprachm
   pro Instanz inklusive Moduleingaengen. 61 gezielte Regressionen erfolgreich.
   Ein alter Vererbungstest wurde auf identische zurueckgesetzte Episoden korrigiert:
   nach Rueckkopplungsmutationen sind zwei aufeinanderfolgende Ausgaben kein Genomvergleich.
+- Entwicklungsversuche konfigurierbar: `divisionMutationRateMultiplier` wirkt nur
+  bei natuerlicher Teilung auf Genom- und Metamutation; 0 erhaelt auch Koerperfarbe
+  und Mutationsfaktoren. Standard 1 bewahrt die bisherige Evolution ohne Trainingsmodus.
+  Training nutzt weiterhin die globale Mutationsrate. Die Einstellung ist im Panel sichtbar.
+  Optionale Eingabeskalierung begrenzt Alter auf [0,1) (60 s -> 0,5) und Kraefte auf
+  [-1,1] mit den getrennten Anziehungs-/Abstossungsgrenzen; Standard ist die bisherige
+  Eingabesemantik. 58 gezielte Regressionen erfolgreich. Das Modell hat weiterhin
+  keine eigenstaendige Organismusgrenze oder organismenbezogene Selektion.
 - Weitere Befunde werden im Anschluss bearbeitet.
 
 ## Bewertung

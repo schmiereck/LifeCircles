@@ -15,6 +15,31 @@ class MutationFactorsTest {
     private double rate, strength;
     private Random previousRandom;
 
+    @Test void clonalDivisionKeepsGenesAndFactorsButTrainingStillMutates() {
+        double original = config.getDivisionMutationRateMultiplier();
+        try {
+            config.setDivisionMutationRateMultiplier(0);
+            RecordingBrain brain = new RecordingBrain(); Cell parent = parent(brain);
+            parent.setMutationRateFactor(.3); parent.setMutationStrengthFactor(1.7);
+            Cell clone = child(parent,false);
+            assertEquals(0,brain.actualRate);
+            assertEquals(.3,clone.getMutationRateFactor()); assertEquals(1.7,clone.getMutationStrengthFactor());
+            assertEquals(parent.getType(),clone.getType());
+            child(parent,true); assertEquals(.03,brain.actualRate,1e-15);
+        } finally { config.setDivisionMutationRateMultiplier(original); }
+    }
+
+    @Test void reducedDivisionMutationMultipliesParentRateOnlyForNaturalBirth() {
+        double original = config.getDivisionMutationRateMultiplier();
+        try {
+            config.setDivisionMutationRateMultiplier(.1);
+            RecordingBrain brain = new RecordingBrain(); Cell parent = parent(brain);
+            parent.setMutationRateFactor(2);
+            child(parent,false); assertEquals(.02,brain.actualRate,1e-15);
+            child(parent,true); assertEquals(.2,brain.actualRate,1e-15);
+        } finally { config.setDivisionMutationRateMultiplier(original); }
+    }
+
     @BeforeEach void configure() {
         rate = config.getMutationRate(); strength = config.getMutationStrength();
         previousRandom = NeuralNetwork.getRandom(); NeuralNetwork.setRandom(new Random(573));

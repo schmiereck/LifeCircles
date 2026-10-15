@@ -85,7 +85,8 @@ public class ReproductionManagerService {
         // The parent's factors control this birth's genetic mutation, for both
         // biological reproduction and training. Changes to the child's own
         // factors below affect its future descendants, not its current genome.
-        double effectiveMutationRate = Math.min(1.0D, config.getMutationRate() * parent.getMutationRateFactor());
+        double divisionRate = config.getMutationRate() * config.getDivisionMutationRateMultiplier();
+        double effectiveMutationRate = Math.min(1.0D, divisionRate * parent.getMutationRateFactor());
         double effectiveMutationStrength = config.getMutationStrength() * parent.getMutationStrengthFactor();
         long mutationStart = environment.getProfiler().start();
         NeuralNetwork network = parent.getBrain().mutate(effectiveMutationRate, effectiveMutationStrength);
@@ -96,8 +97,9 @@ public class ReproductionManagerService {
         child.setAngularVelocity(parent.getAngularVelocity());
         child.setVelocity(new Vector2D(parent.getVelocity().getX(), parent.getVelocity().getY()));
         CellType type = parent.getType();
-        child.setType(new CellType(mutateValue(type.getRed(), typeMutationStrength / 10),
-                mutateValue(type.getGreen(), typeMutationStrength / 10), mutateValue(type.getBlue(), typeMutationStrength / 10)));
+        double colorStrength = typeMutationStrength / 10 * config.getDivisionMutationRateMultiplier();
+        child.setType(new CellType(mutateValue(type.getRed(), colorStrength),
+                mutateValue(type.getGreen(), colorStrength), mutateValue(type.getBlue(), colorStrength)));
         child.setEnergy(energy);
         child.setGeneration(parent.getGeneration() + 1);
         child.setCellState(state);
@@ -107,7 +109,7 @@ public class ReproductionManagerService {
         child.setMutationRateFactor(parent.getMutationRateFactor());
         child.setMutationStrengthFactor(parent.getMutationStrengthFactor());
         // Meta-mutation deliberately uses global settings, avoiding self-amplification.
-        child.mutateMutationFactors(config.getMutationRate(), config.getMutationStrength());
+        child.mutateMutationFactors(divisionRate, config.getMutationStrength());
         return child;
     }
 

@@ -81,6 +81,17 @@ public class ConfigPanel extends VBox {
         grid.addRow(3, desireLabel, desireSlider);
         grid.addRow(4, ageLabel, ageSlider);
 
+        Slider divisionMutation = new Slider(0, 1, simulationConfig.getDivisionMutationRateMultiplier());
+        divisionMutation.setShowTickLabels(true);
+        divisionMutation.valueProperty().addListener((obs, old, value) ->
+                simulationConfig.setDivisionMutationRateMultiplier(value.doubleValue()));
+        grid.addRow(5, new Label("Division mutation (0 = clonal):"), divisionMutation);
+
+        CheckBox normalizedInputs = new CheckBox("Normalize brain inputs (experiment)");
+        normalizedInputs.setSelected(simulationConfig.isNormalizeBrainInputs());
+        normalizedInputs.selectedProperty().addListener((obs, old, value) -> simulationConfig.setNormalizeBrainInputs(value));
+        grid.addRow(6, normalizedInputs);
+
         TitledPane pane = new TitledPane("Reproduction", grid);
         pane.setCollapsible(true);
         pane.setStyle("-fx-text-fill: black;");

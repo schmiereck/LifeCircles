@@ -8,6 +8,20 @@ import de.lifecircles.service.SimulationConfig;
 
 public class CellBrainService {
 
+    static double ageInput(double age) {
+        if (!SimulationConfig.getInstance().isNormalizeBrainInputs()) return age;
+        double nonnegative = Math.max(0, age);
+        return 1 - 60 / (60 + nonnegative);
+    }
+
+    static double forceInput(double force) {
+        SimulationConfig config = SimulationConfig.getInstance();
+        if (!config.isNormalizeBrainInputs()) return force;
+        double scale = force >= 0 ? config.getCellActorMaxRepulsiveForceStrength()
+                : config.getCellActorMaxAttractiveForceStrength();
+        return scale > 0 ? Math.max(-1, Math.min(1, force / scale)) : 0;
+    }
+
     public static double[] generateInputs(final Cell cell) {
         return generateInputs(cell, Environment.getInstance());
     }
@@ -25,7 +39,7 @@ public class CellBrainService {
         inputs[GlobalInputFeature.MY_CELL_TYPE_GREEN.ordinal()] = cellType.getGreen();
         inputs[GlobalInputFeature.MY_CELL_TYPE_BLUE.ordinal()] = cellType.getBlue();
         inputs[GlobalInputFeature.MY_CELL_ENERGY.ordinal()] = cell.getEnergy();
-        inputs[GlobalInputFeature.MY_CELL_AGE.ordinal()] = cell.getAge();
+        inputs[GlobalInputFeature.MY_CELL_AGE.ordinal()] = ageInput(cell.getAge());
         inputs[GlobalInputFeature.MY_CELL_SUNRAY_HIT.ordinal()] = cell.isSunRayHit() ? 1.0 : 0.0;
 
         // Add cell state as global input
@@ -46,7 +60,7 @@ public class CellBrainService {
             inputs[baseGlobal + SensorInputFeature.MY_ACTOR_RED.ordinal()] = myActorType.getRed();
             inputs[baseGlobal + SensorInputFeature.MY_ACTOR_GREEN.ordinal()] = myActorType.getGreen();
             inputs[baseGlobal + SensorInputFeature.MY_ACTOR_BLUE.ordinal()] = myActorType.getBlue();
-            inputs[baseGlobal + SensorInputFeature.MY_ACTOR_FORCE_STRENGTH.ordinal()] = maActor.getForceStrength();
+            inputs[baseGlobal + SensorInputFeature.MY_ACTOR_FORCE_STRENGTH.ordinal()] = forceInput(maActor.getForceStrength());
             inputs[baseGlobal + SensorInputFeature.MY_ACTOR_TOP_POSITION.ordinal()] = (actorPos == topSensorIndex) ? 1.0 : 0.0;
 
             // Use cached sensing from ActorSensorCellCalcService
@@ -67,7 +81,7 @@ public class CellBrainService {
                 sensedCellTypeB = sensedCellType.getBlue() * distanceFactor;
 
                 sensedCellEnergy = sensedCell.getEnergy();
-                sensedCellAge = sensedCell.getAge();
+                sensedCellAge = ageInput(sensedCell.getAge());
 
                 // Sensed cell state as sensor input:
                 double[] normalizedSensedCellState = sensedCell.getNormalizedCellState();
@@ -100,7 +114,7 @@ public class CellBrainService {
                 inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_RED.ordinal()] = sensedActorType.getRed();
                 inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_GREEN.ordinal()] = sensedActorType.getGreen();
                 inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_BLUE.ordinal()] = sensedActorType.getBlue();
-                inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_FORCE_STRENGTH.ordinal()] = sensedActor.getForceStrength();
+                inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_FORCE_STRENGTH.ordinal()] = forceInput(sensedActor.getForceStrength());
             } else {
                 inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_RED.ordinal()] = 0;
                 inputs[baseGlobal + SensorInputFeature.SENSED_ACTOR_TYPE_GREEN.ordinal()] = 0;

@@ -134,6 +134,9 @@ public class SimulationConfig {
 
     private double mutationRate = 0.1D;
     private double mutationStrength = 0.2D;
+    // Natural division only; zero enables clonal development. Training keeps the global rate.
+    private double divisionMutationRateMultiplier = 1;
+    private boolean normalizeBrainInputs = false;
 
     private double cellStateOutputThreshold = 0.5D; // Threshold für die Berechnung des Zell-Zustands
 
@@ -349,6 +352,15 @@ public class SimulationConfig {
 
     public double getMutationStrength() { return this.mutationStrength; }
     public void setMutationStrength(double strength) { this.mutationStrength = strength; }
+
+    public double getDivisionMutationRateMultiplier() { return divisionMutationRateMultiplier; }
+    public void setDivisionMutationRateMultiplier(double multiplier) {
+        if (!Double.isFinite(multiplier) || multiplier < 0 || multiplier > 1)
+            throw new IllegalArgumentException("Division mutation multiplier must be in [0,1]");
+        divisionMutationRateMultiplier = multiplier;
+    }
+    public boolean isNormalizeBrainInputs() { return normalizeBrainInputs; }
+    public void setNormalizeBrainInputs(boolean normalize) { normalizeBrainInputs = normalize; }
 
     public double getReproductionDesireThreshold() { return this.reproductionDesireThreshold; }
     public void setReproductionDesireThreshold(double threshold) { this.reproductionDesireThreshold = threshold; }
