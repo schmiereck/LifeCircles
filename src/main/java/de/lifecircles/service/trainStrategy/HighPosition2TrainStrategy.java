@@ -12,9 +12,23 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
     private static final int EVALUATION_WINDOW_STEPS = 600;
     private static final int SAMPLE_INTERVAL_STEPS = 30;
     private final SimulationConfig config = SimulationConfig.getInstance();
-    private final Random random = new Random();
+    private final Random random;
+    private final EvaluationObserver observer;
     private long stepCounter = 0;
     private final GroundedColonyFitness fitness = new GroundedColonyFitness(SeperatorCount);
+
+    @FunctionalInterface
+    interface EvaluationObserver {
+        /** Called between steps, before replacing the population. Observe only. */
+        void observe(Environment world, GroundedColonyFitness fitness, List<Cell> winners);
+    }
+
+    public HighPosition2TrainStrategy() { this(new Random(), null); }
+
+    HighPosition2TrainStrategy(Random random, EvaluationObserver observer) {
+        this.random = Objects.requireNonNull(random);
+        this.observer = observer;
+    }
 
     @Override
     public Environment initializeEnvironment() {
@@ -97,6 +111,7 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
             }
         }
 
+        if (observer != null) observer.observe(environment,fitness,List.copyOf(winners));
         TrainingPopulationBuilder.build(environment, winners, SeperatorCount, true, random)
                 .ifPresent(environment::resetCells);
         fitness.reset();

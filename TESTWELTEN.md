@@ -577,3 +577,12 @@ Energiebilanz und Bewertung von HIGH_POSITION2: [Standproben](STANDPROBEN.md).
 und die zeitliche Bewertung ganzer Verbaende. `TrainingSelectionTest` besitzt jetzt
 sechs Pruefungen, einschliesslich echter Vererbung des Turmprogramms statt einer
 abgeloesten Spitzenzelle. Details: [HIGH_POSITION2](HIGH_POSITION2.md).
+
+
+## Optionale echte Evolutionslaeufe
+
+`HighPosition2EvolutionStudyTest` startet nur mit `-Devolution.study=true` echte
+mehrere Generationen lange Versuche. `EvolutionArtifactExportTest` exportiert die
+gespeicherten Staende und fuehrt auf Wunsch deklarierte Nachversuche aus.
+Parameter, Rohdaten, ladbare Populationen und Auswertung: [EVOLUTIONSLAUF.md](EVOLUTIONSLAUF.md).
+Diese Laeufe gehoeren nicht zur regulaeren Regressionenauswahl.

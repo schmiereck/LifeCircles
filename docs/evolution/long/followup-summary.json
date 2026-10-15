@@ -1,0 +1,34 @@
+{
+  "more_sun/no_division": {
+    "tracked_section": 3,
+    "height_retained": 0.982438798561619,
+    "cells_retained_world": 0.8241577649958916,
+    "cells_retained_initial_section": 0.8604651162790697,
+    "shape_rms_in_initial_radii": 1.7290637042258732,
+    "final_mean_speed": 2.161524547
+  },
+  "more_sun/frozen_mechanics": {
+    "tracked_section": 3,
+    "height_retained": 0.9881339000115829,
+    "cells_retained_world": 1.0,
+    "cells_retained_initial_section": 1.0,
+    "shape_rms_in_initial_radii": 0.4002855259252869,
+    "final_mean_speed": 3.289e-06
+  },
+  "standard/no_division": {
+    "tracked_section": 7,
+    "height_retained": 0.8666717091719566,
+    "cells_retained_world": 0.972457627118644,
+    "cells_retained_initial_section": 0.9722222222222222,
+    "shape_rms_in_initial_radii": 0.981376896548421,
+    "final_mean_speed": 0.036654379
+  },
+  "standard/frozen_mechanics": {
+    "tracked_section": 7,
+    "height_retained": 0.8927902017032878,
+    "cells_retained_world": 1.0,
+    "cells_retained_initial_section": 1.0,
+    "shape_rms_in_initial_radii": 0.8041430858269742,
+    "final_mean_speed": 3.166e-06
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "clonal_more_sun": {
+    "generations": 10,
+    "simulation_seconds": 500.0,
+    "median_last5_height": 103.16833225,
+    "median_last5_diameters": 3.368629787421219,
+    "median_last5_cells": 891.0,
+    "median_last5_speed": 12.305398667,
+    "best_height": 146.634814035,
+    "best_generation": 9.0,
+    "births": 8783.0,
+    "deaths": 1064.0,
+    "offered_sun_population_correlation": 0.9503143642900094
+  },
+  "more_sun": {
+    "generations": 10,
+    "simulation_seconds": 500.0,
+    "median_last5_height": 104.743397355,
+    "median_last5_diameters": 3.4697348581228447,
+    "median_last5_cells": 923.0,
+    "median_last5_speed": 11.015632862,
+    "best_height": 144.463024658,
+    "best_generation": 9.0,
+    "births": 8863.0,
+    "deaths": 1142.0,
+    "offered_sun_population_correlation": 0.9354982749650148
+  },
+  "standard": {
+    "generations": 10,
+    "simulation_seconds": 500.0,
+    "median_last5_height": 77.037392468,
+    "median_last5_diameters": 2.375772950315962,
+    "median_last5_cells": 310.0,
+    "median_last5_speed": 8.554869534,
+    "best_height": 85.985362769,
+    "best_generation": 9.0,
+    "births": 3753.0,
+    "deaths": 1034.0,
+    "offered_sun_population_correlation": 0.8975466239185879
+  }
+}

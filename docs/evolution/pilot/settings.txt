@@ -1,0 +1,15 @@
+seed=741
+generations=10
+cases=standard,more_sun,clonal_more_sun
+dt=1/60
+width=6400
+height=1200
+energy_per_ray=0.005
+ray_spacing=60.000000
+mutation_rate=0.100000
+mutation_strength=0.200000
+rotation_damping=0.800000
+contact=125.000000
+attraction=90.000000
+normalization=false
+Initial population is saved. Meta-mutation uses unseeded Random; complete trajectories are not bitwise reproducible.

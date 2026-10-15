@@ -78,3 +78,10 @@ wurden fuer diese Aenderung nicht angepasst.
 ```powershell
 mvn test '-Dtest=GroundedColonyFitnessTest,TrainingSelectionTest,TrainingGenerationTest,StandingStructureTest,MechanicsRegressionTest,MutationFactorsTest' '-DargLine=-Djava.util.concurrent.ForkJoinPool.common.parallelism=4'
 ```
+
+
+## Ausgefuehrte Evolutionslaeufe
+
+90 Trainingsgenerationen und vier Nachversuche sind in [EVOLUTIONSLAUF.md](EVOLUTIONSLAUF.md)
+ausgewertet. Die Ergebnisse zeigen hoehere Matten und eine erhebliche Beruhigung
+nach dem Unterbinden weiterer Teilung; schlanke Tuerme sind noch nicht entstanden.
