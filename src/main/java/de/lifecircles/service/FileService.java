@@ -32,7 +32,7 @@ public class FileService {
      */
     public void saveCellsToFile(String filePath, List<Cell> cells) throws IOException {
         System.out.println("Starte Speichern von " + cells.size() + " Zellen...");
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(filePath)))) {
             oos.writeObject(cells);
             System.out.println("Speichern abgeschlossen: " + filePath);
         }
@@ -61,7 +61,7 @@ public class FileService {
     @SuppressWarnings("unchecked")
     public List<Cell> loadCellsFromFile(String filePath) throws IOException, ClassNotFoundException {
         System.out.println("Starte Laden von Zellen aus " + filePath);
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
+        try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filePath)))) {
             List<Cell> cells = (List<Cell>) ois.readObject();
             System.out.println("Laden abgeschlossen: " + cells.size() + " Zellen geladen");
             return cells;
