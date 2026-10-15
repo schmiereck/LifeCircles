@@ -32,16 +32,6 @@ class NetworkLogicAuditTest {
         return net;
     }
 
-    @Test void moduleBiasMutationIgnoresZeroMutationStrength() {
-        var inner = new NeuralNetwork(factory, 1, new int[]{1}, 1, 1, 0);
-        var module = new NeuronNetwork(10, new NeuronTypeInfoData(1, 1, inner.getNeuralNet()), factory);
-        module.mutateNeuron(new Random(1) {
-            @Override public double nextDouble() { return .75; }
-            @Override public int nextInt(int bound) { return 0; }
-        }, 1, 0);
-        assertEquals(.025, module.getBias(0), 1e-15);
-    }
-
     @Test void defaultMutationPerturbsManyWeightsEvenWithoutTopologyChange() {
         var cell = CellFactory.createCell(new Vector2D(100, 100), 10);
         var parent = ((CellBrain) cell.getBrain()).getNeuralNetwork();
@@ -57,17 +47,4 @@ class NetworkLogicAuditTest {
                 Arrays.toString(parent.getLayerSizes()), parent.getNeuralNet().getAllNeuronsSize(), parent.getSynapseCount(), changed);
     }
 
-    @Test void nestedModuleIncomingEdgesAreMissingFromProcessedCountAndInnerEdgesFromStorageCount() {
-        var inner = new NeuralNetwork(factory, 2, new int[0], 1, 1, 0);
-        var outer = new NeuralNetwork(factory, 2, new int[]{1}, 1, 0, 0);
-        var layer = outer.getNeuralNet().getHiddenLayerArr()[0];
-        var module = new NeuronNetwork(layer.getNeuronsArr()[0].getId(), new NeuronTypeInfoData(2, 1, inner.getNeuralNet()), factory);
-        layer.getNeuronsArr()[0] = module;
-        for (int port = 0; port < 2; port++) connect(outer, new Synapse(
-                outer.getNeuralNet().getInputNeuronArr()[port], 0, module, port, 1));
-        connect(outer, new Synapse(module, 0, outer.getNeuralNet().getOutputNeuronArr()[0], 0, 1));
-        outer.calcProcess(new double[]{1, 1});
-        assertEquals(2, inner.getSynapseCount()); assertEquals(3, outer.getSynapseCount());
-        assertEquals(3, outer.getProccessedSynapses()); // 5 edges actually participated.
-    }
 }

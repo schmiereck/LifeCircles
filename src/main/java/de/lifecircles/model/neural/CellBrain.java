@@ -44,7 +44,7 @@ public class CellBrain implements CellBrainInterface, Serializable {
     }
 
     public int getSynapseCount() {
-        return this.network.getSynapseCount();
+        return this.network.getNeuralNet().getStoredSynapseCount();
     }
 
     public boolean[] determineActiveHiddenLayers(int cellState) {

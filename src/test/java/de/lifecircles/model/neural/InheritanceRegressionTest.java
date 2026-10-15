@@ -144,10 +144,12 @@ class InheritanceRegressionTest {
         NeuralNetwork parent = new NeuralNetwork(factory, 2, new int[]{3, 3}, 2, 1, 0);
         for (int generation = 0; generation < 20; generation++) {
             parent.setDisableLayerDeactivation(true);
+            parent.rnnClearPreviousState();
             double[] before = parent.calcProcess(new double[]{0.2, 0.8});
             double[] weights = parent.getSynapseList().stream().mapToDouble(Synapse::getWeight).toArray();
             NeuralNetwork child = parent.mutate(0.3, 0.2);
             assertArrayEquals(weights, parent.getSynapseList().stream().mapToDouble(Synapse::getWeight).toArray(), 0);
+            parent.rnnClearPreviousState();
             assertArrayEquals(before, parent.calcProcess(new double[]{0.2, 0.8}), 1e-12);
             parent = child;
         }

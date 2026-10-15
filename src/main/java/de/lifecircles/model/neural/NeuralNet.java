@@ -371,6 +371,13 @@ public class NeuralNet implements Serializable {
     public void mutate(final NeuronValueFunctionFactory neuronValueFunctionFactory,
                        final NeuronValueFunction neuronValueFunction,
                        final double mutationRate, final double mutationStrength, final boolean mutateNeuronType) {
+        mutate(neuronValueFunctionFactory, neuronValueFunction, mutationRate, mutationStrength, mutateNeuronType,
+                Collections.newSetFromMap(new IdentityHashMap<>()));
+    }
+
+    private void mutate(NeuronValueFunctionFactory neuronValueFunctionFactory, NeuronValueFunction neuronValueFunction,
+                        double mutationRate, double mutationStrength, boolean mutateNeuronType, Set<NeuralNet> visited) {
+        if (!visited.add(this)) return;
         final Random random = NeuralNetwork.getRandom();
 
         // Mutate weights and biases
@@ -391,6 +398,32 @@ public class NeuralNet implements Serializable {
 
         // Apply structural mutations
         this.applyStructuralMutations(neuronValueFunctionFactory, neuronValueFunction, mutationRate, mutationStrength, mutateNeuronType);
+        pruneUnusedNeuronTypes();
+        List<NeuralNet> nested = new ArrayList<>();
+        Set<NeuralNet> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (NeuronTypeInfoData type : neuronTypeInfoDataList)
+            if (type.getNeuralNet() != null && seen.add(type.getNeuralNet())) nested.add(type.getNeuralNet());
+        applyToAllNeurons(neuron -> {
+            NeuralNet definition = neuron.getNeuronTypeInfoData().getNeuralNet();
+            if (definition != null && seen.add(definition)) nested.add(definition);
+        });
+        for (NeuralNet definition : nested) {
+            NeuronValueFunction local = neuronValueFunctionFactory.create();
+            local.reserveExistingIds(definition);
+            definition.mutate(neuronValueFunctionFactory, local, mutationRate, mutationStrength, mutateNeuronType, visited);
+        }
+    }
+
+    // Keep a bounded nursery of unused innovations so new types can later be instantiated.
+    static final int UNUSED_TYPE_LIMIT = 8;
+    private void pruneUnusedNeuronTypes() {
+        Set<NeuronTypeInfoData> used = Collections.newSetFromMap(new IdentityHashMap<>());
+        applyToAllNeurons(neuron -> used.add(neuron.getNeuronTypeInfoData()));
+        int unused = 0;
+        for (int i = neuronTypeInfoDataList.size() - 1; i >= 1; i--) {
+            if (!used.contains(neuronTypeInfoDataList.get(i)) && ++unused > UNUSED_TYPE_LIMIT)
+                neuronTypeInfoDataList.remove(i);
+        }
     }
 
     public void applyStructuralMutations(final NeuronValueFunctionFactory neuronValueFunctionFactory, final NeuronValueFunction neuronValueFunction,
@@ -458,81 +491,32 @@ public class NeuralNet implements Serializable {
         }
     }
 
-    void mutateNeuronTypeInfoDataList(final NeuronValueFunctionFactory neuronValueFunctionFactory,
-                                      final NeuronValueFunction neuronValueFunction,
+    void mutateNeuronTypeInfoDataList(final NeuronValueFunctionFactory factory,
+                                      final NeuronValueFunction outerValues,
                                       Random random, double mutationRate, double structuralMutationRate) {
-        final int neuronTypeInfoPos = random.nextInt(this.neuronTypeInfoDataList.size());
-        final NeuronTypeInfoData selectedNeuronTypeInfoData = this.neuronTypeInfoDataList.get(neuronTypeInfoPos);
-        if (selectedNeuronTypeInfoData.getNeuralNet() == null) {
-            // Neuen Neuron-Typ erstellen:
-            final int inputCount = random.nextInt(7) + 1; // Zufällige Eingabeneuronen zwischen 1 und 8
-            final int[] hiddenCounts = { inputCount };
-            final int outputCount = random.nextInt(7) + 1; // Zufällige Eingabeneuronen zwischen 1 und 8
-            final double synapseConnectivity = random.nextDouble() * 0.8D + 0.2D; // Zufällige Konnektivität zwischen 0.2 und 1.0
-            final int fixedHiddenLayerCount = 0; // Keine festen Hidden-Layer für diesen Typ
-            final NeuralNet newNeuralNet = new NeuralNet(neuronValueFunctionFactory, neuronValueFunction,
-                    inputCount, hiddenCounts, outputCount,
-                    synapseConnectivity, fixedHiddenLayerCount);
-            final NeuronTypeInfoData newNeuronTypeInfoData = new NeuronTypeInfoData(inputCount, outputCount, newNeuralNet);
-            this.neuronTypeInfoDataList.add(newNeuronTypeInfoData);
-        } else  {
-            final NeuralNet selectedNeuralNet = selectedNeuronTypeInfoData.getNeuralNet();
-
+        NeuronTypeInfoData selected = neuronTypeInfoDataList.get(random.nextInt(neuronTypeInfoDataList.size()));
+        NeuronValueFunction local = factory.create();
+        NeuralNet variant;
+        if (selected.getNeuralNet() == null) {
+            int inputs = 1 + random.nextInt(7), outputs = 1 + random.nextInt(7);
+            variant = new NeuralNet(factory, local, inputs, new int[]{inputs}, outputs,
+                    .2 + random.nextDouble() * .8, 0);
+        } else {
+            variant = new NeuralNet(selected.getNeuralNet(), true, factory, local);
+            // Interface changes only affect a new type, never live module instances.
             if (random.nextDouble() < structuralMutationRate) {
-                // Existierenden Neuron-Typ mutieren:
-                final boolean mutateNeuronType = false; // Keine strukturelle Mutation des Typs, nur der Neuronen
-                selectedNeuralNet.mutate(neuronValueFunctionFactory, neuronValueFunction, mutationRate, structuralMutationRate, mutateNeuronType);
-            } else {
-                // Neuen Neuron-Typ als Mutation des ausgewählten Typs erstellen:
-                final NeuralNet newNeuralNet = new NeuralNet(selectedNeuralNet, true,
-                        neuronValueFunctionFactory, neuronValueFunctionFactory.create());
-
-                final boolean mutateNeuronType = true; // Strukturelle Mutation des Typs
-                newNeuralNet.mutate(neuronValueFunctionFactory, neuronValueFunction, mutationRate, structuralMutationRate, mutateNeuronType);
-
-                if (random.nextDouble() < structuralMutationRate) {
-                    final int inputCountChange = random.nextInt(3) - 1;
-
-                    if (inputCountChange == -1 && newNeuralNet.getInputLayerSize() > 1) {
-                        // Eingabeneuronen reduzieren
-                        final int removeNeuronPos = random.nextInt(newNeuralNet.getInputLayerSize());
-                        newNeuralNet.removeInputNeuron(neuronValueFunction, removeNeuronPos);
-                    } else {
-                        if (inputCountChange == 1) {
-                            // Eingabeneuronen erhöhen
-                            final double synapseConnectivity = random.nextDouble() * 0.8D + 0.2D; // Zufällige Konnektivität zwischen 0.2 und 1.0
-                            newNeuralNet.addNewNeuronToInputLayer(neuronValueFunctionFactory, neuronValueFunction, random, synapseConnectivity);
-                        }
-                    }
-                }
-
-                if (random.nextDouble() < structuralMutationRate) {
-                    final int outputCountChange = random.nextInt(3) - 1;
-
-                    if (outputCountChange == -1 && newNeuralNet.getOutputLayerSize() > 1) {
-                        // Ausgabeneuronen reduzieren
-                        final int removeNeuronPos = random.nextInt(newNeuralNet.getOutputLayerSize());
-                        newNeuralNet.removeOutputNeuron(neuronValueFunction, removeNeuronPos);
-                    } else {
-                        if (outputCountChange == 1) {
-                            // Ausgabeneuronen erhöhen
-                            final double synapseConnectivity = random.nextDouble() * 0.8D + 0.2D; // Zufällige Konnektivität zwischen 0.2 und 1.0
-                            newNeuralNet.addNewNeuronToOutputLayer(neuronValueFunctionFactory, neuronValueFunction, random, synapseConnectivity);
-                        }
-                    }
-                }
-
-                final NeuronTypeInfoData newNeuronTypeInfoData =
-                        new NeuronTypeInfoData(newNeuralNet.getInputLayerSize(), newNeuralNet.getOutputLayerSize(),
-                                newNeuralNet);
-
-                this.neuronTypeInfoDataList.add(newNeuronTypeInfoData);
+                int change = random.nextInt(3) - 1;
+                if (change < 0 && variant.getInputCount() > 1) variant.removeInputNeuron(local, random.nextInt(variant.getInputCount()));
+                if (change > 0) variant.addNewNeuronToInputLayer(factory, local, random, .2 + random.nextDouble() * .8);
+            }
+            if (random.nextDouble() < structuralMutationRate) {
+                int change = random.nextInt(3) - 1;
+                if (change < 0 && variant.getOutputLayerSize() > 1) variant.removeOutputNeuron(local, random.nextInt(variant.getOutputLayerSize()));
+                if (change > 0) variant.addNewNeuronToOutputLayer(factory, local, random, .2 + random.nextDouble() * .8);
             }
         }
-        if (random.nextDouble() < structuralMutationRate) {
-            // Wenn der Typ nicht verwendet wird, entferne ihn aus diesem Netzwerk
-            //this.neuronTypeInfoDataList.remove(selectedNeuronTypeInfoData);
-        }
+        neuronTypeInfoDataList.add(new NeuronTypeInfoData(variant.getInputCount(),variant.getOutputLayerSize(),variant));
+        pruneUnusedNeuronTypes();
     }
 
     /**
@@ -803,6 +787,8 @@ public class NeuralNet implements Serializable {
 
     public void addNewNeuronToOutputLayer(final NeuronValueFunctionFactory neuronValueFunctionFactory, final NeuronValueFunction neuronValueFunction, final Random random, final double connectivity) {
         final  Neuron newNeuron = (Neuron) createNewNeuron(neuronValueFunctionFactory, neuronValueFunction, this.neuronTypeInfoDataList.get(0));
+
+        newNeuron.setOutputNeuron(true);
 
         final Neuron[] newOutputNeuronArr = addNeuronToArr(this.outputNeuronArr, newNeuron);
 
@@ -1252,6 +1238,23 @@ public class NeuralNet implements Serializable {
     // Expose the number of synapses for energy cost calculation
     public int getSynapseCount() {
         return this.synapseArray.length;
+    }
+
+    /** Unique stored genes, including shared module definitions and unused type candidates. */
+    public int getStoredSynapseCount() {
+        return countStoredSynapses(Collections.newSetFromMap(new IdentityHashMap<>()));
+    }
+
+    private int countStoredSynapses(Set<NeuralNet> visited) {
+        if (!visited.add(this)) return 0;
+        int[] count = {synapseArray.length};
+        for (NeuronTypeInfoData type : neuronTypeInfoDataList)
+            if (type.getNeuralNet() != null) count[0] += type.getNeuralNet().countStoredSynapses(visited);
+        applyToAllNeurons(neuron -> {
+            NeuralNet definition = neuron.getNeuronTypeInfoData().getNeuralNet();
+            if (definition != null) count[0] += definition.countStoredSynapses(visited);
+        });
+        return count[0];
     }
 
     public List<Synapse> getSynapseList() {

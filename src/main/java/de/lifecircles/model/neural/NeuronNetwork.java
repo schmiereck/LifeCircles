@@ -143,10 +143,12 @@ public class NeuronNetwork implements NeuronInterface {
     public long activate(final NeuronValueFunction neuronValueFunction, final NeuralNet neuralNet) {
         this.checkInOutSize();
 
+        long incomingCount = 0;
         final double[] inputArr = new double[this.neuronTypeInfoData.getInputCount()];
         for (int inputTypePos = 0; inputTypePos < this.neuronTypeInfoData.getInputCount(); inputTypePos++) {
             double sum = this.getBias(inputTypePos);
             final Synapse[] inputSynapseArr = this.inputSynapsesList.get(inputTypePos);
+            incomingCount += inputSynapseArr.length;
             for (int inputSynapsePos = 0; inputSynapsePos < inputSynapseArr.length; inputSynapsePos++) {
                 final Synapse synapse = inputSynapseArr[inputSynapsePos];
                 final int sourceOutputTypePos = synapse.getSourceOutputTypePos();
@@ -173,7 +175,7 @@ public class NeuronNetwork implements NeuronInterface {
             neuronValueFunction.writeValue(neuralNet, this, outputTypePos, calcOutputNeuronValue);
         }
 
-        return calcNeuralNet.getProccessedSynapses();
+        return incomingCount + calcNeuralNet.getProccessedSynapses();
     }
 
     private void checkInOutSize() {
@@ -202,25 +204,10 @@ public class NeuronNetwork implements NeuronInterface {
 
     @Override
     public void mutateNeuron(final Random random, double mutationRate, double mutationStrength) {
-        // Anpassung der Bias-Werte.
-        for (int inputTypePos = 0; inputTypePos < this.neuronTypeInfoData.getInputCount(); inputTypePos++) {
-            if (random.nextDouble() < mutationRate) {
-                double mutationFactor = random.nextDouble() * 0.1 - 0.05; // Zufällige Mutation zwischen -0.05 und +0.05
-                double newBias = this.getBias(inputTypePos) + mutationFactor;
-                this.setBias(inputTypePos, newBias);
-            }
-        }
-
-        if (random.nextDouble() < mutationRate) {
-            final NeuralNet neuralNet = this.network.getNeuralNet();
-            neuralNet.mutateNeuronTypeInfoDataList(this.network.getNeuronValueFunctionFactory(), this.network.getNeuronValueFunction(),
-                    random, mutationRate, mutationStrength);
-        }
-
-        //if (random.nextDouble() < mutationRate) {
-        //    final NeuralNet neuralNet = this.network.getNeuralNet();
-        //    neuralNet.mutate(this.network.getNeuronValueFunction(), mutationRate, mutationStrength);
-        //}
+        for (int port=0; port<neuronTypeInfoData.getInputCount(); port++)
+            if (random.nextDouble() < mutationRate)
+                setBias(port,getBias(port) + (random.nextDouble()*2-1)*mutationStrength);
+        // Shared inner definitions are mutated once by the owning genome traversal.
     }
 
     @Override

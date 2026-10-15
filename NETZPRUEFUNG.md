@@ -29,6 +29,15 @@ deterministische Versuche und Codeanalyse; keine langen Evolutions- oder Sprachm
   genau einem initialen Denkschritt; Eltern bleiben unveraendert. HIGH_POSITION2
   bevorzugt die Abschnittsmitte, berechnet Scores einmal und faerbt nicht mehr zufaellig um.
   47 gezielte Trainings-, Energie- und Mutationsfaktortests erfolgreich.
+- Modulmutation und Kosten vereinheitlicht: innere Gene werden pro Genom einmal mit
+  derselben Rate und Staerke mutiert; geteilte Definitionen bleiben innerhalb eines
+  Genoms geteilt. Neue Typen nutzen eigene ID-Raeume; Schnittstellenaenderungen
+  betreffen ausschliesslich neue Typen. Maximal acht unbenutzte Typkandidaten bleiben
+  als Innovationsvorrat erhalten, verwendete Typen werden nicht entfernt.
+  Zellkosten zaehlen gespeicherte Definitionen einmal und ausgefuehrte Verbindungen
+  pro Instanz inklusive Moduleingaengen. 61 gezielte Regressionen erfolgreich.
+  Ein alter Vererbungstest wurde auf identische zurueckgesetzte Episoden korrigiert:
+  nach Rueckkopplungsmutationen sind zwei aufeinanderfolgende Ausgaben kein Genomvergleich.
 - Weitere Befunde werden im Anschluss bearbeitet.
 
 ## Bewertung
