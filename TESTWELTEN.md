@@ -34,6 +34,15 @@ läuft ausschließlich mit `-Dtissue.sweep=true` und gehört nicht zur Routineau
 
 ## Physikwelten
 
+Die getrennte Netzprüfung steht in [NETZPRUEFUNG.md](NETZPRUEFUNG.md). Ihre 18
+Beobachtungstests laufen nur mit `-Dnetwork.audit=true` und sind nicht Teil der oben
+genannten 282 Korrektheitsprüfungen. Sie reproduzieren aktuelle Probleme und
+Modellentscheidungen; erfolgreiche Beobachtungstests bedeuten keine Fehlerfreiheit.
+
+```powershell
+mvn test '-Dtest=NetworkLogicAuditTest,TrainingLogicAuditTest' '-Dnetwork.audit=true'
+```
+
 Quelle: `src/test/java/de/lifecircles/service/PhysicsRegressionTest.java`.
 
 | Welt | Geprueftes Verhalten |
