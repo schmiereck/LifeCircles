@@ -11,6 +11,11 @@ deterministische Versuche und Codeanalyse; keine langen Evolutions- oder Sprachm
 - `StructuralMutationTest`: sechs reguläre Tests, darunter 960 Strukturmutationsschritte
   mit Graphprüfung, Kopien und endlichen Ausgaben. Zusammen mit Vererbungs-, Port-
   und Mutationsfaktorregressionen: 40 Tests erfolgreich.
+- Aktivitätssteuerung korrigiert: sofortige Zustandsinitialisierung und Umschaltung,
+  parallele Zustandsprogramme für neue Genome, vollständiger Episodenreset.
+  Dynamische Layer halten weiterhin ihre Ausgaben; Mindesttakt 0,001 garantiert
+  ein Aufwachen innerhalb von 1.000 Aufrufen. Feste Zustandsbits bleiben beim Reset erhalten.
+  Vorhandene gespeicherte Topologien werden nicht umgebaut. 62 gezielte Tests erfolgreich.
 - Weitere Befunde werden im Anschluss bearbeitet.
 
 ## Bewertung

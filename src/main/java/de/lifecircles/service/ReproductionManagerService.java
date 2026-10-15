@@ -90,22 +90,7 @@ public class ReproductionManagerService {
     }
 
     public static void calcActiveLayersByState(final Cell cell) {
-        final CellBrain cellBrain = (CellBrain) cell.getBrain();
-        final NeuralNetwork childBrainNetwork = cellBrain.getNeuralNetwork();
-        final NeuralNet childNeuralNet = childBrainNetwork.getNeuralNet();
-        final boolean[] activeLayers = cellBrain.determineActiveHiddenLayers(cell.getCellState());
-        final Layer[] hiddenLayerList = childNeuralNet.getHiddenLayerArr();
-        for (int i = 0; i < Math.min(hiddenLayerList.length, SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT); i++) {
-            final Layer layer = hiddenLayerList[i];
-            layer.setActiveLayer(activeLayers[i]);
-            if (!layer.isActiveLayer()) {
-                for (final NeuronInterface neuron : layer.getNeuronsArr()) {
-                    for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-                        childBrainNetwork.writeNeuronValue(neuron, outputTypePos, 0.0D);
-                    }
-                }
-            }
-        }
+        if (cell.getBrain() instanceof CellBrain brain) brain.applyCellState(cell.getCellState());
     }
 
     private static double mutateValue(double value, double strength) {

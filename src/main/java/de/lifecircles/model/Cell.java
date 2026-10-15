@@ -63,6 +63,7 @@ public class Cell implements SensableCell, Serializable {
         this.generation = 0; // initialize generation counter
         this.mutationRateFactor = 1.0; // Standardwert
         this.mutationStrengthFactor = 1.0; // Standardwert
+        this.setCellState(0);
     }
 
     private static ArrayList<SensorActor> createSensorActors(final Cell cell) {
@@ -343,6 +344,7 @@ public class Cell implements SensableCell, Serializable {
 
     public void setCellState(int cellState) {
         this.cellState = cellState;
+        if (this.brain instanceof de.lifecircles.model.neural.CellBrain cellBrain) cellBrain.applyCellState(cellState);
     }
 
     /**

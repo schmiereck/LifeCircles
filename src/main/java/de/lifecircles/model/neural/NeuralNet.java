@@ -291,8 +291,10 @@ public class NeuralNet implements Serializable {
                 if (neuronArr.length > 0) {
                     final NeuronInterface activationNeuron = neuronArr[0];
                     final int activationOutputTypePos = 0; // Default-Output-Type for activation.
-                    final double activationValue = Math.max(1.0D / 1000,
-                            layer.getActivationCounter() + neuronValueFunction.readValue(this, activationNeuron, activationOutputTypePos));
+                    // Even a silent controller eventually wakes its payload (at most 1000 calls).
+                    final double increment = Math.max(1.0D / 1000,
+                            Math.min(1, neuronValueFunction.readValue(this, activationNeuron, activationOutputTypePos)));
+                    final double activationValue = layer.getActivationCounter() + increment;
                     if (activationValue >= 1.0D) {
                         layer.setActivationCounter(0.0D);
                         layer.setActiveLayer(true);
@@ -1115,19 +1117,31 @@ public class NeuralNet implements Serializable {
 
     public void rnnClearPreviousState(final NeuronValueFunction neuronValueFunction) {
         neuronValueFunction.clearModuleStates();
-        // Setze alle Neuronen in den Hidden-Layern zurück
-        for (final Layer layer : this.hiddenLayerArr) {
-            for (final NeuronInterface neuron : layer.getNeuronsArr()) {
-                for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-                    neuronValueFunction.writeValue(this, neuron, outputTypePos, 0.0D);
-                }
-            }
+        this.proccessedSynapses = 0;
+        for (int i = 0; i < hiddenLayerArr.length; i++) {
+            hiddenLayerArr[i].setActivationCounter(0);
+            if (i >= fixedHiddenLayerCount) hiddenLayerArr[i].setActiveLayer(true);
         }
-        // Setze auch die Output-Neuronen zurück
-        for (final Neuron neuron : this.outputNeuronArr) {
-            for (int outputTypePos = 0; outputTypePos < neuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
-                neuronValueFunction.writeValue(this, neuron, outputTypePos, 0.0D);
+        applyToAllNeurons(neuron -> {
+            for (int p = 0; p < neuron.getNeuronTypeInfoData().getOutputCount(); p++) {
+                neuronValueFunction.writeValue(this, neuron, p, 0);
+                neuronValueFunction.writeDelta(this, neuron, p, 0);
             }
+            for (int p = 0; p < neuron.getNeuronTypeInfoData().getInputCount(); p++)
+                neuronValueFunction.writeInputSum(this, neuron, p, 0);
+        });
+    }
+
+    public int getFixedHiddenLayerCount() { return fixedHiddenLayerCount; }
+
+    /** New genomes use independent state experts feeding the common trunk. */
+    void addParallelStateLayers(NeuronValueFunctionFactory factory, NeuronValueFunction values,
+                                int size, double connectivity) {
+        NeuronInterface[] trunk = hiddenLayerArr.length == 0 ? outputNeuronArr : hiddenLayerArr[0].getNeuronsArr();
+        for (int i = 0; i < fixedHiddenLayerCount; i++) addHiddenLayer(factory, values, i, size, 0);
+        for (int i = 0; i < fixedHiddenLayerCount; i++) {
+            connectLayers(inputNeuronArr, hiddenLayerArr[i].getNeuronsArr(), connectivity);
+            connectLayers(hiddenLayerArr[i].getNeuronsArr(), trunk, connectivity);
         }
     }
 
@@ -1233,7 +1247,7 @@ public class NeuralNet implements Serializable {
         int count = this.inputNeuronArr.length + this.outputNeuronArr.length;
 
         for (Layer layer : this.hiddenLayerArr) {
-            count += layer.getNeuronList().size();
+            count += layer.size();
         }
 
         return count;

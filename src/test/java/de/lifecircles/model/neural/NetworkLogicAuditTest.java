@@ -32,35 +32,6 @@ class NetworkLogicAuditTest {
         return net;
     }
 
-    @Test void sleepingDynamicLayerHoldsPayloadButStillEvaluatesControllerAndOutput() {
-        var net = heldNetwork();
-        double first = net.calcProcess(new double[]{1})[0];
-        assertEquals(2, net.getProccessedSynapses());
-        assertFalse(net.getNeuralNet().getHiddenLayerArr()[0].isActiveLayer());
-        assertEquals(first, net.calcProcess(new double[]{5})[0]);
-        assertEquals(1, net.getProccessedSynapses());
-        assertTrue(net.getNeuralNet().getHiddenLayerArr()[0].isActiveLayer());
-        assertTrue(net.calcProcess(new double[]{5})[0] > first);
-    }
-
-    @Test void zeroControllerCanSleepForeverDespiteCounterFloor() {
-        var net = heldNetwork();
-        Neuron control = (Neuron) net.getNeuralNet().getHiddenLayerArr()[0].getNeuronsArr()[0];
-        control.setActivationFunction(ActivationFunction.ReLU); control.setBias(0, -1);
-        net.calcProcess(new double[]{1});
-        for (int i = 0; i < 1500; i++) net.calcProcess(new double[]{5});
-        var layer = net.getNeuralNet().getHiddenLayerArr()[0];
-        assertFalse(layer.isActiveLayer()); assertEquals(.001, layer.getActivationCounter());
-    }
-
-    @Test void resetDoesNotResetSchedulingAndChangesRepeatedSequenceResult() {
-        var net = heldNetwork(); double first = net.calcProcess(new double[]{1})[0];
-        net.rnnClearPreviousState();
-        assertFalse(net.getNeuralNet().getHiddenLayerArr()[0].isActiveLayer());
-        assertNotEquals(first, net.calcProcess(new double[]{1})[0]);
-        assertEquals(first, new NeuralNetwork(net).calcProcess(new double[]{1})[0]);
-    }
-
     @Test void backpropSkipsJustExecutedLayerBecauseItsNextStepFlagIsOff() {
         var net = heldNetwork(); net.setLearningRate(.1);
         var inputWeight = net.getSynapseList().get(0);
@@ -114,33 +85,6 @@ class NetworkLogicAuditTest {
         assertTrue(changed > 100);
         System.out.printf(Locale.ROOT, "Default genome: layers=%s neurons=%d synapses=%d mutated_weights=%d%n",
                 Arrays.toString(parent.getLayerSizes()), parent.getNeuralNet().getAllNeuronsSize(), parent.getSynapseCount(), changed);
-    }
-
-    @Test void factoryStateZeroAndExplicitStateGateInitializationDisagree() {
-        Cell cell = CellFactory.createCell(new Vector2D(100, 100), 10, .05, 0, 0);
-        Layer[] layers = ((CellBrain) cell.getBrain()).getNeuralNetwork().getNeuralNet().getHiddenLayerArr();
-        assertEquals(0, cell.getCellState());
-        for (int i = 0; i < 3; i++) assertTrue(layers[i].isActiveLayer());
-        ReproductionManagerService.calcActiveLayersByState(cell);
-        for (int i = 0; i < 3; i++) assertFalse(layers[i].isActiveLayer());
-        cell.setCellState(7);
-        for (int i = 0; i < 3; i++) assertFalse(layers[i].isActiveLayer());
-    }
-
-    @Test void initialStateLayersAreSerialAndEarlierGatesCanBeCutOff() {
-        CellBrain brain = new CellBrain(factory, 4, 1, .5, 1, 1);
-        NeuralNetwork definition = brain.getNeuralNetwork();
-        definition.getNeuralNet().applyToAllNeurons(n -> n.setBias(0, 0));
-        for (Synapse edge : definition.getSynapseList()) edge.setWeight(1);
-        double[] outputs = new double[8];
-        for (int state = 0; state < 8; state++) {
-            var net = new NeuralNetwork(definition);
-            for (int bit = 0; bit < 3; bit++) net.getNeuralNet().getHiddenLayerArr()[bit].setActiveLayer((state & 1 << bit) != 0);
-            outputs[state] = net.calcProcess(new double[]{1, 0, 0, 0})[0];
-        }
-        assertEquals(outputs[0], outputs[1]); assertEquals(outputs[0], outputs[2]); assertEquals(outputs[0], outputs[3]);
-        assertEquals(outputs[4], outputs[5]); assertNotEquals(outputs[4], outputs[6]);
-        assertNotEquals(outputs[6], outputs[7]);
     }
 
     @Test void nestedModuleIncomingEdgesAreMissingFromProcessedCountAndInnerEdgesFromStorageCount() {

@@ -30,9 +30,8 @@ public class CellBrain implements CellBrainInterface, Serializable {
                 hiddenLayerSynapseConnectivity, SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT);
         this.network.setEnableNeuronType(true);
 
-        this.network.addHiddenLayer(0, inputCount / 4, stateHiddenLayerSynapseConnectivity); // State 0
-        this.network.addHiddenLayer(0, inputCount / 4, stateHiddenLayerSynapseConnectivity); // State 1
-        this.network.addHiddenLayer(0, inputCount / 4, stateHiddenLayerSynapseConnectivity); // State 2
+        this.network.getNeuralNet().addParallelStateLayers(neuronValueFunctionFactory,
+                this.network.getNeuronValueFunction(), inputCount / 4, stateHiddenLayerSynapseConnectivity);
     }
 
     /**
@@ -54,6 +53,19 @@ public class CellBrain implements CellBrainInterface, Serializable {
             layers[i] = (cellState & (1 << i)) != 0; // Aktivierung basierend auf Bitmasken
         }
         return layers;
+    }
+
+    /** Apply state bits immediately, including clearing disabled outputs for recurrent edges. */
+    public void applyCellState(int cellState) {
+        boolean[] active = determineActiveHiddenLayers(cellState);
+        Layer[] layers = network.getHiddenLayerArr();
+        for (int i = 0; i < Math.min(active.length, Math.min(layers.length,
+                network.getNeuralNet().getFixedHiddenLayerCount())); i++) {
+            layers[i].setActiveLayer(active[i]);
+            if (!active[i]) for (NeuronInterface neuron : layers[i].getNeuronsArr())
+                for (int port = 0; port < neuron.getNeuronTypeInfoData().getOutputCount(); port++)
+                    network.writeNeuronValue(neuron, port, 0);
+        }
     }
 
     @Override
