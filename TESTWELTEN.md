@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=GroundedColonyFitnessTest,StandingStructureTest,CellFileImportTest,BrainInputScalingTest,StructuralMutationTest,NetworkSchedulingTest,ExecutionGradientTest,ModuleMutationCostTest,TrainingSelectionTest,SunIndexRegressionTest,PerformanceEquivalenceTest,TissueMechanicsTest,MechanicalFixtureTest,MechanicsRegressionTest,ForceSignTest,SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=HighPosition3TrainStrategyTest,StructureEpisodeFitnessTest,ControllerStabilityTest,GroundedColonyFitnessTest,StandingStructureTest,CellFileImportTest,BrainInputScalingTest,StructuralMutationTest,NetworkSchedulingTest,ExecutionGradientTest,ModuleMutationCostTest,TrainingSelectionTest,SunIndexRegressionTest,PerformanceEquivalenceTest,TissueMechanicsTest,MechanicalFixtureTest,MechanicsRegressionTest,ForceSignTest,SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 343 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 365 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 Die Performance-Äquivalenztests vergleichen die beschleunigte Sonne mit dem Vollscan
@@ -32,10 +32,15 @@ werden ohne Fenster gemessen. Die 238 separat ausgeführten Weltläufe und ihre 
 sind in [GEWEBEPROBEN.md](GEWEBEPROBEN.md) dokumentiert. `TissueMechanicsSweepTest`
 läuft ausschließlich mit `-Dtissue.sweep=true` und gehört nicht zur Routineauswahl.
 
+HIGH_POSITION3 ergänzt ein Training ganzer klonaler Verbände mit vier Stufen:
+Halten, Störungen ausgleichen, Größensteuerung und Aufbau. Die 16 neuen
+Strategie-/Bewertungsprüfungen gehören zur Routineauswahl. Kontrolllauf und echte
+Zufallsgenerationen sind optional: [HIGH_POSITION3.md](HIGH_POSITION3.md).
+
 ## Physikwelten
 
 Die Netzkorrekturen stehen in [NETZPRUEFUNG.md](NETZPRUEFUNG.md). Ihre
-Korrektheitsregressionen sind Teil der oben genannten 343 Tests. Nur die einzelne
+Korrektheitsregressionen sind Teil der oben genannten 365 Tests. Nur die einzelne
 Mutationsverteilungsprobe bleibt optional:
 
 ```powershell

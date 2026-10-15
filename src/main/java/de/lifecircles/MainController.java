@@ -209,6 +209,7 @@ public class MainController extends BorderPane {
         Label calcFpsLabel = new Label("Calc FPS: 0.0");
         Label stepCountLabel = new Label("Steps: 0");
         Label renderFpsLabel = new Label("Render FPS: 0.0");
+        Label trainingLabel = new Label(calculationService.getTrainingStatus());
 
         // Update status every 500ms
         Thread statusUpdater = new Thread(() -> {
@@ -218,11 +219,13 @@ public class MainController extends BorderPane {
                     double calcFps = calculationService.getFps();
                     long steps = calculationService.getStepCount();
                     double renderFps = simulationView.getFps();
+                    String trainingStatus = calculationService.getTrainingStatus();
                     double targetFps = 1.0 / this.simulationConfig.getRunTimeStep(); // Zielwert in FPS
                     javafx.application.Platform.runLater(() -> {
                         calcFpsLabel.setText(String.format("Calc FPS: %.1f / %.1f", calcFps, targetFps));
                         stepCountLabel.setText(String.format("Steps: %d", steps));
                         renderFpsLabel.setText(String.format("Render FPS: %.1f", renderFps));
+                        trainingLabel.setText(trainingStatus);
                     });
                 } catch (InterruptedException e) {
                     break;
@@ -232,11 +235,12 @@ public class MainController extends BorderPane {
         statusUpdater.setDaemon(true);
         statusUpdater.start();
 
-        HBox statusBar = new HBox(10, calcFpsLabel, stepCountLabel, renderFpsLabel);
+        HBox statusBar = new HBox(10, calcFpsLabel, stepCountLabel, renderFpsLabel, trainingLabel);
         statusBar.setStyle("-fx-padding: 5; -fx-background-color: #333333; -fx-text-fill: white;");
         calcFpsLabel.setStyle("-fx-text-fill: white;");
         stepCountLabel.setStyle("-fx-text-fill: white;");
         renderFpsLabel.setStyle("-fx-text-fill: white;");
+        trainingLabel.setStyle("-fx-text-fill: white;");
         
         return statusBar;
     }

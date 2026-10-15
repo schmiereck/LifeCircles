@@ -1,0 +1,21 @@
+2026-10-15: HIGH_POSITION3 implementation validation
+World: 11200 x 1200, ground top 1150, eight candidates.
+Hold/recover/size: 60 cells per candidate; build: five founders, maximum 60.
+Radius at start: 20; columns: 5; rows: 12 (build: 1).
+Attraction maximum: 90; contact: 125; viscosity: 0.8; rotational damping: 0.8/s; softening: 0.25.
+Energy before every step: 0.75; sunlight/transfer/death disabled by episode policy.
+Episode: 30 seconds; sample: 0.5 seconds; three consecutive successes to advance.
+
+Control (control-60.csv):
+dt=1/60; network initialization seed=573; mutation rate/strength=0; division age=6 seconds.
+No hidden layers or synapses. Output biases: size/green/upward reproduction=12;
+energy share=0; all other outputs=-12. Reproduction only at actor index 9.
+Ten episodes through the real CalculationService path. This is an imposed program, not evolved.
+
+Random (random-5-generations.csv):
+dt=1/60; network initialization seed=574; mutation rate=0.1; mutation strength=0.2.
+Initial genome factory: hidden factor=0.5; state connectivity=0.01; other connectivity=0.025.
+Body color=green; initial state=0; normalized inputs=false.
+Five generations. Parent selection and meta-mutation are not completely seeded.
+Original initial/next genomes preserved in ignored experiments/high-position3-2026-10-15.
+The files are genome populations, not full curriculum checkpoints.

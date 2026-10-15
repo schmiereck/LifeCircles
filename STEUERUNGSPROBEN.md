@@ -123,7 +123,8 @@ beweist ein bereits aufgebauter Turm noch keine erfolgreiche Entwicklung eines
 Turmes aus einer einzelnen Zelle. Die Energieeingänge und Nachbarschaften sind
 hier bewusst andere als in den Herkunftsläufen.
 
-Als nächsten Trainingsversuch würde ich ein separates HIGH_POSITION3 mit einem
+Der daraus entstandene Modus ist in [HIGH_POSITION3.md](HIGH_POSITION3.md)
+beschrieben. Ausgangspunkt war ein separates HIGH_POSITION3 mit einem
 schrittweisen Aufbau der Aufgabe verwenden:
 
 1. Zunächst den vorgegebenen Verband mit laufenden Gehirnen halten. Gleiche

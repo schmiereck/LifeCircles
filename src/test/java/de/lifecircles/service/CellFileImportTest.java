@@ -63,6 +63,18 @@ class CellFileImportTest {
         assertSame(before,service.getLatestState()); assertEquals(1,world.getCellList().size());
     }
 
+    @Test void rejectedTrainingImportPreservesPopulationAndSnapshot() {
+        Environment world=new Environment(300,300);Cell original=cell(100);world.addCell(original);
+        var strategy=new Strategy() {
+            public void onPopulationImported(Environment environment,List<Cell> imported,boolean merge) {
+                throw new IllegalArgumentException("Unsupported training genome");
+            }
+        };
+        CalculationService service=service(world,strategy);var before=service.getLatestState();
+        assertThrows(IllegalArgumentException.class,()->service.importCells(List.of(cell(150)),false));
+        assertEquals(List.of(original),world.getCellList());assertSame(before,service.getLatestState());
+    }
+
     @Test @Timeout(10) void importWaitsForCompleteSimulationStep() throws Exception {
         Environment world = new Environment(300,300);
         CountDownLatch selecting = new CountDownLatch(1), release = new CountDownLatch(1);

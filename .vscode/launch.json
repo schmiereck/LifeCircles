@@ -33,6 +33,14 @@
             "mainClass": "de.lifecircles/de.lifecircles.Main",
             "projectName": "life-circles",
             "args": ["--trainMode=HIGH_POSITION"]
+        },
+        {
+            "type": "java",
+            "name": "Main HIGH_POSITION3",
+            "request": "launch",
+            "mainClass": "de.lifecircles/de.lifecircles.Main",
+            "projectName": "life-circles",
+            "args": ["--trainMode=HIGH_POSITION3"]
         }
     ]
 }

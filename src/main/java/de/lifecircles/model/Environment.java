@@ -113,14 +113,19 @@ public class Environment {
      * @param partitioner Pre-built partitioning strategy for interactions
      */
     public void update(final double deltaTime, final PartitioningStrategy partitioner) {
+        update(deltaTime, partitioner, SimulationStepPolicy.NONE);
+    }
+
+    public void update(final double deltaTime, final PartitioningStrategy partitioner, final SimulationStepPolicy policy) {
         long phaseStart = profiler.start();
         // Calculate sun energy rays
         this.sunRayList.clear();
-        this.sunRayList.addAll(
+        if (policy.useSunlight()) this.sunRayList.addAll(
                 this.energySunCalcService.calculateSunEnergy(
                         this.cellList, this.blockerList, this.width, this.height, this.config, deltaTime
                 )
         );
+        else this.cellList.forEach(Cell::resetSunRayHit);
 
         profiler.finish(SimulationProfiler.Phase.SUN, phaseStart);
         phaseStart = profiler.start();
@@ -162,8 +167,11 @@ public class Environment {
         final List<double[]> brainInputs = this.cellList.stream().map(cell -> CellBrainService.generateInputs(cell, this)).toList();
         profiler.finish(SimulationProfiler.Phase.INPUTS, phaseStart);
         phaseStart = profiler.start();
-        IntStream.range(0, this.cellList.size()).parallel().forEach(i ->
-                CellBrainService.think(this.cellList.get(i), brainInputs.get(i)));
+        IntStream.range(0, this.cellList.size()).parallel().forEach(i -> {
+            Cell cell = this.cellList.get(i);
+            CellBrainService.think(cell, brainInputs.get(i));
+            if (policy != SimulationStepPolicy.NONE) policy.afterThinking(cell);
+        });
         profiler.finish(SimulationProfiler.Phase.BRAINS, phaseStart);
         phaseStart = profiler.start();
         IntStream.range(0, this.cellList.size()).parallel().forEach(i -> {
@@ -196,15 +204,16 @@ public class Environment {
             //cell.updateWithNeighbors(deltaTime, nearbyTypes);
 
             // Dead cells cannot reproduce or serve as an automatic restart seed.
-            if ((cell.getAge() >= this.config.getCellDeathAge()) || (cell.getEnergy() <= 0.0D)) {
+            if (policy.isDead(cell)) {
                 iterator.remove();
                 continue;
             }
 
             // Living cells reproduce using only their available energy.
-            if (ReproductionManagerService.canReproduce(this.config, cell)) {
-                final Cell childCell = ReproductionManagerService.reproduce(this.config, this, cell);
+            if (policy.allowReproduction(cell) && ReproductionManagerService.canReproduce(this.config, cell)) {
+                final Cell childCell = policy.reproduce(this, cell);
                 if (Objects.nonNull(childCell)) {
+                    policy.onBirth(cell, childCell);
                     newCells.add(childCell);
                 }
             }

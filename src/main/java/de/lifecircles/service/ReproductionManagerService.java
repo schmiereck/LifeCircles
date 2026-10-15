@@ -27,6 +27,15 @@ public class ReproductionManagerService {
      * The child inherits traits from the parentCell with mutations.
      */
     public static Cell reproduce(final SimulationConfig config, final Environment environment, final Cell parentCell) {
+        return reproduce(config, environment, parentCell, config.getDivisionMutationRateMultiplier());
+    }
+
+    /** Controlled development experiments can disable birth mutation without changing global settings. */
+    public static Cell reproduceClonally(SimulationConfig config, Environment environment, Cell parent) {
+        return reproduce(config, environment, parent, 0);
+    }
+
+    private static Cell reproduce(SimulationConfig config, Environment environment, Cell parentCell, double divisionMultiplier) {
         SensorActor chosenActor = parentCell.getSensorActors().stream()
                 .filter(actor -> actor.getReproductionDesire() >= config.getReproductionDesireThreshold())
                 .max(Comparator.comparingDouble(SensorActor::getReproductionDesire)).orElse(null);
@@ -36,7 +45,7 @@ public class ReproductionManagerService {
                 parentCell.getRadiusSize() + config.getCellMinGrowRadiusSize() * 2)), environment);
         if (!isFreePosition(environment, childPosition, config.getCellMinGrowRadiusSize())) return null;
         double energy = parentCell.getEnergy() * chosenActor.getReproductionEnergyShareOutput();
-        Cell child = createMutatedChild(config, environment, parentCell, childPosition, chosenActor.getReproductionState(), energy);
+        Cell child = createMutatedChild(config, environment, parentCell, childPosition, chosenActor.getReproductionState(), energy, divisionMultiplier);
         parentCell.setEnergy(parentCell.getEnergy() - energy);
         return child;
     }
@@ -81,11 +90,11 @@ public class ReproductionManagerService {
         return position.wrapped(environment.getWidth(), environment.getHeight());
     }
 
-    private static Cell createMutatedChild(SimulationConfig config, Environment environment, Cell parent, Vector2D position, int state, double energy) {
+    private static Cell createMutatedChild(SimulationConfig config, Environment environment, Cell parent, Vector2D position, int state, double energy, double divisionMultiplier) {
         // The parent's factors control this birth's genetic mutation, for both
         // biological reproduction and training. Changes to the child's own
         // factors below affect its future descendants, not its current genome.
-        double divisionRate = config.getMutationRate() * config.getDivisionMutationRateMultiplier();
+        double divisionRate = config.getMutationRate() * divisionMultiplier;
         double effectiveMutationRate = Math.min(1.0D, divisionRate * parent.getMutationRateFactor());
         double effectiveMutationStrength = config.getMutationStrength() * parent.getMutationStrengthFactor();
         long mutationStart = environment.getProfiler().start();
@@ -97,7 +106,7 @@ public class ReproductionManagerService {
         child.setAngularVelocity(parent.getAngularVelocity());
         child.setVelocity(new Vector2D(parent.getVelocity().getX(), parent.getVelocity().getY()));
         CellType type = parent.getType();
-        double colorStrength = typeMutationStrength / 10 * config.getDivisionMutationRateMultiplier();
+        double colorStrength = typeMutationStrength / 10 * divisionMultiplier;
         child.setType(new CellType(mutateValue(type.getRed(), colorStrength),
                 mutateValue(type.getGreen(), colorStrength), mutateValue(type.getBlue(), colorStrength)));
         child.setEnergy(energy);

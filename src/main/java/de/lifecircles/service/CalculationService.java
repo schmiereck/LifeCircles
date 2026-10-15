@@ -38,6 +38,7 @@ public class CalculationService implements Runnable {
                     case HIGH_ENERGY -> new HighEnergyTrainStrategy();
                     case HIGH_POSITION -> new HighPositionTrainStrategy();
                     case HIGH_POSITION2 -> new HighPosition2TrainStrategy();
+                    case HIGH_POSITION3 -> new HighPosition3TrainStrategy();
                     case TEST_A -> new TestATrainStrategy();
                     case TEST_B -> new TestBTrainStrategy();
                     case TEST_C -> new TestCTrainStrategy();
@@ -77,8 +78,15 @@ public class CalculationService implements Runnable {
 
     void importCells(List<Cell> loaded, boolean merge) {
         synchronized (simulationLock) {
-            if (merge) environment.getCellList().addAll(loaded);
-            else environment.resetCells(loaded);
+            List<Cell> previous = new ArrayList<>(environment.getCellList());
+            try {
+                if (merge) environment.getCellList().addAll(loaded);
+                else environment.resetCells(loaded);
+                trainStrategy.onPopulationImported(environment, List.copyOf(loaded), merge);
+            } catch (RuntimeException exception) {
+                environment.resetCells(previous);
+                throw exception;
+            }
             stateVersion++;
             // Loading must be visible even before Start or while paused, in either LOD mode.
             updateState(snapshotIncludesActors);
@@ -147,6 +155,7 @@ public class CalculationService implements Runnable {
     void update(final double deltaTime) {
         synchronized (simulationLock) {
             stateReadable = false;
+            this.trainStrategy.beforeStep(this.environment, deltaTime);
             final List<Cell> cellList = this.environment.getCellList();
 
             // Update all cells with their neighborhood information
@@ -155,17 +164,19 @@ public class CalculationService implements Runnable {
             environment.getProfiler().finish(SimulationProfiler.Phase.GRID, phaseStart);
 
             // Update environment physics
-            this.environment.update(deltaTime, this.partitioner);
+            this.environment.update(deltaTime, this.partitioner, this.trainStrategy.stepPolicy());
 
             // Strategy-based selection/mutation
             phaseStart = environment.getProfiler().start();
-            this.trainStrategy.selectAndMutate(this.environment);
+            this.trainStrategy.selectAndMutate(this.environment, deltaTime);
             environment.getProfiler().finish(SimulationProfiler.Phase.SELECTION, phaseStart);
             this.stepCount.incrementAndGet();
             stateVersion++;
             stateReadable = true;
         }
     }
+
+    public String getTrainingStatus() { return trainStrategy.getStatus(); }
 
     /** Caller holds simulationLock across the complete capture, not just publication. */
     private void updateState() {
