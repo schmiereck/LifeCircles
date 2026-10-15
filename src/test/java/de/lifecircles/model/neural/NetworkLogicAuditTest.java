@@ -101,51 +101,6 @@ class NetworkLogicAuditTest {
         assertEquals(.025, module.getBias(0), 1e-15);
     }
 
-    @Test void neuronDeletionDisconnectsButDoesNotRemoveNeuronFromLayer() {
-        var net = heldNetwork(); var layer = net.getNeuralNet().getHiddenLayerArr()[0];
-        var removed = layer.getNeuronsArr()[1];
-        net.getNeuralNet().removeNeuronFromHiddenLayer(net.getNeuronValueFunction(), new Random(1), 0);
-        assertEquals(2, layer.getNeuronsArr().length); assertSame(removed, layer.getNeuronsArr()[1]);
-        assertEquals(0, net.getSynapseCount());
-        net.getNeuralNet().addNeuronToHiddenLayer(factory, net.getNeuronValueFunction(), new Random(1), 0, 0);
-        assertEquals(3, layer.getNeuronsArr().length);
-        assertEquals(removed.getId(), layer.getNeuronsArr()[2].getId());
-    }
-
-    @Test void oneNeuronLayerDeletionLeavesDanglingEdgesThatCopyThenDrops() {
-        var net = new NeuralNetwork(factory, 1, new int[]{1}, 1, 1, 0);
-        NeuralNetwork.setRandom(new Random(1) {
-            int call;
-            @Override public double nextDouble() { return call++ == 1 ? 0 : .9; }
-            @Override public int nextInt(int bound) { return 0; }
-        });
-        net.getNeuralNet().applyStructuralMutations(factory, net.getNeuronValueFunction(), 1, .2, false);
-        assertEquals(0, net.getNeuralNet().getHiddenLayerArr().length);
-        assertEquals(2, net.getSynapseCount());
-        Set<NeuronInterface> live = new HashSet<>(); net.getNeuralNet().applyToAllNeurons(live::add);
-        assertTrue(net.getSynapseList().stream().allMatch(e -> !live.contains(e.getSourceNeuron()) || !live.contains(e.getTargetNeuron())));
-        assertEquals(0, new NeuralNetwork(net).getSynapseCount());
-    }
-
-    @Test void randomEdgeCanTargetInputDespiteExplicitExclusion() {
-        var net = new NeuralNetwork(factory, 1, new int[0], 1, 0, 0);
-        net.getNeuralNet().addRandomSynapse(new Random(1) {
-            int call;
-            @Override public int nextInt(int bound) { return call++ == 0 ? 1 : 0; }
-        });
-        assertSame(net.getNeuralNet().getInputNeuronArr()[0], net.getSynapseList().getFirst().getTargetNeuron());
-    }
-
-    @Test void aggressiveMutationCanFailWhenThereIsNoHiddenLayer() {
-        var net = new NeuralNetwork(factory, 1, new int[0], 1, 0, 0);
-        NeuralNetwork.setRandom(new Random(1) {
-            int call;
-            @Override public double nextDouble() { return call++ == 0 ? .9 : 0; }
-        });
-        assertThrows(IllegalArgumentException.class, () -> net.getNeuralNet().mutateAggressively(
-                factory, net.getNeuronValueFunction(), 0, .2));
-    }
-
     @Test void defaultMutationPerturbsManyWeightsEvenWithoutTopologyChange() {
         var cell = CellFactory.createCell(new Vector2D(100, 100), 10);
         var parent = ((CellBrain) cell.getBrain()).getNeuralNetwork();

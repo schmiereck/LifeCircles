@@ -3,6 +3,16 @@
 Stand: 15. Oktober 2026. Produktionslogik unverÃ¤ndert. Die PrÃ¼fung enthÃ¤lt kleine,
 deterministische Versuche und Codeanalyse; keine langen Evolutions- oder SprachmodelllÃ¤ufe.
 
+## Umsetzungsstand
+
+- Strukturmutationen korrigiert: tatsächliche Neuronlöschung, vollständige Layerlöschung,
+  beidseitiges Entfernen von Synapsen, keine Verbindungen zu Eingaben, aggressive
+  Mutation ohne leere Zufallsbereiche und ohne Verschieben fester Layer.
+- `StructuralMutationTest`: sechs reguläre Tests, darunter 960 Strukturmutationsschritte
+  mit Graphprüfung, Kopien und endlichen Ausgaben. Zusammen mit Vererbungs-, Port-
+  und Mutationsfaktorregressionen: 40 Tests erfolgreich.
+- Weitere Befunde werden im Anschluss bearbeitet.
+
 ## Bewertung
 
 Die Grundidee ist brauchbar: Ein vererbbares Netz steuert Zellfunktionen, Zustandsbits

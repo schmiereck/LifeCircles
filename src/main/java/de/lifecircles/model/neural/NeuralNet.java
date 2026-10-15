@@ -390,7 +390,7 @@ public class NeuralNet implements Serializable {
         int removeLayerRange = (this.hiddenLayerArr.length - this.fixedHiddenLayerCount);
         if (removeLayerRange > 0 && random.nextDouble() < structuralMutationRate * 1.5D) { // Erhöhte Wahrscheinlichkeit
             final int pos = random.nextInt(removeLayerRange) + this.fixedHiddenLayerCount;
-            this.removeHiddenLayer(pos);
+            this.removeHiddenLayer(neuronValueFunction, pos);
         }
 
         // Wahrscheinlichkeit, ein Neuron zu einem bestehenden Layer hinzuzufügen
@@ -517,16 +517,16 @@ public class NeuralNet implements Serializable {
         // 50% Chance für eine zusätzliche Strukturmutation
         if (random.nextDouble() < 0.5) {
             // Füge ein zusätzliches Hidden Layer hinzu
-            int pos = random.nextInt(this.hiddenLayerArr.length + 1);
+            int pos = this.fixedHiddenLayerCount + random.nextInt(this.hiddenLayerArr.length - this.fixedHiddenLayerCount + 1);
             int neuronCount = 2 + random.nextInt(4); // 2-5 Neuronen
             this.addHiddenLayer(neuronValueFunctionFactory, neuronValueFunction, pos, neuronCount, 1.0);
         }
 
         // 50% Chance für mehrere zusätzliche Neuronen
-        if (random.nextDouble() < 0.5 && !this.hiddenLayerArr.equals(null)) {
+        if (random.nextDouble() < 0.5 && this.hiddenLayerArr.length > this.fixedHiddenLayerCount) {
             int count = 1 + random.nextInt(3); // 1-3 neue Neuronen
             for (int i = 0; i < count; i++) {
-                int layer = random.nextInt(this.hiddenLayerArr.length);
+                int layer = this.fixedHiddenLayerCount + random.nextInt(this.hiddenLayerArr.length - this.fixedHiddenLayerCount);
                 this.addNeuronToHiddenLayer(neuronValueFunctionFactory, neuronValueFunction, random, layer, mutationStrength);
             }
         }
@@ -553,7 +553,9 @@ public class NeuralNet implements Serializable {
 
         // Make sure we're not connecting within the same layer
         if (sourceLayerIndex == targetLayerIndex) {
-            targetLayerIndex = (sourceLayerIndex + 1) % allLayers.size();
+            // With only input and output there is no distinct, legal target.
+            if (allLayers.size() == 2) return;
+            targetLayerIndex = targetLayerIndex % (allLayers.size() - 1) + 1;
         }
 
         List<NeuronInterface> sourceLayer = allLayers.get(sourceLayerIndex);
@@ -651,11 +653,13 @@ public class NeuralNet implements Serializable {
         return retNeuron;
     }
 
-    private void removeHiddenLayer(final int pos) {
+    private void removeHiddenLayer(final NeuronValueFunction neuronValueFunction, final int pos) {
+        if (pos < this.fixedHiddenLayerCount) throw new IllegalArgumentException("Cannot remove a fixed layer");
         final Layer layer = this.hiddenLayerArr[pos];
-        if (layer.getNeuronList().size() == 1) {
-            // Entferne Layer aus Array
-            this.hiddenLayerArr = removeLayer(this.hiddenLayerArr, pos);
+        this.hiddenLayerArr = removeLayer(this.hiddenLayerArr, pos);
+        for (NeuronInterface neuron : layer.getNeuronsArr()) {
+            this.removeNeuronNeuronSynapses(neuron);
+            neuronValueFunction.releaseNeuron(this, neuron);
         }
     }
 
@@ -715,8 +719,8 @@ public class NeuralNet implements Serializable {
     }
 
     private void removeNeuron(final NeuronValueFunction neuronValueFunction, final Layer layer, final int neuronIdx) {
-        final List<NeuronInterface> layerNeuronList = layer.getNeuronList();
-        final NeuronInterface removedNeuron = layerNeuronList.remove(neuronIdx);
+        final NeuronInterface removedNeuron = layer.getNeuron(neuronIdx);
+        layer.removeNeuron(neuronIdx);
 
         this.removeNeuronNeuronSynapses(removedNeuron);
 
@@ -794,26 +798,20 @@ public class NeuralNet implements Serializable {
     }
 
     private void removeNeuronNeuronSynapses(final NeuronInterface removedNeuron) {
-        int synapsePos = 0;
-        while (synapsePos < this.synapseArray.length) {
-            final Synapse synapse = this.synapseArray[synapsePos];
+        final List<Synapse> retained = new ArrayList<>(this.synapseArray.length);
+        for (final Synapse synapse : this.synapseArray) {
             final NeuronInterface sourceNeuron = synapse.getSourceNeuron();
             final NeuronInterface targetNeuron = synapse.getTargetNeuron();
             if (sourceNeuron == removedNeuron || targetNeuron == removedNeuron) {
                 final int outputTypePos = synapse.getSourceOutputTypePos();
                 sourceNeuron.removeOutputSynapse(outputTypePos, synapse);
-                if (targetNeuron == removedNeuron) {
-                    // Entferne Synapse
-                    removeSynapseAt(synapsePos);
-                    continue;
-                }
                 int inputTypePos = synapse.getTargetInputTypePos();
                 targetNeuron.removeInputSynapse(inputTypePos, synapse);
-                this.removeSynapseAt(synapsePos);
             } else {
-                synapsePos++;
+                retained.add(synapse);
             }
         }
+        this.synapseArray = retained.toArray(Synapse[]::new);
     }
 
     public void removeRandomSynapse(final Random random) {
