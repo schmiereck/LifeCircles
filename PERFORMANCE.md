@@ -1,5 +1,8 @@
 # Performance: kurze Messungen vor langen Evolutionsläufen
 
+Die Gesamtmessungen unten stammen vom 14. Oktober 2026. Die weitere Sonnenoptimierung
+vom 15. Oktober ist im Nachtrag am Ende dokumentiert.
+
 ## Ergebnis
 
 Die einfachen Verbesserungen sind umgesetzt. Die Simulation entscheidet weiterhin
@@ -46,17 +49,17 @@ Die kleine Differenz bei Gehirnen ist kein Nachweis einer Gehirnoptimierung; der
 Berechnung wurde nicht optimiert. Messrauschen, Cache und GC beeinflussen Phasen gemeinsam.
 Auch die optimierte dichte Welt muss alle tatsächlich nahen Aktorpaare prüfen.
 
-### 2. Sonne: Streifen quer zur Strahlrichtung
+### 2. Sonne: Streifen quer zur Strahlrichtung (erste Variante, 14. Oktober)
 
 Alle Strahlen eines Schritts haben dieselbe Richtung. Für sie ist die Koordinate
 `u = x * dirY - y * dirX` entlang des Strahls konstant. Kreise und Rechtecke werden
-über ihre projizierten Intervalle in 64 Einheiten breite Streifen einsortiert. Ein
+über ihre projizierten Intervalle in der ersten Variante in 64 Einheiten breite Streifen einsortiert. Ein
 Strahl prüft nur die Objekte in seinem Streifen, weiterhin mit den bisherigen exakten
 Kreis- und Rechteckschnittberechnungen. Die ursprüngliche Objekt-Reihenfolge bleibt
 auch bei identischen Treffern erhalten. Die konservative Intervallauflösung berücksichtigt
 Rundung an Streifengrenzen.
 
-Für weniger als acht Strahlen oder weniger als insgesamt 256 Objekte bleibt es beim
+In dieser ersten Variante blieb es für weniger als acht Strahlen oder weniger als insgesamt 256 Objekte beim
 direkten Scan. So entsteht bei kleinen Welten und schwacher Sonne kein zusätzlicher Index.
 Der Index wird bei Bedarf pro Schritt neu erzeugt; Bewegungen, Größenänderungen und
 änderbare Blocker benötigen dadurch keine Invalidierungslogik. Die bestehende
@@ -189,3 +192,77 @@ zusätzlich identische Zellenergien zwischen beiden Verfahren.
 - [Sonne](docs/performance/sun.csv), [Snapshots](docs/performance/snapshots.csv).
 - [Messaufbau](src/test/java/de/lifecircles/service/PerformanceStudyTest.java),
   [Äquivalenzprüfungen](src/test/java/de/lifecircles/service/PerformanceEquivalenceTest.java).
+
+## Nachtrag: Sonne am 15. Oktober 2026
+
+Der bereits vorhandene Sonnenindex wurde gezielt weiter beschleunigt:
+
+- Wiederverwendbare Arrays ersetzen die pro Schritt erzeugten HashMaps, Schlüsselobjekte
+  und Bucket-Listen. Die Objektverweise werden auch in dunklen Schritten und beim
+  Wechsel zum Vollscan freigegeben; die Arraykapazitäten bleiben erhalten.
+- Die Querstreifen sind in normalen Welten 24 Einheiten breit. Eine zusätzliche
+  Tiefenstaffelung gruppiert Objekte nach ihrem frühestmöglichen Treffer, bei normalen
+  Welthöhen in 128 Einheiten hohen Gruppen. Jedes Objekt liegt in genau einer Tiefengruppe
+  und gegebenenfalls mehreren Querstreifen. Die Kopfarrays sind auf insgesamt 65536
+  Buckets begrenzt; für größere Welten werden die Gruppen gröber.
+- Leere Streifen werden direkt erkannt. Innerhalb eines belegten Streifens beginnt
+  die Suche bei der ersten belegten Tiefengruppe. Sobald deren untere Grenze hinter
+  dem nächsten bekannten Treffer liegt, endet die Suche.
+- Blocker werden zuerst geprüft; der erste Schattentreffer begrenzt anschließend die
+  Zellsuche. Die bisherigen exakten Schnittgleichungen und die Zellpriorität bei
+  gleichzeitigem Zell-/Blockertreffer bleiben erhalten.
+- Tiefengruppen verändern die Suchreihenfolge. Deshalb tragen Kandidaten ihren ursprünglichen
+  Listenindex: Bei exakt gleichem Zelltreffer gewinnt weiterhin die zuerst gelistete Zelle,
+  auch wenn sie erst in einer späteren Gruppe geprüft wird. Tangenten und Treffern an
+  Gruppengrenzen wird durch konservative Rundungspuffer Rechnung getragen.
+- Der Index wird ab 16 Strahlen und insgesamt mindestens 256 Objekten verwendet.
+  Die zusätzliche Mindeststrahlzahl vermeidet Aufbaukosten bei schwacher Sonne.
+  Bei null Strahlen entfallen auch die Winkel- und Geometrieberechnungen; Sonnenkontakt,
+  Tageszeit und Strahlakkumulator werden weiterhin für jeden Schritt aktualisiert.
+
+Frische Vergleichsmessung auf demselben Rechner, weiterhin Welt 6400 × 6400,
+Strahlrate 120, Abstand 20, 100 Blocker, jeweils drei Wiederholungen:
+
+| Gleichmäßig verteilte Zellen | Vorhandener Streifenindex, ms/Schritt | Neuer Index, ms/Schritt | Faktor |
+| --- | ---: | ---: | ---: |
+| 1024 | 0,2713 | 0,0697 | 3,9 |
+| 4096 | 0,3636 | 0,1753 | 2,1 |
+| 16384 | 1,3180 | 0,6941 | 1,9 |
+
+Die Tabelle vergleicht die Weiterentwicklung mit dem **bereits beschleunigten Index**.
+Sie beschreibt ausschließlich die Sonnenphase. Die Gesamtschrittzeit wurde für diesen
+Nachtrag nicht erneut gemessen.
+
+Zusätzliche Lastfälle verwenden gleich große Zellen im Abstand 24, angeordnet als
+quadratische Kolonie ab (2000, 1000). Die abgeschattete Variante ergänzt einen 8000
+Einheiten breiten Blocker bei Y = 500. Bei 16384 Zellen kosten diese Fälle mit dem neuen
+Index etwa **0,481 ms dicht / 0,488 ms abgeschattet**. Für diese beiden Anordnungen wurde
+kein Vorher-Lauf des alten Index erfasst; daraus wird kein zusätzlicher Vergleichsfaktor abgeleitet.
+
+Die normale Strahlrate 10 bei Abstand 60 wurde separat geprüft. In ihrem kurzen
+Beobachtungsfenster entstehen im Mittel etwa sieben Strahlen pro Schritt; deshalb
+benutzt auch der eingeschaltete Beschleuniger dort den direkten Scan. Dieser Lauf
+dient der Kontrolle des Rückfalls, nicht dem Nachweis eines Sonnen-Speedups bei
+der üblichen Strahldichte. Wie zuvor: 15 Aufwärm- und 30 Messschritte, Mediane aus
+drei Wiederholungen, keine Laufzeit-Pass/Fail-Schwellen. JIT- und GC-Schwankungen bleiben sichtbar.
+
+Die vier neuen `SunIndexRegressionTest`-Prüfungen vergleichen zusätzlich exakte
+Strahlendpunkte, Energie und Sonnenkontakt bei Bewegung, Größenänderung, entfernten
+Zellen, Dunkelheit, Umschaltung zum Vollscan, geänderten Weltdimensionen, überbreiten
+Blockern, Tangenten, gleichen Treffern in verschiedenen Tiefengruppen, Strahlstart
+innerhalb einer Zelle und Treffern genau am Weltende. Auch ein Blocker am Strahlstart
+und identische Zell-/Blockertreffzeiten werden geprüft. Der gemeinsame gezielte Lauf
+umfasst jetzt **282 Tests**.
+
+```powershell
+mvn test '-Dtest=SunIndexRegressionTest,PerformanceEquivalenceTest,SunContactTest'
+mvn test '-Dtest=SunPerformanceStudyTest' '-Dperformance.study=true' '-Dsun.layouts=uniform,dense,shade' '-Dperformance.output=target/sun-followup' '-DargLine=-Djava.util.concurrent.ForkJoinPool.common.parallelism=4'
+# Normale Strahldichte:
+mvn test '-Dtest=SunPerformanceStudyTest' '-Dperformance.study=true' '-Dsun.rate=10' '-Dsun.spacing=60' '-Dperformance.output=target/sun-normal' '-DargLine=-Djava.util.concurrent.ForkJoinPool.common.parallelism=4'
+```
+
+- [Vorheriger Index, frische Baseline](docs/performance/sun-followup-before.csv),
+  [neuer Index, drei Anordnungen](docs/performance/sun-followup-after.csv),
+  [normale Strahldichte](docs/performance/sun-followup-normal.csv).
+- [Index](src/main/java/de/lifecircles/service/ProjectedSunIndex.java),
+  [Regressionen](src/test/java/de/lifecircles/service/SunIndexRegressionTest.java).

@@ -7,8 +7,7 @@ import de.lifecircles.model.Vector2D;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Service handling generation of sun energy rays,
@@ -19,6 +18,8 @@ public class EnergySunCalcService {
     private double timeInCycle = 0.0; // Tracks time within the day/night cycle
     private final Random random;
     private final boolean indexed;
+    private final ProjectedSunIndex<Cell> cellIndex = new ProjectedSunIndex<>();
+    private final ProjectedSunIndex<Blocker> blockerIndex = new ProjectedSunIndex<>();
 
     public EnergySunCalcService() {
         this(new Random());
@@ -34,18 +35,20 @@ public class EnergySunCalcService {
         this.indexed = indexed;
     }
 
-    /** All rays in a step are parallel: their perpendicular coordinate is constant. */
-    private static final class Strips<T> {
-        private final Map<Long, List<T>> buckets = new HashMap<>();
-        void add(T item, double center, double extent) {
-            double padding = Math.max(1e-9, 8 * Math.ulp(Math.abs(center) + extent));
-            long first = (long) Math.floor((center - extent - padding) / 64);
-            long last = (long) Math.floor((center + extent + padding) / 64);
-            for (long bin = first; bin <= last; bin++) buckets.computeIfAbsent(bin, unused -> new ArrayList<>()).add(item);
-        }
-        List<T> candidates(double coordinate) {
-            return buckets.getOrDefault((long) Math.floor(coordinate / 64), List.of());
-        }
+    private static double circleHitT(Cell cell, double rayStartX, double rayStartY, double dirX, double dirY) {
+        Vector2D c = cell.getPosition();
+        double r = cell.getRadiusSize();
+        double dx = rayStartX - c.getX();
+        double dy = rayStartY - c.getY();
+        double a = dirX * dirX + dirY * dirY;
+        double b = 2 * (dx * dirX + dy * dirY);
+        double cVal = dx * dx + dy * dy - r * r;
+        double discriminant = b * b - 4 * a * cVal;
+        if (discriminant < 0) return Double.POSITIVE_INFINITY;
+        double sqrtDisc = Math.sqrt(discriminant);
+        double t1 = (-b - sqrtDisc) / (2 * a);
+        double t2 = (-b + sqrtDisc) / (2 * a);
+        return (t1 > 0) ? t1 : ((t2 > 0) ? t2 : Double.POSITIVE_INFINITY);
     }
 
     public List<SunRay> calculateSunEnergy(
@@ -58,7 +61,7 @@ public class EnergySunCalcService {
         // This call calculates one step's sunlight, not lifetime exposure.
         // Reset even when the accumulator produces no rays or all rays are blocked.
         for (Cell cell : cells) cell.resetSunRayHit();
-        final List<SunRay> rays = new ArrayList<>();
+        cellIndex.clear(); blockerIndex.clear();
 
         // Update time in the day/night cycle
         this.timeInCycle = (this.timeInCycle + deltaTime) % SimulationConfig.SUN_DAY_NIGHT_CYCLE_DURATION;
@@ -73,6 +76,8 @@ public class EnergySunCalcService {
         this.rayAccumulator += raysPerSecond * deltaTime;
         final int numRays = (int) this.rayAccumulator;
         this.rayAccumulator -= numRays;
+        final List<SunRay> rays = new ArrayList<>(Math.max(0, numRays));
+        if (numRays == 0) return rays;
 
         // Sonnenwinkel interpolieren: Tag = vorwärts, Nacht = rückwärts
         double t = this.timeInCycle / SimulationConfig.SUN_DAY_NIGHT_CYCLE_DURATION;
@@ -106,16 +111,21 @@ public class EnergySunCalcService {
         double margin = width * 2.0;
         minX = Math.max(minX, -margin);
         maxX = Math.min(maxX, width + margin);
-        Strips<Cell> cellStrips = null;
-        Strips<Blocker> blockerStrips = null;
+        ProjectedSunIndex<Cell> cellStrips = null;
+        ProjectedSunIndex<Blocker> blockerStrips = null;
         // For a few rays/cells, scanning avoids index construction overhead.
-        if (indexed && numRays >= 8 && cells.size() + blockers.size() >= 256) {
-            cellStrips = new Strips<>(); blockerStrips = new Strips<>();
+        if (indexed && dirY > 0 && numRays >= 16 && cells.size() + blockers.size() >= 256
+                && cellIndex.begin(minX * dirY, maxX * dirY, height) && blockerIndex.begin(minX * dirY, maxX * dirY, height)) {
+            cellStrips = cellIndex; blockerStrips = blockerIndex;
+            int ordinal = 0;
             for (Cell cell : cells) cellStrips.add(cell,
-                    cell.getPosition().getX() * dirY - cell.getPosition().getY() * dirX, cell.getRadiusSize());
+                    ordinal++, cell.getPosition().getX() * dirY - cell.getPosition().getY() * dirX, cell.getRadiusSize(),
+                    cell.getPosition().getY() - cell.getRadiusSize());
+            ordinal = 0;
             for (Blocker blocker : blockers) blockerStrips.add(blocker,
-                    blocker.getPosition().getX() * dirY - blocker.getPosition().getY() * dirX,
-                    (Math.abs(dirY) * blocker.getWidth() + Math.abs(dirX) * blocker.getHeight()) / 2);
+                    ordinal++, blocker.getPosition().getX() * dirY - blocker.getPosition().getY() * dirX,
+                    (Math.abs(dirY) * blocker.getWidth() + Math.abs(dirX) * blocker.getHeight()) / 2,
+                    blocker.getPosition().getY() - blocker.getHeight() / 2);
         }
         for (int rayNo = 0; rayNo < numRays; rayNo++) {
             // Strahlen gleichmäßig (aber zufällig) im erweiterten Bereich verteilen
@@ -136,35 +146,16 @@ public class EnergySunCalcService {
                 double tX = dirX > 0 ? tX2 : tX1;
                 if (tX > 0) tMax = Math.min(tMax, tX);
             }
-            // Endpunkt des Strahls
-            double rayEndX = rayStartX + dirX * tMax;
-            double rayEndY = rayStartY + dirY * tMax;
-            // Schnitt mit Zellen und Blockern wie gehabt, aber entlang der Strahlrichtung
-            double nearestCellHitT = Double.POSITIVE_INFINITY;
-            Cell hitCell = null;
-            for (Cell cell : cellStrips == null ? cells : cellStrips.candidates(rayStartX * dirY)) {
-                // Ray-Circle-Intersection
-                Vector2D c = cell.getPosition();
-                double r = cell.getRadiusSize();
-                double dx = rayStartX - c.getX();
-                double dy = rayStartY - c.getY();
-                double a = dirX * dirX + dirY * dirY;
-                double b = 2 * (dx * dirX + dy * dirY);
-                double cVal = dx * dx + dy * dy - r * r;
-                double discriminant = b * b - 4 * a * cVal;
-                if (discriminant >= 0) {
-                    double sqrtDisc = Math.sqrt(discriminant);
-                    double t1 = (-b - sqrtDisc) / (2 * a);
-                    double t2 = (-b + sqrtDisc) / (2 * a);
-                    double tCell = (t1 > 0) ? t1 : ((t2 > 0) ? t2 : Double.POSITIVE_INFINITY);
-                    if (tCell > 0 && tCell < nearestCellHitT && tCell < tMax) {
-                        nearestCellHitT = tCell;
-                        hitCell = cell;
-                    }
-                }
-            }
+            // Find shade first, so its depth also bounds the subsequent cell traversal.
             double nearestBlockerHitT = Double.POSITIVE_INFINITY;
-            for (Blocker blocker : blockerStrips == null ? blockers : blockerStrips.candidates(rayStartX * dirY)) {
+            var blockerCandidates = blockerStrips == null ? null : blockerStrips.candidates(rayStartX * dirY);
+            Iterator<Blocker> blockerIterator = blockerCandidates == null ? blockers.iterator() : blockerCandidates;
+            while (blockerIterator.hasNext()) {
+                if (blockerCandidates != null) {
+                    double limitY = dirY * Math.min(nearestBlockerHitT, tMax);
+                    if (blockerCandidates.lowerY() > limitY + Math.max(1e-9, 8 * Math.ulp(limitY))) break;
+                }
+                Blocker blocker = blockerIterator.next();
                 // Ray-AABB-Intersection
                 double bx = blocker.getPosition().getX() - blocker.getWidth() / 2;
                 double by = blocker.getPosition().getY() - blocker.getHeight() / 2;
@@ -193,6 +184,33 @@ public class EnergySunCalcService {
                 }
                 if (tmax >= tmin && tmin > 0 && tmin < nearestBlockerHitT && tmin < tMax) {
                     nearestBlockerHitT = tmin;
+                }
+            }
+            // Schnitt mit Zellen und Blockern wie gehabt, aber entlang der Strahlrichtung
+            double nearestCellHitT = Double.POSITIVE_INFINITY;
+            Cell hitCell = null;
+            if (cellStrips == null) {
+                for (Cell cell : cells) {
+                    double tCell = circleHitT(cell, rayStartX, rayStartY, dirX, dirY);
+                    if (tCell > 0 && tCell < nearestCellHitT && tCell < tMax) {
+                        nearestCellHitT = tCell; hitCell = cell;
+                    }
+                }
+            } else {
+                int nearestOrdinal = Integer.MAX_VALUE;
+                var depthCandidates = cellStrips.candidates(rayStartX * dirY);
+                while (depthCandidates.hasNext()) {
+                    double limitY = dirY * Math.min(nearestCellHitT, Math.min(nearestBlockerHitT, tMax));
+                    if (depthCandidates.lowerY() > limitY + Math.max(1e-9, 8 * Math.ulp(limitY))) break;
+                    int ordinal = depthCandidates.ordinal();
+                    Cell cell = depthCandidates.next();
+                    double tCell = circleHitT(cell, rayStartX, rayStartY, dirX, dirY);
+                    if (tCell > 0 && tCell < tMax && (tCell < nearestCellHitT
+                            || (tCell == nearestCellHitT && ordinal < nearestOrdinal))) {
+                        nearestCellHitT = tCell;
+                        nearestOrdinal = ordinal;
+                        hitCell = cell;
+                    }
                 }
             }
             double rayHitT = tMax;
