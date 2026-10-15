@@ -23,6 +23,12 @@ deterministische Versuche und Codeanalyse; keine langen Evolutions- oder Sprachm
   Zellensimulation ohne Trainingsaufzeichnung; Modulspuren bleiben pro Instanz getrennt.
   35 Lern-, Port-, Vererbungs- und Steuerungstests erfolgreich, einschließlich numerischer
   Gradienten für Rückkopplungen mit Vorzustand und beider Schlaf/Wach-Übergänge.
+- Training korrigiert: maximal 20 % unveraenderte Elitegenome (mindestens ein Platz
+  bei Zielgroesse > 1), verbleibende Plaetze Mutationskandidaten. Elite und Mutanten
+  beginnen als frische Zellen mit gleicher Energie, Groesse, Wachstumsphase, Ruhe und
+  genau einem initialen Denkschritt; Eltern bleiben unveraendert. HIGH_POSITION2
+  bevorzugt die Abschnittsmitte, berechnet Scores einmal und faerbt nicht mehr zufaellig um.
+  47 gezielte Trainings-, Energie- und Mutationsfaktortests erfolgreich.
 - Weitere Befunde werden im Anschluss bearbeitet.
 
 ## Bewertung

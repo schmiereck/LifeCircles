@@ -17,13 +17,13 @@ final class TrainingPopulationBuilder {
             return Optional.empty();
         }
         SimulationConfig config = SimulationConfig.getInstance();
-        int eliteCount = Math.min(targetCount, winners.size());
+        // Reserve at least 80% of a full generation for mutation candidates.
+        int eliteCount = Math.min(winners.size(), targetCount > 1 ? Math.max(1, targetCount / 5) : 0);
         List<Cell> parents = new ArrayList<>(targetCount);
         List<Vector2D> positions = new ArrayList<>(targetCount);
         for (int slot = 0; slot < targetCount; slot++) {
             Cell parent = slot < eliteCount ? winners.get(slot) : winners.get(random.nextInt(winners.size()));
-            double radius = sections ? config.getCellMaxRadiusSize()
-                    : slot < eliteCount ? parent.getRadiusSize() : config.getCellMinGrowRadiusSize();
+            double radius = sections ? config.getCellMaxRadiusSize() : config.getCellMinGrowRadiusSize();
             double sectionWidth = world.getWidth() / targetCount;
             Vector2D preferred;
             if (sections) {
@@ -57,13 +57,11 @@ final class TrainingPopulationBuilder {
         }
 
         List<Cell> generation = new ArrayList<>(targetCount);
-        generation.addAll(winners.subList(0, eliteCount));
-        // No repeated biological reproduction attempts, and no energy taken from winners.
-        for (int slot = eliteCount; slot < targetCount; slot++) {
+        // Elites and mutants both start fresh; no physical or neural lifetime advantage.
+        for (int slot = 0; slot < targetCount; slot++) {
             Cell parent = parents.get(slot);
-            Cell child = ReproductionManagerService.createTrainingOffspring(config, world, parent,
-                    positions.get(slot), sections ? 0 : parent.getCellState());
-            if (child == null) return Optional.empty();
+            Cell child = ReproductionManagerService.createTrainingFounder(config, world, parent,
+                    positions.get(slot), sections ? 0 : parent.getCellState(), slot >= eliteCount);
             generation.add(child);
         }
         for (int slot = 0; slot < targetCount; slot++) {
@@ -76,7 +74,6 @@ final class TrainingPopulationBuilder {
                 ReproductionManagerService.calcActiveLayersByState(cell);
             }
             for (SensorActor actor : cell.getSensorActors()) actor.updateCachedPosition();
-            if (sections && slot < eliteCount) CellBrainService.think(cell);
         }
         return Optional.of(generation);
     }

@@ -56,7 +56,9 @@ class TrainingGenerationTest {
         generation(mode.factory.get(), world, mode);
         assertEquals(mode.target, world.getCellList().size());
         assertEquals(mode.target, new HashSet<>(world.getCellList()).size());
-        assertSame(parent, world.getCellList().getFirst());
+        assertNotSame(parent, world.getCellList().getFirst());
+        assertEquals(7,world.getCellList().getFirst().getGeneration());
+        assertEquals(.2,parent.getEnergy());
         for (int i = 0; i < world.getCellList().size(); i++) {
             Cell cell = world.getCellList().get(i);
             assertEquals(1, cell.getEnergy(), 0);

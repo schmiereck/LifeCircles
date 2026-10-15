@@ -46,7 +46,29 @@ public class ReproductionManagerService {
                                                final Cell parent, final Vector2D position, final int state) {
         Vector2D spawn = wrap(position, environment);
         if (!isFreePosition(environment, spawn, config.getCellMinGrowRadiusSize())) return null;
-        return createMutatedChild(config, environment, parent, spawn, state, SimulationConfig.CELL_MAX_ENERGY);
+        return createTrainingFounder(config, environment, parent, spawn, state, true);
+    }
+
+    /** Fresh, equally initialized evaluation episode; elites copy genes without mutation. */
+    public static Cell createTrainingFounder(SimulationConfig config, Environment environment,
+                                             Cell parent, Vector2D position, int state, boolean mutate) {
+        double rate = mutate ? Math.min(1, config.getMutationRate() * parent.getMutationRateFactor()) : 0;
+        double strength = mutate ? config.getMutationStrength() * parent.getMutationStrengthFactor() : 0;
+        long start = environment.getProfiler().start();
+        NeuralNetwork network = parent.getBrain().mutate(rate, strength);
+        environment.getProfiler().finish(SimulationProfiler.Phase.MUTATION, start);
+        Cell founder = new Cell(position, config.getCellMaxRadiusSize() / 2, new CellBrain(network));
+        founder.startGrowthProcess();
+        founder.setType(parent.getType());
+        founder.setGeneration(parent.getGeneration() + (mutate ? 1 : 0));
+        founder.setMutationRateFactor(parent.getMutationRateFactor());
+        founder.setMutationStrengthFactor(parent.getMutationStrengthFactor());
+        if (mutate) founder.mutateMutationFactors(config.getMutationRate(), config.getMutationStrength());
+        founder.setCellState(state);
+        network.rnnClearPreviousState();
+        for (SensorActor actor : founder.getSensorActors()) actor.updateCachedPosition();
+        CellBrainService.think(founder);
+        return founder;
     }
 
     public static boolean isFreePosition(Environment environment, Vector2D position, double radius) {

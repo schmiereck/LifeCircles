@@ -94,46 +94,17 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
                 .map(cell -> cell.getPosition().getY()).orElse(0.0D);
         final double heightRange = maxHeight - minHeight;
 
-        // Sortiere Zellen nach einer gewichteten Kombination aus Y-Position und Nähe zur Mitte
-        final List<Cell> sortedCellList = cells.stream().
-                sorted((c1, c2) -> {
-                    double c1x = c1.getPosition().getX();
-                    double c2x = c2.getPosition().getX();
-                    int section1 = (int) (c1x / xSpace);
-                    int section2 = (int) (c2x / xSpace);
+        // Lower scores prefer higher cells and positions near the section center.
+        Map<Cell, Double> scores = new IdentityHashMap<>();
+        for (Cell cell : cells) {
+            double x = cell.getPosition().getX();
+            double middle = Math.floor(x / xSpace) * xSpace + xSpace / 2;
+            double distance = Math.abs(x - middle) / (xSpace / 2);
+            double height = heightRange > 0 ? (cell.getPosition().getY() - minHeight) / heightRange : .5;
+            scores.put(cell, POSITION_WEIGHT * height + DISTANCE_WEIGHT * distance);
+        }
+        final List<Cell> sortedCellList = cells.stream().sorted(Comparator.comparingDouble(scores::get)).toList();
 
-                    // Berechne Abstand zur Mitte für beide Zellen
-                    double section1Mid = xSpace * section1 + xSpace / 2.0D;
-                    double section2Mid = xSpace * section2 + xSpace / 2.0D;
-                    double distToMid1 = Math.abs(c1x - section1Mid);
-                    double distToMid2 = Math.abs(c2x - section2Mid);
-
-                    // Normalisiere die Werte
-                    double maxPossibleDistance = xSpace / 2.0D; // Maximaler Abstand zur Mitte eines Abschnitts
-                    double normalizedDistToMid1Score = (1.0D - (distToMid1 / maxPossibleDistance)); // 0 = perfekt zentriert, 1 = am Rand
-                    double normalizedDistToMid2Score = (1.0D - (distToMid2 / maxPossibleDistance));
-
-                    // Y-Position (höher ist besser)
-                    // Statt auf gesamte Höhe zu normalisieren, verwenden wir die tatsächlichen min/max Werte
-                    // und stellen sicher, dass wir Division durch Null vermeiden
-                    double normalizedY1Score = heightRange > 0.0D ?
-                            1.0D - ((maxHeight - c1.getPosition().getY()) / heightRange) :
-                            0.5D; // Defaultwert bei keinem Unterschied
-                    double normalizedY2Score = heightRange > 0.0D ?
-                            1.0D - ((maxHeight - c2.getPosition().getY()) / heightRange) :
-                            0.5D;
-
-                    // Berechne Gesamtbewertung:
-                    // - Hohe Y-Position gibt einen hohen Wert
-                    // - Kleine Distanz zur Mitte gibt einen hohen Wert
-                    double score1 = (POSITION_WEIGHT * normalizedY1Score) + (DISTANCE_WEIGHT * (normalizedDistToMid1Score));
-                    double score2 = (POSITION_WEIGHT * normalizedY2Score) + (DISTANCE_WEIGHT * (normalizedDistToMid2Score));
-
-                    return Double.compare(score1, score2);
-                }).
-                toList();
-
-        // Wähle die besten Zellen aus jedem Abschnitt aus
         List<Cell> winners = new ArrayList<>();
         int[] selectedPerSection = new int[SeperatorCount];
         int maxPerSection = 2;//Math.max(1, cells.size() / SeperatorCount);
@@ -150,12 +121,7 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
             }
         }
 
-        TrainingPopulationBuilder.build(environment, winners, SeperatorCount, true, random).ifPresent(generation -> {
-            for (Cell cell : generation) {
-                cell.setType(new CellType(random.nextDouble(), random.nextDouble(), random.nextDouble()));
-                de.lifecircles.model.neural.CellBrainService.think(cell);
-            }
-            environment.resetCells(generation);
-        });
+        TrainingPopulationBuilder.build(environment, winners, SeperatorCount, true, random)
+                .ifPresent(environment::resetCells);
     }
 }
