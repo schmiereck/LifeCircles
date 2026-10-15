@@ -167,6 +167,15 @@ statistische Serie unabhaengiger Initialpopulationen. Ein Erfolg der neuen Auswa
 gegenueber der alten oder die allgemeine Evolution von Organismen ist damit nicht
 nachgewiesen. Die beschriebenen Lernfortschritte beziehen sich auf diese Laeufe.
 
+## Ergaenzung: isolierte Steuerungsversuche
+
+Die nachfolgenden [Steuerungsproben](STEUERUNGSPROBEN.md) trennen das Halten eines
+vorgegebenen Verbandes von Sonnenenergie und Teilung. Vier ausgewaehlte Programme
+lassen eine tragfaehige Packung bereits mit eingefrorenen Kraftausgaengen
+zusammenbrechen. Damit ist laufende Rueckkopplung keine notwendige Ursache;
+die Mischung aus Anziehung und Abstossung selbst traegt diesen Verband nicht.
+Die groebere Einfrierkontrolle oben hatte mehrere Einfluesse gleichzeitig geaendert.
+
 ## Daten, Zellstaende und Wiederholung
 
 Kleine Rohdaten und Grafiken sind versioniert unter `docs/evolution/pilot/` und
