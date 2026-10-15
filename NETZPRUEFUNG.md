@@ -55,6 +55,13 @@ deterministische Versuche und Codeanalyse; keine langen Evolutions- oder Sprachm
   eigenstaendige Modellerweiterungen; niedrigere globale Denkfrequenz und reine
   Topologieversionierung benoetigen vorher weitere API-/Zeitmodellarbeit.
 
+## Nachtrag zur Verbandsselektion
+
+HIGH_POSITION2 bewertet inzwischen die anhaltende Hoehe geometrisch bodenverbundener
+Verbaende. Feste Hoehenskala, 20 Stichproben und bevorzugte Basiszellen ersetzen
+momentane Einzelzellhoehe und den gewichteten Zentrumsscore. Die Vererbung bleibt
+auf einzelne Gewinnergenome beschraenkt. Siehe [HIGH_POSITION2](HIGH_POSITION2.md).
+
 ## Bewertung des untersuchten Ausgangsstands
 
 Die folgenden Befunde dokumentieren den historischen Ausgangsstand. Fuer das

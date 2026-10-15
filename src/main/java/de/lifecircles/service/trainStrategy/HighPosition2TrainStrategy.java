@@ -5,22 +5,16 @@ import de.lifecircles.service.SimulationConfig;
 
 import java.util.*;
 
-/**
- * Training-Strategie: HighPosition.
- * Start mit SeperatorCount Zellen, selektiert alle GENERATION_STEP Schritte die Top SeperatorCount,
- * erzeugt mutierte Nachkommen und ersetzt die Population.
- *
- * Die Gewinner-Zellen werden global aus allen Zellen ausgewählt,
- * indem sie zuerst nach Y-Position (höchste zuerst) und dann
- * nach Nähe zur Abschnittsmitte sortiert werden.
- * Die besten N Zellen (N = SeperatorCount) werden als Gewinner verwendet.
- * Damit werden beide Kriterien – Höhe und Zentrierung – bei der globalen Auswahl berücksichtigt.
- */
+/** Selects sustained height of ground-connected colonies during the final ten seconds. */
 public class HighPosition2TrainStrategy implements TrainStrategy {
     private static final int GENERATION_STEP = 1500 * 2; // Anzahl der Schritte bis zur Selektion
+    // The simulation currently makes one selection call per 60-Hz physics step.
+    private static final int EVALUATION_WINDOW_STEPS = 600;
+    private static final int SAMPLE_INTERVAL_STEPS = 30;
     private final SimulationConfig config = SimulationConfig.getInstance();
     private final Random random = new Random();
     private long stepCounter = 0;
+    private final GroundedColonyFitness fitness = new GroundedColonyFitness(SeperatorCount);
 
     @Override
     public Environment initializeEnvironment() {
@@ -41,6 +35,7 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
     @Override
     public void initialize(Environment environment) {
         this.stepCounter = 0;
+        this.fitness.reset();
         // Add ground blocker by default
         environment.addGroundBlocker();
         //environment.addSunBlocker();
@@ -68,46 +63,27 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
         }
     }
 
-    // Gewichtungsfaktoren
-    private static final double POSITION_WEIGHT = 0.7D; // Gewichtung der Y-Position (höher = wichtiger)
-    private static final double DISTANCE_WEIGHT = 0.3D; // Gewichtung des Abstands zur Mitte
-    //private static final double POSITION_WEIGHT = 1.0D; // Gewichtung der Y-Position (höher = wichtiger)
-    //private static final double DISTANCE_WEIGHT = 0.0D; // Gewichtung des Abstands zur Mitte
-
     @Override
     public void selectAndMutate(Environment environment) {
         stepCounter++;
-        if (stepCounter % GENERATION_STEP != 0) {
+        long phase = (stepCounter - 1) % GENERATION_STEP + 1;
+        if (phase > GENERATION_STEP - EVALUATION_WINDOW_STEPS && phase % SAMPLE_INTERVAL_STEPS == 0)
+            fitness.sample(environment);
+        if (phase != GENERATION_STEP) {
             return;
         }
         List<Cell> cells = environment.getCellList();
         if (cells.isEmpty()) {
+            fitness.reset();
             return;
         }
         double xSpace = (environment.getWidth() / SeperatorCount);
 
-        final double minHeight = cells.stream().
-                min((c1, c2) -> Double.compare(c1.getPosition().getY(), c2.getPosition().getY()))
-                .map(cell -> cell.getPosition().getY()).orElse(0.0D);
-        final double maxHeight = cells.stream().
-                max((c1, c2) -> Double.compare(c1.getPosition().getY(), c2.getPosition().getY()))
-                .map(cell -> cell.getPosition().getY()).orElse(0.0D);
-        final double heightRange = maxHeight - minHeight;
-
-        // Lower scores prefer higher cells and positions near the section center.
-        Map<Cell, Double> scores = new IdentityHashMap<>();
-        for (Cell cell : cells) {
-            double x = cell.getPosition().getX();
-            double middle = Math.floor(x / xSpace) * xSpace + xSpace / 2;
-            double distance = Math.abs(x - middle) / (xSpace / 2);
-            double height = heightRange > 0 ? (cell.getPosition().getY() - minHeight) / heightRange : .5;
-            scores.put(cell, POSITION_WEIGHT * height + DISTANCE_WEIGHT * distance);
-        }
-        final List<Cell> sortedCellList = cells.stream().sorted(Comparator.comparingDouble(scores::get)).toList();
+        final List<Cell> sortedCellList = fitness.ranked(environment);
 
         List<Cell> winners = new ArrayList<>();
         int[] selectedPerSection = new int[SeperatorCount];
-        int maxPerSection = 2;//Math.max(1, cells.size() / SeperatorCount);
+        int maxPerSection = 2;
 
         for (Cell cell : sortedCellList) {
             int section = (int) (cell.getPosition().getX() / xSpace);
@@ -123,5 +99,6 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
 
         TrainingPopulationBuilder.build(environment, winners, SeperatorCount, true, random)
                 .ifPresent(environment::resetCells);
+        fitness.reset();
     }
 }

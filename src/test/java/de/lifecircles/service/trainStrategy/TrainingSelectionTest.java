@@ -89,4 +89,17 @@ class TrainingSelectionTest {
         assertEquals(16, world.getCellList().size());
         assertTrue(world.getCellList().stream().allMatch(c -> c.getType().getRed()==.123));
     }
+
+    @Test void heightTwoBreedsGroundedDevelopmentProgramInsteadOfDetachedTip() {
+        Environment world = new Environment(6400,1200); world.addGroundBlocker();
+        double floor = world.getBlockerList().getFirst().getPosition().getY()
+                - world.getBlockerList().getFirst().getHeight()/2;
+        for(int row=0;row<6;row++) {
+            Cell body = add(world,200,floor-10-20*row); body.setType(new CellType(.123,.234,.345));
+        }
+        Cell detached = add(world,200,100); detached.setType(new CellType(.9,.8,.7));
+        select(new HighPosition2TrainStrategy(),world,3000);
+        assertEquals(16,world.getCellList().size());
+        assertTrue(world.getCellList().stream().allMatch(cell->cell.getType().getRed()==.123));
+    }
 }

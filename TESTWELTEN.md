@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=StandingStructureTest,CellFileImportTest,BrainInputScalingTest,StructuralMutationTest,NetworkSchedulingTest,ExecutionGradientTest,ModuleMutationCostTest,TrainingSelectionTest,SunIndexRegressionTest,PerformanceEquivalenceTest,TissueMechanicsTest,MechanicalFixtureTest,MechanicsRegressionTest,ForceSignTest,SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=GroundedColonyFitnessTest,StandingStructureTest,CellFileImportTest,BrainInputScalingTest,StructuralMutationTest,NetworkSchedulingTest,ExecutionGradientTest,ModuleMutationCostTest,TrainingSelectionTest,SunIndexRegressionTest,PerformanceEquivalenceTest,TissueMechanicsTest,MechanicalFixtureTest,MechanicsRegressionTest,ForceSignTest,SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 326 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 343 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 Die Performance-Äquivalenztests vergleichen die beschleunigte Sonne mit dem Vollscan
@@ -35,7 +35,7 @@ läuft ausschließlich mit `-Dtissue.sweep=true` und gehört nicht zur Routineau
 ## Physikwelten
 
 Die Netzkorrekturen stehen in [NETZPRUEFUNG.md](NETZPRUEFUNG.md). Ihre
-Korrektheitsregressionen sind Teil der oben genannten 326 Tests. Nur die einzelne
+Korrektheitsregressionen sind Teil der oben genannten 343 Tests. Nur die einzelne
 Mutationsverteilungsprobe bleibt optional:
 
 ```powershell
@@ -569,3 +569,11 @@ bleibt aufrecht, eine schmale kleine 1 x 8-Packung verliert trotz Zusammenhalt i
 Hoehe. Beide werden bei 60 und 120 Hz geprueft. 108 separate Weltlaeufe,
 Energiebilanz und Bewertung von HIGH_POSITION2: [Standproben](STANDPROBEN.md).
 `StandingStructureStudyTest` laeuft nur mit `-Dstanding.study=true`.
+
+
+## HIGH_POSITION2 bewertet anhaltende Hoehe
+
+`GroundedColonyFitnessTest` ergaenzt 16 Pruefungen fuer die geometrische Bodenbindung
+und die zeitliche Bewertung ganzer Verbaende. `TrainingSelectionTest` besitzt jetzt
+sechs Pruefungen, einschliesslich echter Vererbung des Turmprogramms statt einer
+abgeloesten Spitzenzelle. Details: [HIGH_POSITION2](HIGH_POSITION2.md).

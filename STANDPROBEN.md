@@ -64,9 +64,11 @@ Rohdaten: [Radius 12, 60 Hz](docs/mechanics/standing-60.csv),
 Vier regulaere Regressionen sichern einen tragenden und einen zusammenfallenden
 Aufbau bei beiden Schrittweiten. Zusammen mit `MechanicsRegressionTest`: 16 Tests erfolgreich.
 
-## Warum HIGH_POSITION2 das gewuenschte Verhalten nicht gezielt belohnt
+## Ausgangsstand: Warum HIGH_POSITION2 das Verhalten nicht gezielt belohnte
 
-Codeanalyse, keine gemessene Erklaerung fuer einen bestimmten gespeicherten Lauf:
+Dieser Ausgangsstand wurde inzwischen durch die [zeitliche Verbandsbewertung](HIGH_POSITION2.md)
+ersetzt. Die folgende Codeanalyse dokumentiert die Motivation der Aenderung;
+sie ist keine gemessene Erklaerung fuer einen bestimmten gespeicherten Lauf:
 
 - Alle 3.000 Schritte, bei 60 Hz also alle 50 Simulationssekunden, werden einzelne
   Zellen nach ihrer momentanen Hoehe und Naehe zur Abschnittsmitte bewertet.
