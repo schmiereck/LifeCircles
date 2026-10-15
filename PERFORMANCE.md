@@ -266,3 +266,11 @@ mvn test '-Dtest=SunPerformanceStudyTest' '-Dperformance.study=true' '-Dsun.rate
   [normale Strahldichte](docs/performance/sun-followup-normal.csv).
 - [Index](src/main/java/de/lifecircles/service/ProjectedSunIndex.java),
   [Regressionen](src/test/java/de/lifecircles/service/SunIndexRegressionTest.java).
+
+
+## Netzkorrekturen und Netzperformance (15. Oktober 2026)
+
+Die separate [Netzmessung](NETZPERFORMANCE.md) dokumentiert Aufbau, Vorwaertsrechnung,
+Mutation und Kostenzaehlung nach den Logikkorrekturen. Der Hauptgewinn ist weniger
+temporaerer Speicher; fuer die laufende Vorwaertsrechnung ist noch kein belastbarer
+CPU-Gewinn nachgewiesen.

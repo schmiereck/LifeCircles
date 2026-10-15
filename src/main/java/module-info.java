@@ -1,4 +1,6 @@
 module de.lifecircles {
+    requires java.management;
+    requires jdk.management;
     requires javafx.controls;
     requires javafx.graphics;
     requires java.prefs;

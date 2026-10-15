@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=SunIndexRegressionTest,PerformanceEquivalenceTest,TissueMechanicsTest,MechanicalFixtureTest,MechanicsRegressionTest,ForceSignTest,SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=BrainInputScalingTest,StructuralMutationTest,NetworkSchedulingTest,ExecutionGradientTest,ModuleMutationCostTest,TrainingSelectionTest,SunIndexRegressionTest,PerformanceEquivalenceTest,TissueMechanicsTest,MechanicalFixtureTest,MechanicsRegressionTest,ForceSignTest,SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 282 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 312 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 Die Performance-Äquivalenztests vergleichen die beschleunigte Sonne mit dem Vollscan
@@ -34,13 +34,12 @@ läuft ausschließlich mit `-Dtissue.sweep=true` und gehört nicht zur Routineau
 
 ## Physikwelten
 
-Die getrennte Netzprüfung steht in [NETZPRUEFUNG.md](NETZPRUEFUNG.md). Ihre 18
-Beobachtungstests laufen nur mit `-Dnetwork.audit=true` und sind nicht Teil der oben
-genannten 282 Korrektheitsprüfungen. Sie reproduzieren aktuelle Probleme und
-Modellentscheidungen; erfolgreiche Beobachtungstests bedeuten keine Fehlerfreiheit.
+Die Netzkorrekturen stehen in [NETZPRUEFUNG.md](NETZPRUEFUNG.md). Ihre
+Korrektheitsregressionen sind Teil der oben genannten 312 Tests. Nur die einzelne
+Mutationsverteilungsprobe bleibt optional:
 
 ```powershell
-mvn test '-Dtest=NetworkLogicAuditTest,TrainingLogicAuditTest' '-Dnetwork.audit=true'
+mvn test '-Dtest=NetworkMutationStudyTest' '-Dnetwork.audit=true'
 ```
 
 Quelle: `src/test/java/de/lifecircles/service/PhysicsRegressionTest.java`.
@@ -496,7 +495,7 @@ keine vollstaendige Untersuchung jeder moeglichen freien Position.
 Kann ein Platz nicht gefunden werden, wird der Generationenwechsel mit einer
 protokollierten Meldung uebersprungen. Die bisherige Population einschliesslich
 Reihenfolge, Positionen, Zustaenden und Energien bleibt dabei erhalten. Erst nach
-erfolgreicher Planung werden die Nachkommen erzeugt und die Gewinner zurueckgesetzt.
+erfolgreicher Planung werden die Nachkommen erzeugt und frische Elitekopien erzeugt.
 
 Abgedeckt sind Gewinner ohne jede Teilungsbereitschaft, vollstaendig blockierte
 Welten ueber wiederholte Auswahlrunden, blockierte bevorzugte Positionen mit freiem
@@ -520,3 +519,18 @@ und die Begrenzung von `HIGH_ENERGY` auf 20 Zellen bei uebergrossen Populationen
 Die Blockerpruefung ist weiterhin diskret: Sehr schnelle Zellen koennen ein duennes
 Hindernis in einem Schritt vollstaendig ueberspringen. Dafuer waere eine kontinuierliche
 Kollisionspruefung oder eine Unterteilung des Physikschritts notwendig.
+
+
+## Korrekturen aus der Netzpruefung
+
+Die 18 ehemaligen Beobachtungen wurden in regulaere Struktur-, Steuerungs-,
+Gradienten-, Modul- und Trainingsregressionen ueberfuehrt. Eine einzelne optionale
+Mutationsverteilungsprobe bleibt als `NetworkMutationStudyTest` erhalten.
+Der breite Abschlusslauf bestand mit 312 regulaeren Regressionen plus dieser Probe.
+Details und gezielte Aufrufe: [Netzpruefung](NETZPRUEFUNG.md).
+Die kurze Leistungsprobe und Rohdaten stehen in [Netzperformance](NETZPERFORMANCE.md).
+
+Trainingsgenerationen enthalten hoechstens 20 % unveraenderte Elitegenome bei den
+normalen Zielgroessen 16/20; der Rest sind Mutationskandidaten. Beide beginnen als
+frische Zellen mit gleicher Wachstumsphase, Energie und genau einem initialen
+Denkschritt. Auch Elitekopien teilen keine Laufzeitzustaende mit ihren Eltern.

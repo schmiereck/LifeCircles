@@ -205,7 +205,7 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
 
     private void checkValueArrSize(final int id) {
         if (id < 0) throw new IllegalArgumentException("Negative neuron ID");
-        initTransientArrays(valuesArr.length);
+        if (inputSumArr == null || deltaArr == null) initTransientArrays(valuesArr.length);
         if (id >= valuesArr.length) {
             int size = Math.max(id + 1, Math.max(16, valuesArr.length * 2));
             valuesArr = java.util.Arrays.copyOf(valuesArr, size);

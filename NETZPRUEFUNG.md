@@ -46,16 +46,26 @@ deterministische Versuche und Codeanalyse; keine langen Evolutions- oder Sprachm
   [-1,1] mit den getrennten Anziehungs-/Abstossungsgrenzen; Standard ist die bisherige
   Eingabesemantik. 58 gezielte Regressionen erfolgreich. Das Modell hat weiterhin
   keine eigenstaendige Organismusgrenze oder organismenbezogene Selektion.
-- Weitere Befunde werden im Anschluss bearbeitet.
+- Performance gemessen und sichere Verbesserungen umgesetzt; siehe [Netzperformance](NETZPERFORMANCE.md).
+  Rund 97 % weniger temporaere Objekte beim Standardnetzaufbau und 94 % weniger
+  bei der Modul-Vorwaertsprobe. Kein belastbarer laufender CPU-Gewinn nachgewiesen.
+- Abschlusspruefung: 312 regulaere Regressionen und eine Mutationsverteilungsprobe
+  erfolgreich (313 Faelle insgesamt). Alle konkreten Fehler aus dieser Pruefung sind
+  korrigiert. BPTT, eigene Zustandsausgaenge und Organismus-Selektion sind weiterhin
+  eigenstaendige Modellerweiterungen; niedrigere globale Denkfrequenz und reine
+  Topologieversionierung benoetigen vorher weitere API-/Zeitmodellarbeit.
 
-## Bewertung
+## Bewertung des untersuchten Ausgangsstands
+
+Die folgenden Befunde dokumentieren den historischen Ausgangsstand. Fuer das
+aktuelle Verhalten gelten die oben aufgefuehrten Korrekturen und regulaeren Tests.
 
 Die Grundidee ist brauchbar: Ein vererbbares Netz steuert Zellfunktionen, Zustandsbits
 schalten Entwicklungsprogramme, und dynamische Layer können Rechenarbeit sparen und
 Werte als Gedächtnis halten. Vorwärtsrechnung, gekapselte Modulausführung und gewöhnliche
 Gewichtsvererbung funktionieren in den vorhandenen kleinen Regressionen.
 
-**Die aktuelle Gesamtkonstruktion ist aber noch keine zuverlässige Grundlage für die
+**Die damalige Gesamtkonstruktion ist aber noch keine zuverlässige Grundlage für die
 Bewertung langer Trainingsläufe.** Strukturelle Mutation verletzt die Graphstruktur,
 Gradiententraining verwendet falsche Ausführungszustände, und die Trainingsstrategien
 erzeugen teilweise keine Trainingsnachkommen. Das sind konkrete Implementierungsfehler
@@ -363,32 +373,46 @@ ist ein sinnvoller Versuch, aber eine Modelländerung; ihr Nutzen wurde hier nic
 5. Modulmutation, vollständige Kosten und Bereinigung ungenutzter Typen vereinheitlichen.
 6. Erst dann Entwicklungs-/Evolutionsmutation trennen und die genannten Performancekandidaten messen.
 
-## Prüffälle und Grenzen
+## Prueffaelle und Grenzen nach der Umsetzung
 
-18 neue Prüffälle sind ausdrücklich **Beobachtungstests des aktuellen Verhaltens**,
-darunter nachgewiesene Fehler. Ein erfolgreicher Lauf bedeutet, dass die beschriebenen
-Probleme reproduziert sind. Er bedeutet nicht, dass das Verhalten richtig ist.
-Die Fälle laufen nur mit `-Dnetwork.audit=true`, damit sie die Fehler nicht als normale
-Regressionsanforderung festschreiben. Bei einer Reparatur müssen die entsprechenden
-Erwartungen in echte Korrektheitsprüfungen umgebaut werden.
+Die urspruenglichen 18 Beobachtungen wurden waehrend der Korrekturen umgebaut.
+Die Fehler werden jetzt durch regulaere Korrektheitstests abgedeckt:
 
-Der gemeinsame gezielte Lauf bestand mit 72 Fällen: 18 Beobachtungen und 54 vorhandenen
-Netz-, Vererbungs-, Mutations- und Trainingsregressionen. Die 282 übrigen gezielten
-Projektprüfungen wurden für diese ausschließlich prüfende Änderung nicht vollständig wiederholt.
+- `StructuralMutationTest`: sechs Tests, darunter 960 Strukturmutationsschritte.
+- `NetworkSchedulingTest`: fuenf Tests fuer Haltewerte, Mindesttakt, Reset und Zustandsprogramme.
+- `ExecutionGradientTest`: fuenf Tests, einschliesslich numerischer rekurrenter Ableitungen.
+- `ModuleMutationCostTest`: vier Tests fuer einmalige Mutation, lokale IDs, Typvorrat und Kosten.
+- `TrainingSelectionTest`: fuenf Tests fuer Mutantenplaetze, Zentrumsscore und faire Episoden.
+- `BrainInputScalingTest`: drei Tests fuer alte und optionale normalisierte Eingaben.
+- `MutationFactorsTest`: 14 Tests, einschliesslich der Trennung natuerlicher Teilung und Training.
+
+`NetworkMutationStudyTest` bleibt eine optionale Verteilungsbeobachtung mit
+`-Dnetwork.audit=true`; sie schreibt keinen Fehler als Sollverhalten fest.
+Die kurze Leistungsprobe `NetworkPerformanceStudyTest` verwendet separat
+`-Dnetwork.performance=true`. Lange Evolutions-/Sprachmodelltests wurden nicht gestartet.
+
+Der abschliessende breite Lauf bestand mit 313 Faellen: 312 regulaere Regressionen
+plus eine Mutationsverteilungsprobe. Abgedeckt sind auch die bisherigen Physik-,
+Gewebe-, Sonnen-, Sensor-, Darstellungs- und Serialisierungsregressionen.
 
 ```powershell
-mvn test '-Dtest=NetworkLogicAuditTest,TrainingLogicAuditTest' '-Dnetwork.audit=true'
-mvn test '-Dtest=NetworkLogicAuditTest,TrainingLogicAuditTest,MultiPortNeuronTest,BackpropagateTest,NestedInheritanceTest,MutationFactorsTest,TrainingGenerationTest' '-Dnetwork.audit=true' '-DargLine=-Djava.util.concurrent.ForkJoinPool.common.parallelism=4'
+mvn test '-Dtest=StructuralMutationTest,NetworkSchedulingTest,ExecutionGradientTest,ModuleMutationCostTest,TrainingSelectionTest,BrainInputScalingTest,MutationFactorsTest,TrainingGenerationTest,MultiPortNeuronTest,NestedInheritanceTest,InheritanceRegressionTest,BackpropagateTest'
+mvn test '-Dtest=NetworkMutationStudyTest' '-Dnetwork.audit=true'
 ```
 
-- [Netzprüffälle](src/test/java/de/lifecircles/model/neural/NetworkLogicAuditTest.java).
-- [Trainingsprüffälle](src/test/java/de/lifecircles/service/trainStrategy/TrainingLogicAuditTest.java).
-- [Netz und Mutation](src/main/java/de/lifecircles/model/neural/NeuralNet.java),
-  [Module](src/main/java/de/lifecircles/model/neural/NeuronNetwork.java),
-  [Zellgehirn](src/main/java/de/lifecircles/model/neural/CellBrain.java),
-  [Generationserzeugung](src/main/java/de/lifecircles/service/trainStrategy/TrainingPopulationBuilder.java).
+### Einstellungen fuer Entwicklungsversuche
 
-Die Prüfung ist kein Vollständigkeitsbeweis für seltene verschachtelte Mutationspfade.
-Die Wirkung vorgeschlagener Fitness-, Skalierungs- und Entwicklungsmodelle muss durch
-eigene Versuche untersucht werden. Die Produktionslogik wurde in diesem Schritt bewusst
-als Grundlage für Deine Bewertung beibehalten.
+Im Bereich Reproduction:
+
+- `Division mutation (0 = clonal)`: Faktor 0 behaelt Gene, Koerperfarbe und
+  Mutationsfaktoren bei natuerlicher Teilung. Training nutzt weiterhin die globale
+  Mutationsrate. Faktor 1 ist der Standard; ohne Trainingsmodus bleibt damit die
+  bisherige natuerliche Mutationsquelle aktiv.
+- `Normalize brain inputs (experiment)`: optionales begrenztes Alter und getrennt
+  skalierte negative Anziehung / positive Abstossung. Standard aus. Die Umschaltung
+  aendert die Interpretation bestehender Eingaben, ohne die Anzahl der Netzports zu aendern.
+
+Diese Optionen machen Vergleichsversuche moeglich. Dass daraus bereits stabile
+mehrzellige Organismen entstehen, ist nicht nachgewiesen. Das Modell besitzt noch
+keine separate Organismusgruendung, keinen eigenen Zustandswechsel-Ausgang und
+keine Bewertung des gemeinsamen Fortpflanzungserfolgs eines ganzen Verbandes.

@@ -29,6 +29,7 @@ public class NeuralNet implements Serializable {
     private transient long proccessedSynapses = 0L;
     private transient Map<NeuronInterface, Integer> forwardOrder;
     private transient Map<Synapse, Double> forwardSources;
+    private transient Set<NeuralNet> storageVisited;
 
     boolean isRecordingForward() { return forwardOrder != null; }
 
@@ -266,6 +267,10 @@ public class NeuralNet implements Serializable {
     }
 
     double[] process(final NeuronValueFunction neuronValueFunction, boolean recordTraining) {
+        return process(neuronValueFunction, recordTraining, true);
+    }
+
+    double[] process(final NeuronValueFunction neuronValueFunction, boolean recordTraining, boolean collectOutputs) {
         if (recordTraining) {
             if (forwardOrder == null) forwardOrder = new IdentityHashMap<>();
             if (forwardSources == null) forwardSources = new IdentityHashMap<>();
@@ -273,7 +278,7 @@ public class NeuralNet implements Serializable {
             for (Neuron neuron : inputNeuronArr) forwardOrder.put(neuron, 0);
         } else { forwardOrder = null; forwardSources = null; }
         this.proccessedSynapses = 0L;
-        final double[] outputArr = new double[this.outputNeuronArr.length];
+        final double[] outputArr = collectOutputs ? new double[this.outputNeuronArr.length] : null;
 
         // process hidden layers
         for (int layerIndex = 0; layerIndex < this.hiddenLayerArr.length; layerIndex++) {
@@ -304,7 +309,7 @@ public class NeuralNet implements Serializable {
         }
 
         // Collect outputs
-        for (int outputNeuronPos = 0; outputNeuronPos < this.outputNeuronArr.length; outputNeuronPos++) {
+        for (int outputNeuronPos = 0; collectOutputs && outputNeuronPos < this.outputNeuronArr.length; outputNeuronPos++) {
             final int outputTypePos = 0; // Default-Output-Type for output neurons.
             outputArr[outputNeuronPos] = neuronValueFunction.readValue(this, this.outputNeuronArr[outputNeuronPos], outputTypePos);
         }
@@ -340,23 +345,6 @@ public class NeuralNet implements Serializable {
         return outputArr;
     }
 
-    /**
-     * Findet das Layer, zu dem ein bestimmtes Neuron gehört.
-     *
-     * @param searchedNeuron ist das gesuchte Neuron.
-     * @return den Layer oder null, wenn das Neuron nicht gefunden wurde.
-     */
-    private Layer findLayerForNeuron(final NeuronInterface searchedNeuron) {
-        for (final Layer layer : this.hiddenLayerArr) {
-            for (final NeuronInterface neuron : layer.getNeuronsArr()) {
-                if (neuron == searchedNeuron) {
-                    return layer;
-                }
-            }
-        }
-        return null;
-    }
-
     public double getOutputValue(final NeuronValueFunction neuronValueFunction, final int outputNeuronPos) {
         final int outputTypePos = 0; // Default-Output-Type for output neurons.
         return neuronValueFunction.readValue(this, this.outputNeuronArr[outputNeuronPos], outputTypePos);
@@ -378,6 +366,7 @@ public class NeuralNet implements Serializable {
     private void mutate(NeuronValueFunctionFactory neuronValueFunctionFactory, NeuronValueFunction neuronValueFunction,
                         double mutationRate, double mutationStrength, boolean mutateNeuronType, Set<NeuralNet> visited) {
         if (!visited.add(this)) return;
+        if (mutationRate <= 0) return;
         final Random random = NeuralNetwork.getRandom();
 
         // Mutate weights and biases
@@ -608,8 +597,9 @@ public class NeuralNet implements Serializable {
 
         // Erstelle die neuen Neuronen
         for (int i = 0; i < neuronCount; i++) {
+            int typeIndex = random.nextInt(this.neuronTypeInfoDataList.size());
             newLayer.addNeuron(createNewNeuron(neuronValueFunctionFactory, neuronValueFunction,
-                    this.neuronTypeInfoDataList.get(random.nextInt(this.neuronTypeInfoDataList.size()))));
+                    this.neuronTypeInfoDataList.get(i == 0 ? 0 : typeIndex)));
         }
 
         // Bestimme die angrenzenden Layer
@@ -1199,18 +1189,24 @@ public class NeuralNet implements Serializable {
 
     private void connectLayers(NeuronInterface[] sourceLayer, NeuronInterface[] targetLayer, double connectivity) {
         connectivity = Math.max(0.0, Math.min(1.0, connectivity));
+        List<Synapse> added = new ArrayList<>();
         for (NeuronInterface source : sourceLayer) {
             for (NeuronInterface target : targetLayer) {
                 if (connectivity >= 1.0 || NeuralNetwork.getRandom().nextDouble() < connectivity) {
                     double limit = Math.sqrt(6.0 / (this.getInputLayerSize() + this.getOutputLayerSize()));
                     final double weight = NeuralNetwork.getRandom().nextDouble() * 2.0D * limit - limit;
-                    this.addSynapse(new Synapse(source,
+                    added.add(new Synapse(source,
                             source.getNeuronTypeInfoData().getOutputCount() == 1 ? 0 : NeuralNetwork.getRandom().nextInt(source.getNeuronTypeInfoData().getOutputCount()),
                             target,
                             target.getNeuronTypeInfoData().getInputCount() == 1 ? 0 : NeuralNetwork.getRandom().nextInt(target.getNeuronTypeInfoData().getInputCount()),
                             weight));
                 }
             }
+        }
+        if (!added.isEmpty()) {
+            int start = synapseArray.length;
+            synapseArray = Arrays.copyOf(synapseArray, start + added.size());
+            for (int i = 0; i < added.size(); i++) synapseArray[start+i] = added.get(i);
         }
     }
 
@@ -1242,19 +1238,22 @@ public class NeuralNet implements Serializable {
 
     /** Unique stored genes, including shared module definitions and unused type candidates. */
     public int getStoredSynapseCount() {
-        return countStoredSynapses(Collections.newSetFromMap(new IdentityHashMap<>()));
+        if (storageVisited == null) storageVisited = Collections.newSetFromMap(new IdentityHashMap<>());
+        storageVisited.clear();
+        return countStoredSynapses(storageVisited);
     }
 
     private int countStoredSynapses(Set<NeuralNet> visited) {
         if (!visited.add(this)) return 0;
-        int[] count = {synapseArray.length};
+        int count = synapseArray.length;
         for (NeuronTypeInfoData type : neuronTypeInfoDataList)
-            if (type.getNeuralNet() != null) count[0] += type.getNeuralNet().countStoredSynapses(visited);
-        applyToAllNeurons(neuron -> {
+            if (type.getNeuralNet() != null) count += type.getNeuralNet().countStoredSynapses(visited);
+        // Inputs/outputs are scalar; live modules reside in hidden layers.
+        for (Layer layer : hiddenLayerArr) for (NeuronInterface neuron : layer.getNeuronsArr()) {
             NeuralNet definition = neuron.getNeuronTypeInfoData().getNeuralNet();
-            if (definition != null) count[0] += definition.countStoredSynapses(visited);
-        });
-        return count[0];
+            if (definition != null) count += definition.countStoredSynapses(visited);
+        }
+        return count;
     }
 
     public List<Synapse> getSynapseList() {

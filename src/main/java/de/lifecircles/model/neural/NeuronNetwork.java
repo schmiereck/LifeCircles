@@ -144,7 +144,8 @@ public class NeuronNetwork implements NeuronInterface {
         this.checkInOutSize();
 
         long incomingCount = 0;
-        final double[] inputArr = new double[this.neuronTypeInfoData.getInputCount()];
+        final ModuleExecutionState state = neuronValueFunction.getModuleState(this, true);
+        final double[] inputArr = state.inputValues;
         for (int inputTypePos = 0; inputTypePos < this.neuronTypeInfoData.getInputCount(); inputTypePos++) {
             double sum = this.getBias(inputTypePos);
             final Synapse[] inputSynapseArr = this.inputSynapsesList.get(inputTypePos);
@@ -158,12 +159,12 @@ public class NeuronNetwork implements NeuronInterface {
             inputArr[inputTypePos] = sum;
         }
 
-        final NeuralNetwork execution = neuronValueFunction.getModuleState(this, true).network;
+        final NeuralNetwork execution = state.network;
         final NeuralNet calcNeuralNet = execution.getNeuralNet();
         final NeuronValueFunction calcNeuronValueFunction = execution.getNeuronValueFunction();
 
         calcNeuralNet.setInputs(calcNeuronValueFunction, inputArr);
-        calcNeuralNet.process(calcNeuronValueFunction, neuralNet.isRecordingForward());
+        calcNeuralNet.process(calcNeuronValueFunction, neuralNet.isRecordingForward(), false);
 
         for (int outputTypePos = 0; outputTypePos < this.neuronTypeInfoData.getOutputCount(); outputTypePos++) {
             Neuron calcOutputNeuron = calcNeuralNet.getOutputNeuronArr()[outputTypePos];
