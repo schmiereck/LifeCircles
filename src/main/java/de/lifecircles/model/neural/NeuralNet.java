@@ -27,6 +27,22 @@ public class NeuralNet implements Serializable {
     private transient boolean disableLayerDeactivation = false;
 
     private transient long proccessedSynapses = 0L;
+    private transient Map<NeuronInterface, Integer> forwardOrder;
+    private transient Map<Synapse, Double> forwardSources;
+
+    boolean isRecordingForward() { return forwardOrder != null; }
+
+    private boolean wasExecuted(NeuronInterface neuron) {
+        return forwardOrder != null && forwardOrder.containsKey(neuron);
+    }
+
+    /** Previous-step outputs are constants: this is one-step training, not BPTT. */
+    boolean propagatesCurrentStep(Synapse edge) {
+        if (forwardOrder == null) return false;
+        Integer source = forwardOrder.get(edge.getSourceNeuron());
+        Integer target = forwardOrder.get(edge.getTargetNeuron());
+        return source != null && target != null && source < target;
+    }
 
     private boolean enableNeuronType = false;
 
@@ -246,6 +262,16 @@ public class NeuralNet implements Serializable {
      * Processes the inputs through the network and returns the outputs.
      */
     public double[] process(final NeuronValueFunction neuronValueFunction) {
+        return process(neuronValueFunction, true);
+    }
+
+    double[] process(final NeuronValueFunction neuronValueFunction, boolean recordTraining) {
+        if (recordTraining) {
+            if (forwardOrder == null) forwardOrder = new IdentityHashMap<>();
+            if (forwardSources == null) forwardSources = new IdentityHashMap<>();
+            forwardOrder.clear(); forwardSources.clear();
+            for (Neuron neuron : inputNeuronArr) forwardOrder.put(neuron, 0);
+        } else { forwardOrder = null; forwardSources = null; }
         this.proccessedSynapses = 0L;
         final double[] outputArr = new double[this.outputNeuronArr.length];
 
@@ -877,6 +903,7 @@ public class NeuralNet implements Serializable {
      * @return Der quadratische Fehler des Netzwerks vor dem Training
      */
     public double backpropagate(final NeuronValueFunction neuronValueFunction, final double[] targetOutput, final double learningRate) {
+        if (forwardOrder == null) throw new IllegalStateException("Training needs a recorded forward pass");
         if (targetOutput.length != this.outputNeuronArr.length) {
             throw new IllegalArgumentException("Zielausgabe muss die gleiche Größe haben wie die Ausgabeschicht");
         }
@@ -907,7 +934,7 @@ public class NeuralNet implements Serializable {
      * @param targetOutput Die erwarteten Ausgabewerte
      */
     private void calcOutputNeuronDelta(final NeuronValueFunction neuronValueFunction, final double[] targetOutput) {
-        for (int outputNeuronPos = 0; outputNeuronPos < this.outputNeuronArr.length; outputNeuronPos++) {
+        for (int outputNeuronPos = this.outputNeuronArr.length - 1; outputNeuronPos >= 0; outputNeuronPos--) {
             final Neuron outputNeuron = this.outputNeuronArr[outputNeuronPos];
             for (int outputTypePos = 0; outputTypePos < outputNeuron.getNeuronTypeInfoData().getOutputCount(); outputTypePos++) {
                 final double output = neuronValueFunction.readValue(this, outputNeuron, outputTypePos);
@@ -916,7 +943,11 @@ public class NeuralNet implements Serializable {
                 // Delta = (Ausgabe - Ziel) * Ableitung der Aktivierungsfunktion
                 //final double inputSum = outputNeuron.getInputSum(outputTypePos);
                 final double inputSum = neuronValueFunction.readInputSum(this, outputNeuron, outputTypePos);
-                final double delta = (output - target) *
+                double errorGradient = output - target;
+                for (Synapse edge : outputNeuron.getOutputSynapseList(outputTypePos))
+                    if (propagatesCurrentStep(edge)) errorGradient += edge.getWeight() *
+                            edge.getTargetNeuron().getInputDelta(this, neuronValueFunction, edge.getTargetInputTypePos());
+                final double delta = errorGradient *
                         outputNeuron.getActivationFunction().derivative(inputSum);
                 //outputNeuron.setDelta(outputTypePos, delta);
                 neuronValueFunction.writeDelta(this, outputNeuron, outputTypePos, delta);
@@ -931,11 +962,9 @@ public class NeuralNet implements Serializable {
     void backpropagateDelta(final NeuronValueFunction neuronValueFunction) {
         for (int hiddenLayerPos = this.hiddenLayerArr.length - 1; hiddenLayerPos >= 0; hiddenLayerPos--) {
             final Layer layer = this.hiddenLayerArr[hiddenLayerPos];
-            if (!layer.isActiveLayer() && !disableLayerDeactivation) continue; // Überspringe inaktive Layer
-
             final NeuronInterface[] neuronArr = layer.getNeuronsArr();
-            for (final NeuronInterface neuron : neuronArr) {
-                neuron.backpropagateDelta(this, neuronValueFunction);
+            for (int i = neuronArr.length - 1; i >= 0; i--) {
+                if (wasExecuted(neuronArr[i])) neuronArr[i].backpropagateDelta(this, neuronValueFunction);
             }
         }
     }
@@ -952,10 +981,9 @@ public class NeuralNet implements Serializable {
 
         // Hidden Layer Neuronen
         for (final Layer layer : this.hiddenLayerArr) {
-            if (!layer.isActiveLayer() && !disableLayerDeactivation) continue; // Überspringe inaktive Layer
-
             final NeuronInterface[] neurons = layer.getNeuronsArr();
             for (final NeuronInterface neuron : neurons) {
+                if (!wasExecuted(neuron)) continue;
                 for (int inputTypePos = 0; inputTypePos < neuron.getNeuronTypeInfoData().getInputCount(); inputTypePos++) {
                     double biasDelta = learningRate * neuron.getInputDelta(this, neuronValueFunction, inputTypePos);
                     final double bias = neuron.getBias(inputTypePos);
@@ -978,18 +1006,10 @@ public class NeuralNet implements Serializable {
             final NeuronInterface targetNeuron = synapse.getTargetNeuron();
             final NeuronInterface sourceNeuron = synapse.getSourceNeuron();
 
-            // Überspringe Synapsen zu deaktivierten Layern
-            if (!this.disableLayerDeactivation) {
-                if (!(targetNeuron instanceof Neuron scalar) || !scalar.isOutputNeuron()) {
-                    final Layer targetLayer = this.findLayerForNeuron(targetNeuron);
-                    if (targetLayer != null && !targetLayer.isActiveLayer()) {
-                        continue;
-                    }
-                }
-            }
+            if (!wasExecuted(targetNeuron)) continue;
 
             // A synapse connects exactly one source output to one target input.
-            final double sourceValue = neuronValueFunction.readValue(this, sourceNeuron, synapse.getSourceOutputTypePos());
+            final double sourceValue = forwardSources.get(synapse);
             final double targetDelta = targetNeuron.getInputDelta(this, neuronValueFunction, synapse.getTargetInputTypePos());
             synapse.setWeight(synapse.getWeight() - learningRate * sourceValue * targetDelta);
         }
@@ -1000,10 +1020,9 @@ public class NeuralNet implements Serializable {
      */
     void backpropagateExtra(NeuronValueFunction neuronValueFunction, double learningRate) {
         for (final Layer layer : this.hiddenLayerArr) {
-            if (!layer.isActiveLayer() && !disableLayerDeactivation) continue; // Überspringe inaktive Layer
-
             final NeuronInterface[] neurons = layer.getNeuronsArr();
             for (final NeuronInterface neuron : neurons) {
+                if (!wasExecuted(neuron)) continue;
                 neuron.backpropagateExtra(this, neuronValueFunction, learningRate);
             }
         }
@@ -1117,6 +1136,7 @@ public class NeuralNet implements Serializable {
 
     public void rnnClearPreviousState(final NeuronValueFunction neuronValueFunction) {
         neuronValueFunction.clearModuleStates();
+        forwardOrder = null; forwardSources = null;
         this.proccessedSynapses = 0;
         for (int i = 0; i < hiddenLayerArr.length; i++) {
             hiddenLayerArr[i].setActivationCounter(0);
@@ -1220,6 +1240,12 @@ public class NeuralNet implements Serializable {
      * Optimized version using array iteration instead of ArrayList.
      */
     private long activate(final NeuronValueFunction neuronValueFunction, final NeuronInterface neuron) {
+        if (forwardOrder != null) {
+            for (int port = 0; port < neuron.getNeuronTypeInfoData().getInputCount(); port++)
+                for (Synapse edge : neuron.getInputSynapseArr(port))
+                    forwardSources.put(edge, neuronValueFunction.readValue(this, edge.getSourceNeuron(), edge.getSourceOutputTypePos()));
+            forwardOrder.put(neuron, forwardOrder.size() + 1);
+        }
         return neuron.activate(neuronValueFunction, this);
     }
 

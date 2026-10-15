@@ -16,6 +16,13 @@ deterministische Versuche und Codeanalyse; keine langen Evolutions- oder Sprachm
   Dynamische Layer halten weiterhin ihre Ausgaben; Mindesttakt 0,001 garantiert
   ein Aufwachen innerhalb von 1.000 Aufrufen. Feste Zustandsbits bleiben beim Reset erhalten.
   Vorhandene gespeicherte Topologien werden nicht umgebaut. 62 gezielte Tests erfolgreich.
+- Gradiententraining korrigiert: Ausführungsspur statt Aktivitätsflag des nächsten Schritts,
+  tatsächlich verwendete Quellwerte, rückwärts gerichtete und gehaltene Werte als
+  Konstanten (Einzelschrittgradient, kein BPTT). Auch Verbindungen innerhalb einer Schicht
+  und zwischen Ausgabeneuronen berücksichtigen die tatsächliche Ausführungsreihenfolge.
+  Zellensimulation ohne Trainingsaufzeichnung; Modulspuren bleiben pro Instanz getrennt.
+  35 Lern-, Port-, Vererbungs- und Steuerungstests erfolgreich, einschließlich numerischer
+  Gradienten für Rückkopplungen mit Vorzustand und beider Schlaf/Wach-Übergänge.
 - Weitere Befunde werden im Anschluss bearbeitet.
 
 ## Bewertung

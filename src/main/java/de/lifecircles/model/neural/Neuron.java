@@ -199,6 +199,7 @@ public class Neuron implements NeuronInterface {
 
             // Sammle Fehler von allen ausgehenden Verbindungen
             for (final Synapse synapse : this.getOutputSynapseList(outputTypePos)) {
+                if (!neuralNet.propagatesCurrentStep(synapse)) continue;
                 final NeuronInterface targetNeuron = synapse.getTargetNeuron();
                 //final double targetDelta = targetNeuron.getDelta(outputTypePos);
                 final double targetDelta = targetNeuron.getInputDelta(neuralNet, neuronValueFunction,

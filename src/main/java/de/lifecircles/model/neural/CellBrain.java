@@ -75,7 +75,7 @@ public class CellBrain implements CellBrainInterface, Serializable {
 
     @Override
     public double[] process() {
-        return this.network.process();
+        return this.network.getNeuralNet().process(this.network.getNeuronValueFunction(), false);
     }
 
     @Override

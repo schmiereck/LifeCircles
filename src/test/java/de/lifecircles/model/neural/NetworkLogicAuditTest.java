@@ -32,36 +32,6 @@ class NetworkLogicAuditTest {
         return net;
     }
 
-    @Test void backpropSkipsJustExecutedLayerBecauseItsNextStepFlagIsOff() {
-        var net = heldNetwork(); net.setLearningRate(.1);
-        var inputWeight = net.getSynapseList().get(0);
-        var numerical = new NeuralNetwork(net); numerical.setDisableLayerDeactivation(true);
-        double epsilon = 1e-6;
-        numerical.getSynapseList().get(0).setWeight(1 + epsilon);
-        double high = Math.pow(numerical.calcProcess(new double[]{1})[0], 2) / 2;
-        numerical.getSynapseList().get(0).setWeight(1 - epsilon);
-        double low = Math.pow(numerical.calcProcess(new double[]{1})[0], 2) / 2;
-        assertTrue((high - low) / (2 * epsilon) > .1);
-        net.calcTrain(new double[]{1}, new double[]{0});
-        assertEquals(1, inputWeight.getWeight());
-        assertNotEquals(1, net.getSynapseList().get(1).getWeight());
-    }
-
-    @Test void backwardEdgeGradientUsesCurrentOutputAlthoughForwardUsedPreviousZero() {
-        var net = new NeuralNetwork(factory, 1, new int[]{1}, 1, 0, 1);
-        net.getNeuralNet().applyToAllNeurons(n -> n.setBias(0, 0)); net.setLearningRate(.1);
-        NeuronInterface h = net.getHiddenLayerArr()[0].getNeuron(0);
-        connect(net, new Synapse(net.getInputNeuronArr()[0], 0, h, 0, 1));
-        connect(net, new Synapse(h, 0, net.getOutputNeuronArr()[0], 0, 1));
-        Synapse feedback = new Synapse(net.getOutputNeuronArr()[0], 0, h, 0, .5); connect(net, feedback);
-        var high = new NeuralNetwork(net); high.getSynapseList().get(2).setWeight(.500001);
-        var low = new NeuralNetwork(net); low.getSynapseList().get(2).setWeight(.499999);
-        // The source value was zero at the first forward pass, so this weight cannot affect its loss.
-        assertEquals(high.calcProcess(new double[]{1})[0], low.calcProcess(new double[]{1})[0]);
-        net.calcTrain(new double[]{1}, new double[]{0});
-        assertNotEquals(.5, feedback.getWeight());
-    }
-
     @Test void moduleBiasMutationIgnoresZeroMutationStrength() {
         var inner = new NeuralNetwork(factory, 1, new int[]{1}, 1, 1, 0);
         var module = new NeuronNetwork(10, new NeuronTypeInfoData(1, 1, inner.getNeuralNet()), factory);

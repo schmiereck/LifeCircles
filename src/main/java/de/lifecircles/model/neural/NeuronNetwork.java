@@ -161,7 +161,7 @@ public class NeuronNetwork implements NeuronInterface {
         final NeuronValueFunction calcNeuronValueFunction = execution.getNeuronValueFunction();
 
         calcNeuralNet.setInputs(calcNeuronValueFunction, inputArr);
-        calcNeuralNet.process(calcNeuronValueFunction);
+        calcNeuralNet.process(calcNeuronValueFunction, neuralNet.isRecordingForward());
 
         for (int outputTypePos = 0; outputTypePos < this.neuronTypeInfoData.getOutputCount(); outputTypePos++) {
             Neuron calcOutputNeuron = calcNeuralNet.getOutputNeuronArr()[outputTypePos];
@@ -231,6 +231,7 @@ public class NeuronNetwork implements NeuronInterface {
         for (int port = 0; port < this.neuronTypeInfoData.getOutputCount(); port++) {
             double outputGradient = 0;
             for (Synapse edge : this.getOutputSynapseList(port)) {
+                if (!neuralNet.propagatesCurrentStep(edge)) continue;
                 outputGradient += edge.getWeight() * edge.getTargetNeuron().getInputDelta(
                         neuralNet, values, edge.getTargetInputTypePos());
             }
@@ -251,6 +252,7 @@ public class NeuronNetwork implements NeuronInterface {
         for (int port = 0; port < inputDeltaArr.length; port++) {
             Neuron input = inner.getInputNeuronArr()[port];
             for (Synapse edge : input.getOutputSynapseList(0)) {
+                if (!inner.propagatesCurrentStep(edge)) continue;
                 inputDeltaArr[port] += edge.getWeight() * edge.getTargetNeuron().getInputDelta(
                         inner, innerValues, edge.getTargetInputTypePos());
             }
