@@ -172,3 +172,10 @@ Die vollständigen evolutionären Langzeitexperimente wurden nicht gestartet.
 - [Labor](src/test/java/de/lifecircles/service/TissueMechanicsLab.java),
   [zwölf Regressionen](src/test/java/de/lifecircles/service/TissueMechanicsTest.java),
   [explizite Studie](src/test/java/de/lifecircles/service/TissueMechanicsSweepTest.java).
+
+
+## Ergaenzung: aufrechte Verbaende
+
+Die [Standproben](STANDPROBEN.md) untersuchen 108 aufrechte Packungen unter voller
+Schwerkraft. Sie ergaenzen die hier beschriebenen frei schwebenden Materialproben
+um Tragfaehigkeit auf einem Boden und den Einfluss der Zellgroesse.
