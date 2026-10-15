@@ -1,0 +1,40 @@
+[
+  {
+    "phase": "acquire",
+    "task": "COUNTER",
+    "storage": 0.0,
+    "work": 0.0,
+    "reward": 0.003,
+    "n": 10,
+    "successes": 0,
+    "median_loss": 0.083891564,
+    "median_accuracy": 0.546875,
+    "median_stored": 54.0,
+    "median_executed": 21.9453125,
+    "median_neurons": 15.5,
+    "solved_median_stored": null,
+    "solved_median_executed": null,
+    "median_first_solved": null,
+    "lost_after_discovery": 0,
+    "rejected": 0
+  },
+  {
+    "phase": "acquire",
+    "task": "DELAY",
+    "storage": 0.0,
+    "work": 0.0,
+    "reward": 0.003,
+    "n": 10,
+    "successes": 1,
+    "median_loss": 0.084539492,
+    "median_accuracy": 0.890625,
+    "median_stored": 115.5,
+    "median_executed": 49.017578125,
+    "median_neurons": 29.5,
+    "solved_median_stored": 72,
+    "solved_median_executed": 38.53515625,
+    "median_first_solved": 850,
+    "lost_after_discovery": 0,
+    "rejected": 0
+  }
+]

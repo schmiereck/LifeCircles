@@ -55,6 +55,19 @@ class BrainEnergyLabTest {
         assertEquals(.25,BrainEnergyLab.data(BrainEnergyLab.Task.XOR,3,false).baselineLoss());
         assertEquals(0,BrainEnergyLab.data(BrainEnergyLab.Task.CONSTANT,3,false).baselineLoss());
     }
+    @Test void pricesCannotRewardInvalidOrNegativeCosts() {
+        assertThrows(IllegalArgumentException.class,()->new BrainEnergyLab.Price(-1,1,.003));
+        assertThrows(IllegalArgumentException.class,()->new BrainEnergyLab.Price(1,Double.NaN,.003));
+        assertThrows(IllegalArgumentException.class,()->new BrainEnergyLab.Price(1,1,0));
+    }
+    @Test void additionalFunctionMustPayItsCostAgainstAnOptimalStaticCompetitor() {
+        var task=BrainEnergyLab.Task.COUNTER;var data=BrainEnergyLab.data(task,74,true);
+        var metrics=BrainEnergyLab.evaluate(BrainEnergyControls.known(task,false),data,task);
+        var staticBaseline=new BrainEnergyLab.Metrics(data.baselineLoss(),0,0,0,3,1);
+        var high=new BrainEnergyLab.Price(1,1,.003);var low=new BrainEnergyLab.Price(1,1,.00003);
+        assertTrue(high.utility(data,metrics)>high.utility(data,staticBaseline));
+        assertTrue(low.utility(data,metrics)<low.utility(data,staticBaseline));
+    }
     @Test void allEvolutionRandomnessIsReproducible() {
         var price=new BrainEnergyLab.Price(100,1,.003);
         var a=BrainEnergyLab.evolve(BrainEnergyLab.Task.DELAY,price,65,5,8,null,null);

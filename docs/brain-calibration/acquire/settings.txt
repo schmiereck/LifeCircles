@@ -1,0 +1,16 @@
+phase=acquire
+generations=1200
+population=32
+seeds=10
+seed_offset=0
+tasks=CONSTANT,AND,OR,XOR,DELAY,COUNTER
+reward_scale=0.003
+storage=[0, 1, 100, 1000]
+work=[0, 0.25, 1, 4]
+frequency=60
+mutation=0.1,0.2 plus seeded factors
+Dynamic scheduling and module mutation enabled. No backpropagation/crossover.
+Logic: reset per independent example. Memory: reset per sequence.
+Acquisition starts random; compression starts with explicit working control plus 24 neutral connections in a separate layer.
+Guards: reject stored edges>4096 or root neurons>128, invalid outputs.
+Timing includes reset and evaluation bookkeeping; one JVM, three warmed short repetitions.

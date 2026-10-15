@@ -1,0 +1,21 @@
+phase=compete
+generations=600
+population=32
+seeds=10
+seed_offset=0
+tasks=DELAY,COUNTER
+reward_scale=3.0E-5
+storage=[0, 1, 100, 1000]
+work=[0, 0.25, 1, 4]
+train_length=64
+train_episodes=4
+frequency=60
+mutation=0.1,0.2 plus seeded factors
+Dynamic scheduling and module mutation enabled. No backpropagation/crossover.
+Logic: reset per independent example. Memory: reset per sequence.
+Acquisition starts random; compression starts with explicit working control plus 24 neutral connections in a separate layer.
+Guards: reject stored edges>4096 or root neurons>128, invalid outputs.
+Timing includes reset and evaluation bookkeeping; one JVM, three warmed short repetitions.
+explicit_prices=1:1,100:0.1
+control_bloat=false (false means no neutral extra layer)
+Competitors: final 20% of initial population are zero-edge constants (0.25,0.375,0.5,0.625).

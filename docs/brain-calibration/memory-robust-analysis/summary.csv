@@ -1,0 +1,3 @@
+phase,task,storage,work,reward,n,successes,median_loss,median_accuracy,median_stored,median_executed,median_neurons,solved_median_stored,solved_median_executed,median_first_solved,lost_after_discovery,rejected
+acquire,COUNTER,0.0,0.0,0.003,10,0,0.083891564,0.546875,54.0,21.9453125,15.5,,,,0,0
+acquire,DELAY,0.0,0.0,0.003,10,1,0.084539492,0.890625,115.5,49.017578125,29.5,72,38.53515625,850,0,0

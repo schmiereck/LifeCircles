@@ -77,8 +77,8 @@ alle Aufgaben einschließlich des zufällig zurückgesetzten Zählers.
 und Reset, konstante Referenzen, reproduzierbare Evolution und exakte
 Übereinstimmung der Kosten mit dem Zell-Energiemodell bei 60 Hz.
 
-Rohdaten: `docs/brain-calibration/pilot/`. Die größeren Serien und ihre
-Auswertung werden in einem separaten Schritt ergänzt.
+Rohdaten: `docs/brain-calibration/pilot/`. Die abgeschlossenen größeren Serien
+stehen in [GEHIRN_ERGEBNISSE.md](GEHIRN_ERGEBNISSE.md).
 
 ## Wiederholen
 
@@ -92,6 +92,10 @@ Standardraster: Speicherfaktoren 0/1/100/1000, Arbeitsfaktoren 0/0,25/1/4,
 zehn Seeds. Erwerb: 1200 Generationen. Zusätzlich konfigurierbar:
 `brain.energy.tasks`, `brain.energy.reward`, `brain.energy.seed_offset`,
 `brain.energy.population`, `brain.energy.seeds`, `brain.energy.storage`,
-`brain.energy.work`. Ergebnisse werden je abgeschlossenem Lauf geschrieben.
+`brain.energy.work`. `brain.energy.prices=1:1,100:0.1` überschreibt das Raster
+mit einzelnen Speicher-/Arbeitspaaren. `brain.energy.train_length` und
+`brain.energy.train_episodes` steuern die Trainingsfolgen. `brain.energy.phase=compete`
+ergänzt statische Konkurrenten; `brain.energy.control_bloat=false` startet die
+Kontrollprogramme ohne Zusatzlayer. Ergebnisse werden je Lauf geschrieben.
 Die Kurzzeiten in `results.csv` enthalten Prüf-/Resetbuchhaltung und werden bei
 gleichzeitig laufenden Serien nicht als belastbarer Performancevergleich verwendet.

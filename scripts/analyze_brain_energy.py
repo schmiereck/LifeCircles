@@ -15,9 +15,23 @@ parser.add_argument("--output", type=Path, required=True)
 args = parser.parse_args()
 args.output.mkdir(parents=True, exist_ok=True)
 rows = []
+budgets = {}
+seen = {}
 for folder in args.folders:
+    settings = dict(line.split("=",1) for line in (folder / "settings.txt").read_text().splitlines() if "=" in line)
     with (folder / "results.csv").open() as stream:
-        rows.extend(csv.DictReader(stream))
+        for row in csv.DictReader(stream):
+            kind=(row["phase"],row["task"],row["reward_scale"])
+            budget=(row["generations"],settings.get("population","32"),settings.get("train_length","24"),settings.get("train_episodes","2"))
+            if kind in budgets and budgets[kind]!=budget:
+                raise ValueError("Analyze different generation/training budgets separately")
+            budgets[kind]=budget
+            identity=kind+(row["storage_factor"],row["work_factor"],row["seed"])
+            values=tuple(row[field] for field in ("loss","accuracy","stored","executed","solved"))
+            if identity in seen:
+                if seen[identity]!=values: raise ValueError("Conflicting repeated trial")
+                continue
+            seen[identity]=values;rows.append(row)
 groups = defaultdict(list)
 for row in rows:
     groups[(row["phase"], row["task"], float(row["storage_factor"]), float(row["work_factor"]), float(row["reward_scale"]))].append(row)
@@ -58,10 +72,13 @@ for reward in sorted({s["reward"] for s in summary}):
                 value=lookup.get((task,*price))
                 if value:
                     ax.text(x,y,f'{value["successes"]}/{value["n"]}',ha="center",va="center",color="white" if value["successes"]>6 else "black",fontsize=9)
+                else:
+                    ax.text(x,y,"—",ha="center",va="center",color="#666666",fontsize=9)
         ax.set_yticks(range(len(tasks)),tasks)
         ax.set_xticks(range(len(prices)),[f"{s:g} / {w:g}" for s,w in prices],rotation=35,ha="right")
-        ax.set_xlabel("Speicherfaktor / Ausführungsfaktor")
-        ax.set_title(("Erlernen aus Zufallsnetzen" if phase=="acquire" else "Fähigkeit nach Verdichtung erhalten")+f"; Belohnungsskala {reward:g} Energie/s")
+        ax.set_xlabel("Speicherfaktor / Ausführungsfaktor (—: nicht durchgeführt)")
+        title={"acquire":"Erlernen aus Zufallsnetzen","compress":"Fähigkeit nach Verdichtung erhalten","compete":"Wettbewerb mit statischen Netzen"}[phase]
+        ax.set_title(title+f"; Belohnungsskala {reward:g} Energie/s")
     fig.tight_layout();fig.savefig(args.output / f"success-{reward:g}.png",dpi=160);plt.close(fig)
 
 # Paired comparisons use only equal task, seed, reward and generation budget.

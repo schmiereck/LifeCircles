@@ -1,0 +1,9 @@
+phase,task,storage,work,reward,n,successes,median_loss,median_accuracy,median_stored,median_executed,median_neurons,solved_median_stored,solved_median_executed,median_first_solved,lost_after_discovery,rejected
+compress,COUNTER,0.0,0.0,0.0003,10,10,1e-09,1.0,57.0,45.2265625,29.0,57.0,45.2265625,0.0,0,0
+compress,COUNTER,1.0,0.25,0.0003,10,10,1.0195999999999999e-05,1.0,32.0,32.0,17.0,32.0,32.0,0.0,0,0
+compress,COUNTER,1.0,1.0,0.0003,10,10,3.33755e-05,1.0,32.0,32.0,17.0,32.0,32.0,0.0,0,0
+compress,COUNTER,100.0,0.1,0.0003,10,9,5.947e-06,1.0,32.0,32.0,17.0,32,32.0,0.0,1,0
+compress,DELAY,0.0,0.0,0.0003,10,10,0.0,1.0,30.0,18.75,15.0,30.0,18.75,0.0,0,0
+compress,DELAY,1.0,0.25,0.0003,10,10,0.0,1.0,3.0,3.0,9.5,3.0,3.0,0.0,0,0
+compress,DELAY,1.0,1.0,0.0003,10,10,0.0,1.0,3.0,3.0,9.5,3.0,3.0,0.0,0,0
+compress,DELAY,100.0,0.1,0.0003,10,10,0.0,1.0,3.0,3.0,9.5,3.0,3.0,0.0,0,0

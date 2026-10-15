@@ -15,6 +15,17 @@ mvn test '-Dtest=HighPosition3TrainStrategyTest,StructureEpisodeFitnessTest,Cont
 Die Auswahl umfasst 365 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
+`BrainEnergyLabTest` ergänzt 19 Routineprüfungen für Aufgaben, Gedächtnis,
+Energieformel und reproduzierbare Evolution:
+
+```powershell
+mvn test '-Dtest=BrainEnergyLabTest'
+```
+
+Zusammen wurden 384 Routineprüfungen erfolgreich ausgeführt. Die optionalen
+Kalibrierungsserien und ihre Ergebnisse stehen in
+[GEHIRN_ERGEBNISSE.md](GEHIRN_ERGEBNISSE.md).
+
 Die Performance-Äquivalenztests vergleichen die beschleunigte Sonne mit dem Vollscan
 und prüfen wiederverwendete Nachbarlisten bei Bewegung, Tod und periodischen Nähten.
 Snapshottests sichern vollständige und kompakte Ansichten sowie die optionale

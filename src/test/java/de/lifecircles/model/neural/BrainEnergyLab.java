@@ -9,6 +9,10 @@ final class BrainEnergyLab {
     record Sample(double[] input,double target) {}
     record Data(List<List<Sample>> episodes,double baselineLoss) {}
     record Price(double storage,double work,double reward) {
+        Price {
+            if(!Double.isFinite(storage) || !Double.isFinite(work) || !Double.isFinite(reward)
+                    || storage<0 || work<0 || reward<=0)throw new IllegalArgumentException("Invalid energy price");
+        }
         double cost(int stored,double executed) {
             return storage*stored*SimulationConfig.ENERGY_COST_PER_SYNAPSE
                     +work*60*executed*SimulationConfig.ENERGY_COST_PER_PROCESSED_SYNAPSE;
@@ -37,7 +41,9 @@ final class BrainEnergyLab {
                 episodes.add(List.of(new Sample(new double[]{a,b},y)));
             }
         } else {
-            int count=validation?8:2,length=validation?64:24;
+            int count=validation?8:Integer.getInteger("brain.energy.train_episodes",2),
+                    length=validation?64:Integer.getInteger("brain.energy.train_length",24);
+            if(count<=0 || length<=0)throw new IllegalArgumentException("Sequence dimensions must be positive");
             for(int episode=0;episode<count;episode++) {
                 List<Sample> samples=new ArrayList<>();int previous=0,state=0;
                 for(int step=0;step<length;step++) {
@@ -87,11 +93,22 @@ final class BrainEnergyLab {
         return result;
     }
     static Result evolve(Task task,Price price,int seed,int generations,int population,NeuralNetwork known,Progress progress) {
+        return evolve(task,price,seed,generations,population,known,false,progress);
+    }
+    static Result evolve(Task task,Price price,int seed,int generations,int population,NeuralNetwork known,boolean competitors,Progress progress) {
         List<Individual> candidates;
         if(known==null) candidates=initial(seed,population);
         else {
             candidates=new ArrayList<>();
-            for(int i=0;i<population;i++) candidates.add(new Individual(known.mutate(0,0),1,1));
+            for(int i=0;i<population;i++) {
+                NeuralNetwork nn=known.mutate(0,0);
+                if(competitors && i>=population*4/5) {
+                    nn=new NeuralNetwork(new ValuesNeuronValueFunctionFactory(),2,new int[0],1,0,0);
+                    double target=new double[]{.25,.375,.5,.625}[i%4];
+                    nn.getOutputNeuronArr()[0].setBias(0,Math.log(target/(1-target)));nn.setEnableNeuronType(true);
+                }
+                candidates.add(new Individual(nn,1,1));
+            }
         }
         Data validation=data(task,seed(seed,100000,task.ordinal()),true);
         int first=-1,rejected=0;Individual champion=null;Metrics checked=null;

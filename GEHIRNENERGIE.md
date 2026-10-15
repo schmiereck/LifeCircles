@@ -155,4 +155,5 @@ mvn test '-Dtest=BrainEnergyAuditTest' '-Dbrain.audit.file=C:\Pfad\stand.cells' 
 Optional `-Dbrain.audit.steps=1200`. Der Test ist ausdrücklich optional und nimmt
 eine HIGH_POSITION3-HOLD-Welt an. Die Produktionslogik und Energiekonstanten wurden
 für diese Untersuchung nicht geändert. Der Audit-Test bestand mit dem genannten
-Zellstand; die vorgeschlagenen Kalibrierungsserien wurden noch nicht gestartet.
+Zellstand. Die anschließenden Kalibrierungsserien sind abgeschlossen:
+[Ergebnisse der Kalibrierung](GEHIRN_ERGEBNISSE.md).
