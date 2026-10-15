@@ -1,0 +1,8 @@
+source=C:\Users\thomas\OneDrive\Dokumente\#Projekte\LifeCircles\test-highPos3-2026-10-15-a01.cells
+steps=1200
+HOLD continuation, no selection/mutation; not a replay of the original run.
+Transient executed counters are measured anew, not read from the file.
+Root neuron/layer counts exclude module interiors. Timing excludes grid, audit bookkeeping and snapshots; one short probe.
+dt=1/60; profiling warm-up=120 steps; common-pool parallelism=4.
+BRAINS includes forward evaluation, applying outputs and the HOLD output policy.
+Source SHA256=38C7860C26E9C29908666F85AC844417091FCCF9C97D6FD8EF0ABFF8C24DEC40
