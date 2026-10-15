@@ -1,7 +1,6 @@
 package de.lifecircles.service;
 
 import de.lifecircles.model.Cell;
-import de.lifecircles.model.Environment;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -92,21 +91,6 @@ public class FileService {
     }
 
     /**
-     * Lädt Zellen aus einer Datei und fügt sie zum Environment hinzu.
-     */
-    public void mergeCellsFromFile(String filePath, Environment environment) throws IOException, ClassNotFoundException {
-        System.out.println("Starte Laden und Zusammenführen von Zellen aus " + filePath);
-        List<Cell> loadedCells = loadCellsFromFileWithProgress(filePath);
-
-        // Anstatt die Zellen zu einer Kopie hinzuzufügen, fügen wir sie direkt zum Environment hinzu
-        for (Cell cell : loadedCells) {
-            environment.addCell(cell);
-        }
-
-        System.out.println("Zusammenführen abgeschlossen: " + loadedCells.size() + " Zellen hinzugefügt");
-    }
-
-    /**
      * Speichert die 100 besten Zellen, verteilt über die Breite (x-Position) des Environments, jeweils mit der höchsten Energie.
      */
     public void saveBestCellsToFile(String filePath, List<Cell> cells, double environmentWidth) throws IOException {
@@ -165,15 +149,6 @@ public class FileService {
             oos.writeObject(bestCells);
             System.out.println("Speichern der besten Zellen abgeschlossen: " + bestCells.size() + " Zellen gespeichert");
         }
-    }
-
-    /**
-     * Lädt und setzt Zellen im Environment.
-     */
-    public void loadAndSetCells(String filePath, Environment environment) throws IOException, ClassNotFoundException {
-        List<Cell> cells = loadCellsFromFileWithProgress(filePath);
-        environment.resetCells(cells);
-        System.out.println("Environment mit " + cells.size() + " geladenen Zellen aktualisiert");
     }
 
     /**

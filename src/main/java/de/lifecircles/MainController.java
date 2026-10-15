@@ -156,8 +156,8 @@ public class MainController extends BorderPane {
             File file = fileChooser.showOpenDialog(getScene().getWindow());
             if (file != null) {
                 try {
-                    // Verwende die neue FileService-Methode, die die Zellen lädt und direkt im Environment setzt
-                    fileService.loadAndSetCells(file.getAbsolutePath(), Environment.getInstance());
+                    // Publish the loaded population between complete simulation steps.
+                    calculationService.loadCellsFromFile(file.getAbsolutePath(), false);
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -176,8 +176,8 @@ public class MainController extends BorderPane {
             File file = fileChooser.showOpenDialog(getScene().getWindow());
             if (file != null) {
                 try {
-                    // Verwende die neue FileService-Methode zum Zusammenführen
-                    fileService.mergeCellsFromFile(file.getAbsolutePath(), Environment.getInstance());
+                    // Merge through the simulation service so paused snapshots are refreshed too.
+                    calculationService.loadCellsFromFile(file.getAbsolutePath(), true);
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();

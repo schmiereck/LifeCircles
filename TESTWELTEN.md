@@ -9,10 +9,10 @@ Genetiktests sind fest vorgegeben; globale Einstellungen werden danach wiederher
 Java 25 und Maven:
 
 ```powershell
-mvn test '-Dtest=BrainInputScalingTest,StructuralMutationTest,NetworkSchedulingTest,ExecutionGradientTest,ModuleMutationCostTest,TrainingSelectionTest,SunIndexRegressionTest,PerformanceEquivalenceTest,TissueMechanicsTest,MechanicalFixtureTest,MechanicsRegressionTest,ForceSignTest,SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
+mvn test '-Dtest=CellFileImportTest,BrainInputScalingTest,StructuralMutationTest,NetworkSchedulingTest,ExecutionGradientTest,ModuleMutationCostTest,TrainingSelectionTest,SunIndexRegressionTest,PerformanceEquivalenceTest,TissueMechanicsTest,MechanicalFixtureTest,MechanicsRegressionTest,ForceSignTest,SensorTargetSelectionTest,MutationFactorsTest,PopulationEnergyTest,SunContactTest,TopSensorTest,SimulationSnapshotTest,PeriodicWorldTest,RotationTest,SizeChangeTest,TrainingGenerationTest,NestedInheritanceTest,MultiPortNeuronTest,BackpropagateTest,CoincidentCellCentersTest,PhysicsRegressionTest,InheritanceRegressionTest,CellSensorVisibilityTest,SerialTest#testNeuronSynapseConnectionsAfterDeserialization,Cell_writeObject_is_called_Test'
 ```
 
-Die Auswahl umfasst 312 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
+Die Auswahl umfasst 322 Tests. Die evolutionaeren Langzeitexperimente der anderen Testklassen
 gehoeren nicht zu diesem gezielten Lauf.
 
 Die Performance-Äquivalenztests vergleichen die beschleunigte Sonne mit dem Vollscan
@@ -35,7 +35,7 @@ läuft ausschließlich mit `-Dtissue.sweep=true` und gehört nicht zur Routineau
 ## Physikwelten
 
 Die Netzkorrekturen stehen in [NETZPRUEFUNG.md](NETZPRUEFUNG.md). Ihre
-Korrektheitsregressionen sind Teil der oben genannten 312 Tests. Nur die einzelne
+Korrektheitsregressionen sind Teil der oben genannten 322 Tests. Nur die einzelne
 Mutationsverteilungsprobe bleibt optional:
 
 ```powershell
@@ -534,3 +534,29 @@ Trainingsgenerationen enthalten hoechstens 20 % unveraenderte Elitegenome bei de
 normalen Zielgroessen 16/20; der Rest sind Mutationskandidaten. Beide beginnen als
 frische Zellen mit gleicher Wachstumsphase, Energie und genau einem initialen
 Denkschritt. Auch Elitekopien teilen keine Laufzeitzustaende mit ihren Eltern.
+
+
+## Laden und Zusammenfuehren ohne veraltete Anzeige
+
+`CellFileImportTest` ergaenzt zehn Regressionen: Laden/Ersetzen und Zusammenfuehren
+vor Start und pausiert, jeweils mit vollstaendigem und kompaktem Snapshot, defekte
+Dateien sowie Import waehrend eines noch laufenden Simulationsschritts.
+Dateilesen erfolgt ausserhalb der Simulationssperre; die gesamte Population wird
+zwischen zwei Schritten uebernommen und der Darstellungszustand sofort aktualisiert.
+`FileService` veraendert die Welt nicht mehr direkt. Beide Ladebuttons verwenden
+`CalculationService.loadCellsFromFile()`.
+
+Die alte Population `default-2025-07-29-a01.cells` wurde separat unveraendert geladen:
+1.047 Zellen, direkt nach Import 1.047 Zellen im Snapshot. Ein anschliessender
+Physik-/Denkschritt in einer Welt 6.400 x 1.200 lieferte endliche Positionen,
+Groessen und Energien. Das belegt Laden und kurzfristige Ausfuehrbarkeit;
+langfristiges Verhalten unter den korrigierten Modellregeln wurde nicht geprueft.
+Der gezielte Abschlusslauf bestand mit 36 Tests inklusive dieser realen Datei.
+
+Die echte Datei gehoert nicht zum Repository. Der optionale `LegacyCellFileTest`
+laeuft nur mit angegebenem Dateipfad und schreibt die Quelldatei nicht:
+
+```powershell
+mvn test '-Dtest=CellFileImportTest,SimulationSnapshotTest'
+mvn test '-Dtest=LegacyCellFileTest' '-Dlegacy.cells=C:\Pfad\population.cells' '-DargLine=-Xmx3g -Djava.util.concurrent.ForkJoinPool.common.parallelism=4'
+```

@@ -68,6 +68,23 @@ public class CalculationService implements Runnable {
         }
     }
 
+    /** Read outside the simulation lock; publish the complete import between steps. */
+    public void loadCellsFromFile(String filePath, boolean merge) throws java.io.IOException, ClassNotFoundException {
+        List<Cell> loaded = FileService.getInstance().loadCellsFromFileWithProgress(filePath);
+        importCells(loaded, merge);
+        System.out.println((merge ? "Zusammenführen abgeschlossen: " : "Population ersetzt: ") + loaded.size() + " Zellen");
+    }
+
+    void importCells(List<Cell> loaded, boolean merge) {
+        synchronized (simulationLock) {
+            if (merge) environment.getCellList().addAll(loaded);
+            else environment.resetCells(loaded);
+            stateVersion++;
+            // Loading must be visible even before Start or while paused, in either LOD mode.
+            updateState(snapshotIncludesActors);
+        }
+    }
+
     public void initializeSimulation() {
         synchronized (simulationLock) {
             stateReadable = false;
