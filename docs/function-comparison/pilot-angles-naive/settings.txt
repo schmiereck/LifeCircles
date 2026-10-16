@@ -1,0 +1,21 @@
+source=experiments\none-energy-long-2026-10-16
+steps=7200
+calibration_steps=7200
+repeats=2
+models_limit=18
+world=600x400 ground only
+founders=8
+founder_energy=.75
+founder_age=9
+founder_radius=10
+founder_state=source_state
+founder_angles=0,45,90,135,180,225,270,315 degrees
+source_snapshots=60000,600000
+representative=median stored-synapse count; original file index breaks ties
+calibration_sun_seed=991000
+trial_sun_seeds=992000+repeat
+fees=source-price,zero
+freeze=calibration mean per birth state; unseen states use 64 canonical decisions
+brain executes in both modes; no cost refund, no mutation, no refill/reseeding. Newborn commands overridden before insertion.
+Primary readouts: cell-seconds and births over fixed duration. Free-fee trials isolate control benefit from brain fees.
+Calibration uses source price; fixed profiles are examples of static policies, not optimized static controls.

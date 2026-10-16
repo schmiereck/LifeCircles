@@ -104,11 +104,46 @@ Parameter für kurze Proben: `function.study.steps`, `function.study.calibration
 Verlauf: `progress.csv`, feste Muster: `profiles.csv`, ausgewählte Modelle:
 `model-N.cells`. Modelldateien enthalten jeweils eine Zelle in einer Liste.
 
+## Ergänzende Signalprüfung und automatische Auswertung
+
+Für jedes der 18 ausgewählten Genome werden alle acht Geburtszustände mit
+synthetischen Eingabevarianten geprüft: Energie, Alter, Lichtkontakt, Orientierung
+sowie Farbe, Energie, Alter, Kraft und Zustand wahrgenommener Nachbarn. Nach 64
+Denkaufrufen werden die letzten 16 Ausgaben gemittelt. Referenz und Varianten
+beginnen jeweils mit frischem Netzgedächtnis. Die 20 Änderungen pro Zustand
+ergeben insgesamt 2880 Probezeilen.
+
+Die Auswertung trennt rohe neuronale Werte von tatsächlich angewendeten Befehlen:
+Größen-/Kraftbegrenzungen, begrenzte Energieanteile und binäre Kinderzustände können
+Änderungen der rohen Werte ohne Verhaltenswirkung lassen. Auch eine Änderung des
+Teilungswunschs eines nicht gewählten Aktors muss die tatsächliche Teilung nicht
+ändern. Die Signalprobe erfasst daher zusätzlich den angeforderten Aktor und
+Kinderzustand. Sie misst Erreichbarkeit von Ausgaben, keine Fitness und keine
+Reaktion auf jede denkbare Sensorbelegung.
+
+Die zwei Signal-Kontrollen prüfen ein konstantes Netz und eine bekannte
+Energie-zu-Größe-Verbindung. Die statistische Auswertung wurde zusätzlich mit
+einem klar getrennten Null-Effekt-Kontrolldatensatz geprüft: alle bekannten
+identischen Paare müssen exakt null Vorteil ergeben. Diese Kontrolldaten sind
+keine biologischen Studienergebnisse.
+
+`watch_function_comparison.ps1` wartet auf den laufenden Simulationsprozess,
+startet anschließend Signalproben samt Kontrollen und archiviert die Ergebnisse
+über `finish_function_comparison.py`. Der Status steht unter
+`experiments/function-comparison-stable-2026-10-16/analysis-job.json`.
+Zusammenfassungen werden unter `docs/function-comparison/stable/` geschrieben;
+`README.md` ist eine automatisch erzeugte Messzusammenfassung. Der abschließende
+wissenschaftliche Befund muss weiterhin anhand der Messdaten eingeordnet werden.
+Die zwei abgebrochenen Vorversuche bleiben unter `docs/function-comparison/pilot-*`
+separat archiviert.
+
 ## GUI parallel beobachten
 
 In VS Code **Main NONE** auswählen. Dieses Profil übergibt `--trainMode=NONE`
-und verwendet vier Common-Pool-Worker. Die aktuelle lokale Konfigurationsvorgabe
-HIGH_POSITION3 bleibt erhalten; Main DEFAULT ohne Argument verwendet diese Vorgabe.
+und verwendet vier Common-Pool-Worker. Main DEFAULT ohne Argument verwendet die
+jeweilige Vorgabe in `SimulationConfig`. Diese wurde während der Vorbereitung
+lokal von HIGH_POSITION3 auf den bereits committeten Standard NONE zurückgestellt;
+der Funktionsvergleich verändert diese Vorgabe nicht.
 
 Die implementierten Physik-, Vererbungs-, Netz- und Performancekorrekturen gelten
 auch in der GUI. Standard-Gehirnpreise bleiben 1/1, Sonnenenergie bleibt 0,01 je

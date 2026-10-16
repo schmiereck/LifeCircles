@@ -1,0 +1,6 @@
+{
+  "commit": "4678169",
+  "reason": "Replace naive variance/mean with stable online statistics",
+  "status": "aborted",
+  "completed_trials": 32
+}
