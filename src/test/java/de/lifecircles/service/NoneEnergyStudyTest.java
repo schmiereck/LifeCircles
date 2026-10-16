@@ -52,19 +52,20 @@ class NoneEnergyStudyTest {
         byte[] bytes=Files.readAllBytes(source);
         int steps=Integer.getInteger("none.energy.steps",36000), seeds=Integer.getInteger("none.energy.seeds",3);
         int interval=Integer.getInteger("none.energy.interval",600), cap=Integer.getInteger("none.energy.cap",2000);
+        int checkpointInterval=Integer.getInteger("none.energy.checkpoint_interval",0);
         long offset=Long.getLong("none.energy.seed_offset",0);
         int foundersPerSection=Integer.getInteger("none.energy.founders_per_section",0);
         double width=Double.parseDouble(System.getProperty("none.energy.width","11200"));
         double height=Double.parseDouble(System.getProperty("none.energy.height","1200"));
         boolean floor=Boolean.getBoolean("none.energy.floor");
-        assertTrue(steps>0 && seeds>0 && interval>0 && cap>0);
+        assertTrue(steps>0 && seeds>0 && interval>0 && cap>0 && checkpointInterval>=0);
         SimulationConfig c=SimulationConfig.getInstance();Random original=NeuralNetwork.getRandom();
         int initial=c.getInitialCellCount();double oldW=c.getWidth(),oldH=c.getHeight();
         String header="seed,storage,work,step,seconds,cells,births,deaths,founder_lineages,total_energy,mean_energy,mean_stored,mean_executed,mean_root_neurons,mean_generation,max_generation,states,contact_fraction,mean_abs_force,brain_cost_requested,decisions,step_wall_ms,status,state_hash\n";
         Files.writeString(out.resolve("trajectory.csv"),header);Files.writeString(out.resolve("results.csv"),header);
         Files.writeString(out.resolve("phases.csv"),"seed,storage,work,phase,calls,total_ms\n");
         Files.writeString(out.resolve("settings.txt"),"source="+source+"\nsha256="+hex(MessageDigest.getInstance("SHA-256").digest(bytes))
-                +"\nsteps="+steps+"\nseeds="+seeds+"\nseed_offset="+offset+"\ninterval="+interval+"\ncap_stop="+cap
+                +"\nsteps="+steps+"\nseeds="+seeds+"\nseed_offset="+offset+"\ninterval="+interval+"\ncheckpoint_interval="+checkpointInterval+"\ncap_stop="+cap
                 +"\nfounders_per_section="+foundersPerSection+"\nfloor_layout="+floor+"\nwidth="+width+"\nheight="+height+"\ndt="+DT+"\nsun_rate="+c.getSunRayRate()+"\nsun_spacing="+c.getSunRaySpacingPx()
                 +"\nenergy_per_ray="+c.getEnergyPerRay()+"\nmutation_rate="+c.getMutationRate()+"\nmutation_strength="+c.getMutationStrength()
                 +"\ndivision_multiplier="+c.getDivisionMutationRateMultiplier()+"\ninput_normalization="+c.isNormalizeBrainInputs()
@@ -103,6 +104,13 @@ class NoneEnergyStudyTest {
                     world.update(DT,grid,policy);elapsed+=System.nanoTime()-begin;
                     if(world.getCellList().isEmpty()) status="extinct";
                     else if(world.getCellList().size()>=cap) status="cap_stop";
+                    if(checkpointInterval>0 && step%checkpointInterval==0) {
+                        save(folder.resolve("step-"+step+".cells"),world.getCellList());
+                        StringBuilder ancestry=new StringBuilder("cell,founder_lineage\n");
+                        for(int i=0;i<world.getCellList().size();i++) ancestry.append(i).append(',')
+                                .append(policy.lineage.get(world.getCellList().get(i))).append('\n');
+                        Files.writeString(folder.resolve("step-"+step+"-lineages.csv"),ancestry);
+                    }
                     if(step%interval==0 || !status.equals("completed") || step==steps) {
                         String line=row(seed,price,step,world,policy,elapsed/1e6/step,status);
                         append(out.resolve("trajectory.csv"),line);

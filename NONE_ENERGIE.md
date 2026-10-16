@@ -74,6 +74,35 @@ Die Laufzeiten enthalten außerdem die Buchhaltung der Versuche. Nach dem Laden
 steht der transiente Ausführungszähler auf null; die Verlaufsgrafik beginnt für
 diese Messgröße erst nach tatsächlich ausgeführten Entscheidungen.
 
+## Langzeitserie ab 16.10.2026
+
+Die autorisierte Langzeitserie verwendet dieselbe kleine Welt und dieselben
+acht Gründer, drei Preise und drei Zufallsfolgen. Pro Lauf sind 600.000 Schritte
+vorgesehen: 10.000 Simulationssekunden. Die neun Läufe werden nacheinander in
+einer JVM ausgeführt; die Preisreihenfolge rotiert wie zuvor zwischen den Seeds.
+
+Alle 600 Schritte werden Messwerte angehängt. Alle 60.000 Schritte (1.000
+Simulationssekunden) werden zusätzlich `step-N.cells` und `step-N-lineages.csv`
+gespeichert. Die Begleitdatei ordnet die Zellen in Dateireihenfolge ihren
+Gründerlinien zu. Diese Speicherstände erlauben spätere Genom-/Funktionsprüfungen;
+sie speichern weiterhin keine vollständigen Zufalls- und Umweltzustände für
+exaktes Wiederaufnehmen eines unterbrochenen Laufs.
+
+```powershell
+./scripts/start_none_energy_long.ps1 -Source 'C:\Pfad\stand.cells' -Output 'C:\Pfad\neuer-Ausgabeordner'
+```
+
+Der Starter öffnet einen versteckten Hintergrundprozess, kopiert die Quelldatei
+in den neuen Ausgabeordner und protokolliert Prüfsumme, Commit und Budgets in
+`launch.json`. `job.json` zeigt Prozess-ID, Status und später den Rückgabecode;
+`run.log`, `trajectory.csv` und `results.csv` zeigen den Fortschritt. Ein vorhandener
+Ausgabeordner wird abgewiesen. Der Rechner muss während der Läufe weiterlaufen.
+
+Das kurze Prüfen aller Preise mit zwei Speicherständen je Preis und den sieben
+Routinekontrollen bestand (acht Tests). Auch der Hintergrundstarter wurde mit
+einer vollständigen kurzen Serie geprüft. Laufzeitabschätzungen für die lange
+Serie bleiben vorläufig, weil sich Populations- und Netzgrößen verändern können.
+
 ## Aussagegrenzen
 
 Diese Versuche prüfen den Übergang eines auf Statik trainierten Bestands in eine
