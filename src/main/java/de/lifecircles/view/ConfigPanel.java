@@ -4,12 +4,12 @@ import de.lifecircles.service.SimulationConfig;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 
 /**
  * Configuration panel for simulation parameters.
  */
-public class ConfigPanel extends VBox {
+public class ConfigPanel extends HBox {
     private final ViewConfig viewConfig;
 
     public ConfigPanel() {

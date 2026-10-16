@@ -5,12 +5,14 @@ import de.lifecircles.service.CalculationService;
 import de.lifecircles.service.FileService;
 import de.lifecircles.service.SimulationConfig;
 import de.lifecircles.view.ConfigPanel;
+import de.lifecircles.view.EnvironmentPanel;
 import de.lifecircles.view.SimulationView;
 import de.lifecircles.view.StatisticsPanel;
 import de.lifecircles.view.ViewConfig;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -39,19 +41,6 @@ public class MainController extends BorderPane {
         this.simulationView = new SimulationView(calculationService);
         this.fileService = FileService.getInstance();
 
-        // Create right side panels
-        VBox rightPanels = new VBox(10);
-        rightPanels.setPrefWidth(250);
-
-        // Add config panel
-        ConfigPanel configPanel = new ConfigPanel();
-        
-        // Add statistics panel
-        StatisticsPanel statisticsPanel = new StatisticsPanel();
-
-        rightPanels.getChildren().addAll(configPanel, statisticsPanel);
-        setRight(rightPanels);
-
         setupUI();
     }
 
@@ -64,9 +53,13 @@ public class MainController extends BorderPane {
         setCenter(simulationView);
         simulationView.setStyle("-fx-background-color: black;");
 
-        // Add status bar at bottom
-        HBox statusBar = createStatusBar();
-        setBottom(statusBar);
+        // Keep the whole world width available; scroll controls on narrow windows.
+        HBox panels = new HBox(10, new ConfigPanel(), new EnvironmentPanel(), new StatisticsPanel());
+        ScrollPane panelScroll = new ScrollPane(panels);
+        panelScroll.setFitToHeight(true);
+        panelScroll.setPrefViewportHeight(260);
+        panelScroll.setMaxHeight(280);
+        setBottom(new VBox(panelScroll, createStatusBar()));
     }
 
     private ToolBar createToolbar() {

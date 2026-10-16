@@ -10,12 +10,13 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 
 /**
  * Panel displaying simulation statistics and population graphs.
  */
-public class StatisticsPanel extends VBox {
+public class StatisticsPanel extends HBox {
     private final StatisticsManagerService statistics;
     private final Label totalLabel = new Label();
     private final Label performanceLabel = new Label();
