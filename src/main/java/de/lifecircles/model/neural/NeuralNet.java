@@ -729,6 +729,42 @@ public class NeuralNet implements Serializable {
         neuronValueFunction.releaseNeuron(this, removedNeuron);
     }
 
+    /** Backward graph closure, including all dynamic scheduling roots and all recurrent edges. */
+    void removeUnobservableHiddenNeurons(NeuronValueFunctionFactory factory, NeuronValueFunction values,
+                                        Set<NeuralNet> visited) {
+        if (!visited.add(this)) return;
+        Set<NeuronInterface> needed = Collections.newSetFromMap(new IdentityHashMap<>());
+        ArrayDeque<NeuronInterface> pending = new ArrayDeque<>();
+        for (Neuron output : outputNeuronArr) if (needed.add(output)) pending.add(output);
+        // Always keep controllers, even with scheduling disabled: the flag can change later.
+        for (int i = fixedHiddenLayerCount; i < hiddenLayerArr.length; i++) {
+            Layer layer = hiddenLayerArr[i];
+            if (layer.size() > 0 && needed.add(layer.getNeuron(0))) pending.add(layer.getNeuron(0));
+        }
+        while (!pending.isEmpty()) {
+            NeuronInterface target = pending.removeFirst();
+            for (int port = 0; port < target.getNeuronTypeInfoData().getInputCount(); port++) {
+                for (Synapse edge : target.getInputSynapseArr(port)) {
+                    // Even a zero weight is kept: IEEE arithmetic with nonfinite inputs is observable.
+                    NeuronInterface source = edge.getSourceNeuron();
+                    if (needed.add(source)) pending.add(source);
+                }
+            }
+        }
+        // Keep layer order, fixed-state slots, input/output interfaces and surviving summation order.
+        for (Layer layer : hiddenLayerArr)
+            for (int i = layer.size() - 1; i >= 0; i--)
+                if (!needed.contains(layer.getNeuron(i))) removeNeuron(values, layer, i);
+
+        // Definitions can be shared by several instances. Simplify each once, preserving every port.
+        // Leave unused type candidates in the nursery intact; they are latent genetic material.
+        for (Layer layer : hiddenLayerArr) for (NeuronInterface neuron : layer.getNeuronsArr()) {
+            NeuralNet inner = neuron.getNeuronTypeInfoData().getNeuralNet();
+            if (inner != null) inner.removeUnobservableHiddenNeurons(factory, factory.create(), visited);
+        }
+        values.clearModuleStates();
+    }
+
     private void removeInputNeuron(final NeuronValueFunction neuronValueFunction, final int removeNeuronPos) {
         final Neuron removedNeuron = this.inputNeuronArr[removeNeuronPos];
 

@@ -106,6 +106,18 @@ public class NeuralNetwork implements Serializable {
     }
 
     /**
+     * Experimental genotype copy with unreachable hidden neurons removed, starting with empty memory.
+     * Preserves forward outputs and layer scheduling, not energy fees or future mutation distribution.
+     * Does not change this network. Never applied automatically to living cells.
+     */
+    public NeuralNetwork simplifiedCopy() {
+        NeuralNetwork copy = new NeuralNetwork(this);
+        copy.neuralNet.removeUnobservableHiddenNeurons(copy.neuronValueFunctionFactory,
+                copy.neuronValueFunction, Collections.newSetFromMap(new IdentityHashMap<>()));
+        return copy;
+    }
+
+    /**
      * Sets the input values for the network.
      */
     public void setInputs(final double[] inputArr) {
