@@ -71,6 +71,13 @@ public class SimulationConfig {
     // Sun:
 
     private volatile double sunRayRate = 10.0;
+    private volatile BrainEnergyCosts brainEnergyCosts = BrainEnergyCosts.DEFAULT;
+
+    public BrainEnergyCosts getBrainEnergyCosts() { return brainEnergyCosts; }
+    /** One live multiplier for both stored DNA and the original per-decision work bill. */
+    public void setBrainEnergyMultiplier(double multiplier) {
+        brainEnergyCosts = new BrainEnergyCosts(multiplier, multiplier);
+    }
     private double energyPerRay = 0.01D; //0.005; //0.015; // 0.025;
     // Spacing between sun rays in pixels; average one ray per this spacing
     private double sunRaySpacingPx = 60.0;

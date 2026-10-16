@@ -2,6 +2,7 @@ package de.lifecircles;
 
 import de.lifecircles.service.SimulationConfig;
 import de.lifecircles.view.EnvironmentPanel;
+import de.lifecircles.service.BrainEnergyCosts;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Slider;
@@ -16,6 +17,7 @@ class MainControllerLayoutTest {
         CompletableFuture<Void> result = new CompletableFuture<>();
         Platform.startup(() -> {
             SimulationConfig config=SimulationConfig.getInstance(); double sun=config.getSunRayRate();
+            double brainMultiplier=config.getBrainEnergyCosts().work();
             MainController controller=null;
             try {
                 controller=new MainController();
@@ -30,9 +32,13 @@ class MainControllerLayoutTest {
                 Slider slider=(Slider)panel.lookup(".slider");
                 slider.setValue(0); assertEquals(0,config.getSunRayRate());
                 slider.setValue(37.5); assertEquals(37.5,config.getSunRayRate());
+                Slider brainSlider=(Slider)controller.lookup("#brain-energy-slider");
+                assertEquals(2,brainSlider.getValue());
+                brainSlider.setValue(4);assertEquals(new BrainEnergyCosts(100,100),config.getBrainEnergyCosts());
+                brainSlider.setValue(0);assertEquals(new BrainEnergyCosts(0,0),config.getBrainEnergyCosts());
                 result.complete(null);
             } catch(Throwable failure) {result.completeExceptionally(failure);}
-            finally {config.setSunRayRate(sun); if(controller!=null) controller.shutdown();}
+            finally {config.setSunRayRate(sun);config.setBrainEnergyMultiplier(brainMultiplier); if(controller!=null) controller.shutdown();}
         });
         try {result.get(45,TimeUnit.SECONDS);} finally {Platform.exit();}
     }

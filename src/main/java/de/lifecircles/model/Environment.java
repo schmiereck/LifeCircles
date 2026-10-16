@@ -122,6 +122,8 @@ public class Environment {
     }
 
     public void update(final double deltaTime, final PartitioningStrategy partitioner, final SimulationStepPolicy policy) {
+        // One immutable price snapshot for every cell in this step, including live GUI changes.
+        final de.lifecircles.service.BrainEnergyCosts brainCosts = policy.brainEnergyCosts();
         long phaseStart = profiler.start();
         // Calculate sun energy rays
         this.sunRayList.clear();
@@ -181,7 +183,7 @@ public class Environment {
         phaseStart = profiler.start();
         IntStream.range(0, this.cellList.size()).parallel().forEach(i -> {
             Cell cell = this.cellList.get(i);
-            CellCalcService.advanceCell(cell, deltaTime, policy.brainEnergyCosts());
+            CellCalcService.advanceCell(cell, deltaTime, brainCosts);
             this.wrapPosition(cell);
             BlockerCellCalcService.handleBlockerCollisions(cell, this.blockerList, this);
             this.wrapPosition(cell);

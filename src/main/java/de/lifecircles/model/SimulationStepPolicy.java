@@ -8,7 +8,7 @@ import de.lifecircles.service.BrainEnergyCosts;
 public interface SimulationStepPolicy {
     SimulationStepPolicy NONE = new SimulationStepPolicy() {};
     default boolean useSunlight() { return true; }
-    default BrainEnergyCosts brainEnergyCosts() { return BrainEnergyCosts.DEFAULT; }
+    default BrainEnergyCosts brainEnergyCosts() { return SimulationConfig.getInstance().getBrainEnergyCosts(); }
     default void afterThinking(Cell cell) {}
     default boolean isDead(Cell cell) {
         return cell.getAge() >= SimulationConfig.getInstance().getCellDeathAge() || cell.getEnergy() <= 0;
