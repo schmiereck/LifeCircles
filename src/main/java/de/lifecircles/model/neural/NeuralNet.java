@@ -30,6 +30,15 @@ public class NeuralNet implements Serializable {
     private transient Map<NeuronInterface, Integer> forwardOrder;
     private transient Map<Synapse, Double> forwardSources;
     private transient Set<NeuralNet> storageVisited;
+    private transient NetworkExecutionPlan executionPlan;
+    private transient boolean skippedState;
+    private transient boolean executionOptimizationEnabled = true;
+    private transient boolean usingExecutionPlan;
+
+    /** Disabling preserves output semantics; reset before changing topology after optimized execution. */
+    public void setExecutionOptimizationEnabled(boolean enabled) { executionOptimizationEnabled = enabled; }
+    public boolean isExecutionOptimizationEnabled() { return executionOptimizationEnabled; }
+    boolean isUsingExecutionPlan() { return usingExecutionPlan; }
 
     boolean isRecordingForward() { return forwardOrder != null; }
 
@@ -271,6 +280,21 @@ public class NeuralNet implements Serializable {
     }
 
     double[] process(final NeuronValueFunction neuronValueFunction, boolean recordTraining, boolean collectOutputs) {
+        return process(neuronValueFunction, recordTraining, collectOutputs, executionOptimizationEnabled);
+    }
+
+    double[] process(final NeuronValueFunction neuronValueFunction, boolean recordTraining, boolean collectOutputs,
+                     boolean optimize) {
+        if (executionPlan != null && !executionPlan.matches(this)) {
+            if (skippedState) throw new IllegalStateException(
+                    "Network topology changed after optimized execution; copy the genotype or clear recurrent state first");
+            executionPlan = null;
+        }
+        usingExecutionPlan = optimize && executionOptimizationEnabled && !recordTraining;
+        if (usingExecutionPlan && executionPlan == null) {
+            executionPlan = new NetworkExecutionPlan(this);
+            if (!executionPlan.matches(this)) throw new IllegalStateException("Topology changed during plan preparation");
+        }
         if (recordTraining) {
             if (forwardOrder == null) forwardOrder = new IdentityHashMap<>();
             if (forwardSources == null) forwardSources = new IdentityHashMap<>();
@@ -285,8 +309,13 @@ public class NeuralNet implements Serializable {
             final Layer layer = this.hiddenLayerArr[layerIndex];
             final NeuronInterface[] neuronArr = layer.getNeuronsArr();
             if (layer.isActiveLayer() || this.disableLayerDeactivation) {
-                for (final NeuronInterface neuron : neuronArr) {
-                    this.proccessedSynapses += this.activate(neuronValueFunction, neuron);
+                for (int j = 0; j < neuronArr.length; j++) {
+                    if (!usingExecutionPlan || executionPlan.executes(layerIndex, j))
+                        this.proccessedSynapses += this.activate(neuronValueFunction, neuronArr[j]);
+                }
+                if (usingExecutionPlan) {
+                    this.proccessedSynapses += executionPlan.skippedWork[layerIndex];
+                    skippedState |= executionPlan.skipsNeurons;
                 }
             } else {
                 if (layerIndex < fixedHiddenLayerCount) {
@@ -1147,6 +1176,9 @@ public class NeuralNet implements Serializable {
     }
 
     public void rnnClearPreviousState(final NeuronValueFunction neuronValueFunction) {
+        executionPlan = null;
+        skippedState = false;
+        usingExecutionPlan = false;
         neuronValueFunction.clearModuleStates();
         forwardOrder = null; forwardSources = null;
         this.proccessedSynapses = 0;
@@ -1321,6 +1353,7 @@ public class NeuralNet implements Serializable {
     @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
+        executionOptimizationEnabled = true;
         // Nach der Wiederherstellung der Synapsen: Input-Synapsen-Array und Zähler für alle Neuronen korrekt setzen
         // Alle Neuronen einsammeln
         List<NeuronInterface> allNeurons = new ArrayList<>();
