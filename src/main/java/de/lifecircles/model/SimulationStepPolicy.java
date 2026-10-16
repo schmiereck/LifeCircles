@@ -2,11 +2,13 @@ package de.lifecircles.model;
 
 import de.lifecircles.service.ReproductionManagerService;
 import de.lifecircles.service.SimulationConfig;
+import de.lifecircles.service.BrainEnergyCosts;
 
 /** Optional episode constraints. afterThinking runs concurrently on separate cells. */
 public interface SimulationStepPolicy {
     SimulationStepPolicy NONE = new SimulationStepPolicy() {};
     default boolean useSunlight() { return true; }
+    default BrainEnergyCosts brainEnergyCosts() { return BrainEnergyCosts.DEFAULT; }
     default void afterThinking(Cell cell) {}
     default boolean isDead(Cell cell) {
         return cell.getAge() >= SimulationConfig.getInstance().getCellDeathAge() || cell.getEnergy() <= 0;

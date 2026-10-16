@@ -14,15 +14,14 @@ public class EnergyCellCalcService {
      * @param deltaTime time step in seconds
      */
     public static void decayEnergy(final Cell cell, final double deltaTime, final boolean useSynapseEnergyCost) {
+        decayEnergy(cell, deltaTime, useSynapseEnergyCost ? BrainEnergyCosts.DEFAULT : new BrainEnergyCosts(0, 0));
+    }
+
+    public static void decayEnergy(Cell cell, double deltaTime, BrainEnergyCosts costs) {
         final int synapseCount = cell.getBrain().getSynapseCount();
         final long proccessedSynapses = cell.getBrain().getProccessedSynapses();
         final double synapseEnergyCost =
-                useSynapseEnergyCost
-                            ?
-                                synapseCount * SimulationConfig.ENERGY_COST_PER_SYNAPSE * deltaTime +
-                                proccessedSynapses * SimulationConfig.ENERGY_COST_PER_PROCESSED_SYNAPSE
-                            :
-                                0.0D;
+                costs.cost(synapseCount, proccessedSynapses, deltaTime);
         final double newEnergy =
                 Math.max(0.0D,
                         cell.getEnergy() - ((SimulationConfig.ENERGY_DECAY_RATE * deltaTime) + synapseEnergyCost));

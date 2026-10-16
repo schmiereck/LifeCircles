@@ -28,13 +28,18 @@ public class Environment {
     private static Environment instance;
 
     public Environment(double width, double height) {
+        this(width, height, new Random());
+    }
+
+    /** Seedable sunlight for reproducible continuations; ordinary worlds remain random. */
+    public Environment(double width, double height, Random sunRandom) {
         this.width = width;
         this.height = height;
         this.cellList = new ArrayList<>();
         this.blockerList = new ArrayList<>();
         this.config = SimulationConfig.getInstance();
         this.sunRayList = new ArrayList<>();
-        this.energySunCalcService = new EnergySunCalcService();
+        this.energySunCalcService = new EnergySunCalcService(sunRandom);
 
         // Setze diese Instanz als globalen Zugriffspunkt
         instance = this;
@@ -176,7 +181,7 @@ public class Environment {
         phaseStart = profiler.start();
         IntStream.range(0, this.cellList.size()).parallel().forEach(i -> {
             Cell cell = this.cellList.get(i);
-            CellCalcService.advanceCell(cell, deltaTime);
+            CellCalcService.advanceCell(cell, deltaTime, policy.brainEnergyCosts());
             this.wrapPosition(cell);
             BlockerCellCalcService.handleBlockerCollisions(cell, this.blockerList, this);
             this.wrapPosition(cell);

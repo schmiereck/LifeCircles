@@ -36,6 +36,16 @@ public class ReproductionManagerService {
     }
 
     private static Cell reproduce(SimulationConfig config, Environment environment, Cell parentCell, double divisionMultiplier) {
+        return reproduce(config, environment, parentCell, divisionMultiplier, null);
+    }
+
+    /** Reproducible birth traits and meta-mutation; brain RNG is supplied through NeuralNetwork. */
+    public static Cell reproduce(SimulationConfig config, Environment world, Cell parent, Random birthRandom) {
+        return reproduce(config, world, parent, config.getDivisionMutationRateMultiplier(), birthRandom);
+    }
+
+    private static Cell reproduce(SimulationConfig config, Environment environment, Cell parentCell,
+                                  double divisionMultiplier, Random birthRandom) {
         SensorActor chosenActor = parentCell.getSensorActors().stream()
                 .filter(actor -> actor.getReproductionDesire() >= config.getReproductionDesireThreshold())
                 .max(Comparator.comparingDouble(SensorActor::getReproductionDesire)).orElse(null);
@@ -45,7 +55,7 @@ public class ReproductionManagerService {
                 parentCell.getRadiusSize() + config.getCellMinGrowRadiusSize() * 2)), environment);
         if (!isFreePosition(environment, childPosition, config.getCellMinGrowRadiusSize())) return null;
         double energy = parentCell.getEnergy() * chosenActor.getReproductionEnergyShareOutput();
-        Cell child = createMutatedChild(config, environment, parentCell, childPosition, chosenActor.getReproductionState(), energy, divisionMultiplier);
+        Cell child = createMutatedChild(config, environment, parentCell, childPosition, chosenActor.getReproductionState(), energy, divisionMultiplier, birthRandom);
         parentCell.setEnergy(parentCell.getEnergy() - energy);
         return child;
     }
@@ -90,7 +100,7 @@ public class ReproductionManagerService {
         return position.wrapped(environment.getWidth(), environment.getHeight());
     }
 
-    private static Cell createMutatedChild(SimulationConfig config, Environment environment, Cell parent, Vector2D position, int state, double energy, double divisionMultiplier) {
+    private static Cell createMutatedChild(SimulationConfig config, Environment environment, Cell parent, Vector2D position, int state, double energy, double divisionMultiplier, Random birthRandom) {
         // The parent's factors control this birth's genetic mutation, for both
         // biological reproduction and training. Changes to the child's own
         // factors below affect its future descendants, not its current genome.
@@ -107,8 +117,9 @@ public class ReproductionManagerService {
         child.setVelocity(new Vector2D(parent.getVelocity().getX(), parent.getVelocity().getY()));
         CellType type = parent.getType();
         double colorStrength = typeMutationStrength / 10 * divisionMultiplier;
-        child.setType(new CellType(mutateValue(type.getRed(), colorStrength),
-                mutateValue(type.getGreen(), colorStrength), mutateValue(type.getBlue(), colorStrength)));
+        Random traitRandom = birthRandom == null ? random : birthRandom;
+        child.setType(new CellType(mutateValue(type.getRed(), colorStrength, traitRandom),
+                mutateValue(type.getGreen(), colorStrength, traitRandom), mutateValue(type.getBlue(), colorStrength, traitRandom)));
         child.setEnergy(energy);
         child.setGeneration(parent.getGeneration() + 1);
         child.setCellState(state);
@@ -118,7 +129,8 @@ public class ReproductionManagerService {
         child.setMutationRateFactor(parent.getMutationRateFactor());
         child.setMutationStrengthFactor(parent.getMutationStrengthFactor());
         // Meta-mutation deliberately uses global settings, avoiding self-amplification.
-        child.mutateMutationFactors(divisionRate, config.getMutationStrength());
+        if (birthRandom == null) child.mutateMutationFactors(divisionRate, config.getMutationStrength());
+        else child.mutateMutationFactors(divisionRate, config.getMutationStrength(), birthRandom);
         return child;
     }
 
@@ -126,7 +138,7 @@ public class ReproductionManagerService {
         if (cell.getBrain() instanceof CellBrain brain) brain.applyCellState(cell.getCellState());
     }
 
-    private static double mutateValue(double value, double strength) {
+    private static double mutateValue(double value, double strength, Random random) {
         double mutation = (random.nextDouble() * 2 - 1) * strength;
         return Math.max(0.0, Math.min(1.0, value + mutation));
     }

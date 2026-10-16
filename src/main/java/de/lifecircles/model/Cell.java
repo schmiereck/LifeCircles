@@ -420,7 +420,10 @@ public class Cell implements SensableCell, Serializable {
     }
 
     public void mutateMutationFactors(double mutationRate, double mutationStrength) {
-        Random random = new Random();
+        mutateMutationFactors(mutationRate, mutationStrength, new Random());
+    }
+
+    public void mutateMutationFactors(double mutationRate, double mutationStrength, Random random) {
 
         // Mutate mutationRateFactor
         if (random.nextDouble() < mutationRate) {

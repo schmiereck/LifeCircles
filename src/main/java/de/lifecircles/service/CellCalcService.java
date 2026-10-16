@@ -24,7 +24,10 @@ public class CellCalcService {
 
     /** Advance physics/metabolism after all cells have made their decisions. */
     public static void advanceCell(final Cell cell, final double deltaTime) {
-        final boolean useSynapseEnergyCost = true;
+        advanceCell(cell, deltaTime, BrainEnergyCosts.DEFAULT);
+    }
+
+    public static void advanceCell(Cell cell, double deltaTime, BrainEnergyCosts costs) {
 
         // Newborns grow linearly toward the current brain target during their first
         // simulation second. Thinking may change that target, but never growthAge.
@@ -68,7 +71,7 @@ public class CellCalcService {
         cell.setRotation(rotation);
 
         // Update energy and age
-        EnergyCellCalcService.decayEnergy(cell, deltaTime, useSynapseEnergyCost);
+        EnergyCellCalcService.decayEnergy(cell, deltaTime, costs);
 
         cell.incAge(deltaTime);
     }

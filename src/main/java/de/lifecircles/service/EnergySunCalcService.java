@@ -25,7 +25,7 @@ public class EnergySunCalcService {
         this(new Random());
     }
 
-    EnergySunCalcService(Random random) {
+    public EnergySunCalcService(Random random) {
         this(random, true);
     }
 
