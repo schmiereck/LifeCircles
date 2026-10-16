@@ -21,7 +21,7 @@ class FunctionComparisonStudyTest {
         Files.writeString(out.resolve("progress.csv"),"model,fee,mode,sun_seed,step,cells,births,deaths,total_energy\n");
         Files.writeString(out.resolve("profiles.csv"),"model,state,samples,rms_variation,output,value\n");
         Files.writeString(out.resolve("settings.txt"),"source="+root+"\nsteps="+steps+"\ncalibration_steps="+calibration+"\nrepeats="+repeats
-                +"\nmodels_limit="+limit+"\nworld=600x400 ground only\nfounders=8\nfounder_energy=.75\nfounder_age=9\nfounder_radius=10\nfounder_state=source_state"
+                +"\nmodels_limit="+limit+"\nworld=600x400 ground only\nfounders=8\nfounder_energy=.75\nfounder_age=9\nfounder_radius=10\nfounder_state=source_state\nfounder_angles=0,45,90,135,180,225,270,315 degrees"
                 +"\nsource_snapshots=60000,600000\nrepresentative=median stored-synapse count; original file index breaks ties\ncalibration_sun_seed=991000"
                 +"\ntrial_sun_seeds=992000+repeat\nfees=source-price,zero\nfreeze=calibration mean per birth state; unseen states use 64 canonical decisions"
                 +"\nbrain executes in both modes; no cost refund, no mutation, no refill/reseeding. Newborn commands overridden before insertion."

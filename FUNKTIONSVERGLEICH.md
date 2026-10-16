@@ -17,6 +17,10 @@ Fortpflanzung. Er ist keine Messung abstrakter Aufgabenleistung wie XOR.
   mit Boden, Energie 0,75, Alter 9 und Radius 10. Ererbte Zellfarbe und anfänglicher
   Zellzustand stammen von der ausgewählten Zelle. Laufende Netzaktivierungen und
   Gedächtnis beginnen leer. Die Modelle werden separat gespeichert.
+  Die acht Anfangswinkel sind gleichmäßig von 0 bis 315 Grad verteilt. Ein
+  ausschließlich gleichgerichteter Ansatz wurde nach den ersten Modellen
+  abgebrochen, weil er bei manchen Genomen vor allem blockierte Teilungsrichtungen
+  prüfte. Dessen partielle Daten bleiben separat als Vorversuch erhalten.
 - Natürliche Teilung, Sonne, Tod und physikalische Wechselwirkungen sind aktiv.
   Geburten sind klonal: keine Genom-, Farb- oder Meta-Mutation im Versuchszeitraum.
   Kein Training, kein Nachfüllen, keine Wiederbesiedlung.

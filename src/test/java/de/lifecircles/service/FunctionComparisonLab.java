@@ -26,7 +26,13 @@ final class FunctionComparisonLab {
     }
     static Environment world(Cell genome,long seed) {
         var world=new Environment(600,400,new Random(seed));world.addGroundBlocker();
-        for(int i=0;i<8;i++)world.addCell(founder(genome,new Vector2D((i+.5)*75,339),genome.getCellState()));
+        for(int i=0;i<8;i++) {
+            Cell cell=founder(genome,new Vector2D((i+.5)*75,339),genome.getCellState());
+            cell.setRotation(i*Math.PI/4);
+            CellBrainService.think(cell);
+            for(var actor:cell.getSensorActors())actor.updateCachedPosition();
+            world.addCell(cell);
+        }
         return world;
     }
     static final class Policy implements SimulationStepPolicy {

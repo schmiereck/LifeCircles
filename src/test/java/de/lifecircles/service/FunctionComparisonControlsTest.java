@@ -55,6 +55,7 @@ class FunctionComparisonControlsTest {
             assertNotSame(genome.getBrain(),cell.getBrain());
         }
         assertNotSame(world.getCellList().get(0).getBrain(),world.getCellList().get(1).getBrain());
+        for(int i=0;i<8;i++)assertEquals(i*Math.PI/4,world.getCellList().get(i).getRotation(),1e-12);
         assertEquals(.01,genome.getEnergy());assertEquals(500,genome.getAge());
     }
 }
