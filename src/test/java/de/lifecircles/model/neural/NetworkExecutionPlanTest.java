@@ -81,4 +81,10 @@ class NetworkExecutionPlanTest {
             assertEquals(original.getProccessedSynapses(),net.getProccessedSynapses());
         }
     }
+    @Test void denseNetworkAvoidsRepeatedPlanValidationWhenThereIsNothingToSkip() {
+        var net=new NeuralNetwork(factory,2,new int[]{3},2,1,0);
+        run(net,new double[]{1,1});assertTrue(net.getNeuralNet().isExecutionOptimizationEnabled());
+        NetworkSimplificationTest.connect(net,new Synapse(net.getInputNeuronArr()[0],0,net.getOutputNeuronArr()[0],0,.3));
+        assertDoesNotThrow(()->run(net,new double[]{1,1}));
+    }
 }

@@ -34,11 +34,13 @@ public class NeuralNet implements Serializable {
     private transient boolean skippedState;
     private transient boolean executionOptimizationEnabled = true;
     private transient boolean usingExecutionPlan;
+    private transient boolean optimizingModules;
+    private transient boolean executionPlanUnneeded;
 
     /** Disabling preserves output semantics; reset before changing topology after optimized execution. */
     public void setExecutionOptimizationEnabled(boolean enabled) { executionOptimizationEnabled = enabled; }
     public boolean isExecutionOptimizationEnabled() { return executionOptimizationEnabled; }
-    boolean isUsingExecutionPlan() { return usingExecutionPlan; }
+    boolean isOptimizingModules() { return optimizingModules; }
 
     boolean isRecordingForward() { return forwardOrder != null; }
 
@@ -290,10 +292,17 @@ public class NeuralNet implements Serializable {
                     "Network topology changed after optimized execution; copy the genotype or clear recurrent state first");
             executionPlan = null;
         }
-        usingExecutionPlan = optimize && executionOptimizationEnabled && !recordTraining;
+        optimizingModules = optimize && executionOptimizationEnabled && !recordTraining;
+        usingExecutionPlan = optimizingModules && !executionPlanUnneeded;
         if (usingExecutionPlan && executionPlan == null) {
             executionPlan = new NetworkExecutionPlan(this);
             if (!executionPlan.matches(this)) throw new IllegalStateException("Topology changed during plan preparation");
+            if (!executionPlan.skipsNeurons) {
+                // Dense/empty modules have nothing to skip. Avoid paying validation on every call.
+                executionPlan = null;
+                usingExecutionPlan = false;
+                executionPlanUnneeded = true;
+            }
         }
         if (recordTraining) {
             if (forwardOrder == null) forwardOrder = new IdentityHashMap<>();
@@ -1179,6 +1188,8 @@ public class NeuralNet implements Serializable {
         executionPlan = null;
         skippedState = false;
         usingExecutionPlan = false;
+        optimizingModules = false;
+        executionPlanUnneeded = false;
         neuronValueFunction.clearModuleStates();
         forwardOrder = null; forwardSources = null;
         this.proccessedSynapses = 0;

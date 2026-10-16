@@ -165,7 +165,7 @@ public class NeuronNetwork implements NeuronInterface {
 
         calcNeuralNet.setInputs(calcNeuronValueFunction, inputArr);
         calcNeuralNet.process(calcNeuronValueFunction, neuralNet.isRecordingForward(), false,
-                neuralNet.isUsingExecutionPlan());
+                neuralNet.isOptimizingModules());
 
         for (int outputTypePos = 0; outputTypePos < this.neuronTypeInfoData.getOutputCount(); outputTypePos++) {
             Neuron calcOutputNeuron = calcNeuralNet.getOutputNeuronArr()[outputTypePos];
