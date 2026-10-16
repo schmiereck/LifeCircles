@@ -96,6 +96,13 @@ Modellprüfsummen stimmen mit dem abgeschlossenen Funktionsvergleich überein.
 
 ## GUI: Cell → Brain energy
 
+Die Cell-Box enthält zusätzlich **Max. lifespan**: logarithmisch 10–10.000
+Simulationssekunden, Startwert weiterhin 10.000. Die Grenze gilt auch für bestehende
+Zellen; bereits ältere Zellen sterben bei der nächsten Altersprüfung. Der Regler
+ändert weder ihr bisheriges Alter noch die Energie-Todesregel. Strategien mit eigener
+Sterberegel (etwa HIGH_POSITION3 mit fester Mitgliedschaft) behalten diese Regel.
+Ideen zur Wiederverwertung: [Überreste und Ressourcenkreisläufe](RESSOURCENKREISLAUF.md).
+
 Neben Environment befindet sich unten die neue Box **Cell**. Ihr Regler skaliert
 die bisherigen Speicher- und Rechengebühren gemeinsam:
 

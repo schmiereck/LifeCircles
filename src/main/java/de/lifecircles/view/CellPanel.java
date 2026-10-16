@@ -5,6 +5,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
@@ -25,8 +26,27 @@ public class CellPanel extends VBox {
         Runnable refresh=()->value.setText(String.format("Brain energy: %.3g× (1× = previous standard)",config.getBrainEnergyCosts().work()));
         cost.valueProperty().addListener((obs,old,next)->{config.setBrainEnergyMultiplier(multiplier(next.doubleValue()));refresh.run();});
         refresh.run();
-        Label hint=new Label("Storage + computation, 0–1000×.\nBasic metabolism stays constant.\nApplies on the next simulation step.");
-        VBox content=new VBox(10,value,cost,hint);content.setPadding(new Insets(5));
+        Label hint=new Label("Storage + computation, 0–1000×.\nBasic metabolism stays constant.");
+        cost.setTooltip(new Tooltip("Applies on the next simulation step."));
+        Label lifespanValue=new Label();
+        Slider lifespan=new Slider(Math.min(1,Math.log10(config.getCellDeathAge())),
+                Math.max(4,Math.log10(config.getCellDeathAge())),Math.log10(config.getCellDeathAge()));
+        lifespan.setId("cell-lifespan-slider");lifespan.setPrefWidth(270);
+        lifespan.setTooltip(new Tooltip("Maximum age in simulation seconds, not wall time.\nAlready older cells die at the next age check."));
+        lifespan.setShowTickLabels(true);lifespan.setShowTickMarks(true);
+        lifespan.setMajorTickUnit(1);lifespan.setMinorTickCount(0);lifespan.setBlockIncrement(.1);
+        lifespan.setLabelFormatter(new StringConverter<>() {
+            @Override public String toString(Double position) {return String.format("%.0f s",Math.pow(10,position));}
+            @Override public Double fromString(String text) {return Math.log10(Double.parseDouble(text));}
+        });
+        Runnable refreshLifespan=()->lifespanValue.setText(String.format("Max. lifespan: %.0f simulation s",config.getCellDeathAge()));
+        lifespan.valueProperty().addListener((obs,old,next)-> {
+            config.setCellDeathAge(Math.max(1,Math.round(Math.pow(10,next.doubleValue()))));
+            refreshLifespan.run();
+        });
+        refreshLifespan.run();
+        Label lifespanHint=new Label("Existing older cells also expire.");
+        VBox content=new VBox(6,value,cost,hint,lifespanValue,lifespan,lifespanHint);content.setPadding(new Insets(5));
         getChildren().add(new TitledPane("Cell",content));
     }
     /** Continuous near zero, then logarithmic from 0.1× to 1000×. */
