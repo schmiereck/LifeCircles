@@ -1,0 +1,11 @@
+{
+  "models": 18,
+  "sequences": 144,
+  "bit_exact_output_comparisons": 42134400,
+  "billed_synapses_original": 188418940,
+  "billed_synapses_planned": 188418940,
+  "median_model_speedup": 1.1997661236258255,
+  "min_model_speedup": 1.0875846683152348,
+  "max_model_speedup": 1.331848742571962,
+  "note": "Same DNA, outputs, scheduling and logical work bill; isolated forward execution, not world performance"
+}

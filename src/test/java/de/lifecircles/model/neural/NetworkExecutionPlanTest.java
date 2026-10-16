@@ -2,6 +2,7 @@ package de.lifecircles.model.neural;
 
 import org.junit.jupiter.api.*;
 import java.util.*;
+import java.io.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class NetworkExecutionPlanTest {
@@ -86,5 +87,20 @@ class NetworkExecutionPlanTest {
         run(net,new double[]{1,1});assertTrue(net.getNeuralNet().isExecutionOptimizationEnabled());
         NetworkSimplificationTest.connect(net,new Synapse(net.getInputNeuronArr()[0],0,net.getOutputNeuronArr()[0],0,.3));
         assertDoesNotThrow(()->run(net,new double[]{1,1}));
+    }
+    private NeuralNetwork saveAndLoad(NeuralNetwork net) throws Exception {
+        var bytes=new ByteArrayOutputStream();try(var out=new ObjectOutputStream(bytes)){out.writeObject(net);}
+        try(var in=new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()))){return (NeuralNetwork)in.readObject();}
+    }
+    @Test void savingOptimizedCellsDoesNotPersistPlansOrChangeLoadedOutputsAndBills() throws Exception {
+        var original=network();original.getNeuralNet().setExecutionOptimizationEnabled(false);
+        var planned=new NeuralNetwork(original);
+        for(int t=0;t<1200;t++){run(original,new double[]{t%5,t%3});run(planned,new double[]{t%5,t%3});}
+        original=saveAndLoad(original);planned=saveAndLoad(planned);
+        original.getNeuralNet().setExecutionOptimizationEnabled(false);
+        for(int t=0;t<1200;t++) {
+            assertArrayEquals(run(original,new double[]{t%7,t%11}),run(planned,new double[]{t%7,t%11}));
+            assertEquals(original.getProccessedSynapses(),planned.getProccessedSynapses());
+        }
     }
 }

@@ -1,0 +1,22 @@
+{
+  "implementation_commit": "28a526e",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "source_files": [
+    {
+      "path": "src/main/java/de/lifecircles/model/neural/NeuralNet.java",
+      "sha256": "18b6ff98c9e56d9d1cfed4b696875c92da9ea9294498d66b1485fb81bdf78f00"
+    },
+    {
+      "path": "src/main/java/de/lifecircles/model/neural/NetworkExecutionPlan.java",
+      "sha256": "589d333c82d00788a21630b4971f77d51861674b3d5ea6bf22fd640fcaebd48d"
+    },
+    {
+      "path": "src/main/java/de/lifecircles/model/neural/NeuronNetwork.java",
+      "sha256": "65750332ea5c3b69638edea50e3606ae2e012931134b59ac7eca7939d970aa45"
+    },
+    {
+      "path": "src/test/java/de/lifecircles/model/neural/NetworkExecutionPlanStudyTest.java",
+      "sha256": "099a6ae8da53c4a85e4d368b36c1ec5b69f3cd7641107925a5b4c9081d7c9969"
+    }
+  ]
+}

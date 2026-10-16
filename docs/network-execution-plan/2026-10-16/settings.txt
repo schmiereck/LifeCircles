@@ -1,0 +1,9 @@
+source=experiments\function-comparison-stable-2026-10-16
+models=18
+state_sequences=8 per model
+steps_per_sequence=2200
+state_change_at=1100
+finite_random_inputs=[-2,2], every 17th [-100,100]
+benchmark=single-thread no training trace, state 7; 500 warmup + 2000 timed steps; 7 alternating repeats
+semantics=exact forward outputs, scheduling, stored DNA and original work bill; fresh memory
+unused_type_candidates=retained

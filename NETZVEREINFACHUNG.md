@@ -1,5 +1,8 @@
 # Netze vereinfachen, ohne ihre Ausgaben zu verändern
 
+Umgesetzter Folgeschritt: [DNA-erhaltender Ausführungsplan und GUI-Kostenregler](NETZAUSFUEHRUNG.md).
+Die folgenden Zahlen beschreiben weiterhin die frühere strukturelle Forschungs-Kopie.
+
 Untersuchung vom 16. Oktober 2026, Java 25.0.3, Windows. Grundlage sind dieselben
 18 Genome aus den langen NONE-Kostenversuchen wie beim Funktionsvergleich.
 
