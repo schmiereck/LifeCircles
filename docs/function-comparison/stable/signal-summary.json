@@ -1,0 +1,247 @@
+[
+  {
+    "model": 0,
+    "probes": 160,
+    "max_raw_delta": 5.91652922155e-05,
+    "max_applied_delta": 5.91652922155e-05,
+    "raw_changed_probes": 12,
+    "applied_changed_probes": 12,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_TYPE_RED",
+      "ACTOR_5_TYPE_BLUE"
+    ]
+  },
+  {
+    "model": 1,
+    "probes": 160,
+    "max_raw_delta": 0.123324279808,
+    "max_applied_delta": 0.123324279808,
+    "raw_changed_probes": 92,
+    "applied_changed_probes": 92,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_2_TYPE_BLUE",
+      "ACTOR_9_REPRODUCTION_ENERGY_SHARE"
+    ]
+  },
+  {
+    "model": 2,
+    "probes": 160,
+    "max_raw_delta": 0.000277792734896,
+    "max_applied_delta": 0.000277792734896,
+    "raw_changed_probes": 8,
+    "applied_changed_probes": 8,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_TYPE_RED"
+    ]
+  },
+  {
+    "model": 3,
+    "probes": 160,
+    "max_raw_delta": 0.00245544459712,
+    "max_applied_delta": 0.00245544459712,
+    "raw_changed_probes": 40,
+    "applied_changed_probes": 40,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_TYPE_RED",
+      "ACTOR_4_TYPE_GREEN"
+    ]
+  },
+  {
+    "model": 4,
+    "probes": 160,
+    "max_raw_delta": 0.000131290369342,
+    "max_applied_delta": 0.000131290369342,
+    "raw_changed_probes": 8,
+    "applied_changed_probes": 8,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_TYPE_RED"
+    ]
+  },
+  {
+    "model": 5,
+    "probes": 160,
+    "max_raw_delta": 0.0658557473224,
+    "max_applied_delta": 0.0658557473224,
+    "raw_changed_probes": 12,
+    "applied_changed_probes": 12,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_TYPE_RED",
+      "ACTOR_10_ENERGY_DELIVERY"
+    ]
+  },
+  {
+    "model": 6,
+    "probes": 160,
+    "max_raw_delta": 6.23216865248e-06,
+    "max_applied_delta": 6.23216865248e-06,
+    "raw_changed_probes": 8,
+    "applied_changed_probes": 8,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_TYPE_RED"
+    ]
+  },
+  {
+    "model": 7,
+    "probes": 160,
+    "max_raw_delta": 0.000254550292342,
+    "max_applied_delta": 0.000254550292342,
+    "raw_changed_probes": 12,
+    "applied_changed_probes": 12,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_TYPE_RED",
+      "ACTOR_4_ENERGY_DELIVERY"
+    ]
+  },
+  {
+    "model": 8,
+    "probes": 160,
+    "max_raw_delta": 5.74436824023e-05,
+    "max_applied_delta": 5.74436824023e-05,
+    "raw_changed_probes": 8,
+    "applied_changed_probes": 8,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_TYPE_RED"
+    ]
+  },
+  {
+    "model": 9,
+    "probes": 160,
+    "max_raw_delta": 0.0120445136019,
+    "max_applied_delta": 0.00417590502913,
+    "raw_changed_probes": 52,
+    "applied_changed_probes": 16,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_TYPE_RED",
+      "ACTOR_1_ENERGY_DELIVERY"
+    ]
+  },
+  {
+    "model": 10,
+    "probes": 160,
+    "max_raw_delta": 1.88555900003e-05,
+    "max_applied_delta": 1.88555900003e-05,
+    "raw_changed_probes": 8,
+    "applied_changed_probes": 8,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_TYPE_RED"
+    ]
+  },
+  {
+    "model": 11,
+    "probes": 160,
+    "max_raw_delta": 0.00133976821331,
+    "max_applied_delta": 0.00133976821331,
+    "raw_changed_probes": 56,
+    "applied_changed_probes": 56,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_TYPE_RED",
+      "ACTOR_8_REPRODUCTION_DESIRE"
+    ]
+  },
+  {
+    "model": 12,
+    "probes": 160,
+    "max_raw_delta": 1.87053807227e-05,
+    "max_applied_delta": 1.87053807227e-05,
+    "raw_changed_probes": 8,
+    "applied_changed_probes": 8,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_TYPE_RED"
+    ]
+  },
+  {
+    "model": 13,
+    "probes": 160,
+    "max_raw_delta": 9.46437104571e-05,
+    "max_applied_delta": 9.46437104571e-05,
+    "raw_changed_probes": 8,
+    "applied_changed_probes": 8,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_TYPE_RED"
+    ]
+  },
+  {
+    "model": 14,
+    "probes": 160,
+    "max_raw_delta": 2.54817898402e-05,
+    "max_applied_delta": 2.54817898402e-05,
+    "raw_changed_probes": 8,
+    "applied_changed_probes": 8,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_TYPE_RED"
+    ]
+  },
+  {
+    "model": 15,
+    "probes": 160,
+    "max_raw_delta": 0.0549631431746,
+    "max_applied_delta": 1.0,
+    "raw_changed_probes": 28,
+    "applied_changed_probes": 20,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_REPRODUCTION_DESIRE",
+      "ACTOR_0_TYPE_RED",
+      "ACTOR_1_STATE_2"
+    ]
+  },
+  {
+    "model": 16,
+    "probes": 160,
+    "max_raw_delta": 3.68367375099e-05,
+    "max_applied_delta": 3.68367375099e-05,
+    "raw_changed_probes": 44,
+    "applied_changed_probes": 44,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_0_TYPE_RED",
+      "ACTOR_6_TYPE_RED"
+    ]
+  },
+  {
+    "model": 17,
+    "probes": 160,
+    "max_raw_delta": 0.348229069688,
+    "max_applied_delta": 0.122063320876,
+    "raw_changed_probes": 114,
+    "applied_changed_probes": 90,
+    "winner_changed_probes": 0,
+    "child_state_changed_probes": 0,
+    "changed_features": [
+      "ACTOR_1_TYPE_BLUE",
+      "ACTOR_4_TYPE_BLUE"
+    ]
+  }
+]

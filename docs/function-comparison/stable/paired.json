@@ -1,0 +1,722 @@
+[
+  {
+    "model": 0,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 0,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 0,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 0,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 1,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 1,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 1,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 1,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 2,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 2,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 2,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 2,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 3,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.06636207938530236,
+    "births_delta": -19,
+    "energy_seconds_gain": -0.02030149978514728
+  },
+  {
+    "model": 3,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0011000544641679433,
+    "births_delta": 15,
+    "energy_seconds_gain": 0.004584836456954067
+  },
+  {
+    "model": 3,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0036881702574036446,
+    "births_delta": 5,
+    "energy_seconds_gain": -0.0003751166843422027
+  },
+  {
+    "model": 3,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.033136312911391075,
+    "births_delta": 5,
+    "energy_seconds_gain": -0.015485966803969076
+  },
+  {
+    "model": 4,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 4,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 4,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 4,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 5,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.03382689774197112,
+    "births_delta": -40,
+    "energy_seconds_gain": -0.02913352404688674
+  },
+  {
+    "model": 5,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": -0.015836132371545797,
+    "births_delta": -1,
+    "energy_seconds_gain": 0.0018898155160191887
+  },
+  {
+    "model": 5,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.00534871877022991,
+    "births_delta": 20,
+    "energy_seconds_gain": 0.0023336740715609317
+  },
+  {
+    "model": 5,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.001900398277506321,
+    "births_delta": 1,
+    "energy_seconds_gain": -0.004760157089647721
+  },
+  {
+    "model": 6,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 6,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 6,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 6,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 7,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 7,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 7,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 7,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 8,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 8,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 8,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 8,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 9,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.05034808678657887,
+    "births_delta": -24,
+    "energy_seconds_gain": -0.023802558695105946
+  },
+  {
+    "model": 9,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": -0.016772268713856398,
+    "births_delta": 24,
+    "energy_seconds_gain": 0.012281794639024568
+  },
+  {
+    "model": 9,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": -0.0037255372994665636,
+    "births_delta": 46,
+    "energy_seconds_gain": 0.0023565058953600726
+  },
+  {
+    "model": 9,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": -0.06583445968367885,
+    "births_delta": 15,
+    "energy_seconds_gain": 0.009356064658412322
+  },
+  {
+    "model": 10,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 10,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 10,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 10,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 11,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 11,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 11,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 11,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 12,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 12,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 12,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 12,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 13,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": -0.006127497440952534,
+    "births_delta": -11,
+    "energy_seconds_gain": 0.013050098136259125
+  },
+  {
+    "model": 13,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": -0.05401489094329748,
+    "births_delta": 1,
+    "energy_seconds_gain": 0.012376448810974994
+  },
+  {
+    "model": 13,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.003163175097551818,
+    "births_delta": 5,
+    "energy_seconds_gain": 0.008204858202275345
+  },
+  {
+    "model": 13,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.030662054094297453,
+    "births_delta": -34,
+    "energy_seconds_gain": -0.012423833618802171
+  },
+  {
+    "model": 14,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 14,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 14,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 14,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 15,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 15,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 15,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 15,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 16,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 16,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 16,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 16,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": true,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 17,
+    "fee": "source",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 17,
+    "fee": "source",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 17,
+    "fee": "zero",
+    "sun_seed": 992000,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  },
+  {
+    "model": 17,
+    "fee": "zero",
+    "sun_seed": 992001,
+    "early": false,
+    "censored": false,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "energy_seconds_gain": 0.0
+  }
+]

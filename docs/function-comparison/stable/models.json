@@ -1,0 +1,724 @@
+[
+  {
+    "model": 0,
+    "fee": "source",
+    "origin_seed": 0,
+    "storage": 1.0,
+    "work": 0.1,
+    "snapshot_step": 60000,
+    "stored": 744,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0.0,
+    "live_cell_seconds": 17198.704166666997,
+    "frozen_cell_seconds": 17198.704166666997,
+    "calibration_rms": 1.7114965836e-06,
+    "reachable_frozen_states": [
+      7
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 1.7824999999999999e-06
+  },
+  {
+    "model": 0,
+    "fee": "zero",
+    "origin_seed": 0,
+    "storage": 1.0,
+    "work": 0.1,
+    "snapshot_step": 60000,
+    "stored": 744,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "live_cell_seconds": 17221.4583333335,
+    "frozen_cell_seconds": 17221.4583333335,
+    "calibration_rms": 1.7114965836e-06,
+    "reachable_frozen_states": [
+      7
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 1.739e-06
+  },
+  {
+    "model": 1,
+    "fee": "source",
+    "origin_seed": 0,
+    "storage": 1.0,
+    "work": 0.1,
+    "snapshot_step": 600000,
+    "stored": 791,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "live_cell_seconds": 17407.766666666997,
+    "frozen_cell_seconds": 17407.766666666997,
+    "calibration_rms": 0.00387337943062,
+    "reachable_frozen_states": [
+      0
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0036793635
+  },
+  {
+    "model": 1,
+    "fee": "zero",
+    "origin_seed": 0,
+    "storage": 1.0,
+    "work": 0.1,
+    "snapshot_step": 600000,
+    "stored": 791,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0.0,
+    "live_cell_seconds": 17869.279166667002,
+    "frozen_cell_seconds": 17869.279166667002,
+    "calibration_rms": 0.00387337943062,
+    "reachable_frozen_states": [
+      0
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0038423225
+  },
+  {
+    "model": 2,
+    "fee": "source",
+    "origin_seed": 0,
+    "storage": 1.0,
+    "work": 1.0,
+    "snapshot_step": 60000,
+    "stored": 774,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "live_cell_seconds": 16003.4791666665,
+    "frozen_cell_seconds": 16003.4791666665,
+    "calibration_rms": 0.0,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0
+  },
+  {
+    "model": 2,
+    "fee": "zero",
+    "origin_seed": 0,
+    "storage": 1.0,
+    "work": 1.0,
+    "snapshot_step": 60000,
+    "stored": 774,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "live_cell_seconds": 17798.0916666665,
+    "frozen_cell_seconds": 17798.0916666665,
+    "calibration_rms": 0.0,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0
+  },
+  {
+    "model": 3,
+    "fee": "source",
+    "origin_seed": 0,
+    "storage": 1.0,
+    "work": 1.0,
+    "snapshot_step": 600000,
+    "stored": 783,
+    "valid": true,
+    "cell_seconds_gain": 0.03270591617326746,
+    "births_delta": -2,
+    "live_cell_seconds": 12393.650000000001,
+    "frozen_cell_seconds": 12001.141666666499,
+    "calibration_rms": 0.000109741853713,
+    "reachable_frozen_states": [
+      7
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.00010969
+  },
+  {
+    "model": 3,
+    "fee": "zero",
+    "origin_seed": 0,
+    "storage": 1.0,
+    "work": 1.0,
+    "snapshot_step": 600000,
+    "stored": 783,
+    "valid": true,
+    "cell_seconds_gain": 0.018387361722558282,
+    "births_delta": 5.0,
+    "live_cell_seconds": 14336.454166666499,
+    "frozen_cell_seconds": 14077.604166666999,
+    "calibration_rms": 0.000109741853713,
+    "reachable_frozen_states": [
+      7
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0001059285
+  },
+  {
+    "model": 4,
+    "fee": "source",
+    "origin_seed": 0,
+    "storage": 100.0,
+    "work": 0.1,
+    "snapshot_step": 60000,
+    "stored": 753,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0.0,
+    "live_cell_seconds": 16974.7541666665,
+    "frozen_cell_seconds": 16974.7541666665,
+    "calibration_rms": 0.0,
+    "reachable_frozen_states": [
+      1
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0
+  },
+  {
+    "model": 4,
+    "fee": "zero",
+    "origin_seed": 0,
+    "storage": 100.0,
+    "work": 0.1,
+    "snapshot_step": 60000,
+    "stored": 753,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0.0,
+    "live_cell_seconds": 17163.7458333335,
+    "frozen_cell_seconds": 17163.7458333335,
+    "calibration_rms": 0.0,
+    "reachable_frozen_states": [
+      1
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0
+  },
+  {
+    "model": 5,
+    "fee": "source",
+    "origin_seed": 0,
+    "storage": 100.0,
+    "work": 0.1,
+    "snapshot_step": 600000,
+    "stored": 779,
+    "valid": true,
+    "cell_seconds_gain": 0.008996240324891103,
+    "births_delta": -20.5,
+    "live_cell_seconds": 16797.9291666665,
+    "frozen_cell_seconds": 16648.158333332998,
+    "calibration_rms": 0.00285460883498,
+    "reachable_frozen_states": [
+      6
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.002854667
+  },
+  {
+    "model": 5,
+    "fee": "zero",
+    "origin_seed": 0,
+    "storage": 100.0,
+    "work": 0.1,
+    "snapshot_step": 600000,
+    "stored": 779,
+    "valid": true,
+    "cell_seconds_gain": 0.0036326284115455465,
+    "births_delta": 10.5,
+    "live_cell_seconds": 17408.1166666665,
+    "frozen_cell_seconds": 17345.108333333497,
+    "calibration_rms": 0.00285460883498,
+    "reachable_frozen_states": [
+      6
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.002854793
+  },
+  {
+    "model": 6,
+    "fee": "source",
+    "origin_seed": 1,
+    "storage": 1.0,
+    "work": 0.1,
+    "snapshot_step": 60000,
+    "stored": 759,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "live_cell_seconds": 17741.699999999997,
+    "frozen_cell_seconds": 17741.699999999997,
+    "calibration_rms": 0.0,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0
+  },
+  {
+    "model": 6,
+    "fee": "zero",
+    "origin_seed": 1,
+    "storage": 1.0,
+    "work": 0.1,
+    "snapshot_step": 60000,
+    "stored": 759,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "live_cell_seconds": 17753.4375,
+    "frozen_cell_seconds": 17753.4375,
+    "calibration_rms": 0.0,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0
+  },
+  {
+    "model": 7,
+    "fee": "source",
+    "origin_seed": 1,
+    "storage": 1.0,
+    "work": 0.1,
+    "snapshot_step": 600000,
+    "stored": 761,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "live_cell_seconds": 14356.7,
+    "frozen_cell_seconds": 14356.7,
+    "calibration_rms": 7.48576190548688e-07,
+    "reachable_frozen_states": [
+      1,
+      5
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 7.595e-07
+  },
+  {
+    "model": 7,
+    "fee": "zero",
+    "origin_seed": 1,
+    "storage": 1.0,
+    "work": 0.1,
+    "snapshot_step": 600000,
+    "stored": 761,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0.0,
+    "live_cell_seconds": 14487.2,
+    "frozen_cell_seconds": 14487.2,
+    "calibration_rms": 7.48576190548688e-07,
+    "reachable_frozen_states": [
+      1,
+      5
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 6.42e-07
+  },
+  {
+    "model": 8,
+    "fee": "source",
+    "origin_seed": 1,
+    "storage": 1.0,
+    "work": 1.0,
+    "snapshot_step": 60000,
+    "stored": 756,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "live_cell_seconds": 16308.2916666665,
+    "frozen_cell_seconds": 16308.2916666665,
+    "calibration_rms": 0.0,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0
+  },
+  {
+    "model": 8,
+    "fee": "zero",
+    "origin_seed": 1,
+    "storage": 1.0,
+    "work": 1.0,
+    "snapshot_step": 60000,
+    "stored": 756,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0.0,
+    "live_cell_seconds": 18182.3250000005,
+    "frozen_cell_seconds": 18182.3250000005,
+    "calibration_rms": 0.0,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0
+  },
+  {
+    "model": 9,
+    "fee": "source",
+    "origin_seed": 1,
+    "storage": 1.0,
+    "work": 1.0,
+    "snapshot_step": 600000,
+    "stored": 779,
+    "valid": true,
+    "cell_seconds_gain": 0.016142893225215893,
+    "births_delta": 0,
+    "live_cell_seconds": 13661.8083333335,
+    "frozen_cell_seconds": 13444.7708333335,
+    "calibration_rms": 0.000432595671849,
+    "reachable_frozen_states": [
+      2
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0004370785
+  },
+  {
+    "model": 9,
+    "fee": "zero",
+    "origin_seed": 1,
+    "storage": 1.0,
+    "work": 1.0,
+    "snapshot_step": 600000,
+    "stored": 779,
+    "valid": true,
+    "cell_seconds_gain": -0.03527994740003226,
+    "births_delta": 30.5,
+    "live_cell_seconds": 14183.474999999999,
+    "frozen_cell_seconds": 14702.1666666665,
+    "calibration_rms": 0.000432595671849,
+    "reachable_frozen_states": [
+      2
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.00042595899999999995
+  },
+  {
+    "model": 10,
+    "fee": "source",
+    "origin_seed": 1,
+    "storage": 100.0,
+    "work": 0.1,
+    "snapshot_step": 60000,
+    "stored": 758,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0.0,
+    "live_cell_seconds": 17421.1958333335,
+    "frozen_cell_seconds": 17421.1958333335,
+    "calibration_rms": 0.0,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0
+  },
+  {
+    "model": 10,
+    "fee": "zero",
+    "origin_seed": 1,
+    "storage": 100.0,
+    "work": 0.1,
+    "snapshot_step": 60000,
+    "stored": 758,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0.0,
+    "live_cell_seconds": 17197.179166667,
+    "frozen_cell_seconds": 17197.179166667,
+    "calibration_rms": 0.0,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0
+  },
+  {
+    "model": 11,
+    "fee": "source",
+    "origin_seed": 1,
+    "storage": 100.0,
+    "work": 0.1,
+    "snapshot_step": 600000,
+    "stored": 774,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "live_cell_seconds": 14407.733333333501,
+    "frozen_cell_seconds": 14407.733333333501,
+    "calibration_rms": 8.08732722762e-06,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 8.039e-06
+  },
+  {
+    "model": 11,
+    "fee": "zero",
+    "origin_seed": 1,
+    "storage": 100.0,
+    "work": 0.1,
+    "snapshot_step": 600000,
+    "stored": 774,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "live_cell_seconds": 14926.404166667,
+    "frozen_cell_seconds": 14926.404166667,
+    "calibration_rms": 8.08732722762e-06,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 4.871e-06
+  },
+  {
+    "model": 12,
+    "fee": "source",
+    "origin_seed": 2,
+    "storage": 1.0,
+    "work": 0.1,
+    "snapshot_step": 60000,
+    "stored": 754,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "live_cell_seconds": 17865.6,
+    "frozen_cell_seconds": 17865.6,
+    "calibration_rms": 0.0,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0
+  },
+  {
+    "model": 12,
+    "fee": "zero",
+    "origin_seed": 2,
+    "storage": 1.0,
+    "work": 0.1,
+    "snapshot_step": 60000,
+    "stored": 754,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0.0,
+    "live_cell_seconds": 17864.725,
+    "frozen_cell_seconds": 17864.725,
+    "calibration_rms": 0.0,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0
+  },
+  {
+    "model": 13,
+    "fee": "source",
+    "origin_seed": 2,
+    "storage": 1.0,
+    "work": 0.1,
+    "snapshot_step": 600000,
+    "stored": 816,
+    "valid": true,
+    "cell_seconds_gain": -0.030620362661279432,
+    "births_delta": -5.0,
+    "live_cell_seconds": 13957.0916666665,
+    "frozen_cell_seconds": 14397.962500000001,
+    "calibration_rms": 6.68516970139e-06,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 6.691e-06
+  },
+  {
+    "model": 13,
+    "fee": "zero",
+    "origin_seed": 2,
+    "storage": 1.0,
+    "work": 0.1,
+    "snapshot_step": 600000,
+    "stored": 816,
+    "valid": true,
+    "cell_seconds_gain": 0.01678743178534514,
+    "births_delta": -14.5,
+    "live_cell_seconds": 14902.5958333335,
+    "frozen_cell_seconds": 14656.55,
+    "calibration_rms": 6.68516970139e-06,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 5.652e-06
+  },
+  {
+    "model": 14,
+    "fee": "source",
+    "origin_seed": 2,
+    "storage": 1.0,
+    "work": 1.0,
+    "snapshot_step": 60000,
+    "stored": 734,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0.0,
+    "live_cell_seconds": 16096.5541666665,
+    "frozen_cell_seconds": 16096.5541666665,
+    "calibration_rms": 0.0,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0
+  },
+  {
+    "model": 14,
+    "fee": "zero",
+    "origin_seed": 2,
+    "storage": 1.0,
+    "work": 1.0,
+    "snapshot_step": 60000,
+    "stored": 734,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0.0,
+    "live_cell_seconds": 18189.7541666665,
+    "frozen_cell_seconds": 18189.7541666665,
+    "calibration_rms": 0.0,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0
+  },
+  {
+    "model": 15,
+    "fee": "source",
+    "origin_seed": 2,
+    "storage": 1.0,
+    "work": 1.0,
+    "snapshot_step": 600000,
+    "stored": 824,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "live_cell_seconds": 13395.958333333001,
+    "frozen_cell_seconds": 13395.958333333001,
+    "calibration_rms": 0.00322260534877,
+    "reachable_frozen_states": [
+      2
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0032837545
+  },
+  {
+    "model": 15,
+    "fee": "zero",
+    "origin_seed": 2,
+    "storage": 1.0,
+    "work": 1.0,
+    "snapshot_step": 600000,
+    "stored": 824,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0.0,
+    "live_cell_seconds": 14723.2541666665,
+    "frozen_cell_seconds": 14723.2541666665,
+    "calibration_rms": 0.00322260534877,
+    "reachable_frozen_states": [
+      2
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0033085099999999997
+  },
+  {
+    "model": 16,
+    "fee": "source",
+    "origin_seed": 2,
+    "storage": 100.0,
+    "work": 0.1,
+    "snapshot_step": 60000,
+    "stored": 777,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0,
+    "live_cell_seconds": 16159.5041666665,
+    "frozen_cell_seconds": 16159.5041666665,
+    "calibration_rms": 1.20910661175e-06,
+    "reachable_frozen_states": [
+      7
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 1.2080000000000001e-06
+  },
+  {
+    "model": 16,
+    "fee": "zero",
+    "origin_seed": 2,
+    "storage": 100.0,
+    "work": 0.1,
+    "snapshot_step": 60000,
+    "stored": 777,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0.0,
+    "live_cell_seconds": 16305.7166666665,
+    "frozen_cell_seconds": 16305.7166666665,
+    "calibration_rms": 1.20910661175e-06,
+    "reachable_frozen_states": [
+      7
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 1.1765e-06
+  },
+  {
+    "model": 17,
+    "fee": "source",
+    "origin_seed": 2,
+    "storage": 100.0,
+    "work": 0.1,
+    "snapshot_step": 600000,
+    "stored": 766,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0.0,
+    "live_cell_seconds": 18418.2250000005,
+    "frozen_cell_seconds": 18418.2250000005,
+    "calibration_rms": 0.0122237815556,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0124461295
+  },
+  {
+    "model": 17,
+    "fee": "zero",
+    "origin_seed": 2,
+    "storage": 100.0,
+    "work": 0.1,
+    "snapshot_step": 600000,
+    "stored": 766,
+    "valid": true,
+    "cell_seconds_gain": 0.0,
+    "births_delta": 0.0,
+    "live_cell_seconds": 18200.7208333335,
+    "frozen_cell_seconds": 18200.7208333335,
+    "calibration_rms": 0.0122237815556,
+    "reachable_frozen_states": [
+      3
+    ],
+    "reachable_fallback_states": [],
+    "shadow_rms": 0.0124837255
+  }
+]

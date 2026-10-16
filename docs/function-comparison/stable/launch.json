@@ -1,0 +1,11 @@
+{
+  "study_commit": "674ffcc",
+  "calibration_steps": 7200,
+  "sun_repeats": 2,
+  "output_folder": "experiments/function-comparison-stable-2026-10-16",
+  "postprocessing_commit": "2e70a53a1cd4f47787b1346bbae410bc41257f82",
+  "study_pid": 7764,
+  "models": 18,
+  "planned_trials": 144,
+  "steps_per_trial": 7200
+}

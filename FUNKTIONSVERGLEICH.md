@@ -1,5 +1,7 @@
 # Funktionsvergleich der NONE-Genome
 
+Abgeschlossene Auswertung: [FUNKTIONS_ERGEBNISSE.md](FUNKTIONS_ERGEBNISSE.md).
+
 ## Fragestellung
 
 Bringt die laufende situationsabhängige Steuerung einen Vorteil gegenüber festen

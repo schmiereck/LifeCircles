@@ -1,0 +1,58 @@
+[
+  {
+    "snapshot_step": 60000,
+    "fee": "source",
+    "valid_models": 9,
+    "mean_gain": 0.0,
+    "median_gain": 0.0,
+    "min_gain": 0.0,
+    "max_gain": 0.0,
+    "positive_models": 0,
+    "positive_seed_pairs": 0,
+    "seed_pairs": 18,
+    "mean_births_delta": 0.0,
+    "reachable_fallback_models": 0
+  },
+  {
+    "snapshot_step": 60000,
+    "fee": "zero",
+    "valid_models": 9,
+    "mean_gain": 0.0,
+    "median_gain": 0.0,
+    "min_gain": 0.0,
+    "max_gain": 0.0,
+    "positive_models": 0,
+    "positive_seed_pairs": 0,
+    "seed_pairs": 18,
+    "mean_births_delta": 0.0,
+    "reachable_fallback_models": 0
+  },
+  {
+    "snapshot_step": 600000,
+    "fee": "source",
+    "valid_models": 9,
+    "mean_gain": 0.003024965229121669,
+    "median_gain": 0.0,
+    "min_gain": -0.030620362661279432,
+    "max_gain": 0.03270591617326746,
+    "positive_models": 3,
+    "positive_seed_pairs": 4,
+    "seed_pairs": 18,
+    "mean_births_delta": -3.0555555555555554,
+    "reachable_fallback_models": 0
+  },
+  {
+    "snapshot_step": 600000,
+    "fee": "zero",
+    "valid_models": 9,
+    "mean_gain": 0.00039194161326852297,
+    "median_gain": 0.0,
+    "min_gain": -0.03527994740003226,
+    "max_gain": 0.018387361722558282,
+    "positive_models": 3,
+    "positive_seed_pairs": 6,
+    "seed_pairs": 18,
+    "mean_births_delta": 3.5,
+    "reachable_fallback_models": 0
+  }
+]

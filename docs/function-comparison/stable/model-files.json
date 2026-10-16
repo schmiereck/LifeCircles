@@ -1,0 +1,92 @@
+[
+  {
+    "file": "model-0.cells",
+    "bytes": 67764,
+    "sha256": "46decc2edb4c027207a806daece77f0e40d023bfe3b7df721b1597c1b05a3fb4"
+  },
+  {
+    "file": "model-1.cells",
+    "bytes": 100426,
+    "sha256": "d79844fec438d7211df6fa986dddbc4614e6f8342032e37c5838af49b4e0282a"
+  },
+  {
+    "file": "model-10.cells",
+    "bytes": 69051,
+    "sha256": "26a1052fdb53e7b9b22f9561f870ebd73e59433a80763923e8e1d15c8043a7a7"
+  },
+  {
+    "file": "model-11.cells",
+    "bytes": 106027,
+    "sha256": "bdeae66eb951b2763b0bb6aee977c87c0899688e22b560138cc4815c61dea174"
+  },
+  {
+    "file": "model-12.cells",
+    "bytes": 68276,
+    "sha256": "0cb1573efb313fd63f69f60b1ba84f97bc6c43120c3283fbb2db09e3d3ed71dc"
+  },
+  {
+    "file": "model-13.cells",
+    "bytes": 72463,
+    "sha256": "69af5fcdf25a5ba352dd9ec24976f114f5e0d89554f07e147de32616f7755554"
+  },
+  {
+    "file": "model-14.cells",
+    "bytes": 67235,
+    "sha256": "3c1b532820e7cebe7505f102b9cfcd630ebe83c04596736e3145d28871ac5eff"
+  },
+  {
+    "file": "model-15.cells",
+    "bytes": 126417,
+    "sha256": "c2e9862cc9dd9c5368ea1f651970300a318d223b9f60bd517d7ab6ef72ae5fd8"
+  },
+  {
+    "file": "model-16.cells",
+    "bytes": 70245,
+    "sha256": "66c5c785e688de170043a8d8f02dec9c55c6e2175f1fafa680fd9498a65ea7a4"
+  },
+  {
+    "file": "model-17.cells",
+    "bytes": 97390,
+    "sha256": "9e2d995b361fa59d47ecd73203e0bc6d26602ebaed790616b518c56c09fa3334"
+  },
+  {
+    "file": "model-2.cells",
+    "bytes": 87857,
+    "sha256": "499b8fae531efe879c4ef9c939b5bc3a539870bffc46f2e2ad714f689177bb8c"
+  },
+  {
+    "file": "model-3.cells",
+    "bytes": 112172,
+    "sha256": "20cb674e544866343e09cd96c2901322c2cdd3d41417106f52b41d4fbf6281f5"
+  },
+  {
+    "file": "model-4.cells",
+    "bytes": 68748,
+    "sha256": "da047f87dcf20e6539d4945fb18d6c1432a91d799214a96f79e4c39438b2187a"
+  },
+  {
+    "file": "model-5.cells",
+    "bytes": 107205,
+    "sha256": "334cc417fa3129201358d77ac27c73f954c7a19a727c370721c291f8ffb1b83e"
+  },
+  {
+    "file": "model-6.cells",
+    "bytes": 68571,
+    "sha256": "8596a446948f7c375fa15773e776190440fd286d70cf34135cdc5a0280a1c0a9"
+  },
+  {
+    "file": "model-7.cells",
+    "bytes": 71878,
+    "sha256": "c4e6b972b50f03484e9c6c960b335c65d56d52095923f51a11acfd98c4d1e193"
+  },
+  {
+    "file": "model-8.cells",
+    "bytes": 68457,
+    "sha256": "08fb4bcce852e64a61e7839c76eb8700ccb6edea35ace00e8815363faaac54e9"
+  },
+  {
+    "file": "model-9.cells",
+    "bytes": 106101,
+    "sha256": "983371628cd8cab2eff4250accc14edb4e3f3965f2b1ce6520f113305253dec8"
+  }
+]
