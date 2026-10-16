@@ -76,6 +76,9 @@ diese Messgröße erst nach tatsächlich ausgeführten Entscheidungen.
 
 ## Langzeitserie ab 16.10.2026
 
+Die Serie ist vollständig abgeschlossen. Bewertung und Datenprüfung:
+[NONE_LANGZEIT_ERGEBNISSE.md](NONE_LANGZEIT_ERGEBNISSE.md).
+
 Die autorisierte Langzeitserie verwendet dieselbe kleine Welt und dieselben
 acht Gründer, drei Preise und drei Zufallsfolgen. Pro Lauf sind 600.000 Schritte
 vorgesehen: 10.000 Simulationssekunden. Die neun Läufe werden nacheinander in

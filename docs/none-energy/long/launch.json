@@ -1,0 +1,10 @@
+{
+  "commit": "3b9534fa286ec9f3f4eada29410ca70ab782003b",
+  "original_source": "C:\\Users\\thomas\\OneDrive\\Dokumente\\#Projekte\\LifeCircles\\test-highPos3-2026-10-15-a01.cells",
+  "source_copy": "C:\\Users\\thomas\\Projekte\\LifeCircles\\experiments\\none-energy-long-2026-10-16\\source.cells",
+  "sha256": "38C7860C26E9C29908666F85AC844417091FCCF9C97D6FD8EF0ABFF8C24DEC40",
+  "steps": 600000,
+  "seeds": 3,
+  "planned_trials": 9,
+  "checkpoint_interval": 60000
+}

@@ -1,5 +1,8 @@
 # Gehirnkosten unter NONE: Ergebnisse
 
+Der anschließende Vergleich über je 10.000 Simulationssekunden ist ebenfalls
+abgeschlossen: [Langzeitergebnisse](NONE_LANGZEIT_ERGEBNISSE.md).
+
 Abgeschlossen am 16.10.2026: **27 Versuche, insgesamt 424.872 Simulationsschritte**.
 Alle drei optionalen Serien sind ohne Testfehler abgeschlossen. Ausgangspunkt war
 `test-highPos3-2026-10-15-a01.cells` mit 480 Zellen. Die Quelldatei blieb unverändert;

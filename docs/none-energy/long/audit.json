@@ -1,0 +1,8 @@
+{
+  "trials": 9,
+  "steps": 5400000,
+  "trajectory_rows": 9009,
+  "early_replay_checks": 549,
+  "checkpoint_populations": 90,
+  "lineage_files": 90
+}

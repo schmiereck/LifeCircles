@@ -1,0 +1,254 @@
+[
+  {
+    "storage": 1.0,
+    "work": 0.1,
+    "trials": 3,
+    "status_counts": {
+      "completed": 3
+    },
+    "observed_stop_seconds": [
+      10000.0,
+      10000.0,
+      10000.0
+    ],
+    "full_duration_trials": 3,
+    "cells": {
+      "mean": 225.0,
+      "min": 220.0,
+      "max": 231.0
+    },
+    "births": {
+      "mean": 42400.333333333336,
+      "min": 39298.0,
+      "max": 44479.0
+    },
+    "deaths": {
+      "mean": 42183.333333333336,
+      "min": 39075.0,
+      "max": 44267.0
+    },
+    "founder_lineages": {
+      "mean": 1.0,
+      "min": 1.0,
+      "max": 1.0
+    },
+    "total_energy": {
+      "mean": 37.810763504,
+      "min": 37.223576261,
+      "max": 38.784024599
+    },
+    "mean_energy": {
+      "mean": 0.16816885033333334,
+      "min": 0.161141023,
+      "max": 0.176291021
+    },
+    "mean_stored": {
+      "mean": 788.8620129999999,
+      "min": 758.482143,
+      "max": 815.376623
+    },
+    "mean_executed": {
+      "mean": 569.9372746666667,
+      "min": 483.227273,
+      "max": 653.865801
+    },
+    "mean_root_neurons": {
+      "mean": 651.6968886666667,
+      "min": 639.120536,
+      "max": 668.918182
+    },
+    "mean_generation": {
+      "mean": 524.5617333333333,
+      "min": 479.254464,
+      "max": 610.863636
+    },
+    "max_generation": {
+      "mean": 532.3333333333334,
+      "min": 487.0,
+      "max": 620.0
+    },
+    "contact_fraction": {
+      "mean": 0.998485,
+      "min": 0.995455,
+      "max": 1.0
+    },
+    "step_wall_ms": {
+      "mean": 5.527018333333333,
+      "min": 5.370206,
+      "max": 5.627497
+    },
+    "mean_brain_cost_per_cell_second": {
+      "mean": 7.683099959917223e-05,
+      "min": 7.40131561859277e-05,
+      "max": 7.826062231381395e-05
+    }
+  },
+  {
+    "storage": 1.0,
+    "work": 1.0,
+    "trials": 3,
+    "status_counts": {
+      "completed": 3
+    },
+    "observed_stop_seconds": [
+      10000.0,
+      10000.0,
+      10000.0
+    ],
+    "full_duration_trials": 3,
+    "cells": {
+      "mean": 175.33333333333334,
+      "min": 157.0,
+      "max": 193.0
+    },
+    "births": {
+      "mean": 30076.666666666668,
+      "min": 21449.0,
+      "max": 36576.0
+    },
+    "deaths": {
+      "mean": 29909.333333333332,
+      "min": 21281.0,
+      "max": 36427.0
+    },
+    "founder_lineages": {
+      "mean": 1.0,
+      "min": 1.0,
+      "max": 1.0
+    },
+    "total_energy": {
+      "mean": 29.883444149333332,
+      "min": 28.381238984,
+      "max": 31.620072795
+    },
+    "mean_energy": {
+      "mean": 0.17102238066666667,
+      "min": 0.163834574,
+      "max": 0.180772223
+    },
+    "mean_stored": {
+      "mean": 792.4538186666666,
+      "min": 779.602273,
+      "max": 815.689119
+    },
+    "mean_executed": {
+      "mean": 618.8057033333333,
+      "min": 544.477273,
+      "max": 766.649682
+    },
+    "mean_root_neurons": {
+      "mean": 643.2983413333334,
+      "min": 637.766839,
+      "max": 648.503185
+    },
+    "mean_generation": {
+      "mean": 497.553412,
+      "min": 491.958549,
+      "max": 503.096591
+    },
+    "max_generation": {
+      "mean": 504.6666666666667,
+      "min": 498.0,
+      "max": 512.0
+    },
+    "contact_fraction": {
+      "mean": 1.0,
+      "min": 1.0,
+      "max": 1.0
+    },
+    "step_wall_ms": {
+      "mean": 4.357608333333333,
+      "min": 4.299854,
+      "max": 4.425486
+    },
+    "mean_brain_cost_per_cell_second": {
+      "mean": 0.0007826483486769071,
+      "min": 0.0007398606794235095,
+      "max": 0.0008471582672342519
+    }
+  },
+  {
+    "storage": 100.0,
+    "work": 0.1,
+    "trials": 3,
+    "status_counts": {
+      "completed": 3
+    },
+    "observed_stop_seconds": [
+      10000.0,
+      10000.0,
+      10000.0
+    ],
+    "full_duration_trials": 3,
+    "cells": {
+      "mean": 220.0,
+      "min": 206.0,
+      "max": 233.0
+    },
+    "births": {
+      "mean": 40848.0,
+      "min": 31956.0,
+      "max": 48384.0
+    },
+    "deaths": {
+      "mean": 40636.0,
+      "min": 31758.0,
+      "max": 48159.0
+    },
+    "founder_lineages": {
+      "mean": 1.0,
+      "min": 1.0,
+      "max": 1.0
+    },
+    "total_energy": {
+      "mean": 36.964206137333335,
+      "min": 35.795425152,
+      "max": 37.883292101
+    },
+    "mean_energy": {
+      "mean": 0.16824737633333334,
+      "min": 0.162589236,
+      "max": 0.1737642
+    },
+    "mean_stored": {
+      "mean": 772.4027416666667,
+      "min": 768.975728,
+      "max": 776.051502
+    },
+    "mean_executed": {
+      "mean": 603.9638456666667,
+      "min": 559.15534,
+      "max": 658.858369
+    },
+    "mean_root_neurons": {
+      "mean": 647.0916686666667,
+      "min": 641.15534,
+      "max": 655.296137
+    },
+    "mean_generation": {
+      "mean": 530.0386456666668,
+      "min": 480.067873,
+      "max": 598.859223
+    },
+    "max_generation": {
+      "mean": 536.0,
+      "min": 487.0,
+      "max": 605.0
+    },
+    "contact_fraction": {
+      "mean": 0.9969513333333333,
+      "min": 0.995146,
+      "max": 1.0
+    },
+    "step_wall_ms": {
+      "mean": 5.884338333333334,
+      "min": 5.607014,
+      "max": 6.181096
+    },
+    "mean_brain_cost_per_cell_second": {
+      "mean": 0.00010055242891108388,
+      "min": 9.447355267380099e-05,
+      "max": 0.00010676901455726058
+    }
+  }
+]
