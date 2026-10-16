@@ -1,0 +1,18 @@
+{
+  "simplifier_commit": "5100edb",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "source_files": [
+    {
+      "path": "src/main/java/de/lifecircles/model/neural/NeuralNetwork.java",
+      "sha256": "2304a92be05cdf88e60fc092772000a92244163a6ef472d65c4c6e950344da74"
+    },
+    {
+      "path": "src/main/java/de/lifecircles/model/neural/NeuralNet.java",
+      "sha256": "e2a19fc3bae1dfca85b73b1bb59b0fd5cee52b121b8a0f5e0a6f8cb29149c7cc"
+    },
+    {
+      "path": "src/test/java/de/lifecircles/model/neural/NetworkSimplificationStudyTest.java",
+      "sha256": "e65396b703356539a90ccb144fbd49c0c73bf4cb1cda09d3f75ecc2bfc416660"
+    }
+  ]
+}

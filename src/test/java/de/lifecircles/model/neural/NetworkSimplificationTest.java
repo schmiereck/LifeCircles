@@ -96,4 +96,62 @@ class NetworkSimplificationTest {
         StructuralMutationTest.assertGraph(compact);
         for(int seed=0;seed<10;seed++) {NeuralNetwork.setRandom(new Random(seed));StructuralMutationTest.assertGraph(compact.mutate(.5,.2));}
     }
+    @Test void silentControllerPreservesDelayedWakeupBeyondOneThousandCalls() {
+        NeuralNetwork net=new NeuralNetwork(factory,1,new int[]{3},1,0,0);
+        Neuron control=(Neuron)net.getHiddenLayerArr()[0].getNeuron(0);
+        control.setActivationFunction(ActivationFunction.ReLU);control.setBias(0,-1000);
+        var payload=net.getHiddenLayerArr()[0].getNeuron(1);
+        connect(net,new Synapse(net.getInputNeuronArr()[0],0,payload,0,1));
+        connect(net,new Synapse(payload,0,net.getOutputNeuronArr()[0],0,1));
+        var compact=net.simplifiedCopy();assertEquals(2,compact.getHiddenLayerArr()[0].size());
+        sameSequence(net,compact,3100);
+    }
+    @Test void sparseRandomGraphsIncludingBackwardAndSelfEdgesStayBitExact() {
+        Random random=new Random(402);
+        for(int sample=0;sample<40;sample++) {
+            NeuralNetwork net=new NeuralNetwork(factory,3,new int[]{5,6,4},2,.07,sample%3);
+            List<NeuronInterface> sources=new ArrayList<>(),targets=new ArrayList<>();
+            net.getNeuralNet().applyToAllNeurons(sources::add);
+            for(Layer layer:net.getHiddenLayerArr())Collections.addAll(targets,layer.getNeuronsArr());
+            Collections.addAll(targets,net.getOutputNeuronArr());
+            for(int edge=0;edge<12;edge++)connect(net,new Synapse(sources.get(random.nextInt(sources.size())),0,
+                    targets.get(random.nextInt(targets.size())),0,random.nextDouble()-.5));
+            var compact=net.simplifiedCopy();StructuralMutationTest.assertGraph(compact);
+            sameSequence(net,compact,1200);
+        }
+    }
+    @Test void simplificationTraversesTwoModuleLevelsAndRetainsTheirInterfaces() {
+        NeuralNetwork inner=new NeuralNetwork(factory,2,new int[]{4},2,0,0);
+        connect(inner,new Synapse(inner.getInputNeuronArr()[1],0,inner.getOutputNeuronArr()[1],0,1));
+        NeuralNetwork middle=new NeuralNetwork(factory,2,new int[]{2},2,0,1);
+        var middleModule=new NeuronNetwork(middle.getHiddenLayerArr()[0].getNeuron(0).getId(),
+                new NeuronTypeInfoData(2,2,inner.getNeuralNet()),factory);
+        middle.getHiddenLayerArr()[0].getNeuronsArr()[0]=middleModule;
+        connect(middle,new Synapse(middle.getInputNeuronArr()[1],0,middleModule,1,1));
+        connect(middle,new Synapse(middleModule,1,middle.getOutputNeuronArr()[1],0,1));
+        NeuralNetwork outer=new NeuralNetwork(factory,2,new int[]{2},2,0,0);
+        var outerModule=new NeuronNetwork(outer.getHiddenLayerArr()[0].getNeuron(1).getId(),
+                new NeuronTypeInfoData(2,2,middle.getNeuralNet()),factory);
+        outer.getHiddenLayerArr()[0].getNeuronsArr()[1]=outerModule;
+        connect(outer,new Synapse(outer.getInputNeuronArr()[1],0,outerModule,1,1));
+        connect(outer,new Synapse(outerModule,1,outer.getOutputNeuronArr()[1],0,1));
+        var compact=outer.simplifiedCopy();
+        var cm=compact.getHiddenLayerArr()[0].getNeuron(1).getNeuronTypeInfoData().getNeuralNet();
+        var ci=cm.getHiddenLayerArr()[0].getNeuron(0).getNeuronTypeInfoData().getNeuralNet();
+        assertEquals(1,cm.getHiddenLayerArr()[0].size());assertEquals(1,ci.getHiddenLayerArr()[0].size());
+        assertEquals(2,ci.getInputCount());assertEquals(2,ci.getOutputLayerSize());
+        sameSequence(outer,compact,2200);
+    }
+    @Test void unusedModuleTypeCandidatesRemainAvailableWithoutBeingSimplified() throws Exception {
+        NeuralNetwork unused=new NeuralNetwork(factory,1,new int[]{5},1,0,0);
+        NeuralNetwork net=new NeuralNetwork(factory,1,new int[]{2},1,0,0);
+        var field=NeuralNet.class.getDeclaredField("neuronTypeInfoDataList");field.setAccessible(true);
+        @SuppressWarnings("unchecked") var types=(List<NeuronTypeInfoData>)field.get(net.getNeuralNet());
+        types.add(new NeuronTypeInfoData(1,1,unused.getNeuralNet()));
+        var compact=net.simplifiedCopy();
+        @SuppressWarnings("unchecked") var copied=(List<NeuronTypeInfoData>)field.get(compact.getNeuralNet());
+        assertEquals(5,copied.get(1).getNeuralNet().getHiddenLayerArr()[0].size());
+        assertNotSame(unused.getNeuralNet(),copied.get(1).getNeuralNet());
+        sameSequence(net,compact,100);
+    }
 }

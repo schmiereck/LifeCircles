@@ -1,5 +1,7 @@
 # Netzperformance nach den Logikkorrekturen
 
+Neuere Untersuchung: [Netze ohne Änderung ihrer Ausgaben vereinfachen](NETZVEREINFACHUNG.md).
+
 Messung vom 15. Oktober 2026, Java 25. Die Ausgangsbasis enthaelt bereits die
 Korrekturen an Struktur, Steuerung, Gradienten, Training und Modulmutation.
 Die beiden Laeufe verwenden dieselben Seeds, Netzdefinitionen und Eingaben.

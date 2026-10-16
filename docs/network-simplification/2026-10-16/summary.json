@@ -1,0 +1,35 @@
+{
+  "models": 18,
+  "sequences": 144,
+  "network_steps_compared": 316800,
+  "bit_exact_output_comparisons": 42134400,
+  "median_model_speedup": 1.6205198207492573,
+  "min_model_speedup": 1.3303672426455828,
+  "max_model_speedup": 1.9668606477966013,
+  "timing_note": "Median of seven paired ratios per model, then median across 18 related genomes; isolated forward execution, no whole-world inference",
+  "root_neurons": {
+    "before": 11644,
+    "after": 8721,
+    "reduction": 0.25103057368601855
+  },
+  "root_synapses": {
+    "before": 13585,
+    "after": 7914,
+    "reduction": 0.41744571218255433
+  },
+  "stored_synapses": {
+    "before": 13882,
+    "after": 8205,
+    "reduction": 0.4089468376314652
+  },
+  "serialized_bytes": {
+    "before": 1127094,
+    "after": 775793,
+    "reduction": 0.31168740140573903
+  },
+  "executed_synapses": {
+    "before": 188418940,
+    "after": 137955280,
+    "reduction": 0.2678268968077201
+  }
+}
