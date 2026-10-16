@@ -8,6 +8,7 @@ script=Path(__file__).resolve().parent
 subprocess.run([sys.executable,str(script/"analyze_function_comparison.py"),str(a.folder),"--output",str(a.output)],check=True)
 for name in ("results.csv","settings.txt","signals.csv"):
     shutil.copy2(a.folder/name,a.output/name)
+if (a.folder/"launch.json").exists():shutil.copy2(a.folder/"launch.json",a.output/"launch.json")
 for name in ("profiles.csv","progress.csv"):
     (a.output/(name+".gz")).write_bytes(gzip.compress((a.folder/name).read_bytes(),mtime=0))
 records=[]
