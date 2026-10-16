@@ -1,5 +1,7 @@
 # Gehirnkosten unter NONE
 
+Abgeschlossene Messungen und Bewertung: [NONE_ERGEBNISSE.md](NONE_ERGEBNISSE.md).
+
 Gepaarte Fortsetzungen des gespeicherten HIGH_POSITION3-Zellstands: drei Kostenvarianten,
 je drei Zufallsfolgen, zunächst 36.000 Schritte bei 60 Hz (600 Simulationssekunden,
 fünf Tag-/Nachtzyklen). Preise: Struktur/Berechnung 1/1, 1/0,1 und 100/0,1.
@@ -55,6 +57,9 @@ Ressourcenvergleich, erlaubt aber keine direkte Übertragung auf große Kolonien
 Ordner pro Versuch enthalten `start.cells` und `end.cells`; Ergebnis- und Verlaufs-CSV,
 Phasenzeiten und Einstellungen liegen darüber. Ergebnisse in einen neuen Ordner
 schreiben; erneutes Ausführen überschreibt dessen CSV-Dateien.
+Die Zell-Dateien speichern keine Weltgeometrie, Sonnenphase oder Zufallszustände.
+Für visuelles Weiterführen muss die passende Weltgeometrie eingerichtet werden;
+ein solches Laden startet eine neue Fortsetzung mit neuen Zufallsfolgen.
 
 Routinekontrollen: `NoneEnergyControlsTest` prüft alle drei Preise und kostenfreie
 Gehirne bis zum Tod sowie den reproduzierbaren Ablauf einschließlich Geburt und
@@ -65,6 +70,9 @@ mit der bisherigen gezielten Regression: **391 Prüfungen, keine Fehler**.
 Die drei Serien laufen teilweise gleichzeitig in separaten JVMs. Biologische
 Zustände und Zufallsfolgen sind unabhängig; Laufzeitmessungen konkurrieren jedoch
 um CPU und Speicherbandbreite. Daraus keine belastbare Beschleunigung ableiten.
+Die Laufzeiten enthalten außerdem die Buchhaltung der Versuche. Nach dem Laden
+steht der transiente Ausführungszähler auf null; die Verlaufsgrafik beginnt für
+diese Messgröße erst nach tatsächlich ausgeführten Entscheidungen.
 
 ## Aussagegrenzen
 

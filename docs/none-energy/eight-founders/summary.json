@@ -1,0 +1,44 @@
+[
+  {
+    "storage": 1.0,
+    "work": 0.1,
+    "trials": 3,
+    "status_counts": {
+      "cap_stop": 3
+    },
+    "observed_stop_seconds": [
+      149.666667,
+      149.766667,
+      150.183333
+    ],
+    "full_duration_trials": 0
+  },
+  {
+    "storage": 1.0,
+    "work": 1.0,
+    "trials": 3,
+    "status_counts": {
+      "cap_stop": 3
+    },
+    "observed_stop_seconds": [
+      161.95,
+      163.966667,
+      159.866667
+    ],
+    "full_duration_trials": 0
+  },
+  {
+    "storage": 100.0,
+    "work": 0.1,
+    "trials": 3,
+    "status_counts": {
+      "cap_stop": 3
+    },
+    "observed_stop_seconds": [
+      151.533333,
+      154.033333,
+      149.633333
+    ],
+    "full_duration_trials": 0
+  }
+]

@@ -26,6 +26,11 @@ Zusammen wurden 384 Routineprüfungen erfolgreich ausgeführt. Die optionalen
 Kalibrierungsserien und ihre Ergebnisse stehen in
 [GEHIRN_ERGEBNISSE.md](GEHIRN_ERGEBNISSE.md).
 
+`NoneEnergyControlsTest` ergänzt sieben Routineprüfungen für tatsächliche Gebühren,
+Tod, reproduzierbare Geburtsmutation und die Auswahl der Gründer. Zusammen bestanden
+391 Prüfungen. Die optionalen NONE-Fortsetzungen und deren Bewertung stehen in
+[NONE_ERGEBNISSE.md](NONE_ERGEBNISSE.md).
+
 Die Performance-Äquivalenztests vergleichen die beschleunigte Sonne mit dem Vollscan
 und prüfen wiederverwendete Nachbarlisten bei Bewegung, Tod und periodischen Nähten.
 Snapshottests sichern vollständige und kompakte Ansichten sowie die optionale

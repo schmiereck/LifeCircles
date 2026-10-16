@@ -1,0 +1,23 @@
+source=C:\Users\thomas\OneDrive\Dokumente\#Projekte\LifeCircles\test-highPos3-2026-10-15-a01.cells
+sha256=38c7860c26e9c29908666f85ac844417091fccf9c97d6fd8ef0abff8c24dec40
+steps=36000
+seeds=3
+seed_offset=0
+interval=600
+cap_stop=2000
+founders_per_section=1
+width=11200.0
+height=1200
+dt=0.016666666666666666
+sun_rate=10.0
+sun_spacing=60.0
+energy_per_ray=0.01
+mutation_rate=0.1
+mutation_strength=0.2
+division_multiplier=1.0
+input_normalization=false
+NONE obstacles from DefaultTrainStrategy; imported coordinates/energy/age/genomes preserved, no random founders, no training/refill/reseeding.
+Sun, network mutation and birth traits/meta-mutation seeded independently. Price order rotated by seed.
+No UI snapshots; step_wall_ms includes grid and profiling, excludes checkpoints/serialization. CPU comparisons are descriptive.
+brain_cost_requested is cumulative before energy-zero clamping; newborn initial thinking is not a billed world step.
+Contact and output diversity are descriptive, not demonstrated biological functions. Cap stops entire trial, never truncates population.
