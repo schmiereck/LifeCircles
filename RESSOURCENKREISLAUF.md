@@ -1,120 +1,49 @@
-# Überreste, Aasfresser und Spezialisierung
+# Mehrere Energieformen und Überreste als Zellen
 
-Entwurf vom 16.10.2026. Die Lebensdauer ist jetzt live in der Cell-Box einstellbar.
-Die folgenden Erweiterungen sind Vorschläge; Überreste und zusätzliche Ressourcen
-sind noch nicht implementiert.
+Präzisierter Entwurf vom 16.10.2026 nach der Vorgabe des Nutzers. Diese Fassung ersetzt
+meinen früheren Vorschlag mit eigenständigen Überrestobjekten und Baustoffen.
+Es wurden noch keine zusätzlichen Energieformen oder Überreste implementiert.
 
-## 1. Kleiner erster Schritt: Restenergie bleibt verfügbar
+## Tatsächlicher Bestand
 
-Beim Alterstod besitzt eine Zelle oft noch Energie. Diese könnte vollständig oder
-mit einem ausdrücklich festgelegten Verlust in ein passives Überrestobjekt übergehen.
-Bei Tod mit Energie null entsteht zunächst keine neue verwertbare Energie. Die Bilanz
-lautet: entnommene Zellreserve = Reserve des Überrests + ausgewiesener Verlust.
+- `Cell` besitzt genau einen skalaren Speicher `energy`, begrenzt auf 0 bis 1.
+- Sonnenaufnahme, Grundumsatz, Gehirngebühren und Austausch verwenden diesen Speicher.
+- Absorption und Delivery sind zwei Transferrichtungen derselben Energieform.
+- `CellType` beschreibt RGB-Eigenschaften, keine Energieform oder Stoffwechselklasse.
+- Ein zweiter Energiespeicher oder eine Zuordnung von Energieformen zu Zellfunktionen existiert nicht.
 
-Ein Überrest hat keinen neuronalen Controller, keine Teilung und keine Sonnenaufnahme.
-Sein Verhalten ist fest: passive Bewegung/Kollision, Aufnahme durch Nachbarn und
-gegebenenfalls zeitabhängiger Zerfall. Restmenge und Zerfallszeit begrenzen seine Existenz.
-Das wäre direkt an den Lebensdauerregler anschließbar: Mehr Alterstod erzeugt mehr
-verwertbare Restenergie, ohne dass die Sterberegel Nahrung aus dem Nichts erzeugt.
+## Gewünschtes Modell
 
-Technisch sollte das ein eigener passiver Objekttyp sein, keine normale Zelle mit
-einem vorgetäuschten leeren Gehirn. Sonst zahlen tausende Überreste weiterhin für
-Sensorarrays, Denkvorbereitung und Zellverwaltung. Die räumliche Suche und Darstellung
-können sie trotzdem berücksichtigen. Auch passive Körper verursachen Physikkosten;
-leere oder vollständig zerfallene Überreste müssen verschwinden.
+Überreste bleiben normale Zellen mit ihren noch vorhandenen Energievorräten.
+Sie bekommen einen Zustand „tot“ und fest vorgegebenes Verhalten, keine neuronalen
+Entscheidungen und keine Teilung. Nachbarn absorbieren ihre Restenergien über den
+normalen Austausch. Erst wenn alle Vorräte leer sind, verschwindet die Zelle.
+Es gibt hierfür kein zusätzliches Materie-, Körpermaterial- oder Baustoffmodell.
 
-Der jetzige Transferdienst akzeptiert als Ziel ausdrücklich `Cell`. Für Aas müsste
-der Zugriff auf einen endlichen Energiespeicher verallgemeinert werden. Lebende
-Zellen könnten weiter freiwillig abgeben oder Energie entziehen; Überreste wären
-passive Quellen. Aufnahme muss dieselbe gleichzeitige, konservative Verrechnung
-verwenden, einschließlich begrenzter Empfängerkapazität und periodischer Distanz.
-Ein unterscheidbares Sensorsignal für Überreste wäre sinnvoll; eine Netzschnittstellen-
-Änderung braucht allerdings eine definierte Migration alter DNA.
-
-Erste Prüfungen: Alterstod überträgt nur vorhandene Energie; Hunger erzeugt keine;
-mehrere Aasfresser teilen endliche Vorräte ohne Reihenfolgevorteil; volle Empfänger
-vernichten keine Restenergie; Zerfall ist unabhängig von der Schrittweite; Aufnahme
-über den Weltrand funktioniert; Teilung/Tod/Fressen über viele Generationen hat
-keinen positiven Bilanzfehler.
-
-## 2. Danach Energie und Baustoffe trennen
-
-Für den gewünschten Tod an einem Mangel bei gleichzeitig verbleibenden anderen
-Vorräten würde ich zunächst zwei Ressourcen verwenden:
-
-| Ressource | Verwendung | Typischer Verbleib beim Tod |
-|---|---|---|
-| Nutzenergie | Grundumsatz, Gehirn, Bewegung und Verarbeitung | Noch vorhandener Energievorrat |
-| Baustoffe / Biomasse | Wachstum und Bildung von Kindern | Körpermaterial und Baustoffreserve |
-
-Dadurch kann eine Zelle etwa mit vollen Baustoffvorräten an Energiemangel sterben.
-Ihre Biomasse bleibt für andere verfügbar. Reiner Baustoffmangel sollte zunächst
-Wachstum und Teilung verhindern; ob er auch nach einer Frist zum Tod führt, wäre
-eine eigene bewusst eingestellte Regel.
-
-Wichtig: Momentan gibt es keine eigenständige konservierte Baustoffbilanz bei
-Größenänderung und Teilung. Aus dem Radius einfach Nahrung abzuleiten wäre deshalb
-ein Energieeinfallstor: Wiederholtes Teilen, Wachsen und Sterben könnte verwertbare
-Materie erzeugen. Vor essbarer Körpermasse müssen Eltern/Kind-Material beim Teilen
-aufgeteilt und Wachstum aus einem realen Baustoffvorrat bezahlt werden. Schrumpfen
-darf höchstens zuvor gebundene Bestände freigeben, keinen kostenlosen Neubestand.
-
-Mehrere Energieträger sind ebenfalls möglich. Für den Einstieg macht die Trennung
-von Energie und Materie die Bilanzen und Engpässe aber leichter prüfbar als ein
-separater Energieträger für jede einzelne Aktion. Ob der Gehirnverbrauch später
-einen besonderen Energieträger braucht, sollte ein gezieltes Folgeexperiment zeigen.
-
-## 3. Umwandlung als begrenzte Fähigkeit
-
-Die gemeinsame Basis könnte wenige feste, prüfbare Reaktionen enthalten, beispielsweise
-Verdauung organischer Reserven in Nutzenergie. Die DNA bestimmt die Kapazität und
-die laufenden Kosten der dafür nötigen Ausstattung. Das Gehirn regelt deren Aktivität.
-So ist Umwandlung prinzipiell für jede Linie erreichbar, aber nicht gleichzeitig
-beliebig stark und kostenlos verfügbar.
-
-Begrenzungen könnten sein:
-
-- Ein gemeinsames Kapazitätsbudget pro Zelle: mehr Photosyntheseausstattung lässt
-  weniger Platz für Verdauung oder andere Verarbeitung.
-- Ausstattung kostet Material und Unterhalt, auch wenn sie gerade nicht genutzt wird.
-- Jede Reaktion hat endlichen Durchsatz und benötigt tatsächlich vorhandene Eingangsvorräte.
-- Umwandlung verursacht ausgewiesene Verluste beziehungsweise zusätzliche Kosten.
-- Ausgabe kann gespeichert, verbraucht oder an Nachbarn abgegeben werden.
-
-Damit werden Kooperation und verschiedene Zellrollen möglich: Eine Zelle beschafft
-Ressourcen, eine andere verarbeitet sie, weitere wachsen oder bewegen den Verband.
-Das sind Hypothesen über Selektionsanreize, keine Garantie, dass Spezialisierung entsteht.
-Eine universelle Zelle darf weiterhin erfolgreich sein, wenn die Umwelt keine Vorteile
-für Arbeitsteilung bietet. Zu prüfen sind daher Spezialisten, Generalisten und
-kooperierende Verbände unter denselben Bilanzen und wechselnden Ressourcenbedingungen.
-
-Für jede Reaktion braucht es eine explizite Stoffbilanz und eine Energiebilanz.
-Unterschiedliche Ressourcen lassen sich nicht ohne festgelegte Einheiten einfach
-aufsummieren. Ein geschlossener Umwandlungskreislauf darf weder Materie noch nutzbare
-Energie erzeugen. Auch Sensor-/Reglerausgänge wählen nur Raten; sie schreiben keine
-Ressourcen direkt gut.
-
-## 4. Muss das Netz den Umwandlungsalgorithmus erfinden?
-
-Ein erst zu lösender Rechencode könnte Netzfunktionen erzwingen. Dann hängen jedoch
-ökologischer Erfolg und Gehirngröße stark von einer von uns festgelegten Prüfaufgabe ab.
-Das wäre ein interessantes separates Experiment, ähnlich den logischen Trainingsaufgaben.
-
-Für die offene Welt würde ich zunächst feste Reaktionsregeln und evolvierbare
-Ausstattung verwenden. Die anspruchsvolle Netzaufgabe wäre die passende Steuerung:
-Wann aufnehmen, verarbeiten, speichern oder weitergeben? Wann Ausstattung aktivieren,
-und welche Rolle soll ein Kind übernehmen? Damit bleibt echte Regulation eine
-potenziell nützliche Leistung, ohne dass jeder Energiegewinn zwingend ein künstliches
-Rechenrätsel erfordert. Danach lässt sich messen, ob dynamische Steuerung gegenüber
-festen Regeln tatsächlich einen Vorteil bietet.
+Ein Verbleib als `Cell` passt bereits zum Zellziel des Transferdienstes. Für die
+Performance sollten tote Zellen die Gehirn-Eingabeaufbereitung und das Denken
+überspringen. Ihre feste Steuerung darf nicht versehentlich alte Aktorbefehle
+weiterlaufen lassen. Welche passiven Kräfte und welche Aufnahme-/Abgaberegeln
+nach dem Tod gelten, ist ausdrücklich festzulegen.
 
 ## Empfohlene Reihenfolge
 
-1. Passive Überreste mit ausschließlich vorhandener Restenergie und konservativer Aufnahme.
-2. Geschlossene Baustoffbilanz für Wachstum und Teilung, danach verwertbare Körpermasse.
-3. Wenige begrenzte Reaktionen mit evolvierbarer Kapazität und Kosten.
-4. Ökologische Vergleiche von Aasfressern, Räubern, Produzenten und kooperierenden Verbänden.
+1. Mehrere ausdrücklich benannte Energiespeicher pro Zelle einführen. Kapazitäten,
+   Sonnenaufnahme, Transfer, Teilung und Dateikompatibilität eindeutig definieren.
+   Anfangs keine automatische Umwandlung zwischen den Speichern.
+2. Verbrauch, Überlebensbedingungen und begrenzte Umwandlung festlegen. Dann kann
+   eine Zelle an Mangel einer benötigten Energieform sterben, obwohl andere
+   Speicher noch gefüllt sind. Nicht jeder leere Speicher muss zwingend tödlich sein.
+3. Tote Zellen mit genau diesen übrigen Vorräten bestehen lassen. Absorption
+   leert sie, ohne neue Energie beim Tod gutzuschreiben.
+4. Evolvierbare Umwandlungskapazitäten und deren neuronale Steuerung untersuchen.
 
-Jeder Schritt sollte zuerst mit kleinen deterministischen Welten und einer vollständigen
-Ressourcenbilanz geprüft werden. Das hält neue Wachstums-/Sterbeschleifen kontrollierbar
-und vermeidet eine sofortige Erhöhung der Laufzeit durch weitere Gehirne.
+Auch ohne Materiemodell sind Bilanzen erforderlich: Teilung verteilt vorhandene
+Vorräte, Transfer erzeugt keine Energie, Tod bewahrt höchstens die verbleibenden
+Reserven. Umwandlungskreisläufe dürfen keine nutzbare Energie erzeugen.
+
+Die Anzahl und Bedeutung der Energieformen, deren Umweltquellen sowie die
+Verbrauchs-/Umwandlungsregeln sind noch offen. Eine reine Erweiterung der Speicher
+sollte nicht stillschweigend neue Todesregeln oder kostenlose Anfangsvorräte einführen.
+Bestehende Dateien und die neuronale Ein-/Ausgabeschnittstelle benötigen eine
+explizite Kompatibilitätsregel, bevor solche Änderungen aktiviert werden.
