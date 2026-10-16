@@ -38,6 +38,20 @@ mvn test '-Dtest=NoneEnergyStudyTest' '-Dnone.energy.file=C:\Pfad\stand.cells' '
 ```
 
 Weitere Parameter: `none.energy.seed_offset`, `none.energy.width`, `none.energy.cap`.
+`none.energy.founders_per_section=1` wählt deterministisch den ersten Vertreter
+jedes früheren 1400-Pixel-Trainingsbereichs (hier acht Gründer). Höhere Zahlen wählen
+gleichmäßig über die Dateireihenfolge verteilte Vertreter. Null lädt alle Zellen.
+`none.energy.floor=true` verwendet ausschließlich einen Boden, setzt die Gründer
+gleichmäßig nebeneinander darüber und ihre Geschwindigkeiten auf null.
+`none.energy.height` ergänzt die einstellbare Breite. Diese Anordnungsänderung wird
+in den Einstellungen erfasst; sie ist keine Fortsetzung der ursprünglichen Geometrie.
+
+Nach dem frühen Wachstum der großen Varianten wird zusätzlich eine 600 × 400 große
+periodische Bodenwelt mit acht Gründern und denselben drei Preisen/Seeds geprüft.
+Die Strahlendichte und Energie je Strahl bleiben gleich; die gesamte verfügbare
+Sonnenenergie ist wegen der kleineren Breite geringer. Das erleichtert den vollständigen
+Ressourcenvergleich, erlaubt aber keine direkte Übertragung auf große Kolonien.
+
 Ordner pro Versuch enthalten `start.cells` und `end.cells`; Ergebnis- und Verlaufs-CSV,
 Phasenzeiten und Einstellungen liegen darüber. Ergebnisse in einen neuen Ordner
 schreiben; erneutes Ausführen überschreibt dessen CSV-Dateien.
@@ -45,6 +59,12 @@ schreiben; erneutes Ausführen überschreibt dessen CSV-Dateien.
 Routinekontrollen: `NoneEnergyControlsTest` prüft alle drei Preise und kostenfreie
 Gehirne bis zum Tod sowie den reproduzierbaren Ablauf einschließlich Geburt und
 Mutation. Mit den betroffenen Regressionen bestanden 88 Prüfungen.
+Nach Ergänzung der Gründer-Auswahl bestanden die sieben neuen Kontrollen gemeinsam
+mit der bisherigen gezielten Regression: **391 Prüfungen, keine Fehler**.
+
+Die drei Serien laufen teilweise gleichzeitig in separaten JVMs. Biologische
+Zustände und Zufallsfolgen sind unabhängig; Laufzeitmessungen konkurrieren jedoch
+um CPU und Speicherbandbreite. Daraus keine belastbare Beschleunigung ableiten.
 
 ## Aussagegrenzen
 

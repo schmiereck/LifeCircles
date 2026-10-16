@@ -53,7 +53,10 @@ class NoneEnergyStudyTest {
         int steps=Integer.getInteger("none.energy.steps",36000), seeds=Integer.getInteger("none.energy.seeds",3);
         int interval=Integer.getInteger("none.energy.interval",600), cap=Integer.getInteger("none.energy.cap",2000);
         long offset=Long.getLong("none.energy.seed_offset",0);
+        int foundersPerSection=Integer.getInteger("none.energy.founders_per_section",0);
         double width=Double.parseDouble(System.getProperty("none.energy.width","11200"));
+        double height=Double.parseDouble(System.getProperty("none.energy.height","1200"));
+        boolean floor=Boolean.getBoolean("none.energy.floor");
         assertTrue(steps>0 && seeds>0 && interval>0 && cap>0);
         SimulationConfig c=SimulationConfig.getInstance();Random original=NeuralNetwork.getRandom();
         int initial=c.getInitialCellCount();double oldW=c.getWidth(),oldH=c.getHeight();
@@ -62,24 +65,31 @@ class NoneEnergyStudyTest {
         Files.writeString(out.resolve("phases.csv"),"seed,storage,work,phase,calls,total_ms\n");
         Files.writeString(out.resolve("settings.txt"),"source="+source+"\nsha256="+hex(MessageDigest.getInstance("SHA-256").digest(bytes))
                 +"\nsteps="+steps+"\nseeds="+seeds+"\nseed_offset="+offset+"\ninterval="+interval+"\ncap_stop="+cap
-                +"\nwidth="+width+"\nheight=1200\ndt="+DT+"\nsun_rate="+c.getSunRayRate()+"\nsun_spacing="+c.getSunRaySpacingPx()
+                +"\nfounders_per_section="+foundersPerSection+"\nfloor_layout="+floor+"\nwidth="+width+"\nheight="+height+"\ndt="+DT+"\nsun_rate="+c.getSunRayRate()+"\nsun_spacing="+c.getSunRaySpacingPx()
                 +"\nenergy_per_ray="+c.getEnergyPerRay()+"\nmutation_rate="+c.getMutationRate()+"\nmutation_strength="+c.getMutationStrength()
                 +"\ndivision_multiplier="+c.getDivisionMutationRateMultiplier()+"\ninput_normalization="+c.isNormalizeBrainInputs()
-                +"\nNONE obstacles from DefaultTrainStrategy; imported coordinates/energy/age/genomes preserved, no random founders, no training/refill/reseeding."
+                +"\nDefault layout: NONE obstacles and imported coordinates preserved. Floor layout: ground only, founders equally spaced above floor with zero velocity."
+                +"\nImported energy/age/genomes preserved, no random founders, no training/refill/reseeding."
                 +"\nSun, network mutation and birth traits/meta-mutation seeded independently. Price order rotated by seed."
                 +"\nNo UI snapshots; step_wall_ms includes grid and profiling, excludes checkpoints/serialization. CPU comparisons are descriptive."
                 +"\nbrain_cost_requested is cumulative before energy-zero clamping; newborn initial thinking is not a billed world step."
                 +"\nContact and output diversity are descriptive, not demonstrated biological functions. Cap stops entire trial, never truncates population.\n");
         try {
-            c.setWidth(width);c.setHeight(1200);c.setInitialCellCount(0);
+            c.setWidth(width);c.setHeight(height);c.setInitialCellCount(0);
             for(int s=0;s<seeds;s++) for(int order=0;order<PRICES.length;order++) {
                 long seed=offset+s;BrainEnergyCosts price=PRICES[(s+order)%PRICES.length];
                 NeuralNetwork.setRandom(new Random(900001+seed));
-                Environment world=new Environment(width,1200,new Random(700001+seed));
-                new DefaultTrainStrategy().initialize(world);
-                world.resetCells(load(bytes));
+                Environment world=new Environment(width,height,new Random(700001+seed));
+                if(floor) world.addGroundBlocker();else new DefaultTrainStrategy().initialize(world);
+                world.resetCells(selectFounders(load(bytes),foundersPerSection));
+                if(floor) for(int i=0;i<world.getCellList().size();i++) {
+                    Cell cell=world.getCellList().get(i);
+                    cell.setPosition(new Vector2D((i+.5)*width/world.getCellList().size(),height-Environment.GroundBlockerHeight-cell.getRadiusSize()-1));
+                    cell.setVelocity(new Vector2D(0,0));cell.setAngularVelocity(0);
+                    for(var actor:cell.getSensorActors()) actor.updateCachedPosition();
+                }
                 Policy policy=new Policy(price,800001+seed,world.getCellList());
-                var grid=new SpatialGridPartitioningStrategy(width,1200,2*(c.getCellMaxRadiusSize()+c.getCellActorMaxFieldRadius()));
+                var grid=new SpatialGridPartitioningStrategy(width,height,2*(c.getCellMaxRadiusSize()+c.getCellActorMaxFieldRadius()));
                 world.getProfiler().setEnabled(true);
                 String name="seed-"+seed+"-s"+price.storage()+"-w"+price.work();
                 Path folder=out.resolve(name);Files.createDirectories(folder);
@@ -112,6 +122,19 @@ class NoneEnergyStudyTest {
 
     @SuppressWarnings("unchecked") static List<Cell> load(byte[] bytes) throws Exception {
         try(var in=new ObjectInputStream(new ByteArrayInputStream(bytes))){return (List<Cell>)in.readObject();}
+    }
+    /** Deterministic bottleneck: evenly spaced file-order representatives of each former 1400px training section. */
+    static List<Cell> selectFounders(List<Cell> cells,int perSection) {
+        if(perSection<0) throw new IllegalArgumentException("Negative founder count");
+        if(perSection==0) return cells;
+        Map<Integer,List<Cell>> groups=new TreeMap<>();
+        for(Cell cell:cells) groups.computeIfAbsent((int)(cell.getPosition().getX()/1400),k->new ArrayList<>()).add(cell);
+        List<Cell> selected=new ArrayList<>();
+        for(var group:groups.values()) {
+            int count=Math.min(perSection,group.size());
+            for(int i=0;i<count;i++) selected.add(group.get(i*group.size()/count));
+        }
+        return selected;
     }
     static void save(Path path,List<Cell> cells) throws Exception {
         try(var out=new ObjectOutputStream(new BufferedOutputStream(Files.newOutputStream(path)))){out.writeObject(new ArrayList<>(cells));}

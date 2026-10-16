@@ -40,6 +40,20 @@ class NoneEnergyControlsTest {
         }
     }
 
+    @Test void bottleneckKeepsRepresentativesOfEverySectionWithoutEditingThem() {
+        List<Cell> cells=new ArrayList<>();
+        for(int section=0;section<8;section++) for(int i=0;i<6;i++)
+            cells.add(new Cell(new Vector2D(100+section*1400+i,100),10,new PhysicsRegressionTest.ConstantBrain()));
+        var selected=NoneEnergyStudyTest.selectFounders(cells,2);
+        assertEquals(16,selected.size());
+        for(int section=0;section<8;section++) {
+            assertSame(cells.get(section*6),selected.get(section*2));
+            assertSame(cells.get(section*6+3),selected.get(section*2+1));
+        }
+        assertSame(cells,NoneEnergyStudyTest.selectFounders(cells,0));
+        assertThrows(IllegalArgumentException.class,()->NoneEnergyStudyTest.selectFounders(cells,-1));
+    }
+
     @Test void sunlightBirthMutationAndContinuationReplayExactly() throws Exception {
         Random previous=NeuralNetwork.getRandom();
         try {
