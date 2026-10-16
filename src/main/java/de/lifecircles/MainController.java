@@ -54,7 +54,7 @@ public class MainController extends BorderPane {
         simulationView.setStyle("-fx-background-color: black;");
 
         // Keep the whole world width available; scroll controls on narrow windows.
-        HBox panels = new HBox(10, new ConfigPanel(), new EnvironmentPanel(), new StatisticsPanel());
+        HBox panels = new HBox(10, new EnvironmentPanel(), new ConfigPanel(), new StatisticsPanel());
         ScrollPane panelScroll = new ScrollPane(panels);
         panelScroll.setFitToHeight(true);
         panelScroll.setPrefViewportHeight(260);
