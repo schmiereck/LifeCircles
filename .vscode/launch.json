@@ -20,6 +20,15 @@
         },
         {
             "type": "java",
+            "name": "Main NONE",
+            "request": "launch",
+            "mainClass": "de.lifecircles/de.lifecircles.Main",
+            "projectName": "life-circles",
+            "args": ["--trainMode=NONE"],
+            "vmArgs": "-Djava.util.concurrent.ForkJoinPool.common.parallelism=4"
+        },
+        {
+            "type": "java",
             "name": "Main HIGH_ENERGY",
             "request": "launch",
             "mainClass": "de.lifecircles/de.lifecircles.Main",
