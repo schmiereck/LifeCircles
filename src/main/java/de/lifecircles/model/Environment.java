@@ -143,7 +143,7 @@ public class Environment {
         profiler.finish(SimulationProfiler.Phase.INTERACTIONS, phaseStart);
         phaseStart = profiler.start();
         // Process energy transfers between cells
-        EnergyTransferCellCalcService.processEnergyTransfers(this.cellList, this);
+        EnergyTransferCellCalcService.processEnergyTransfers(this.cellList, this, deltaTime);
         profiler.finish(SimulationProfiler.Phase.TRANSFER, phaseStart);
         phaseStart = profiler.start();
 

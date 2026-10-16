@@ -2,103 +2,101 @@ package de.lifecircles.service;
 
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.Environment;
-import de.lifecircles.model.SensableActor;
-import de.lifecircles.model.SensableCell;
 import de.lifecircles.model.SensorActor;
-import de.lifecircles.service.partitioningStrategy.PartitioningStrategy;
-
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Objects;
 
-/**
- * Service for processing energy transfer between cells using sensors and actuators.
- */
+/** Conservative transfers computed from one shared pre-transfer energy snapshot. */
 public class EnergyTransferCellCalcService {
-    // Maximum energy transfer per interaction
-    private static final double MAX_ENERGY_DELIVERY_TRANSFER = 0.005D;
-    private static final double MAX_ENERGY_ABSORBTION_TRANSFER = 0.01D;
-    // Minimum energy threshold for transfer
-    private static final double MIN_ENERGY_FOR_TRANSFER = 0.1D;
+    // Preserve the former full-output throughput at 60 physics steps per second.
+    private static final double DELIVERY_PER_SECOND = 0.005 * SimulationConfig.FPS;
+    private static final double ABSORPTION_PER_SECOND = 0.01 * SimulationConfig.FPS;
+    private static final double DELIVERY_RESERVE = 0.1;
 
-    /**
-     * Processes energy transfer and absorption between cells based on sensor-actor interactions.
-     * @param cells list of cells in the environment
-     */
-    public static void processEnergyTransfers(final List<Cell> cells) {
-        processEnergyTransfers(cells, Environment.getInstance());
+    private static final class Budget {
+        final Cell cell;
+        final double energy;
+        double delivery, outgoing, incoming, delta;
+        Budget(Cell cell) { this.cell = cell; energy = cell.getEnergy(); }
+    }
+    private static final class Transfer {
+        final Budget donor, receiver;
+        final boolean delivery;
+        double amount;
+        Transfer(Budget donor, Budget receiver, double amount, boolean delivery) {
+            this.donor = donor; this.receiver = receiver; this.amount = amount; this.delivery = delivery;
+            if (delivery) donor.delivery += amount;
+        }
     }
 
-    public static void processEnergyTransfers(final List<Cell> cells, final Environment environment) {
-        for (final Cell calcCell : cells) {
-            for (final SensorActor sensor : calcCell.getSensorActors()) {
-                final SensableActor otherActor = sensor.getSensedActor();
-                if (Objects.nonNull(otherActor)) {
-                    final SensableCell otherCell = sensor.getSensedCell();
-                    if (Objects.nonNull(otherCell)) {
-                        // --- Distanzabhängigkeit berechnen ---
-                        double distance = 0.0;
-                        double maxSensorRadius = 1.0;
-                        if (sensor.getCachedPosition() != null && otherActor.getCachedPosition() != null) {
-                            distance = sensor.getCachedPosition().getShortestDirectionWithWrapAround(
-                                    otherActor.getCachedPosition(), environment.getWidth(), environment.getHeight()).length();
-                            Cell emitter = otherActor instanceof SensorActor actor ? actor.getParentCell() : calcCell;
-                            maxSensorRadius = SensorActorForceCellCalcService.calcSensorRadius(emitter.getRadiusSize(), emitter.getSensorActors().size());
-                        }
-                        double distFactorDelivery = 1.0;
-                        double distFactorAbsorption = 1.0;
-                        if (maxSensorRadius > 0.0) {
-                            double normDist = Math.min(distance / maxSensorRadius, 1.0);
+    /** Convenience for callers using the standard 60 Hz physics step. */
+    public static void processEnergyTransfers(List<Cell> cells) {
+        processEnergyTransfers(cells, Environment.getInstance());
+    }
+    public static void processEnergyTransfers(List<Cell> cells, Environment environment) {
+        processEnergyTransfers(cells, environment, 1.0 / SimulationConfig.FPS);
+    }
 
-                            final double calcCellTransferStrength = calcCell.getRadiusSize() / SimulationConfig.getInstance().getCellMaxRadiusSize();
-                            //final double otherCellTransferStrength = otherCell.getRadiusSize() / SimulationConfig.getInstance().getCellMaxRadiusSize();
-
-                            // Linear Interpolation: 1.0 (nah) -> 0.8 (fern) für Delivery
-                            distFactorDelivery = 1.0 - (1.0 - SimulationConfig.CELL_ENERGY_DELIVERY_FACTOR_FAR) * normDist * calcCellTransferStrength;
-                            // Linear Interpolation: 1.0 (nah) -> 0.7 (fern) für Absorption
-                            distFactorAbsorption = 1.0 - (1.0 - SimulationConfig.CELL_ENERGY_ABSORPTION_FACTOR_FAR) * normDist * calcCellTransferStrength;
-                        }
-                        // --- Absorption ---
-                        final double absorptionOutput = sensor.getEnergyAbsorption();
-                        if ((absorptionOutput > 0.0D)) {
-                            final double otherCellTransferAmountLimit =
-                                    Math.min(
-                                            otherCell.getEnergy(),
-                                            Math.min(
-                                                    MAX_ENERGY_ABSORBTION_TRANSFER,
-                                                    absorptionOutput * distFactorAbsorption
-                                            ));
-
-                            final double cellTransferAmountLimited;
-                            if ((calcCell.getEnergy() + otherCellTransferAmountLimit) > calcCell.getMaxEnergy()) {
-                                cellTransferAmountLimited = calcCell.getMaxEnergy() - calcCell.getEnergy();
-                            } else {
-                                cellTransferAmountLimited = otherCellTransferAmountLimit;
-                            }
-                            calcCell.setEnergy(calcCell.getEnergy() + cellTransferAmountLimited);
-                            otherCell.setEnergy(otherCell.getEnergy() - cellTransferAmountLimited);
-                        }
-                        // --- Delivery ---
-                        final double deliveryOutput = sensor.getEnergyDelivery();
-                        if ((deliveryOutput > 0.0D) && (calcCell.getEnergy() > MIN_ENERGY_FOR_TRANSFER)) {
-                            final double cellTransferAmountLimit =
-                                        Math.min(
-                                                calcCell.getEnergy(),
-                                                Math.min(
-                                                        MAX_ENERGY_DELIVERY_TRANSFER,
-                                                        deliveryOutput * distFactorDelivery
-                                            ));
-                            final double otherCellTransferAmountLimited;
-                            if ((otherCell.getEnergy() + cellTransferAmountLimit) > otherCell.getMaxEnergy()) {
-                                otherCellTransferAmountLimited = otherCell.getMaxEnergy() - otherCell.getEnergy();
-                            } else {
-                                otherCellTransferAmountLimited = cellTransferAmountLimit;
-                            }
-                            calcCell.setEnergy(calcCell.getEnergy() - otherCellTransferAmountLimited);
-                            otherCell.setEnergy(otherCell.getEnergy() + otherCellTransferAmountLimited);
-                        }
-                    }
-                }
+    /**
+     * Delivery shares energy above 0.1; absorption can take the donor's last energy.
+     * Commands are linear in output [0,1], distance attenuation and simulation time.
+     * Scarce donor budgets and receiver space are shared proportionally between requests.
+     * Received energy becomes available for onward transfer on the next step.
+     */
+    public static void processEnergyTransfers(List<Cell> cells, Environment environment, double deltaTime) {
+        if (!Double.isFinite(deltaTime) || deltaTime < 0) throw new IllegalArgumentException("Invalid transfer time step");
+        if (deltaTime == 0 || cells.isEmpty()) return;
+        var budgets = new IdentityHashMap<Cell, Budget>(cells.size());
+        for (Cell cell : cells) budgets.put(cell, new Budget(cell));
+        List<Transfer> transfers = new ArrayList<>();
+        for (Cell cell : cells) {
+            Budget own = budgets.get(cell);
+            for (SensorActor sensor : cell.getSensorActors()) {
+                if (!(sensor.getSensedCell() instanceof Cell target) || target == cell
+                        || !(sensor.getSensedActor() instanceof SensorActor actor) || actor.getParentCell() != target) continue;
+                Budget other = budgets.get(target);
+                if (other == null) continue;
+                double delivery = sensor.getEnergyDelivery(), absorption = sensor.getEnergyAbsorption();
+                if (!(delivery > 0) && !(absorption > 0)) continue;
+                // Missing geometry must not act as a zero-distance connection.
+                if (sensor.getCachedPosition() == null || actor.getCachedPosition() == null) continue;
+                double distance = sensor.getCachedPosition().getShortestDirectionWithWrapAround(
+                        actor.getCachedPosition(), environment.getWidth(), environment.getHeight()).length();
+                double radius = SensorActorForceCellCalcService.calcSensorRadius(target.getRadiusSize(), target.getSensorActors().size());
+                double normDistance = radius > 0 ? Math.min(distance / radius, 1) : 0;
+                double strength = cell.getRadiusSize() / SimulationConfig.getInstance().getCellMaxRadiusSize();
+                double deliveryFactor = 1 - (1 - SimulationConfig.CELL_ENERGY_DELIVERY_FACTOR_FAR) * normDistance * strength;
+                double absorptionFactor = 1 - (1 - SimulationConfig.CELL_ENERGY_ABSORPTION_FACTOR_FAR) * normDistance * strength;
+                request(transfers, own, other, DELIVERY_PER_SECOND * delivery * deliveryFactor * deltaTime, true);
+                request(transfers, other, own, ABSORPTION_PER_SECOND * absorption * absorptionFactor * deltaTime, false);
             }
         }
+        // First enforce the voluntary delivery reserve across ALL ports.
+        for (Transfer t : transfers) {
+            if (t.delivery) t.amount *= scale(Math.max(0, t.donor.energy - DELIVERY_RESERVE), t.donor.delivery);
+            t.donor.outgoing += t.amount;
+        }
+        // Absorption and delivery compete for the same finite donor energy.
+        for (Transfer t : transfers) {
+            t.amount *= scale(t.donor.energy, t.donor.outgoing);
+            t.receiver.incoming += t.amount;
+        }
+        // Receiver room uses the same snapshot: no order-dependent same-step relaying.
+        for (Transfer t : transfers) {
+            double amount = t.amount * scale(Math.max(0, t.receiver.cell.getMaxEnergy() - t.receiver.energy), t.receiver.incoming);
+            t.donor.delta -= amount;
+            t.receiver.delta += amount;
+        }
+        for (Budget b : budgets.values()) b.cell.setEnergy(b.energy + b.delta);
+    }
+
+    private static double scale(double available, double requested) {
+        return requested > 0 ? Math.min(1, available / requested) : 0;
+    }
+    private static void request(List<Transfer> transfers, Budget donor, Budget receiver, double amount, boolean delivery) {
+        if (donor.energy <= (delivery ? DELIVERY_RESERVE : 0)
+                || receiver.energy >= receiver.cell.getMaxEnergy()) return;
+        if (amount > 0 && Double.isFinite(amount)) transfers.add(new Transfer(donor, receiver, amount, delivery));
     }
 }
