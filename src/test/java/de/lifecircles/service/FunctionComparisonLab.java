@@ -56,7 +56,13 @@ final class FunctionComparisonLab {
             grid.build(world.getCellList());world.update(DT,grid,policy);
             for(Cell cell:world.getCellList()) {
                 int state=cell.getCellState()&7;double[] out=commands(cell);counts[state]++;
-                for(int j=0;j<OUTPUTS;j++){sum[state][j]+=out[j];squares[state][j]+=out[j]*out[j];}
+                double inverseCount=1.0/counts[state];
+                // Welford: constant commands remain bit-identical, without cancellation in E[x²]-E[x]².
+                for(int j=0;j<OUTPUTS;j++) {
+                    double delta=out[j]-sum[state][j];
+                    sum[state][j]+=delta*inverseCount;
+                    squares[state][j]+=delta*(out[j]-sum[state][j]);
+                }
             }
             if(world.getCellList().size()>=2000)throw new IllegalStateException("Calibration population cap reached");
         }
@@ -64,8 +70,7 @@ final class FunctionComparisonLab {
         for(int state=0;state<8;state++) {
             if(counts[state]>0) {
                 for(int j=0;j<OUTPUTS;j++) {
-                    sum[state][j]/=counts[state];
-                    rms[state]+=Math.max(0,squares[state][j]/counts[state]-sum[state][j]*sum[state][j]);
+                    rms[state]+=Math.max(0,squares[state][j]/counts[state]);
                 }
                 rms[state]=Math.sqrt(rms[state]/OUTPUTS);
             } else {

@@ -12,7 +12,8 @@ class FunctionComparisonControlsTest {
     @AfterEach void restore(){NeuralNetwork.setRandom(previous);}
     Cell constant() {
         var n=new NeuralNetwork(new ValuesNeuronValueFunctionFactory(),CellFactory.calcInputCount(12),new int[0],FunctionComparisonLab.OUTPUTS,0,0);
-        for(var output:n.getOutputNeuronArr())output.setBias(0,0);
+        for(var output:n.getOutputNeuronArr())output.setBias(0,-.8);
+        for(int i=0;i<12;i++)n.getOutputNeuronArr()[1+i*ActorOutputFeature.values().length+ActorOutputFeature.FORCE.ordinal()].setBias(0,0);
         for(int i=0;i<12;i++)for(var feature:new ActorOutputFeature[]{ActorOutputFeature.REPRODUCTION_DESIRE,ActorOutputFeature.ENERGY_DELIVERY,ActorOutputFeature.ENERGY_ABSORPTION})
             n.getOutputNeuronArr()[1+i*ActorOutputFeature.values().length+feature.ordinal()].setBias(0,-20);
         return new Cell(new Vector2D(100,100),10,new CellBrain(n));
@@ -20,6 +21,9 @@ class FunctionComparisonControlsTest {
     @Test void constantControlHasNoArtificialLiveFrozenAdvantage() {
         Cell genome=constant();var free=new BrainEnergyCosts(0,0);
         var profiles=FunctionComparisonLab.calibrate(genome,free,60);
+        var reference=FunctionComparisonLab.founder(genome,new Vector2D(300,339),0);
+        assertArrayEquals(FunctionComparisonLab.commands(reference),profiles.mean()[0],0);
+        assertEquals(0,profiles.rms()[0],0);
         var live=FunctionComparisonLab.run(genome,free,null,992000,120,null);
         var frozen=FunctionComparisonLab.run(genome,free,profiles.mean(),992000,120,null);
         assertEquals(live.cellSeconds(),frozen.cellSeconds(),1e-12);

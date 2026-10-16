@@ -36,6 +36,11 @@ Für nicht beobachtete Zustände werden 64 kanonische Entscheidungen eines neuen
 Gründers mit diesem Zustand verwendet. Deren Befehle sind eine Ersatzvorgabe,
 keine im Kalibrierlauf beobachteten Mittelwerte. Samplezahlen und Streuungen
 werden in `profiles.csv` dokumentiert.
+Mittelwert und Varianz werden online mit Welfords Verfahren bestimmt. Dadurch
+bleiben vollständig konstante Ausgaben bitgleich, und die Varianz ist exakt null.
+Die zuvor verwendete Summen-/Quadratsummenformel erzeugte bei langen Reihen
+konstanter Werte numerische Scheinstreuung; die damit begonnenen Teilserien
+werden separat aufbewahrt und nicht mit der korrigierten Serie vermischt.
 
 Im Vergleich laufen die Gehirne in beiden Varianten normal weiter. In `frozen`
 werden direkt nach dem Denken sämtliche Ausgaben durch das feste Muster des
