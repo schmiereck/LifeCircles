@@ -52,7 +52,34 @@ public class EnvironmentPanel extends VBox {
             config.setSunSpectralZones(next);
             sourceType.setDisable(next);
         });
-        VBox content = new VBox(8, title, rate, value, hint, new Label("Sun energy form:"), sourceType, zones);
+        Label seasonValue = new Label();
+        Slider seasonLength = new Slider(0, 60, config.getSeasonDuration() / 60);
+        seasonLength.setId("season-length");
+        seasonLength.setShowTickLabels(true);
+        seasonLength.setShowTickMarks(true);
+        seasonLength.setMajorTickUnit(15);
+        seasonLength.setPrefWidth(270);
+        Slider winter = new Slider(0, 100, config.getWinterIntensity() * 100);
+        winter.setId("winter-intensity");
+        winter.setShowTickLabels(true);
+        winter.setShowTickMarks(true);
+        winter.setMajorTickUnit(25);
+        winter.setPrefWidth(270);
+        Runnable refreshSeason = () -> seasonValue.setText(config.getSeasonDuration() == 0 ? "Seasons off (0 = constant summer)"
+                : String.format("Year: %.1f min · winter light %.0f %% of summer", config.getSeasonDuration() / 60,
+                        config.getWinterIntensity() * 100));
+        seasonLength.valueProperty().addListener((obs, old, next) -> {
+            config.setSeasonDuration(next.doubleValue() * 60);
+            refreshSeason.run();
+        });
+        winter.valueProperty().addListener((obs, old, next) -> {
+            config.setWinterIntensity(next.doubleValue() / 100);
+            refreshSeason.run();
+        });
+        refreshSeason.run();
+        VBox content = new VBox(8, title, rate, value, hint, new Label("Sun energy form:"), sourceType, zones,
+                new Label("Year length (simulation minutes):"), seasonLength,
+                new Label("Winter light (% of summer):"), winter, seasonValue);
         content.setPadding(new Insets(5));
         getChildren().add(new TitledPane("Environment", content));
     }

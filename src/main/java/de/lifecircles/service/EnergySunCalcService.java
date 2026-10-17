@@ -21,6 +21,9 @@ public class EnergySunCalcService {
     private final boolean indexed;
     private final ProjectedSunIndex<Cell> cellIndex = new ProjectedSunIndex<>();
     private final ProjectedSunIndex<Blocker> blockerIndex = new ProjectedSunIndex<>();
+    /** Fraction of the current year in [0,1); 0 is mid-summer. Advancing by phase keeps live length changes smooth. */
+    private double seasonPhase;
+    private volatile double currentIntensity = 1;
 
     public EnergySunCalcService() {
         this(new Random());
@@ -35,6 +38,15 @@ public class EnergySunCalcService {
         this.random = random;
         this.indexed = indexed;
     }
+
+    /** Smooth year: 1 at mid-summer (phase 0), winter factor at mid-winter (phase 0.5). */
+    public static double seasonFactor(double phase, double winterIntensity) {
+        return winterIntensity + (1 - winterIntensity) * (.5 + .5 * Math.cos(2 * Math.PI * phase));
+    }
+
+    /** Day/night times season factor of the last calculated step, in [0,1]. */
+    public double getCurrentIntensity() { return currentIntensity; }
+    public double getSeasonPhase() { return seasonPhase; }
 
     private static double circleHitT(Cell cell, double rayStartX, double rayStartY, double dirX, double dirY) {
         Vector2D c = cell.getPosition();
@@ -71,9 +83,14 @@ public class EnergySunCalcService {
         // Update time in the day/night cycle
         this.timeInCycle = (this.timeInCycle + deltaTime) % SimulationConfig.SUN_DAY_NIGHT_CYCLE_DURATION;
 
-        // Calculate intensity based on sinusoidal function
-        final double intensity = (Math.sin((this.timeInCycle / SimulationConfig.SUN_DAY_NIGHT_CYCLE_DURATION) * Math.PI) *
-                (1.0D - SimulationConfig.SUN_NIGHT_INTENSITY)) + SimulationConfig.SUN_NIGHT_INTENSITY;
+        final double seasonDuration = config.getSeasonDuration();
+        if (seasonDuration > 0) this.seasonPhase = (this.seasonPhase + deltaTime / seasonDuration) % 1.0D;
+
+        // Calculate intensity based on sinusoidal function, scaled by the season
+        final double intensity = ((Math.sin((this.timeInCycle / SimulationConfig.SUN_DAY_NIGHT_CYCLE_DURATION) * Math.PI) *
+                (1.0D - SimulationConfig.SUN_NIGHT_INTENSITY)) + SimulationConfig.SUN_NIGHT_INTENSITY)
+                * (seasonDuration > 0 ? seasonFactor(this.seasonPhase, config.getWinterIntensity()) : 1.0D);
+        this.currentIntensity = intensity;
 
         // Accumulate ray count based on pixel spacing to maintain constant density
         // Adjust rays per second based on intensity

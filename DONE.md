@@ -16,12 +16,21 @@
 
 Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erledigt markieren.
 
+## Jahreszeiten und Sonnenkurve (17.10.2026)
+
+- Jahresfaktor auf die Tag/Nacht-Intensität, GUI-Regler für Jahreslänge und Winterlicht.
+- Populationsdiagramm mit angebotener Sonnenenergie; Abtastung in Simulationszeit.
+- 204 gezielte Tests aller heutigen Energie-/Umweltschritte erfolgreich,
+  `target/energy-environment-tests.log`. Siehe `JAHRESZEITEN.md`.
+- Hinweis: Ein `mvn clean` hat ältere lokale Protokolle in `target/` entfernt; die in
+  den Dokumenten genannten Messwerte bleiben die Referenz.
+
 ## Spektralzonen und Energieanzeige (17.10.2026)
 
 - `SunSpectrum`: vier Zonen, 15-%-Mischstreifen, periodisch; Form je Strahl am
   Auftreffpunkt. GUI-Schalter, farbige Strahlen und Zonenhintergrund.
 - Zelldialog: kleine Vorräte/Kapazitäten wissenschaftlich statt `0,00` (`024df5c`).
-- 50 gezielte Tests erfolgreich, `target/spectral-zones-tests.log`. Siehe `SPEKTRALZONEN.md`.
+- 50 gezielte Tests erfolgreich, `target/energy-environment-tests.log` (Neulauf). Siehe `SPEKTRALZONEN.md`.
 
 ## Basale Notatmung gegen Gehirnpause-Sackgasse (17.10.2026)
 
@@ -32,7 +41,7 @@ Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erl
   über `SimulationStepPolicy.useBasalBrainRespiration()`. `EnergyConversion`: Umkehrmutation.
 - Neue `BasalBrainRespirationTest` (Bilanz, Ratenlimit, Grundumsatzschutz, Ausnahmen,
   Enzymvorteil, Umkehrmutation); Pausentests laufen explizit ohne Notatmung.
-  146 gezielte Tests erfolgreich, Protokoll `target/basal-respiration-tests.log`.
+  146 gezielte Tests erfolgreich, Protokoll `target/energy-environment-tests.log` (Neulauf).
 
 ## Performance der Gehirnfinanzierung (17.10.2026)
 

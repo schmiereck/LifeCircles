@@ -256,7 +256,10 @@ public class Environment {
         phaseStart = profiler.start();
 
         // Update statistics
-        StatisticsManagerService.getInstance().update(this.cellList);
+        // Offered sunlight energy per simulation second, comparable across rate and season changes.
+        final double sunPower = policy.useSunlight() ? this.energySunCalcService.getCurrentIntensity()
+                * (this.width / this.config.getSunRaySpacingPx()) * this.config.getSunRayRate() * this.config.getEnergyPerRay() : 0;
+        StatisticsManagerService.getInstance().update(this.cellList, sunPower, deltaTime);
         profiler.finish(SimulationProfiler.Phase.STATISTICS, phaseStart);
     }
 

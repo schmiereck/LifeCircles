@@ -74,6 +74,21 @@ public class SimulationConfig {
     private volatile double sunRayRate = 10.0;
     private volatile EnergyType sunEnergyType = EnergyType.PRIMARY;
 
+    /** Season length in simulation seconds; 0 switches seasons off (constant summer). */
+    private volatile double seasonDuration = 0;
+    /** Sun intensity factor at mid-winter, relative to mid-summer, in [0,1]. */
+    private volatile double winterIntensity = .25;
+    public double getSeasonDuration() { return seasonDuration; }
+    public void setSeasonDuration(double seconds) {
+        if (!Double.isFinite(seconds) || seconds < 0) throw new IllegalArgumentException("Season duration must be finite and >= 0");
+        seasonDuration = seconds;
+    }
+    public double getWinterIntensity() { return winterIntensity; }
+    public void setWinterIntensity(double factor) {
+        if (!Double.isFinite(factor) || factor < 0 || factor > 1) throw new IllegalArgumentException("Winter intensity must be in [0,1]");
+        winterIntensity = factor;
+    }
+
     /** Location-dependent forms (see SunSpectrum) instead of the single sun energy type. */
     private volatile boolean sunSpectralZones = false;
     public boolean isSunSpectralZones() { return sunSpectralZones; }

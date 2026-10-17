@@ -8,8 +8,10 @@
   ggf. höhere Gehirnkosten oder schwächere Notatmung als Parameterstudie).
 - [ ] GUI-Gegenprobe des Nutzers auf zweitem Rechner (neue Welt und festgefahrener Altlauf).
 - [x] Spektralzonen 000 | 001 | 010 | 100 mit schmalen Mischstreifen, GUI-schaltbar.
-- [ ] Gesamtintensität der Sonne in der Populationskurve.
-- [ ] Jahreszeiten, in der GUI regelbar (Dauer, Wintertiefe).
+- [x] Gesamtintensität der Sonne in der Populationskurve.
+- [x] Jahreszeiten, in der GUI regelbar (Dauer, Wintertiefe).
+- [ ] Prüfen, ob Winter Vorratshaltung in Fremdformen belohnt; dafür ggf. neuronale
+  Drosselung der Enzymaktivität (siehe `IDEAS.md`).
 - [ ] Langlauf mit Zonen: Fremdformen in lebenden Zellen und Überresten, Nischen an Grenzen.
 
 - [x] Performance-Regression nach funktionaler Gehirnenergie untersuchen und seriellen Engpass beheben.

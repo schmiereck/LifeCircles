@@ -90,7 +90,7 @@ in einer einzelnen Mutation unerreichbar (die Quelle durfte nie gleich dem alten
 
 Default-NONE-Welt, `NeuralNetwork`-Seed 4711, dt 1/60, 600 Simulationssekunden,
 gleicher Code mit Umkehrmutation, nur die Notatmung per Policy an/aus. Temporärer
-Messtest, nicht eingecheckt; Protokoll `target/respiration-none-probe-600s.log`.
+Messtest, nicht eingecheckt; Lokales Protokoll durch `mvn clean` entfernt; Werte unten.
 „Enzym“ zählt Zellen, deren exprimierte Route aktiv 000 → 001 ist. Ein Lauf je Variante.
 
 | t | ohne: lebend / pausiert / Enzym | mit: lebend / pausiert / Enzym |

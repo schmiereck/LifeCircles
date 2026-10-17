@@ -24,4 +24,4 @@ lebende Zellen meist volle Fremdvorräte und hinterlassen sie beim Tod als Aas.
 
 Tests: `SunSpectrumTest` (reine Zonen, lineare periodische Mischung, Häufigkeit der
 Mischformen, Bilanz absorbierter Strahlen je Zone, Einheitsmodus unverändert);
-50 gezielte Sonnen-/Snapshot-/GUI-Tests, Protokoll `target/spectral-zones-tests.log`.
+50 gezielte Sonnen-/Snapshot-/GUI-Tests, Protokoll `target/energy-environment-tests.log` (Neulauf).

@@ -5,6 +5,9 @@ Aktualisiert: 17.10.2026. Branch `master`.
 - Spektralzonen der Sonne (GUI-Schalter): 000 | 001 | 010 | 100 mit schmalen linearen
   Mischstreifen, Form am Auftreffpunkt. Zelldialog zeigt kleine Vorräte sichtbar an.
   Noch kein Langlauf zur Aas-/Nischenbildung. Siehe `SPEKTRALZONEN.md`.
+- Jahreszeiten (GUI: Jahreslänge 0–60 min, Winterlicht 0–100 %, Standard aus) und
+  angebotene Sonnenenergie als gelbe Kurve im Populationsdiagramm; Historie jetzt in
+  Simulationszeit (5 s × 300 = 25 min). 204 gezielte Tests. Siehe `JAHRESZEITEN.md`.
 
 - Evolutionäre Sackgasse der 001-Gehirnenergie behoben: angeborene basale Notatmung
   000 → 001 (nur Bedarfslücke, 40 %, max. 0,003 000/s, Grundumsatz geschützt) plus

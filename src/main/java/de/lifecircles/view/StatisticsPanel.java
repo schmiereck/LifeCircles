@@ -21,6 +21,7 @@ public class StatisticsPanel extends HBox {
     private final Label totalLabel = new Label();
     private final Label performanceLabel = new Label();
     private final Label clustersLabel = new Label();
+    private final Label sunLabel = new Label();
     private final Canvas populationGraph;
     
     // Parameter zur Steuerung der Updategeschwindigkeit
@@ -49,10 +50,12 @@ public class StatisticsPanel extends HBox {
         totalLabel.setStyle("-fx-text-fill: black;");
         performanceLabel.setStyle("-fx-text-fill: black;");
         clustersLabel.setStyle("-fx-text-fill: black;");
+        sunLabel.setStyle("-fx-text-fill: black;");
         
         countsBox.getChildren().addAll(
             totalLabel,
             performanceLabel,
+            sunLabel,
             clustersLabel
         );
 
@@ -62,7 +65,8 @@ public class StatisticsPanel extends HBox {
 
         // Population graph
         populationGraph.setStyle("-fx-background-color: #1a1a1a;");
-        TitledPane graphPane = new TitledPane("Population History", populationGraph);
+        TitledPane graphPane = new TitledPane(String.format("Population (white) · Sun (yellow) · last %.0f min",
+                StatisticsManagerService.HISTORY_SIZE * StatisticsManagerService.SAMPLE_INTERVAL_SECONDS / 60), populationGraph);
         graphPane.setCollapsible(true);
         graphPane.setStyle("-fx-text-fill: black;");
 
@@ -114,6 +118,7 @@ public class StatisticsPanel extends HBox {
     private void updateLabels() {
         totalLabel.setText(String.format("Living: %d | Remains: %d", statistics.getTotalPopulation(), statistics.getRemainsPopulation()));
         performanceLabel.setText(String.format("Update Time: %.1f ms", statistics.getAverageUpdateTime()));
+        sunLabel.setText(String.format("Sun: %.3f energy/s offered", statistics.getSunPower()));
     }
 
     private void updateGraph() {
@@ -141,12 +146,15 @@ public class StatisticsPanel extends HBox {
             gc.strokeLine(0, y, populationGraph.getWidth(), y);
         }
 
-        // Draw total population line on top
+        // Sun on its own scale (top = largest value in the window), population on top
+        var sunHistory = statistics.getSunPowerHistory();
+        double sunMax = sunHistory.stream().mapToDouble(Double::doubleValue).max().orElse(0);
+        if (sunMax > 0) drawHistoryLine(gc, sunHistory, sunMax, Color.rgb(230, 200, 40, .8));
         drawHistoryLine(gc, totalHistory, maxValue, Color.WHITE);
     }
 
-    private void drawHistoryLine(GraphicsContext gc, java.util.List<Integer> history, int maxValue, Color color) {
-        if (history.isEmpty()) return;
+    private void drawHistoryLine(GraphicsContext gc, java.util.List<? extends Number> history, double maxValue, Color color) {
+        if (history.size() < 2) return;
 
         gc.setStroke(color);
         gc.setLineWidth(2);
@@ -156,10 +164,10 @@ public class StatisticsPanel extends HBox {
 
         gc.beginPath();
         for (int i = 0; i < history.size(); i++) {
-            Integer value = history.get(i);
+            Number value = history.get(i);
             if (Objects.nonNull(value)) {
                 double x = i * xStep;
-                double y = height * (1 - (double) value / maxValue);
+                double y = height * (1 - value.doubleValue() / maxValue);
                 if (i == 0) {
                     gc.moveTo(x, y);
                 } else {
