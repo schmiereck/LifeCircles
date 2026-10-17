@@ -27,6 +27,14 @@ class FunctionalBrainEnergyTest {
     void step(Environment world,double dt) {
         var grid=new SpatialGridPartitioningStrategy(world.getWidth(),world.getHeight(),60);grid.build(world.getCellList());world.update(dt,grid);
     }
+    /** Pause semantics in isolation: no innate 000 -> 001 respiration may rescue the brain. */
+    static final SimulationStepPolicy NO_RESPIRATION=new SimulationStepPolicy() {
+        @Override public boolean keepRemains() { return true; }
+        @Override public boolean useBasalBrainRespiration() { return false; }
+    };
+    void stepWithoutRespiration(Environment world,double dt) {
+        var grid=new SpatialGridPartitioningStrategy(world.getWidth(),world.getHeight(),60);grid.build(world.getCellList());world.update(dt,grid,NO_RESPIRATION);
+    }
     @Test void separatesMaintenanceFromFullyFundedActualWorkAndChargesStorageOnce() {
         var brain=new CountingBrain();Cell cell=cell(brain);cell.setEnergy(.5);cell.setEnergy(EnergyType.SECONDARY,.2);
         Environment world=new Environment(300,300);world.addCell(cell);step(world,.25);
@@ -39,7 +47,7 @@ class FunctionalBrainEnergyTest {
         cell.setEnergy(EnergyType.SECONDARY,BrainEnergyCosts.DEFAULT.cost(10,4,.1));
         var actor=cell.getSensorActors().getFirst();actor.setEnergyAbsorption(.7);actor.setEnergyDelivery(1);actor.setReproductionDesire(1);actor.setForceStrength(10);
         cell.setIsGrowing(true);double growth=cell.getGrowthAge(),radius=cell.getRadiusSize();
-        Environment world=new Environment(300,300);world.addCell(cell);step(world,.1);
+        Environment world=new Environment(300,300);world.addCell(cell);stepWithoutRespiration(world,.1);
         assertEquals(0,brain.decisions);assertTrue(cell.isBrainPaused());assertEquals(.7,actor.getEnergyAbsorption());
         assertEquals(0,actor.getEnergyDelivery());assertEquals(0,actor.getReproductionDesire());assertEquals(0,actor.getForceStrength());
         assertEquals(growth,cell.getGrowthAge());assertEquals(radius,cell.getRadiusSize());
@@ -48,23 +56,23 @@ class FunctionalBrainEnergyTest {
     }
     @Test void storageShortageDrainsOnlyRemainingBrainReserveWithoutTouchingOtherForms() {
         var brain=new CountingBrain();Cell cell=cell(brain);cell.setEnergy(EnergyType.SECONDARY,1e-12);cell.setEnergy(EnergyType.RGB_111,.3);
-        Environment world=new Environment(300,300);world.addCell(cell);step(world,1);
+        Environment world=new Environment(300,300);world.addCell(cell);stepWithoutRespiration(world,1);
         assertEquals(0,brain.decisions);assertEquals(0,cell.getEnergy(EnergyType.SECONDARY));assertEquals(.3,cell.getEnergy(EnergyType.RGB_111));
         assertEquals(1-SimulationConfig.ENERGY_DECAY_RATE,cell.getEnergy(),1e-14);
     }
     @Test void conversionCanWakeAPausedBrainWithoutAnyDecisionInBetween() {
         var brain=new CountingBrain();Cell cell=cell(brain);cell.setEnergy(.5);Environment world=new Environment(300,300);world.addCell(cell);
-        step(world,.1);assertTrue(cell.isBrainPaused());assertEquals(0,brain.decisions);
+        stepWithoutRespiration(world,.1);assertTrue(cell.isBrainPaused());assertEquals(0,brain.decisions);
         cell.setEnergyConversion(new EnergyConversion(EnergyType.PRIMARY,EnergyType.SECONDARY,1));
-        double before=cell.getTotalEnergy();step(world,.1);
+        double before=cell.getTotalEnergy();stepWithoutRespiration(world,.1);
         assertFalse(cell.isBrainPaused());assertEquals(1,brain.decisions);
         assertEquals(before-.002-SimulationConfig.ENERGY_DECAY_RATE*.1-BrainEnergyCosts.DEFAULT.cost(10,3,.1),cell.getTotalEnergy(),1e-14);
     }
     @Test void ordinaryAbsorptionCanWakeAStarvedBrainAndEmptyTheDonorCorpse() {
         var brain=new CountingBrain();Cell cell=cell(brain);cell.getSensorActors().getFirst().setEnergyAbsorption(1);
-        Environment world=new Environment(300,300);world.addCell(cell);step(world,1.0/60);assertTrue(cell.isBrainPaused());
+        Environment world=new Environment(300,300);world.addCell(cell);stepWithoutRespiration(world,1.0/60);assertTrue(cell.isBrainPaused());
         Cell food=new Cell(new Vector2D(122,100),10,new PhysicsRegressionTest.ConstantBrain());food.setEnergy(0);food.setEnergy(EnergyType.SECONDARY,.001);food.becomeRemains();
-        world.addCell(food);step(world,1.0/60);
+        world.addCell(food);stepWithoutRespiration(world,1.0/60);
         assertEquals(1,brain.decisions);assertFalse(cell.isBrainPaused());assertEquals(0,food.getTotalEnergy());assertEquals(1,world.getCellList().size());
     }
     @Test void zeroFeesExplicitlyAllowFreeBrainsAndEachAuthorizationCanBeUsedOnlyOnce() {
@@ -98,17 +106,17 @@ class FunctionalBrainEnergyTest {
             Map<String,Double> memory=network.getNeuralNet().getNeuronActivations(network.getNeuronValueFunction());
             double[] counters=Arrays.stream(network.getHiddenLayerArr()).mapToDouble(Layer::getActivationCounter).toArray();
             cell.setEnergy(EnergyType.SECONDARY,0);Environment world=new Environment(300,300);world.addCell(cell);
-            for(int i=0;i<5;i++)step(world,1.0/60);
+            for(int i=0;i<5;i++)stepWithoutRespiration(world,1.0/60);
             assertTrue(cell.isBrainPaused());assertEquals(memory,network.getNeuralNet().getNeuronActivations(network.getNeuronValueFunction()));
             assertArrayEquals(counters,Arrays.stream(network.getHiddenLayerArr()).mapToDouble(Layer::getActivationCounter).toArray());
-            cell.setEnergy(EnergyType.SECONDARY,.2);step(world,1.0/60);assertFalse(cell.isBrainPaused());assertTrue(brain.getProccessedSynapses()>0);
+            cell.setEnergy(EnergyType.SECONDARY,.2);stepWithoutRespiration(world,1.0/60);assertFalse(cell.isBrainPaused());assertTrue(brain.getProccessedSynapses()>0);
         } finally {NeuralNetwork.setRandom(previous);}
     }
     @Test void pausedStepsNeverBillLastDecisionsWorkAgain() {
         var brain=new CountingBrain();Cell cell=cell(brain);cell.setEnergy(EnergyType.SECONDARY,.01);
-        Environment world=new Environment(300,300);world.addCell(cell);step(world,.1);assertEquals(1,brain.decisions);
+        Environment world=new Environment(300,300);world.addCell(cell);stepWithoutRespiration(world,.1);assertEquals(1,brain.decisions);
         double reserve=BrainEnergyCosts.DEFAULT.workCost(4);cell.setEnergy(EnergyType.SECONDARY,reserve);
-        for(int i=0;i<3;i++)step(world,.1);
+        for(int i=0;i<3;i++)stepWithoutRespiration(world,.1);
         assertEquals(1,brain.decisions);assertTrue(cell.isBrainPaused());
         assertEquals(reserve-3*BrainEnergyCosts.DEFAULT.storageCost(10,.1),cell.getEnergy(EnergyType.SECONDARY),1e-20);
     }

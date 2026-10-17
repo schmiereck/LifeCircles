@@ -2,6 +2,12 @@
 
 Aktualisiert: 17.10.2026. Branch `master`.
 
+- Evolutionäre Sackgasse der 001-Gehirnenergie behoben: angeborene basale Notatmung
+  000 → 001 (nur Bedarfslücke, 40 %, max. 0,003 000/s, Grundumsatz geschützt) plus
+  Richtungsumkehr als Enzymmutation. Vererbte Enzyme bleiben doppelt so effizient.
+  146 gezielte Tests. Kurzer Default-NONE-Vergleich (Seed 4711, 120 s): ohne Notatmung
+  441/543 Gehirne pausiert, mit Notatmung 88/1669. Details: `FUNKTIONALE_ENERGIE.md`.
+
 - Performance-Regression der neuen Gehirnfinanzierung behoben: unabhängige
   Finanzierungsprüfungen und Eingabeerzeugung parallel, unveränderte Phasenbarrieren.
   Lokaler Vergleich mit 2000 Zellen: 59 → 35 ms/Schritt, identische Zustandsprüfsumme

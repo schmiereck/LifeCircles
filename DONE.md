@@ -16,6 +16,17 @@
 
 Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erledigt markieren.
 
+## Basale Notatmung gegen Gehirnpause-Sackgasse (17.10.2026)
+
+- Ursache: Sonne nur 000, keine aktive Route 000 → 001, Teilung halbiert 001; pausierte
+  Gehirne teilen nicht, also entsteht auch kein Enzym. Aus 001 → 000 war 000 → 001
+  in einer Mutation unerreichbar.
+- `BrainEnergyService`: Bedarfslücke aus freiem 000 mit 40 %, max. 0,003/s; schaltbar
+  über `SimulationStepPolicy.useBasalBrainRespiration()`. `EnergyConversion`: Umkehrmutation.
+- Neue `BasalBrainRespirationTest` (Bilanz, Ratenlimit, Grundumsatzschutz, Ausnahmen,
+  Enzymvorteil, Umkehrmutation); Pausentests laufen explizit ohne Notatmung.
+  146 gezielte Tests erfolgreich, Protokoll `target/basal-respiration-tests.log`.
+
 ## Performance der Gehirnfinanzierung (17.10.2026)
 
 - Serielle Vorabprüfung aus `daf8fb0` als zusätzlichen Engpass nachgewiesen;

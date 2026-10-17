@@ -24,6 +24,8 @@ public record EnergyConversion(EnergyType source, EnergyType target, double capa
         if(random.nextDouble()<rate) nextCapacity=Math.clamp(capacity+random.nextDouble(-1,1)*strength,0,1);
         if(random.nextDouble()<rate) nextSource=differentType(random,nextTarget);
         if(random.nextDouble()<rate) nextTarget=differentType(random,nextSource);
+        // Reversing a reaction is one step, so the inert 001 -> 000 start can reach 000 -> 001.
+        if(random.nextDouble()<rate) { EnergyType swapped=nextSource;nextSource=nextTarget;nextTarget=swapped; }
         return new EnergyConversion(nextSource,nextTarget,nextCapacity);
     }
     private static EnergyType differentType(Random random,EnergyType excluded) {

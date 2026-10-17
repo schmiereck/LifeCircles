@@ -66,7 +66,9 @@ Quelle, Ziel und Kapazität jedes der acht Einträge können unabhängig mit der
 effektiven Mutationsrate variieren, auch wenn der Eintrag im Elternteil inaktiv war.
 Kapazität ändert sich um einen gleichverteilten Wert in ± effektiver Mutationsstärke,
 begrenzt auf [0,1]. Quelle/Ziel bleiben stets verschieden. Elternfaktoren und
-Teilungsmultiplikator gelten wie bei der Gehirnmutation. Kapazität null kann positiv
+Teilungsmultiplikator gelten wie bei der Gehirnmutation. Ein vierter Genort kehrt
+mit derselben Rate die Richtung um (Quelle ↔ Ziel), seit 17.10.2026; so wird aus der
+inaktiven Startroute 001 → 000 in einem Schritt 000 → 001. Kapazität null kann positiv
 werden und später wieder auf null sinken.
 
 Biologische Nachkommen und Trainingsnachkommen erben das Merkmal. Unmutierte Eliten,

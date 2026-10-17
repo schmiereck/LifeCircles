@@ -48,6 +48,44 @@ Die Speichergebühr gilt auch während der Pause. Reicht 001 nicht einmal dafür
 wird nur der noch vorhandene Rest abgebucht; es gibt keine negativen Vorräte oder
 Schulden. Alte Arbeitszähler werden während einer Pause nicht erneut verrechnet.
 
+## Basale Notatmung 000 → 001
+
+Umgesetzt am 17.10.2026 nach einem festgefahrenen NONE-Lauf: Sonne liefert nur 000,
+Gründer- und Altgenome besitzen keine aktive Route 000 → 001, und jede Teilung halbiert
+den 001-Vorrat. Nach wenigen Generationen pausierten fast alle Gehirne; ohne Gehirn
+gibt es keine Teilung, ohne Teilung keine Mutation, die ein Enzym hätte entwickeln
+können. Eine evolutionäre Sackgasse, auch in neu initialisierten Welten.
+
+Jede lebende Zelle besitzt deshalb eine angeborene, nicht vererbte und nicht
+mutierende Notatmung. Sie ist keine Enzymroute und belegt nicht den einen aktiven
+Stoffwechselplatz; sie ist Teil der Gehirnfinanzierung in `BrainEnergyService.prepare`:
+
+- Nur bei Bedarf: gedeckt wird höchstens die Lücke zwischen vorhandenem 001 und
+  Speichergebühr plus Arbeitsreserve des nächsten Zyklus. Kein Vorratsaufbau.
+- Halbe Enzymausbeute: 40 % statt 80 %; 60 % des verbrauchten 000 dissipieren.
+- Langsam: höchstens 0,003 000 pro Simulationssekunde (gleich dem Grundumsatz), also
+  maximal 0,0012 001/s. Ein Standardgründer (1286 Synapsen) braucht im Messlauf
+  etwa 0,00088 001/s und wird so knapp vollständig versorgt. Größere oder aktivere
+  Gehirne sparen über mehrere Schritte an und denken nur in Teilen der Schritte.
+- Der 000-Anteil für den Grundumsatz dieses Schritts bleibt unangetastet. Das Gehirn
+  kann den Körper nicht im selben Schritt verhungern lassen; unterhalb davon pausiert es wie bisher.
+- Keine Notatmung für Überreste, für kostenlose Gehirne (keine Lücke) und für
+  Episoden ohne Stoffwechsel (`useEnergyConversion() == false`, z. B. HIGH_POSITION3).
+  `SimulationStepPolicy.useBasalBrainRespiration()` folgt standardmäßig diesem Schalter.
+- Sie läuft vor dem Einfrieren der Eingaben; Sensoren sehen den neuen 001-Stand.
+
+Vorteil des vererbten Enzyms bleibt messbar und ist getestet: 000 → 001 mit 80 %
+kostet je Gehirnenergie halb so viel 000, liefert bis zu 0,08 001/s (66-fache
+Notatmung), füllt bei Überschuss einen Vorrat bis 1 als Puffer und erlaubt damit
+größere Gehirne oder Pausenfreiheit bei hohem Gehirnkostenregler. Aasfresser können
+001 direkt aufnehmen. Selektion auf Stoffwechsel bleibt also wirksam, nur nicht mehr
+als Alles-oder-nichts-Hürde vor jeder weiteren Evolution.
+
+Dazu kann eine Enzymroute jetzt per Mutation ihre Richtung umkehren (eigener Genort,
+gleiche effektive Rate wie Quelle/Ziel/Kapazität). Die inaktive Startroute 001 → 000
+erreicht damit in einem Schritt 000 → 001; vorher war diese Route aus der Startroute
+in einer einzelnen Mutation unerreichbar (die Quelle durfte nie gleich dem alten Ziel werden).
+
 ## Pause und Erholung
 
 - Keine neue neuronale Ausführung und keine neuen Inputs in das pausierende Gehirn.
@@ -57,7 +95,8 @@ Schulden. Alte Arbeitszähler werden während einer Pause nicht erneut verrechne
   Wachstumsfortschritt werden nicht zurückgesetzt. Biologisches Alter läuft weiter.
 - Zuletzt gewählte Absorptionsports bleiben verfügbar. Es gibt keinen neu erfundenen
   kostenlosen Allport-Saugmechanismus. Bei zuvor ausgeschalteter Absorption benötigt
-  die Zelle etwa Sonnenenergie 001 oder eigene automatische Umwandlung zur Erholung.
+  die Zelle etwa Sonnenenergie 001, eigene automatische Umwandlung oder die basale
+  Notatmung aus freiem 000 zur Erholung.
 - Sonne, Austausch, automatische Enzyme und passive Physik laufen weiter. Sobald
   genügend 001 vorhanden ist, folgt der nächste bezahlte Zyklus aus dem alten Gedächtnis.
 - Zelldetails zeigen `Gehirn pausiert (001)`. Eine Pause allein macht die Zelle nicht
@@ -95,7 +134,8 @@ unter derselben Simulationssperre. Direkte alte Weltaufbauten werden spätestens
 ersten Weltschritt umgestellt. Reines Lesen einer Archivdatei erhält ihre Originalwerte.
 Die Versionsmarkierung wird gespeichert, sodass erneutes Laden/Speichern/Weiterlaufen
 keine wiederholte Umverteilung auslöst. Alte Genome erhalten keine kostenlose passende
-Enzymroute und können deshalb unter den neuen Bedingungen eine Denkpause erreichen.
+Enzymroute; sie werden seit der basalen Notatmung langsam und verlustreich aus 000
+versorgt und wachen in bereits festgefahrenen Welten im nächsten Schritt wieder auf.
 
 ## Trainings und frühere Studien
 

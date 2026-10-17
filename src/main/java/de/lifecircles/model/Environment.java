@@ -126,6 +126,7 @@ public class Environment {
         for(Cell cell:cellList)cell.migrateEnergyUsage();
         // One immutable price snapshot for every cell in this step, including live GUI changes.
         final de.lifecircles.service.BrainEnergyCosts brainCosts = policy.brainEnergyCosts();
+        final boolean basalRespiration = policy.useBasalBrainRespiration();
         long phaseStart = profiler.start();
         // Calculate sun energy rays
         this.sunRayList.clear();
@@ -181,7 +182,7 @@ public class Environment {
         // Per-cell financing does not read neighbors. Finish every debit/output pause
         // before generating any inputs, so sensors still see one consistent state.
         IntStream.range(0,cellList.size()).parallel().forEach(i ->
-                canThink[i]=BrainEnergyService.prepare(cellList.get(i),deltaTime,brainCosts));
+                canThink[i]=BrainEnergyService.prepare(cellList.get(i),deltaTime,brainCosts,basalRespiration));
         profiler.finish(SimulationProfiler.Phase.BRAIN_FUNDING, phaseStart);
         phaseStart = profiler.start();
         // Freeze all sensed inputs before any worker changes energy, age or outputs.

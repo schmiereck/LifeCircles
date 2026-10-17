@@ -56,7 +56,9 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
   Alte Einzel-Enzyme in alle acht Einträge migrieren. Keine feste Kopplung an Zellfarben.
 - Verbrauch: 000 Erhalt/Tod, 001 Gehirn. Kein produktiver Denkzyklus ohne vorherige
   Finanzierungsprüfung; tatsächliche Arbeit einmal abrechnen. Pause erhält Gedächtnis
-  und Takte, Aufnahme/Enzyme ermöglichen Erholung. Gründerbudgets 80:20 teilen;
+  und Takte, Aufnahme/Enzyme ermöglichen Erholung. Angeborene Notatmung deckt nur die
+  Gehirnlücke aus freiem 000 (40 %, max. 0,003/s), nie den Grundumsatz des Schritts;
+  vererbte Enzyme müssen besser bleiben. Gründerbudgets 80:20 teilen;
   biologische Geburten teilen vorhandene Vorräte und denken erst im bezahlten Schritt.
   Altpopulationen via energyUsageVersion einmalig konservativ umstellen; tote Vorräte
   unverändert lassen. HIGH_POSITION3 hat ausdrücklich freie Gehirne (Mechanikversuch).

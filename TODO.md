@@ -2,6 +2,10 @@
 
 ## Aktueller Auftrag
 
+- [x] Gehirnpause-Sackgasse (nur 000 aus Sonne, keine 000→001-Route) durch basale Notatmung und Umkehrmutation lösen.
+- [ ] 600-s-NONE-Vergleich mit/ohne Notatmung auswerten (Enzymanteil, Pausen, Population).
+- [ ] GUI-Gegenprobe des Nutzers auf zweitem Rechner (neue Welt und festgefahrener Altlauf).
+
 - [x] Performance-Regression nach funktionaler Gehirnenergie untersuchen und seriellen Engpass beheben.
 - [ ] Wirkung des Fixes im gemeldeten langsamen 2500er-Lauf nach GUI-Neustart nachmessen.
 

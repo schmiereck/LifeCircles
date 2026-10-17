@@ -14,6 +14,8 @@ public interface SimulationStepPolicy {
     default boolean keepRemains() { return false; }
     default boolean useSunlight() { return true; }
     default boolean useEnergyConversion() { return true; }
+    /** Innate on-demand 000 -> 001 brain respiration; follows the metabolism switch by default. */
+    default boolean useBasalBrainRespiration() { return useEnergyConversion(); }
     default BrainEnergyCosts brainEnergyCosts() { return SimulationConfig.getInstance().getBrainEnergyCosts(); }
     default void afterThinking(Cell cell) {}
     default boolean isDead(Cell cell) {

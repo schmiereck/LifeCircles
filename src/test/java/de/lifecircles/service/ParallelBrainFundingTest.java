@@ -46,6 +46,7 @@ class ParallelBrainFundingTest {
             public boolean useSunlight(){return false;}
             public boolean allowReproduction(Cell cell){return false;}
             public BrainEnergyCosts brainEnergyCosts(){return BrainEnergyCosts.DEFAULT;}
+            public boolean useBasalBrainRespiration(){return false;}
         });
         for(Cell cell:world.getCellList()) {
             var brain=(ObservingBrain)cell.getBrain();
@@ -64,10 +65,10 @@ class ParallelBrainFundingTest {
         var brain=new CensusBrain();var cell=new Cell(new Vector2D(50,50),10,brain);
         assertTrue(BrainEnergyService.prepare(cell,.1,BrainEnergyCosts.FREE));
         assertEquals(0,brain.storageCalls);assertEquals(0,brain.workCalls);
-        assertFalse(BrainEnergyService.prepare(cell,.1,BrainEnergyCosts.DEFAULT));
+        assertFalse(BrainEnergyService.prepare(cell,.1,BrainEnergyCosts.DEFAULT,false));
         assertEquals(1,brain.storageCalls);assertEquals(0,brain.workCalls);
         cell.setEnergy(EnergyType.SECONDARY,.2);
-        assertTrue(BrainEnergyService.prepare(cell,.1,BrainEnergyCosts.DEFAULT));
+        assertTrue(BrainEnergyService.prepare(cell,.1,BrainEnergyCosts.DEFAULT,false));
         assertEquals(2,brain.storageCalls);assertEquals(1,brain.workCalls);
     }
 }

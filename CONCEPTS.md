@@ -15,6 +15,10 @@
   Gründerbudget 80:20 aufteilen, keine zusätzliche Anfangsenergie. Alte lebende
   Populationen einmalig ohne Energiegewinn umstellen, Überreste nicht umverteilen.
   Wachstums-/Kraftkosten sind ein späterer Schritt. Siehe `FUNKTIONALE_ENERGIE.md`.
+- Keine Alles-oder-nichts-Hürde vor Evolution: eine angeborene, nicht vererbte
+  Notatmung 000 → 001 (40 %, max. 0,003 000/s, nur Bedarfslücke, Grundumsatz geschützt)
+  hält Gehirne langsam am Laufen. Vererbte Enzyme (80 %, bis 0,1/s, Vorrat) bleiben
+  der Vorteil, auf den selektiert wird. Enzymrouten können per Mutation umkehren.
 - Stoffwechsel: ein gemeinsames genetisches Programm enthält je eine mutierbare
   Route pro Spezialisierung 0..7. Nur eine Route je Zelle aktiv, gewählt durch dieselben
   drei Zellzustandsbits wie bisherige Specialization und Sensoren. Das Gehirn bestimmt
