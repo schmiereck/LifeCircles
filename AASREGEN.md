@@ -63,4 +63,12 @@ dass zufällige Netze diese Lösung zuverlässig oder schnell evolvieren. Ein st
 Absorber kann diese erste Aufgabe lösen; aktive Suche, Ressourcenumwandlung und
 mehrzellige Kooperation benötigen spätere, anspruchsvollere Szenarien.
 
-Start bisher über `--trainMode=CARRION_RAIN`; GUI-Auswahl folgt im nächsten Schritt.
+## GUI
+
+Oben `New…` → `CARRION_RAIN` → `Erstellen` → `Start`.
+Der Dialog ersetzt die bisherige Welt erst beim Erstellen; Abbrechen lässt sie weiterlaufen.
+Auch NONE, HIGH_ENERGY, HIGH_POSITION(2/3) und TEST_A/B/C sind wählbar.
+Die neue Welt beginnt pausiert, mit neuer Kamera, ohne alte Auswahl und mit neuer
+Statistik. Gehirn-, Lebensdauer- und Sonnenregler bleiben eingestellt. Die Sonderregel
+„keine Sonne“ ist im Dialog und in der Statuszeile des Aastrainings sichtbar.
+Alternativ ist weiterhin `--trainMode=CARRION_RAIN` beim Programmstart möglich.

@@ -235,4 +235,9 @@ public class SimulationView extends Pane {
     public double getFps() {
         return fps;
     }
+
+    public void resetWorldView() {
+        if(cellDetailView!=null) cellDetailView.close();
+        camera.reset();
+    }
 }

@@ -16,7 +16,9 @@ Aktualisiert: 17.10.2026. Branch `master`.
   keine Sonnenaufnahme/Teilung; normale Absorption leert Restvorräte bis zur Entfernung.
   Trainingsepisoden erzeugen standardmäßig keine Überreste. Siehe `UEBERRESTE.md`.
 - GUI zeigt alle Energien in Zelldetails, Überreste mit Kreuz und getrenntem Zähler.
-- 222 gezielte Tests erfolgreich; aktuelle Codeschritte: `fa1060b`, `367d33f`.
+- Achtenergie-/Überrestestand: 222 gezielte Tests erfolgreich (`fa1060b`, `367d33f`).
+  Aktueller Aasregen-/GUI-Schritt: 70 gezielte Tests erfolgreich, einschließlich
+  Trainings-, Import-, Überrest-, Snapshot-, Dialog- und Nebenläufigkeitsprüfungen.
 - Energieverbrauch und Überleben verwenden bisher Primärenergie. Weitere Zuordnungen
   und Umwandlungen sind noch nicht festgelegt.
 - Austauschbefehle wirken weiterhin gemeinsam auf alle Formen, mit getrennten Bilanzen.
@@ -25,6 +27,8 @@ Aktualisiert: 17.10.2026. Branch `master`.
   als begrenzte Futterzufuhr; Überlebenszeit und Aufnahme werden selektiert.
   Kontrollnetz überlebt 120 s, ohne Aufnahme Tod nach 60 s. Siehe `AASREGEN.md`.
 - Szenariowechsel im Berechnungsdienst ersetzt Welt, Raster und Snapshot unter einer
-  Sperre und startet pausiert. GUI-Auswahl folgt als eigener Schritt.
+  Sperre und startet pausiert. Oben „New…“ mit erklärter Szenarioauswahl; auch NONE
+  und bestehende Trainings-/Testaufbauten sind ohne Codeänderung wählbar.
+- „Show Energy“ bleibt ein Primärenergiebalken; nur die Zelldetails zeigen alle acht Formen.
 - Vorangegangene Kosten-/Funktionsstudien bewerten frühere Modellstände und ersetzen
   keinen neuen Ökologietest. Siehe `FUNKTIONS_ERGEBNISSE.md` und `NONE_LANGZEIT_ERGEBNISSE.md`.

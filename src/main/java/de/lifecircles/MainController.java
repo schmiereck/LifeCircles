@@ -4,17 +4,14 @@ import de.lifecircles.model.Environment;
 import de.lifecircles.service.CalculationService;
 import de.lifecircles.service.FileService;
 import de.lifecircles.service.SimulationConfig;
+import de.lifecircles.service.trainStrategy.TrainMode;
+import javafx.scene.control.*;
 import de.lifecircles.view.ConfigPanel;
 import de.lifecircles.view.EnvironmentPanel;
 import de.lifecircles.view.CellPanel;
 import de.lifecircles.view.SimulationView;
 import de.lifecircles.view.StatisticsPanel;
 import de.lifecircles.view.ViewConfig;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -64,6 +61,8 @@ public class MainController extends BorderPane {
     }
 
     private ToolBar createToolbar() {
+        Button newButton = new Button("New…");
+        newButton.setId("new-simulation-button");
         Button startButton = new Button("Start");
         Button pauseButton = new Button("Pause");
         Button resetButton = new Button("Reset");
@@ -71,6 +70,14 @@ public class MainController extends BorderPane {
         Button saveBestButton = new Button("Save best as");
         Button loadButton = new Button("Load");
         Button loadMergeButton = new Button("Load & Merge");
+
+        newButton.setOnAction(e -> createScenarioDialog().showAndWait().ifPresent(mode -> {
+            calculationService.newSimulation(mode);
+            simulationView.resetWorldView();
+            startButton.setDisable(false); pauseButton.setDisable(true);
+            if(getScene().getWindow() instanceof javafx.stage.Stage stage)
+                stage.setTitle("LifeCircles Simulation - " + mode);
+        }));
 
         startButton.setOnAction(e -> {
             calculationService.start();
@@ -90,9 +97,8 @@ public class MainController extends BorderPane {
             startButton.setDisable(false);
             pauseButton.setDisable(true);
 
-            this.calculationService.stop();
-
             this.calculationService.resetSimulation();
+            simulationView.resetWorldView();
         });
 
         saveButton.setOnAction(e -> {
@@ -192,11 +198,31 @@ public class MainController extends BorderPane {
         HBox speedLayout = new HBox(10, speedSlider, sliderValueLabel);
 
         return new ToolBar(
-            startButton, pauseButton, resetButton,
+            newButton, startButton, pauseButton, resetButton,
             saveButton, saveBestButton, loadButton, loadMergeButton,
             new Label(" | "),
             speedLabel, speedLayout //speedSlider
         );
+    }
+
+    /** Building the dialog has no side effects: Cancel keeps the current run intact. */
+    Dialog<TrainMode> createScenarioDialog() {
+        Dialog<TrainMode> dialog=new Dialog<>();
+        dialog.setTitle("Neue Simulation");
+        dialog.setHeaderText("Szenario wählen. Die aktuelle Welt wird beim Erstellen ersetzt.");
+        if(getScene()!=null && getScene().getWindow()!=null) dialog.initOwner(getScene().getWindow());
+        ComboBox<TrainMode> scenarios=new ComboBox<>(); scenarios.setId("new-scenario-choice");
+        // EVOLUTIONARY is only a legacy alias of NONE, not a separate implemented strategy.
+        for(TrainMode mode:TrainMode.values()) if(mode!=TrainMode.EVOLUTIONARY) scenarios.getItems().add(mode);
+        scenarios.setValue(simulationConfig.getTrainMode()==TrainMode.EVOLUTIONARY?TrainMode.NONE:simulationConfig.getTrainMode());
+        Label description=new Label(scenarios.getValue().description());
+        description.setWrapText(true); description.setPrefWidth(450);
+        scenarios.valueProperty().addListener((o,old,value)->description.setText(value.description()));
+        dialog.getDialogPane().setContent(new VBox(12,scenarios,description,new Label("Die neue Welt startet pausiert. Weiter mit Start.")));
+        ButtonType create=new ButtonType("Erstellen",ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(create,ButtonType.CANCEL);
+        dialog.setResultConverter(button->button==create?scenarios.getValue():null);
+        return dialog;
     }
 
     private HBox createStatusBar() {

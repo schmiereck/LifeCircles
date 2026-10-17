@@ -14,6 +14,10 @@ public class Camera {
     private final double maxScale = 10.0;
 
     public Camera() {
+        reset();
+    }
+
+    public void reset() {
         this.scale = 0.92D / SimulationConfig.getInstance().getScaleSimulation();
         this.position = new Vector2D(0, 0);
     }

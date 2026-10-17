@@ -37,3 +37,8 @@ Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erl
 - Fünf Szenariotests einschließlich Fluchtausschluss; zwei Tests für Wechsel/Reset,
   Pause und wiederholtes Start/Stop. Welt-/Raster-/Snapshotwechsel erfolgt atomar.
 - Details und Grenzen des ersten Curriculums in `AASREGEN.md`.
+- `33c48d8`: Aasregen und sicherer Szenariowechsel im Berechnungsdienst.
+- GUI: „New…“-Dialog mit Szenariobeschreibung, unverändertem Lauf bei Abbrechen,
+  pausierter neuer Welt, aktualisiertem Fenstertitel und zurückgesetzter Kamera/Details.
+- Abschlussprüfung: 70 Tests erfolgreich; Protokoll lokal
+  `target/carrion-scenario-complete-tests.log`. Kein langer Evolutionslauf gestartet.
