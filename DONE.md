@@ -16,6 +16,12 @@
 
 Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erledigt markieren.
 
+## Langlauf Zonen ± Jahreszeiten (17.10.2026)
+
+- `ZoneSeasonStudyTest` (opt-in), zwei Läufe à 2700 s. Ergebnisse und Grenzen in
+  `ZONEN_JAHRESZEITEN_ERGEBNISSE.md`.
+- `InheritanceRegressionTest` an Geburt ohne kostenlosen Gedanken angepasst (`8047f5b`).
+
 ## Neuronale Enzymdrossel (17.10.2026)
 
 - `OutputLayout`, `NeuralNet.ensureOutputCount`, `CellBrain.ensureEnzymeOutput`,

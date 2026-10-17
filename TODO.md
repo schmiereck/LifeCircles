@@ -14,7 +14,10 @@
 - [ ] Prüfen, ob Winter Vorratshaltung in Fremdformen belohnt und die Drossel genutzt wird.
 - [x] Veralteten Test `InheritanceRegressionTest.reproductionUsesChildStateBeforeFirstThink…`
   an „kein kostenloser Geburtsgedanke“ angepasst: prüft die Eingaben der ersten Entscheidung.
-- [ ] Langlauf mit Zonen: Fremdformen in lebenden Zellen und Überresten, Nischen an Grenzen.
+- [x] Langlauf mit Zonen: Fremdformen in lebenden Zellen und Überresten, Nischen an Grenzen.
+- [ ] Folgelauf mit milderem Winter (50 %) bzw. längerem Jahr; Drossel/Jahreszeit erneut prüfen.
+- [ ] Ursache der leeren 010-Zone klären (Zonenreihenfolge, Geländeblocker, Zuwanderung).
+- [ ] Warum wird Aas mit Fremdformen kaum gefressen? Aasfresser-Nische gezielt prüfen.
 
 - [x] Performance-Regression nach funktionaler Gehirnenergie untersuchen und seriellen Engpass beheben.
 - [ ] Wirkung des Fixes im gemeldeten langsamen 2500er-Lauf nach GUI-Neustart nachmessen.
