@@ -2,6 +2,7 @@ package de.lifecircles.service;
 
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.Environment;
+import de.lifecircles.model.EnergyType;
 import de.lifecircles.model.SensorActor;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -18,7 +19,7 @@ public class EnergyTransferCellCalcService {
         final Cell cell;
         final double energy;
         double delivery, outgoing, incoming, delta;
-        Budget(Cell cell) { this.cell = cell; energy = cell.getEnergy(); }
+        Budget(Cell cell, EnergyType energyType) { this.cell = cell; energy = cell.getEnergy(energyType); }
     }
     private static final class Transfer {
         final Budget donor, receiver;
@@ -47,8 +48,17 @@ public class EnergyTransferCellCalcService {
     public static void processEnergyTransfers(List<Cell> cells, Environment environment, double deltaTime) {
         if (!Double.isFinite(deltaTime) || deltaTime < 0) throw new IllegalArgumentException("Invalid transfer time step");
         if (deltaTime == 0 || cells.isEmpty()) return;
+        processEnergyType(cells, environment, deltaTime, EnergyType.PRIMARY);
+        // Existing single-energy populations do not pay for a second transfer pass.
+        for (Cell cell : cells) if (cell.getEnergy(EnergyType.SECONDARY) > 0) {
+            processEnergyType(cells, environment, deltaTime, EnergyType.SECONDARY);
+            break;
+        }
+    }
+
+    private static void processEnergyType(List<Cell> cells, Environment environment, double deltaTime, EnergyType energyType) {
         var budgets = new IdentityHashMap<Cell, Budget>(cells.size());
-        for (Cell cell : cells) budgets.put(cell, new Budget(cell));
+        for (Cell cell : cells) budgets.put(cell, new Budget(cell, energyType));
         List<Transfer> transfers = new ArrayList<>();
         for (Cell cell : cells) {
             Budget own = budgets.get(cell);
@@ -68,8 +78,8 @@ public class EnergyTransferCellCalcService {
                 double strength = cell.getRadiusSize() / SimulationConfig.getInstance().getCellMaxRadiusSize();
                 double deliveryFactor = 1 - (1 - SimulationConfig.CELL_ENERGY_DELIVERY_FACTOR_FAR) * normDistance * strength;
                 double absorptionFactor = 1 - (1 - SimulationConfig.CELL_ENERGY_ABSORPTION_FACTOR_FAR) * normDistance * strength;
-                request(transfers, own, other, DELIVERY_PER_SECOND * delivery * deliveryFactor * deltaTime, true);
-                request(transfers, other, own, ABSORPTION_PER_SECOND * absorption * absorptionFactor * deltaTime, false);
+                request(transfers, own, other, DELIVERY_PER_SECOND * delivery * deliveryFactor * deltaTime, true, energyType);
+                request(transfers, other, own, ABSORPTION_PER_SECOND * absorption * absorptionFactor * deltaTime, false, energyType);
             }
         }
         // First enforce the voluntary delivery reserve across ALL ports.
@@ -84,19 +94,19 @@ public class EnergyTransferCellCalcService {
         }
         // Receiver room uses the same snapshot: no order-dependent same-step relaying.
         for (Transfer t : transfers) {
-            double amount = t.amount * scale(Math.max(0, t.receiver.cell.getMaxEnergy() - t.receiver.energy), t.receiver.incoming);
+            double amount = t.amount * scale(Math.max(0, t.receiver.cell.getMaxEnergy(energyType) - t.receiver.energy), t.receiver.incoming);
             t.donor.delta -= amount;
             t.receiver.delta += amount;
         }
-        for (Budget b : budgets.values()) b.cell.setEnergy(b.energy + b.delta);
+        for (Budget b : budgets.values()) b.cell.setEnergy(energyType, b.energy + b.delta);
     }
 
     private static double scale(double available, double requested) {
         return requested > 0 ? Math.min(1, available / requested) : 0;
     }
-    private static void request(List<Transfer> transfers, Budget donor, Budget receiver, double amount, boolean delivery) {
+    private static void request(List<Transfer> transfers, Budget donor, Budget receiver, double amount, boolean delivery, EnergyType energyType) {
         if (donor.energy <= (delivery ? DELIVERY_RESERVE : 0)
-                || receiver.energy >= receiver.cell.getMaxEnergy()) return;
+                || receiver.energy >= receiver.cell.getMaxEnergy(energyType)) return;
         if (amount > 0 && Double.isFinite(amount)) transfers.add(new Transfer(donor, receiver, amount, delivery));
     }
 }

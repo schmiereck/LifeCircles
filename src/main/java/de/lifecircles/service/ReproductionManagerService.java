@@ -54,9 +54,10 @@ public class ReproductionManagerService {
         Vector2D childPosition = wrap(parentCell.getPosition().add(direction.multiply(
                 parentCell.getRadiusSize() + config.getCellMinGrowRadiusSize() * 2)), environment);
         if (!isFreePosition(environment, childPosition, config.getCellMinGrowRadiusSize())) return null;
-        double energy = parentCell.getEnergy() * chosenActor.getReproductionEnergyShareOutput();
-        Cell child = createMutatedChild(config, environment, parentCell, childPosition, chosenActor.getReproductionState(), energy, divisionMultiplier, birthRandom);
-        parentCell.setEnergy(parentCell.getEnergy() - energy);
+        double share = chosenActor.getReproductionEnergyShareOutput();
+        Cell child = createMutatedChild(config, environment, parentCell, childPosition, chosenActor.getReproductionState(), share, divisionMultiplier, birthRandom);
+        for (EnergyType type : EnergyType.ALL)
+            parentCell.setEnergy(type, parentCell.getEnergy(type) - child.getEnergy(type));
         return child;
     }
 
@@ -100,7 +101,7 @@ public class ReproductionManagerService {
         return position.wrapped(environment.getWidth(), environment.getHeight());
     }
 
-    private static Cell createMutatedChild(SimulationConfig config, Environment environment, Cell parent, Vector2D position, int state, double energy, double divisionMultiplier, Random birthRandom) {
+    private static Cell createMutatedChild(SimulationConfig config, Environment environment, Cell parent, Vector2D position, int state, double energyShare, double divisionMultiplier, Random birthRandom) {
         // The parent's factors control this birth's genetic mutation, for both
         // biological reproduction and training. Changes to the child's own
         // factors below affect its future descendants, not its current genome.
@@ -120,7 +121,8 @@ public class ReproductionManagerService {
         Random traitRandom = birthRandom == null ? random : birthRandom;
         child.setType(new CellType(mutateValue(type.getRed(), colorStrength, traitRandom),
                 mutateValue(type.getGreen(), colorStrength, traitRandom), mutateValue(type.getBlue(), colorStrength, traitRandom)));
-        child.setEnergy(energy);
+        // Biological division partitions every reserve; training founders remain fresh episodes.
+        for (EnergyType energyType : EnergyType.ALL) child.setEnergy(energyType, parent.getEnergy(energyType) * energyShare);
         child.setGeneration(parent.getGeneration() + 1);
         child.setCellState(state);
         calcActiveLayersByState(child);
