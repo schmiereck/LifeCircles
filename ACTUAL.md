@@ -2,6 +2,10 @@
 
 Aktualisiert: 17.10.2026. Branch `master`.
 
+- Neuronale Enzymdrossel: angehängter Ausgang 133, Aktivität = clamp(2 × Ausgang, 0, 1),
+  skaliert den Enzymdurchsatz. Alte Netze: unverbundener Ausgang = exakt volle Aktivität,
+  alte Ausgänge bitgenau unverändert. Jetzt 316/134. Siehe `ENERGIEUMWANDLUNG.md`.
+
 - Spektralzonen der Sonne (GUI-Schalter): 000 | 001 | 010 | 100 mit schmalen linearen
   Mischstreifen, Form am Auftreffpunkt. Zelldialog zeigt kleine Vorräte sichtbar an.
   Noch kein Langlauf zur Aas-/Nischenbildung. Siehe `SPEKTRALZONEN.md`.
@@ -56,7 +60,7 @@ Aktualisiert: 17.10.2026. Branch `master`.
   enthält acht vererbte, mutierbare Umwandlungsregeln, je eine pro „Specialization“
   (Zellzustand 0..7). Aktiv ist nur die zur Zelle passende Regel: maximal 0,1/s mal
   Kapazität, 80 % Ausbeute. Neue Genome sind inaktiv; alte Einzelregeln gelten nach
-  Migration unverändert in allen acht Rollen. Keine neuen neuronalen Kanäle.
+  Migration unverändert in allen acht Rollen. Aktivität seit Enzymdrossel neuronal regelbar.
   Eigene/Nachbarsensoren sehen die abgeschlossene Umwandlung; Überreste reagieren nicht.
   Siehe `ENERGIEUMWANDLUNG.md` und `FUNKTIONALE_ENERGIE.md`.
 - Austauschbefehle wirken weiterhin gemeinsam auf alle Formen, mit getrennten Bilanzen.

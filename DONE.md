@@ -16,6 +16,14 @@
 
 Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erledigt markieren.
 
+## Neuronale Enzymdrossel (17.10.2026)
+
+- `OutputLayout`, `NeuralNet.ensureOutputCount`, `CellBrain.ensureEnzymeOutput`,
+  `Cell.enzymeThrottle`; Umwandlungsdurchsatz × Aktivität; Anzeige im Zelldialog.
+- `EnzymeThrottleTest` (Abbildung, bitgenaue Migration, Gründer, Altdatei, Durchsatz,
+  feste Controller, Pause). 262 von 263 gezielten Tests erfolgreich,
+  `target/enzyme-throttle-tests.log`; der eine Fehlschlag bestand schon vorher (siehe TODO).
+
 ## Jahreszeiten und Sonnenkurve (17.10.2026)
 
 - Jahresfaktor auf die Tag/Nacht-Intensität, GUI-Regler für Jahreslänge und Winterlicht.

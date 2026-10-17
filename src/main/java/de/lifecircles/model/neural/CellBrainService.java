@@ -226,6 +226,10 @@ public class CellBrainService {
 
             index += ActorOutputFeature.values().length;
         }
+
+        // Appended channel; shorter fixed/legacy controllers leave the current activity unchanged.
+        final int enzymeIndex = OutputLayout.enzymeActivity(actorList.size());
+        if (outputs.length > enzymeIndex) cell.setEnzymeActivity(OutputLayout.activityFromOutput(outputs[enzymeIndex]));
     }
 
     /**

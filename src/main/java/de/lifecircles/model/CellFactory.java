@@ -32,8 +32,8 @@ public abstract class CellFactory {
         return EnergyInputLayout.inputCount(sensorActorCount);
     }
 
+    /** Construction size; Cell appends the enzyme throttle (OutputLayout) as a disconnected output. */
     public static int calcOutputCount(final int sensorActorCount) {
-        return GlobalOutputFeature.values().length +
-                (ActorOutputFeature.values().length * sensorActorCount);
+        return OutputLayout.legacyOutputCount(sensorActorCount);
     }
 }

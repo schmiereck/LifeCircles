@@ -13,10 +13,11 @@ public final class EnergyConversionService {
     public static double convert(Cell cell,double dt) {
         if(!Double.isFinite(dt) || dt<0) throw new IllegalArgumentException("Invalid conversion time step");
         EnergyConversion conversion=cell.getEnergyConversion();
-        if(dt==0 || cell.isRemains() || !conversion.active()) return 0;
+        double activity=cell.getEnzymeActivity();
+        if(dt==0 || cell.isRemains() || !conversion.active() || activity==0) return 0;
         double source=cell.getEnergy(conversion.source()), target=cell.getEnergy(conversion.target());
         double room=Math.max(0,cell.getMaxEnergy(conversion.target())-target);
-        double consumed=Math.min(source,Math.min(MAX_INPUT_PER_SECOND*conversion.capacity()*dt,room/EFFICIENCY));
+        double consumed=Math.min(source,Math.min(MAX_INPUT_PER_SECOND*conversion.capacity()*activity*dt,room/EFFICIENCY));
         if(consumed<=0) return 0;
         cell.setEnergy(conversion.source(),source-consumed);
         cell.setEnergy(conversion.target(),target+consumed*EFFICIENCY);

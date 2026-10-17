@@ -38,10 +38,10 @@ unteren drei Bits wie bei den vorhandenen Zustands-Sensoren.
 - Umgewandelt werden gespeicherte Vorräte, auch wenn sie bereits länger in der Zelle
   liegen. Die Einschränkung ist das einzelne Enzym samt Rate und Ausbeute. Eine reine
   Umwandlung beim Aufnahmeereignis wurde für diesen Schritt nicht gewählt.
-- Der Prozess ist automatisch innerhalb der gewählten Spezialisierung. Das Gehirn
-  steuert Aufnahme, Abgabe und die Spezialisierung seiner Kinder; es gibt noch keine
-  zusätzliche kontinuierliche Enzymaktivitätssteuerung. Keine neuen neuronalen
-  Ausgänge und keine Umdeutung alter Ausgänge.
+- Der Prozess läuft automatisch innerhalb der gewählten Spezialisierung. Das Gehirn
+  steuert Aufnahme, Abgabe, die Spezialisierung seiner Kinder und seit 17.10.2026 die
+  Aktivität des exprimierten Enzyms (siehe „Neuronale Drosselung“). Alte Ausgänge
+  werden nicht umgedeutet.
 - Es gibt bisher keinen separaten Preis für Enzymsynthese oder das Vorhalten einer
   Kapazität; der reale Preis ist Quellverbrauch mit 20 % Umwandlungsverlust. Das ist
   eine erste experimentelle Regel, kein bereits austariertes Stoffwechselmodell.
@@ -80,7 +80,33 @@ Trainingsgründer erhalten weiterhin die ausdrücklich definierten Episodenreser
 
 Die optionale Tabelle wird mit `.cells` gespeichert. Alte Dateien bleiben ladbar;
 vorhandene Einzelregeln werden erhalten, fehlende bleiben inaktiv. Keine zusätzliche Energie. Eingangs-/Ausgangs-
-dimensionen bleiben 316/133, ihre bisherigen Migrationen bleiben unverändert.
+dimensionen damals 316/133; seit der Enzymdrossel 316/134 (siehe unten).
+
+## Neuronale Drosselung
+
+Umgesetzt am 17.10.2026. Ein zusätzlicher Ausgang am **Ende** des Ausgangsvektors
+(Index 133 bei zwölf Aktoren, `OutputLayout`) regelt die Aktivität des gerade
+exprimierten Enzyms: `Aktivität = clamp(2 × Ausgang, 0, 1)`.
+
+- Ausgang ≥ 0,5 = volle Aktivität, darunter lineare Drosselung bis 0. Effektiver
+  Quellverbrauch: `0,1 × Kapazität × Aktivität` pro Sekunde, Ausbeute weiter 80 %.
+- Migration: Netze mit 133 Ausgängen erhalten beim Erzeugen/Laden einer Zelle ein
+  unverbundenes Sigmoid-Ausgangsneuron mit Bias 0, ohne Zufallszahlen zu verbrauchen.
+  Es liefert exakt 0,5, also unveränderte volle Aktivität. Alle 133 alten Ausgänge
+  bleiben bitgenau gleich (Test mit identischem Zwillingsnetz). Keine neuen Synapsen.
+- Neue Gründer werden in der bisherigen Größe gebaut und bekommen denselben unverbundenen
+  Ausgang; ihre Zufallsfolgen und Topologie bleiben gleich. Bias-Mutationen und
+  Zufallssynapsen erreichen den Ausgang wie jeden anderen, die Drossel ist evolvierbar.
+- Gespeichert als Drosselgrad `1 − Aktivität`; das Fehlen des Felds in alten `.cells`
+  bedeutet daher volle Aktivität. Neugeborene starten mit voller Aktivität und folgen
+  ab ihrer ersten bezahlten Entscheidung dem eigenen Netz.
+- Pausierte Gehirne behalten die zuletzt beschlossene Aktivität; Überreste wandeln
+  nicht um. Feste Controller mit nur 133 Werten ändern die Aktivität nicht.
+- Die basale Notatmung 000 → 001 ist kein Enzym und wird nicht gedrosselt.
+- Zelldetails zeigen die Aktivität neben Kapazität und Ausbeute.
+
+Zweck: Vorratshaltung über Winter und Zonengrenzen, z. B. Einlagern im Überfluss und
+Abschalten im Mangel, ohne ständig 000 in eine andere Form zu verlieren.
 
 ## Reihenfolge und Beobachtung
 

@@ -25,14 +25,15 @@
   bei der Teilung die Spezialisierung des Kindes; dieses erbt die gesamte Tabelle.
   Maximal 0,1 Quelle/s mal Kapazität, 80 % Ausbeute. Umwandlung vorhandener
   Speicher erfolgt automatisch, zeitlich begrenzt und vor allen Energiesensoren.
-  Neue Genome starten inaktiv, alte Einzelregeln gelten in allen Rollen; Überreste reagieren nicht. Details und noch
-  offene neuronale Regulation: `ENERGIEUMWANDLUNG.md`.
+  Neue Genome starten inaktiv, alte Einzelregeln gelten in allen Rollen; Überreste reagieren nicht.
+  Das Gehirn drosselt die Aktivität über einen angehängten Ausgang (≥ 0,5 = voll).
+  Details: `ENERGIEUMWANDLUNG.md`.
 - Energieformen der Umwelt dürfen ortsabhängig sein (Spektralzonen). Druck zur
   Spezialisierung soll möglichst aus der Umgebung kommen, nicht aus Zellsonderregeln.
 - Physik muss Wachstum, Kontakte, Rotation und periodische Ränder sauber begrenzen.
 - DNA-erhaltende Ausführung spart CPU; genetische Reserven bleiben erhalten.
 - Default-Gründer beginnen mit 48 versteckten Neuronen (24 gemeinsam + 3 × 8
-  Zustandsneuronen). 316 Sensor-/133 Ausgangsneuronen zählen zusätzlich. Das ist
+  Zustandsneuronen). 316 Sensor-/134 Ausgangsneuronen zählen zusätzlich. Das ist
   eine Anfangsgröße, keine Wachstumsgrenze; geladene/evolvierte DNA bleibt erhalten.
 - Experimente müssen Nutzen variabler Steuerung, Erwerb/Erhalt, Kosten und CPU-Zeit
   unterscheiden. Exakte Optimierung und neue Evolutionsregeln getrennt bewerten.

@@ -16,7 +16,7 @@ class CompactFounderBrainTest {
     @Test void defaultHasFortyEightHiddenNeuronsWithAllEnergyAndActuatorChannels() {
         Cell cell=CellFactory.createCell(new Vector2D(100,100),10);
         CellBrain brain=(CellBrain)cell.getBrain();
-        assertEquals(316,brain.getInputCount());assertEquals(133,brain.getNeuralNetwork().getNeuralNet().getOutputNeuronArr().length);
+        assertEquals(316,brain.getInputCount());assertEquals(134,brain.getNeuralNetwork().getNeuralNet().getOutputNeuronArr().length);
         assertEquals(48,hidden(brain));
         Layer[] layers=brain.getNeuralNetwork().getHiddenLayerArr();
         assertEquals(4,layers.length);

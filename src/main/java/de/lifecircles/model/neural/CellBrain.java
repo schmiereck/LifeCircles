@@ -50,6 +50,12 @@ public class CellBrain implements CellBrainInterface, Serializable {
                 this.network.getNeuronValueFunction(), hiddenSizingInputs / 4, stateHiddenLayerSynapseConnectivity);
     }
 
+    /** Old cell outputs get the appended enzyme throttle, disconnected so full activity is kept. */
+    public void ensureEnzymeOutput(int actors) {
+        if (network.getNeuralNet().getOutputNeuronArr().length == OutputLayout.legacyOutputCount(actors))
+            network.getNeuralNet().ensureOutputCount(network.getNeuronValueFunction(), OutputLayout.outputCount(actors));
+    }
+
     /** Old cell interfaces get new disconnected channels; unrelated small lab networks stay intact. */
     public void ensureEnergyInputs(int actors) {
         if (network.getNeuralNet().getInputCount() == EnergyInputLayout.legacyInputCount(actors)

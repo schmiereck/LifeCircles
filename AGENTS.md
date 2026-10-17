@@ -44,8 +44,9 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
   Umwandlung. Änderungen an DNA-Ein-/Ausgängen und Dateiformaten explizit migrieren.
 - Energie-Sensoren umfassen eigene **und benachbarte** Vorräte; neue Formen dort mitführen.
 - Sensorpositionen nicht still verschieben: Erweiterungen liegen im angehängten
-  `EnergyInputLayout`. Aktuell zwölf Aktoren: 316 Eingänge / 133 Ausgänge;
-  vorhandene Netze mit 213 oder 304 Eingängen werden ohne neue Synapsen migriert.
+  `EnergyInputLayout`, Ausgänge im angehängten `OutputLayout`. Aktuell zwölf Aktoren:
+  316 Eingänge / 134 Ausgänge (133 = Enzymdrossel); vorhandene Netze mit 213 oder 304
+  Eingängen bzw. 133 Ausgängen werden ohne neue Synapsen migriert.
 - Überreste sind normale `Cell`-Objekte mit festem Verhalten und Restreserven. Kein
   zusätzliches Materie-/Körpermaterialmodell. Sie verschwinden, wenn alle Vorräte leer sind.
 - Acht Energieformen entsprechend RGB-Bits 000 bis 111. Nur Komponenten 0 und 1;

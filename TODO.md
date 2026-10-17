@@ -10,8 +10,10 @@
 - [x] Spektralzonen 000 | 001 | 010 | 100 mit schmalen Mischstreifen, GUI-schaltbar.
 - [x] Gesamtintensität der Sonne in der Populationskurve.
 - [x] Jahreszeiten, in der GUI regelbar (Dauer, Wintertiefe).
-- [ ] Prüfen, ob Winter Vorratshaltung in Fremdformen belohnt; dafür ggf. neuronale
-  Drosselung der Enzymaktivität (siehe `IDEAS.md`).
+- [x] Neuronale Drosselung der Enzymaktivität (angehängter Ausgang, verlustfreie Migration).
+- [ ] Prüfen, ob Winter Vorratshaltung in Fremdformen belohnt und die Drossel genutzt wird.
+- [ ] Veralteten Test `InheritanceRegressionTest.reproductionUsesChildStateBeforeFirstThink…`
+  an „kein kostenloser Geburtsgedanke“ anpassen (schlug schon vor der Enzymdrossel fehl).
 - [ ] Langlauf mit Zonen: Fremdformen in lebenden Zellen und Überresten, Nischen an Grenzen.
 
 - [x] Performance-Regression nach funktionaler Gehirnenergie untersuchen und seriellen Engpass beheben.

@@ -1198,6 +1198,23 @@ public class NeuralNet implements Serializable {
         executionPlanUnneeded = false;
     }
 
+    /** Appends disconnected sigmoid outputs with bias 0 (exactly 0.5), without consuming the evolution RNG. */
+    void ensureOutputCount(NeuronValueFunction values, int count) {
+        if (count <= outputNeuronArr.length) return;
+        int oldCount = outputNeuronArr.length;
+        values.reserveExistingIds(this);
+        outputNeuronArr = Arrays.copyOf(outputNeuronArr, count);
+        var scalar = new NeuronTypeInfoData(1, 1, null);
+        for (int i = oldCount; i < count; i++) {
+            Neuron output = new Neuron(values.fetchNextFreeId(this), scalar, 0);
+            output.setOutputNeuron(true);
+            outputNeuronArr[i] = output;
+        }
+        // Only disconnected outputs are appended, so a rebuilt plan is safe for old memory.
+        executionPlan = null;
+        executionPlanUnneeded = false;
+    }
+
     public void rnnClearPreviousState(final NeuronValueFunction neuronValueFunction) {
         executionPlan = null;
         skippedState = false;

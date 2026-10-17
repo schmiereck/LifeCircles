@@ -44,6 +44,8 @@ public class Cell implements SensableCell, Serializable {
     // Null in old saves means no conversion. Immutable genotype, never a shared mutable controller.
     private EnergyConversion energyConversion;
     private EnergyConversionProgram energyConversionProgram=EnergyConversionProgram.NONE;
+    // Stored as throttle: the default 0 of fields absent in older saves means full activity.
+    private double enzymeThrottle;
     private int energyUsageVersion=1; // Absent in previous saves: migrate once at simulation import/first step.
     private transient boolean brainPaused;
     private transient boolean brainDecisionAuthorized;
@@ -70,7 +72,10 @@ public class Cell implements SensableCell, Serializable {
         this.type = new CellType(this.random.nextDouble(), this.random.nextDouble(), this.random.nextDouble());
         this.sensorActors = this.createSensorActors(this);
         this.brain = cellBrain;
-        if (cellBrain instanceof CellBrain neuralBrain) neuralBrain.ensureEnergyInputs(sensorActors.size());
+        if (cellBrain instanceof CellBrain neuralBrain) {
+            neuralBrain.ensureEnergyInputs(sensorActors.size());
+            neuralBrain.ensureEnzymeOutput(sensorActors.size());
+        }
         // Raw body construction: factories assign founder budgets; births overwrite all stores from the parent.
         this.energy = SimulationConfig.CELL_MAX_ENERGY;
         this.age = 0.0;
@@ -323,6 +328,13 @@ public class Cell implements SensableCell, Serializable {
         return total;
     }
 
+    /** Neural throttle of the expressed enzyme in [0,1]; births and old saves start at full activity. */
+    public double getEnzymeActivity() { return 1 - enzymeThrottle; }
+    public void setEnzymeActivity(double activity) {
+        if (!Double.isFinite(activity) || activity < 0 || activity > 1) throw new IllegalArgumentException("Enzyme activity must be in [0,1]");
+        enzymeThrottle = 1 - activity;
+    }
+
     public EnergyConversion getEnergyConversion() {
         return energyConversionProgram.route(getSpecializationIndex());
     }
@@ -573,6 +585,9 @@ public class Cell implements SensableCell, Serializable {
             sensorActor.setParentCell(this);
         }
         if (remains) { remains = false; becomeRemains(); }
-        else if (brain instanceof CellBrain neuralBrain) neuralBrain.ensureEnergyInputs(sensorActors.size());
+        else if (brain instanceof CellBrain neuralBrain) {
+            neuralBrain.ensureEnergyInputs(sensorActors.size());
+            neuralBrain.ensureEnzymeOutput(sensorActors.size());
+        }
     }
 }
