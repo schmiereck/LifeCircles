@@ -38,6 +38,8 @@ public class Cell implements SensableCell, Serializable {
     private double energy;
     // Missing in old saves: Java serialization initializes it to zero, without a subsidy.
     private double secondaryEnergy;
+    // Lazily allocated for codes 010..111. Missing fields in old files mean empty stores.
+    private double[] additionalEnergies;
     private double age; // in seconds
     private int generation; // generation counter
     private transient boolean sunRayHit = false; // Flag to indicate if cell was hit by sun ray
@@ -61,6 +63,7 @@ public class Cell implements SensableCell, Serializable {
         this.type = new CellType(this.random.nextDouble(), this.random.nextDouble(), this.random.nextDouble());
         this.sensorActors = this.createSensorActors(this);
         this.brain = cellBrain;
+        if (cellBrain instanceof CellBrain neuralBrain) neuralBrain.ensureEnergyInputs(sensorActors.size());
         this.energy = SimulationConfig.CELL_MAX_ENERGY;
         this.age = 0.0;
         this.generation = 0; // initialize generation counter
@@ -280,6 +283,7 @@ public class Cell implements SensableCell, Serializable {
         return switch (energyType) {
             case PRIMARY -> energy;
             case SECONDARY -> secondaryEnergy;
+            default -> additionalEnergies == null ? 0 : additionalEnergies[energyType.getCode() - 2];
         };
     }
 
@@ -296,11 +300,20 @@ public class Cell implements SensableCell, Serializable {
         switch (energyType) {
             case PRIMARY -> energy = bounded;
             case SECONDARY -> secondaryEnergy = bounded;
+            default -> {
+                if (additionalEnergies == null && bounded == 0) return;
+                if (additionalEnergies == null) additionalEnergies = new double[EnergyType.ALL.size() - 2];
+                additionalEnergies[energyType.getCode() - 2] = bounded;
+            }
         }
     }
 
     /** Accounting only: legacy sensing, metabolism and survival still use primary energy. */
-    public double getTotalEnergy() { return energy + secondaryEnergy; }
+    public double getTotalEnergy() {
+        double total = energy + secondaryEnergy;
+        if (additionalEnergies != null) for (double value : additionalEnergies) total += value;
+        return total;
+    }
 
     public CellBrainInterface getBrain() {
         return this.brain;
@@ -472,6 +485,8 @@ public class Cell implements SensableCell, Serializable {
     @Serial
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
+        if (additionalEnergies != null && additionalEnergies.length != EnergyType.ALL.size() - 2)
+            throw new InvalidObjectException("Invalid number of energy stores");
         // A loaded object is a new instance, including repeated loads of one saved cell.
         this.sensingId = NEXT_SENSING_ID.getAndIncrement();
         this.velocityForce = new Vector2D(0, 0);
@@ -480,5 +495,6 @@ public class Cell implements SensableCell, Serializable {
         for (SensorActor sensorActor : this.sensorActors) {
             sensorActor.setParentCell(this);
         }
+        if (brain instanceof CellBrain neuralBrain) neuralBrain.ensureEnergyInputs(sensorActors.size());
     }
 }

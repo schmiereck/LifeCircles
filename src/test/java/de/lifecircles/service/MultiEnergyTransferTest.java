@@ -53,17 +53,20 @@ class MultiEnergyTransferTest {
     }
     @Test void denseMixedTransfersKeepBothBudgetsAndIgnoreCellOrder() {
         Random random=new Random(892);List<Cell> cells=new ArrayList<>();
-        double[][] initial=new double[24][2];
-        for(int i=0;i<24;i++){initial[i][0]=random.nextDouble();initial[i][1]=random.nextDouble();cells.add(cell(initial[i][0],initial[i][1]));}
+        double[][] initial=new double[24][EnergyType.ALL.size()];
+        for(int i=0;i<24;i++) {
+            Cell c=cell(0,0);cells.add(c);
+            for(EnergyType type:EnergyType.ALL){initial[i][type.getCode()]=random.nextDouble();c.setEnergy(type,initial[i][type.getCode()]);}
+        }
         for(Cell c:cells)for(int p=0;p<12;p++){Cell to=cells.get(random.nextInt(cells.size()));if(to!=c)contact(c,to,p,random.nextDouble(),random.nextDouble());}
-        double primary=total(EnergyType.PRIMARY),secondary=total(EnergyType.SECONDARY);step(2);
-        double[][] expected=new double[24][2];
+        double[] totals=new double[EnergyType.ALL.size()];for(EnergyType type:EnergyType.ALL)totals[type.getCode()]=total(type);step(2);
+        double[][] expected=new double[24][EnergyType.ALL.size()];
         for(int i=0;i<24;i++)for(EnergyType type:EnergyType.ALL)expected[i][type.ordinal()]=cells.get(i).getEnergy(type);
         for(int repeat=0;repeat<20;repeat++) {
             for(int i=0;i<24;i++)for(EnergyType type:EnergyType.ALL)cells.get(i).setEnergy(type,initial[i][type.ordinal()]);
             Collections.shuffle(world.getCellList(),random);step(2);
             for(int i=0;i<24;i++)for(EnergyType type:EnergyType.ALL)assertEquals(expected[i][type.ordinal()],cells.get(i).getEnergy(type),1e-14);
-            assertEquals(primary,total(EnergyType.PRIMARY),1e-13);assertEquals(secondary,total(EnergyType.SECONDARY),1e-13);
+            for(EnergyType type:EnergyType.ALL)assertEquals(totals[type.getCode()],total(type),1e-13);
         }
     }
     @Test void secondaryTransferUsesPeriodicContactDistance() {

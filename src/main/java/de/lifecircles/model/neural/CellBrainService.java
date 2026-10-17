@@ -125,6 +125,17 @@ public class CellBrainService {
             baseGlobal += SensorInputFeature.values().length;
         }
 
+        // Appended channels preserve all original indices and avoid averaging different forms.
+        if (totalInputs >= EnergyInputLayout.inputCount(actorCount)) {
+            for (EnergyType energyType : EnergyType.ALL) if (energyType != EnergyType.PRIMARY) {
+                inputs[EnergyInputLayout.ownEnergy(actorCount, energyType)] = cell.getEnergy(energyType);
+                for (int actor = 0; actor < actorCount; actor++) {
+                    SensableCell neighbor = myActorList.get(actor).getSensedCell();
+                    inputs[EnergyInputLayout.neighborEnergy(actorCount, actor, energyType)] = neighbor == null ? 0 : neighbor.getEnergy(energyType);
+                }
+            }
+        }
+
         return inputs;
     }
 

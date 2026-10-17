@@ -20,8 +20,10 @@ public class CellBrain implements CellBrainInterface, Serializable {
                      final double stateHiddenLayerSynapseConnectivity, final double hiddenLayerSynapseConnectivity) {
 
         //final int hiddenCount = (inputCount + outputCount) * 2; // Arbitrary hidden layer size
+        int hiddenSizingInputs = inputCount == EnergyInputLayout.inputCount(SimulationConfig.CELL_SENSOR_ACTOR_COUNT)
+                ? EnergyInputLayout.legacyInputCount(SimulationConfig.CELL_SENSOR_ACTOR_COUNT) : inputCount;
         final int[] hiddenCountArr = {
-                (int)(inputCount * hiddenCountFactor),
+                (int)(hiddenSizingInputs * hiddenCountFactor),
                 outputCount
         };
 
@@ -31,7 +33,13 @@ public class CellBrain implements CellBrainInterface, Serializable {
         this.network.setEnableNeuronType(true);
 
         this.network.getNeuralNet().addParallelStateLayers(neuronValueFunctionFactory,
-                this.network.getNeuronValueFunction(), inputCount / 4, stateHiddenLayerSynapseConnectivity);
+                this.network.getNeuronValueFunction(), hiddenSizingInputs / 4, stateHiddenLayerSynapseConnectivity);
+    }
+
+    /** Old cell interfaces get new disconnected channels; unrelated small lab networks stay intact. */
+    public void ensureEnergyInputs(int actors) {
+        if (network.getNeuralNet().getInputCount() == EnergyInputLayout.legacyInputCount(actors))
+            network.getNeuralNet().ensureInputCount(network.getNeuronValueFunction(), EnergyInputLayout.inputCount(actors));
     }
 
     /**

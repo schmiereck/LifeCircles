@@ -27,10 +27,15 @@ public class Neuron implements NeuronInterface {
     private final NeuronTypeInfoData neuronTypeInfoData;
 
     public Neuron(final int id, final NeuronTypeInfoData neuronTypeInfoData) {
+        this(id, neuronTypeInfoData, NeuralNetwork.getRandom().nextDouble() * 2.0D - 1.0D);
+    }
+
+    /** Deterministic disconnected migration inputs must not consume the evolution RNG. */
+    Neuron(final int id, final NeuronTypeInfoData neuronTypeInfoData, double initialBias) {
         this.id = id;
         this.neuronTypeInfoData = neuronTypeInfoData;
         this.value = 0.0;
-        this.bias = NeuralNetwork.getRandom().nextDouble() * 2.0D - 1.0D; // Random bias between -1 and 1
+        this.bias = initialBias;
         this.inputSynapseArr = new Synapse[0];
         this.outputSynapseList = new ArrayList<>();
         this.activationFunction = ActivationFunction.Sigmoid;

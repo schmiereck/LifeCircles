@@ -1,0 +1,24 @@
+package de.lifecircles.model.neural;
+
+import de.lifecircles.model.EnergyType;
+
+/** Append-only energy channels. Original global/actor indices never move. */
+public final class EnergyInputLayout {
+    private EnergyInputLayout() {}
+    public static int legacyInputCount(int actors) {
+        return GlobalInputFeature.values().length + actors * SensorInputFeature.values().length;
+    }
+    public static int inputCount(int actors) {
+        return legacyInputCount(actors) + (EnergyType.ALL.size() - 1) * (actors + 1);
+    }
+    public static int ownEnergy(int actors, EnergyType type) {
+        return type == EnergyType.PRIMARY ? GlobalInputFeature.MY_CELL_ENERGY.ordinal()
+                : legacyInputCount(actors) + type.getCode() - 1;
+    }
+    public static int neighborEnergy(int actors, int actor, EnergyType type) {
+        if (actor < 0 || actor >= actors) throw new IndexOutOfBoundsException(actor);
+        return type == EnergyType.PRIMARY
+                ? GlobalInputFeature.values().length + actor * SensorInputFeature.values().length + SensorInputFeature.SENSED_CELL_ENERGY.ordinal()
+                : legacyInputCount(actors) + (EnergyType.ALL.size() - 1) * (actor + 1) + type.getCode() - 1;
+    }
+}

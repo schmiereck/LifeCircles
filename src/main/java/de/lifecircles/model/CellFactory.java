@@ -29,8 +29,7 @@ public abstract class CellFactory {
     }
 
     public static int calcInputCount(final int sensorActorCount) {
-        return GlobalInputFeature.values().length +
-                (SensorInputFeature.values().length * sensorActorCount);
+        return EnergyInputLayout.inputCount(sensorActorCount);
     }
 
     public static int calcOutputCount(final int sensorActorCount) {

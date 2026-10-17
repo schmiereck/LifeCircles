@@ -308,8 +308,12 @@ public class CellDetailView extends Stage {
                 currentCell.getType().getBlue()));
         stateLabel.setText(String.valueOf(currentCell.getCellState()));
         ageLabel.setText(String.format("%.2f", currentCell.getAge()));
-        energyLabel.setText(String.format("Primär: %.2f / Sekundär: %.2f",
-                currentCell.getEnergy(EnergyType.PRIMARY), currentCell.getEnergy(EnergyType.SECONDARY)));
+        StringBuilder energyText = new StringBuilder();
+        for (EnergyType energyType : EnergyType.ALL) {
+            if (!energyText.isEmpty()) energyText.append(energyType.getCode() == 4 ? "\n" : "   ");
+            energyText.append(String.format("%s: %.2f", energyType.getRgbCode(), currentCell.getEnergy(energyType)));
+        }
+        energyLabel.setText(energyText.toString());
         generationLabel.setText(String.valueOf(currentCell.getGeneration()));
         // NEU: Synapsen-Anzahl anzeigen
         int synapseCount = 0;

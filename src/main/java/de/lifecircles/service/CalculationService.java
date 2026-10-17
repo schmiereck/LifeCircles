@@ -201,6 +201,9 @@ public class CalculationService implements Runnable {
                 }
 
                 final CellType cellType = cell.getType();
+                double[] additionalEnergies = new double[EnergyType.ALL.size() - 2];
+                for (EnergyType energyType : EnergyType.ALL) if (energyType.getCode() >= 2)
+                    additionalEnergies[energyType.getCode() - 2] = cell.getEnergy(energyType);
                 cellStates.add(new SimulationStateDto.CellStateDto(
                         cell.getPosition(),
                         cell.getRotation(),
@@ -209,6 +212,7 @@ public class CalculationService implements Runnable {
                         actorStateDtos,
                         cell.getEnergy(),
                         cell.getEnergy(EnergyType.SECONDARY),
+                        additionalEnergies,
                         cell.getAge(),
                         cell.getCellState() // Zell-Zustand hinzufügen
                 ));

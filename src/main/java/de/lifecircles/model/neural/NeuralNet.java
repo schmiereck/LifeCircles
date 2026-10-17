@@ -1184,6 +1184,20 @@ public class NeuralNet implements Serializable {
         return this.inputNeuronArr.length;
     }
 
+    /** Append disconnected interface inputs without resetting existing memory or changing genes. */
+    void ensureInputCount(NeuronValueFunction values, int count) {
+        if (count <= inputNeuronArr.length) return;
+        int oldCount = inputNeuronArr.length;
+        values.reserveExistingIds(this);
+        inputNeuronArr = Arrays.copyOf(inputNeuronArr, count);
+        var scalar = new NeuronTypeInfoData(1, 1, null);
+        for (int i = oldCount; i < count; i++)
+            inputNeuronArr[i] = new Neuron(values.fetchNextFreeId(this), scalar, 0);
+        // This operation only appends disconnected inputs, so a rebuilt plan is safe for old memory.
+        executionPlan = null;
+        executionPlanUnneeded = false;
+    }
+
     public void rnnClearPreviousState(final NeuronValueFunction neuronValueFunction) {
         executionPlan = null;
         skippedState = false;

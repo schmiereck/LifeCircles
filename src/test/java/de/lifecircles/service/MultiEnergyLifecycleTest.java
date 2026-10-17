@@ -54,7 +54,7 @@ class MultiEnergyLifecycleTest {
     @Test void oldBrainInputsStillSensePrimaryAndKeepTheirShape() {
         Environment world=new Environment(300,300);Cell p=parent(world,.25);
         double[] inputs=CellBrainService.generateInputs(p,world);
-        assertEquals(213,inputs.length);assertEquals(.8,inputs[GlobalInputFeature.MY_CELL_ENERGY.ordinal()]);
+        assertEquals(EnergyInputLayout.inputCount(12),inputs.length);assertEquals(.8,inputs[GlobalInputFeature.MY_CELL_ENERGY.ordinal()]);
         assertEquals(133,CellFactory.calcOutputCount(12));
     }
     @Test void trainingFounderStartsAFreshEpisodeRatherThanDuplicatingParentalReserves() {

@@ -50,10 +50,11 @@ public class EnergyTransferCellCalcService {
         if (deltaTime == 0 || cells.isEmpty()) return;
         processEnergyType(cells, environment, deltaTime, EnergyType.PRIMARY);
         // Existing single-energy populations do not pay for a second transfer pass.
-        for (Cell cell : cells) if (cell.getEnergy(EnergyType.SECONDARY) > 0) {
-            processEnergyType(cells, environment, deltaTime, EnergyType.SECONDARY);
-            break;
-        }
+        int present = 0;
+        for (Cell cell : cells) for (EnergyType type : EnergyType.ALL)
+            if (type != EnergyType.PRIMARY && cell.getEnergy(type) > 0) present |= 1 << type.getCode();
+        for (EnergyType type : EnergyType.ALL) if ((present & (1 << type.getCode())) != 0)
+            processEnergyType(cells, environment, deltaTime, type);
     }
 
     private static void processEnergyType(List<Cell> cells, Environment environment, double deltaTime, EnergyType energyType) {
