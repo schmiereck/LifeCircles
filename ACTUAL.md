@@ -6,7 +6,10 @@ Aktualisiert: 17.10.2026. Branch `master`.
   000 → 001 (nur Bedarfslücke, 40 %, max. 0,003 000/s, Grundumsatz geschützt) plus
   Richtungsumkehr als Enzymmutation. Vererbte Enzyme bleiben doppelt so effizient.
   146 gezielte Tests. Kurzer Default-NONE-Vergleich (Seed 4711, 120 s): ohne Notatmung
-  441/543 Gehirne pausiert, mit Notatmung 88/1669. Details: `FUNKTIONALE_ENERGIE.md`.
+  441/543 Gehirne pausiert, mit Notatmung 88/1669. 600-s-Vergleich: Notatmung hält
+  Pausen bei 6–10 %, aber der Enzymanteil 000→001 steigt dabei nicht (~2–4 %); ohne
+  Notatmung erholt sich die Welt nur langsam über Umkehrmutanten (Pausen 87 % → 27 %).
+  Details: `FUNKTIONALE_ENERGIE.md`.
 
 - Performance-Regression der neuen Gehirnfinanzierung behoben: unabhängige
   Finanzierungsprüfungen und Eingabeerzeugung parallel, unveränderte Phasenbarrieren.

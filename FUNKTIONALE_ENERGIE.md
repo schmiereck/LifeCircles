@@ -86,6 +86,28 @@ gleiche effektive Rate wie Quelle/Ziel/Kapazität). Die inaktive Startroute 001 
 erreicht damit in einem Schritt 000 → 001; vorher war diese Route aus der Startroute
 in einer einzelnen Mutation unerreichbar (die Quelle durfte nie gleich dem alten Ziel werden).
 
+### Vergleichslauf (17.10.2026)
+
+Default-NONE-Welt, `NeuralNetwork`-Seed 4711, dt 1/60, 600 Simulationssekunden,
+gleicher Code mit Umkehrmutation, nur die Notatmung per Policy an/aus. Temporärer
+Messtest, nicht eingecheckt; Protokoll `target/respiration-none-probe-600s.log`.
+„Enzym“ zählt Zellen, deren exprimierte Route aktiv 000 → 001 ist. Ein Lauf je Variante.
+
+| t | ohne: lebend / pausiert / Enzym | mit: lebend / pausiert / Enzym |
+|---:|---|---|
+| 60 s | 477 / 416 / 4 | 768 / 76 / 18 |
+| 120 s | 550 / 512 / 3 | 1634 / 152 / 33 |
+| 300 s | 947 / 452 / 29 | 1134 / 70 / 49 |
+| 600 s | 1124 / 298 / 32 | 1191 / 126 / 28 |
+
+Bewertung: Die Notatmung beseitigt die Sackgasse sofort. Ohne sie erholt sich eine
+*neue* Welt dank Umkehrmutation zwar langsam, ein bereits vollständig pausierter
+Altlauf aber nicht (keine Teilungen). Mit Notatmung setzt sich das Enzym in 600 s
+jedoch nicht durch; die Welt ist durch 000 begrenzt (mittleres 000 ≈ 0,05), und für
+Standardgehirne reicht die Notatmung. Ob der doppelte Wirkungsgrad langfristig
+selektiert wird, ist offen; Stellschrauben sind Ausbeute/Rate der Notatmung und der
+Gehirnkostenregler.
+
 ## Pause und Erholung
 
 - Keine neue neuronale Ausführung und keine neuen Inputs in das pausierende Gehirn.
