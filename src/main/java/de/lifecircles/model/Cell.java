@@ -34,7 +34,10 @@ public class Cell implements SensableCell, Serializable {
     private CellType type;
     private final List<SensorActor> sensorActors;
     private CellBrainInterface brain;
+    // Keep this exact field name/type and serialVersionUID for existing .cells files.
     private double energy;
+    // Missing in old saves: Java serialization initializes it to zero, without a subsidy.
+    private double secondaryEnergy;
     private double age; // in seconds
     private int generation; // generation counter
     private transient boolean sunRayHit = false; // Flag to indicate if cell was hit by sun ray
@@ -259,7 +262,7 @@ public class Cell implements SensableCell, Serializable {
 
     @Override
     public void setEnergy(double energy) {
-        this.energy = Math.max(0.0D, Math.min(SimulationConfig.CELL_MAX_ENERGY, energy));
+        setEnergy(EnergyType.PRIMARY, energy);
     }
 
     @Override
@@ -271,6 +274,33 @@ public class Cell implements SensableCell, Serializable {
     public double getMaxEnergy() {
         return SimulationConfig.CELL_MAX_ENERGY;
     }
+
+    @Override
+    public double getEnergy(EnergyType energyType) {
+        return switch (energyType) {
+            case PRIMARY -> energy;
+            case SECONDARY -> secondaryEnergy;
+        };
+    }
+
+    @Override
+    public double getMaxEnergy(EnergyType energyType) {
+        java.util.Objects.requireNonNull(energyType);
+        return SimulationConfig.CELL_MAX_ENERGY;
+    }
+
+    @Override
+    public void setEnergy(EnergyType energyType, double value) {
+        if (Double.isNaN(value)) throw new IllegalArgumentException("Energy must not be NaN");
+        double bounded = Math.max(0, Math.min(getMaxEnergy(energyType), value));
+        switch (energyType) {
+            case PRIMARY -> energy = bounded;
+            case SECONDARY -> secondaryEnergy = bounded;
+        }
+    }
+
+    /** Accounting only: legacy sensing, metabolism and survival still use primary energy. */
+    public double getTotalEnergy() { return energy + secondaryEnergy; }
 
     public CellBrainInterface getBrain() {
         return this.brain;

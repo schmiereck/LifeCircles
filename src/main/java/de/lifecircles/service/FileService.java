@@ -136,7 +136,7 @@ public class FileService {
         // Falls weniger als 100 gefunden wurden, mit weiteren besten auffüllen
         if (bestCells.size() < numBest) {
             List<Cell> sorted = new ArrayList<>(cells);
-            sorted.sort(Comparator.comparingDouble(Cell::getEnergy).reversed());
+            sorted.sort(Comparator.<Cell>comparingDouble(Cell::getEnergy).reversed());
             for (Cell c : sorted) {
                 if (!bestCells.contains(c)) {
                     bestCells.add(c);
