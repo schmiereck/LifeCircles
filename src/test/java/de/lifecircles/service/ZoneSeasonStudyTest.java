@@ -14,6 +14,8 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
  * Opt-in long NONE run with spectral zones, optionally seasons. Example:
  * mvn test -Dtest=ZoneSeasonStudyTest -Dzone.study.seconds=2700 -Dzone.study.year=600 -Dzone.study.name=seasons
  * Writes target/zone-season-study/NAME.csv, NAME-summary.txt and the final population NAME.cells.
+ * -Dzone.study.load=PATH continues a saved population (e.g. an earlier NAME.cells) instead of new founders;
+ * the year then starts again at mid-summer.
  */
 @EnabledIfSystemProperty(named="zone.study.seconds", matches="\\d+")
 class ZoneSeasonStudyTest {
@@ -31,6 +33,13 @@ class ZoneSeasonStudyTest {
         NeuralNetwork.setRandom(new Random(seed));
         var strategy=new DefaultTrainStrategy();
         Environment world=strategy.initializeEnvironment();strategy.initialize(world);
+        String load=System.getProperty("zone.study.load");
+        if(load!=null && !load.isBlank()) {
+            List<Cell> loaded=FileService.getInstance().loadCellsFromFile(load);
+            for(Cell cell:loaded)cell.migrateEnergyUsage();
+            world.resetCells(loaded);
+            System.out.println("ZONESTUDY "+name+" continues "+loaded.size()+" cells from "+load);
+        }
         double radius=(config.getCellMaxRadiusSize()+config.getCellActorMaxFieldRadius())*2;
         var grid=PartitioningStrategyFactory.createStrategy(world.getWidth(),world.getHeight(),radius);
         var policy=strategy.stepPolicy();
@@ -103,7 +112,7 @@ class ZoneSeasonStudyTest {
             routes.merge(key,1,Integer::sum);
         }
         StringBuilder s=new StringBuilder();
-        s.append("run=").append(name).append(" seconds=").append(seconds).append(" year=").append(year)
+        s.append("run=").append(name).append(" load=").append(System.getProperty("zone.study.load","-")).append(" seconds=").append(seconds).append(" year=").append(year)
                 .append(" winter=").append(winter).append(" seed=").append(seed).append('\n');
         s.append("expressed routes of living cells by zone:\n");
         routes.forEach((k,v)->s.append("  ").append(k).append(": ").append(v).append('\n'));
