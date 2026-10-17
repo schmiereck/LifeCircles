@@ -24,13 +24,19 @@ Aktualisiert: 17.10.2026. Branch `master`.
 - Achtenergie-/Überrestestand: 222 gezielte Tests erfolgreich (`fa1060b`, `367d33f`).
   Aktueller Aasregen-/GUI-Schritt: 70 gezielte Tests erfolgreich, einschließlich
   Trainings-, Import-, Überrest-, Snapshot-, Dialog- und Nebenläufigkeitsprüfungen.
-- Energieverbrauch und Überleben verwenden weiterhin Primärenergie. Der Genotyp
+- Feste Verbrauchszuordnung: 000 für Grundumsatz/Tod, 001 für Gehirnspeicher und
+  Rechenarbeit. Vorabfinanzierung, Pause ohne Gedächtnisfortschritt und Wiederanlaufen
+  durch Aufnahme/Umwandlung aktiv. Neue Gründer teilen dasselbe Budget 80:20 auf;
+  alte lebende Zellen werden beim Simulationsimport einmalig konservativ umgestellt.
+  HIGH_POSITION3 bleibt ausdrücklich mit kostenlosen Gehirnen abgesichert.
+  Details: `FUNKTIONALE_ENERGIE.md`. Größen-/Kraftpreise sind weiterhin offen.
+- Der Genotyp
   enthält acht vererbte, mutierbare Umwandlungsregeln, je eine pro „Specialization“
   (Zellzustand 0..7). Aktiv ist nur die zur Zelle passende Regel: maximal 0,1/s mal
   Kapazität, 80 % Ausbeute. Neue Genome sind inaktiv; alte Einzelregeln gelten nach
   Migration unverändert in allen acht Rollen. Keine neuen neuronalen Kanäle.
   Eigene/Nachbarsensoren sehen die abgeschlossene Umwandlung; Überreste reagieren nicht.
-  Siehe `ENERGIEUMWANDLUNG.md`. Spezielle Verbrauchszuordnungen bleiben offen.
+  Siehe `ENERGIEUMWANDLUNG.md` und `FUNKTIONALE_ENERGIE.md`.
 - Austauschbefehle wirken weiterhin gemeinsam auf alle Formen, mit getrennten Bilanzen.
 - Projektgedächtnis: `AGENTS.md`, `ACTUAL.md`, `TODO.md`, `CONCEPTS.md`, `IDEAS.md`, `DONE.md`.
 - Neues Training `CARRION_RAIN`: acht Kammern, keine Sonne/Teilung, normale Überreste
@@ -49,5 +55,7 @@ Aktualisiert: 17.10.2026. Branch `master`.
   Sperre und startet pausiert. Oben „New…“ mit erklärter Szenarioauswahl; auch NONE
   und bestehende Trainings-/Testaufbauten sind ohne Codeänderung wählbar.
 - „Show Energy“ bleibt ein Primärenergiebalken; nur die Zelldetails zeigen alle acht Formen.
+- Verbrauchsmodell-Abschluss: 315 unterschiedliche gezielte Tests erfolgreich,
+  einschließlich neu geprüfter Finanzierung/Pause/Erholung, Altimport, Trainings und Physik.
 - Vorangegangene Kosten-/Funktionsstudien bewerten frühere Modellstände und ersetzen
   keinen neuen Ökologietest. Siehe `FUNKTIONS_ERGEBNISSE.md` und `NONE_LANGZEIT_ERGEBNISSE.md`.

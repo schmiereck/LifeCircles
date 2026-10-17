@@ -2,6 +2,7 @@
 
 ## Aktueller Auftrag
 
+- [x] Feste Zuordnung 000 → Erhalt, 001 → Gehirn; Mangel, Erholung, Gründerbudgets und Altpopulationen prüfen.
 - [x] Umwandlungsregeln an Specialization koppeln; gemeinsame vererbbare Tabelle und Zellketten prüfen.
 - [x] Default-Gründer auf 48 versteckte Neuronen verkleinern, einschließlich Zustandsnetzen.
 - [x] Aasregen-Training ohne Sonne mit kleinen Kontrollwelten und Futterbilanz.
@@ -15,7 +16,8 @@
 
 ## Anschließend
 
-- [ ] Verbrauchs-/Überlebensanforderungen je Energieform gemeinsam festlegen.
+- [x] Erste Verbrauchs-/Überlebensanforderungen: 000 Erhalt, 001 Gehirn.
+- [ ] Getrennte Kosten für Größenänderung und Aktorkräfte entwerfen und mechanisch prüfen.
 - [x] Begrenzte Umwandlungen mit evolvierbarer Route/Kapazität implementieren und bilanzieren.
 - [ ] Prüfen, ob Austauschbefehle getrennt nach Energieform evolvierbar werden sollen.
 - [ ] Neue Ökologietests: Produzenten, Räuber/Aasfresser und kooperierende Zellverbände.

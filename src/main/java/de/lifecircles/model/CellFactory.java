@@ -2,11 +2,12 @@ package de.lifecircles.model;
 
 import de.lifecircles.model.neural.*;
 import de.lifecircles.service.SimulationConfig;
+import de.lifecircles.service.EnergyAllocationService;
 
 public abstract class CellFactory {
 
     public static Cell createCell(final Vector2D position, final double radiusSize) {
-        return new Cell(position, radiusSize, CellBrain.createDefault());
+        return founder(new Cell(position, radiusSize, CellBrain.createDefault()));
     }
 
     public static Cell createCell(final Vector2D position, final double radiusSize, final double hiddenCountFactor,
@@ -19,12 +20,13 @@ public abstract class CellFactory {
                 hiddenCountFactor,
                 stateHiddenLayerSynapseConnectivity, hiddenLayerSynapseConnectivity);
 
-        return new Cell(position, radiusSize, cellBrain);
+        return founder(new Cell(position, radiusSize, cellBrain));
     }
 
     public static Cell createCell(final Vector2D position, final double radiusSize, final CellBrainInterface cellBrain) {
-        return new Cell(position, radiusSize, cellBrain);
+        return founder(new Cell(position, radiusSize, cellBrain));
     }
+    private static Cell founder(Cell cell) { EnergyAllocationService.initializeFounder(cell,1);return cell; }
 
     public static int calcInputCount(final int sensorActorCount) {
         return EnergyInputLayout.inputCount(sensorActorCount);

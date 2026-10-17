@@ -68,7 +68,7 @@ final class TrainingPopulationBuilder {
         for (int slot = 0; slot < targetCount; slot++) {
             Cell cell = generation.get(slot);
             cell.setPosition(positions.get(slot));
-            cell.setEnergy(SimulationConfig.CELL_MAX_ENERGY);
+            EnergyAllocationService.initializeFounder(cell,SimulationConfig.CELL_MAX_ENERGY);
             if (sections) {
                 cell.setCellState(0);
                 cell.setAge(0);

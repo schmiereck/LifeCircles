@@ -110,6 +110,7 @@ public class CellBrain implements CellBrainInterface, Serializable {
     public long getProccessedSynapses() {
         return this.network.getProccessedSynapses();
     }
+    @Override public long getMaximumProcessedSynapses() { return network.getNeuralNet().getMaximumProcessedSynapses(); }
 
     @Override
     public NeuralNetwork mutate(final double mutationRate, final double mutationStrength) {

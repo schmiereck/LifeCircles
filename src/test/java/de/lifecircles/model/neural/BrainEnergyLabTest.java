@@ -45,10 +45,11 @@ class BrainEnergyLabTest {
     @Test void priceMatchesActualCellEnergyModelAtSixtyDecisionsPerSecond() {
         var network=BrainEnergyControls.known(BrainEnergyLab.Task.XOR,false);
         network.calcProcess(new double[]{1,0});
-        Cell cell=new Cell(new Vector2D(100,100),20,new CellBrain(network));cell.setEnergy(1);
+        Cell cell=new Cell(new Vector2D(100,100),20,new CellBrain(network));cell.setEnergy(1);cell.setEnergy(EnergyType.SECONDARY,1);
         double expected=new BrainEnergyLab.Price(1,1,.003).cost(cell.getBrain().getSynapseCount(),cell.getBrain().getProccessedSynapses());
         EnergyCellCalcService.decayEnergy(cell,1.0/60,true);
-        assertEquals(expected,(1-cell.getEnergy())*60-SimulationConfig.ENERGY_DECAY_RATE,1e-12);
+        assertEquals(expected,(1-cell.getEnergy(EnergyType.SECONDARY))*60,1e-12);
+        assertEquals(1-SimulationConfig.ENERGY_DECAY_RATE/60,cell.getEnergy(),1e-14);
     }
     @Test void booleanConstantBaselinesAreAccountedFor() {
         assertEquals(.1875,BrainEnergyLab.data(BrainEnergyLab.Task.AND,3,false).baselineLoss());

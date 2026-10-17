@@ -26,8 +26,8 @@ public class CellPanel extends VBox {
         Runnable refresh=()->value.setText(String.format("Brain energy: %.3g× (1× = previous standard)",config.getBrainEnergyCosts().work()));
         cost.valueProperty().addListener((obs,old,next)->{config.setBrainEnergyMultiplier(multiplier(next.doubleValue()));refresh.run();});
         refresh.run();
-        Label hint=new Label("Storage + computation, 0–1000×.\nBasic metabolism stays constant.");
-        cost.setTooltip(new Tooltip("Applies on the next simulation step."));
+        Label hint=new Label("Storage + computation use energy 001.\nMaintenance uses 000; 0× = free brains.");
+        cost.setTooltip(new Tooltip("Applies on the next simulation step.\nInsufficient 001 pauses thinking until supply returns."));
         Label lifespanValue=new Label();
         Slider lifespan=new Slider(Math.min(1,Math.log10(config.getCellDeathAge())),
                 Math.max(4,Math.log10(config.getCellDeathAge())),Math.log10(config.getCellDeathAge()));

@@ -312,7 +312,8 @@ public class CellDetailView extends Stage {
                 currentCell.getType().getRed(),
                 currentCell.getType().getGreen(),
                 currentCell.getType().getBlue()));
-        stateLabel.setText(currentCell.isRemains() ? "Überrest" : String.valueOf(currentCell.getCellState()));
+        stateLabel.setText(currentCell.isRemains() ? "Überrest" : currentCell.getCellState()+
+                (currentCell.isBrainPaused()?" · Gehirn pausiert (001)":""));
         ageLabel.setText(String.format("%.2f", currentCell.getAge()));
         StringBuilder energyText = new StringBuilder();
         for (EnergyType energyType : EnergyType.ALL) {

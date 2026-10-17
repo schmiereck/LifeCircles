@@ -9,8 +9,12 @@
 - Überreste bleiben normale Zellen. Sie behalten nur tatsächlich übrige Reserven,
   denken/teilen sich nicht und werden über den normalen Austausch geleert.
 - Kein zusätzliches Materie-, Biomasse- oder Baustoffmodell für Überreste.
-- Primärenergie-Verbrauch bleibt bis zu einer ausdrücklich definierten neuen
-  Ressourcenregel erhalten. Keine stillen neuen Todesbedingungen oder Anfangssubventionen.
+- Feste Funktionen: Grundumsatz/Tod aus 000, Gehirnspeicher und berechnete Synapsen
+  aus 001. Mangel pausiert Denken/Gedächtnis/Takt; Wiederaufnahme nach Versorgung.
+  Kosten vor Ausführung absichern, tatsächliche Arbeit genau einmal bezahlen.
+  Gründerbudget 80:20 aufteilen, keine zusätzliche Anfangsenergie. Alte lebende
+  Populationen einmalig ohne Energiegewinn umstellen, Überreste nicht umverteilen.
+  Wachstums-/Kraftkosten sind ein späterer Schritt. Siehe `FUNKTIONALE_ENERGIE.md`.
 - Stoffwechsel: ein gemeinsames genetisches Programm enthält je eine mutierbare
   Route pro Spezialisierung 0..7. Nur eine Route je Zelle aktiv, gewählt durch dieselben
   drei Zellzustandsbits wie bisherige Specialization und Sensoren. Das Gehirn bestimmt

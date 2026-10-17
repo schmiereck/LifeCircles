@@ -2,15 +2,16 @@
 
 Stand: 17.10.2026. Acht Speicher, vollständige Energie-Sensorik und Überreste sind
 implementiert. Begrenzte, genetisch evolvierbare Umwandlung ist ergänzt;
-siehe [ENERGIEUMWANDLUNG.md](ENERGIEUMWANDLUNG.md). Spezielle Verbrauchszuordnungen sind noch offen.
+siehe [ENERGIEUMWANDLUNG.md](ENERGIEUMWANDLUNG.md). Verbrauch ist jetzt fest getrennt:
+000 für Erhalt, 001 für Gehirne; siehe [FUNKTIONALE_ENERGIE.md](FUNKTIONALE_ENERGIE.md).
 Aktueller Überblick: [ACTUAL.md](ACTUAL.md), Aufgaben: [TODO.md](TODO.md).
 
 ## RGB-Codes und Vorräte
 
 | Code (R,G,B) | API-Bezeichnung | Anfangsvorrat einer neuen Zelle |
 |---|---|---:|
-| 000 | PRIMARY | 1,0 wie bisher |
-| 001 | SECONDARY | 0,0 |
+| 000 | PRIMARY / Erhalt | 0,8 |
+| 001 | SECONDARY / Gehirn | 0,2 |
 | 010 | RGB_010 | 0,0 |
 | 011 | RGB_011 | 0,0 |
 | 100 | RGB_100 | 0,0 |
@@ -24,15 +25,19 @@ Füllstände selbst sind kontinuierlich in [0,1]. Diese Klassifizierung ist unab
 von den bisherigen kontinuierlichen RGB-Farben der Zellen und Aktoren.
 
 Die bisherigen untypisierten Energiemethoden bezeichnen weiter PRIMARY/000.
-Gehirnkosten, Grundumsatz und Überlebens-/Teilungsbedingungen verwenden weiterhin
-Primärenergie. Andere Vorräte können nur über eine vorhandene aktive Umwandlung
-nach 000 dafür einspringen. Getrennte Verbrauchsregeln je Funktion bleiben offen.
+Grundumsatz und bisherige Überlebens-/Teilungsbedingungen verwenden Primärenergie.
+Gehirnspeicherung und Rechenarbeit werden vorab aus 001 finanziert, bei Mangel pausiert
+Denken bis zur erneuten Versorgung. Andere Vorräte können über eine passende Umwandlung
+die jeweiligen Verbraucher versorgen. Kosten für weitere Zellfunktionen bleiben offen.
 `getTotalEnergy()` ist eine Bilanzhilfe, keine neue Überlebensbedingung.
 
 Die bisherigen serialisierten Felder für Primär- und Sekundärenergie bleiben erhalten.
 Die sechs weiteren Speicher werden nur bei Bedarf angelegt. Alte Dateien erhalten
-keine neue Energie; fehlende Vorräte sind leer. Neue Dateien speichern alle vorhandenen
-Werte und gegebenenfalls den Überrestzustand. Sie sollten mit diesem oder einem
+keine neue Energie. Fehlende Vorräte sind beim bloßen Lesen leer; beim Übernehmen
+alter lebender Zellen in eine Simulation werden einmalig 20 % des vorhandenen 000
+nach 001 verschoben, soweit Platz vorhanden ist. Gesamtenergie bleibt erhalten,
+Überreste werden nicht umverteilt. Neue Dateien speichern alle vorhandenen
+Werte, die Verbrauchsversion und gegebenenfalls den Überrestzustand. Sie sollten mit diesem oder einem
 neueren Programmstand weiterverwendet werden.
 
 ## Sonne, Austausch und Teilung

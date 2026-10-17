@@ -3,8 +3,8 @@
 - Horizontaler genetischer Austausch, etwa über virenartige Überträger.
 - Mehrzellige Arbeitsteilung: Gelenke, Sehnen, Knochen, Bindegewebe, Haut und Muskeln
   als funktionelle Entsprechungen aus Zellverbänden, auch mehrlagige Kugelpackungen.
-- Verschiedene Energieformen für verschiedene Funktionen; Tod an einem Engpass
-  kann andere verwertbare Reserven hinterlassen.
+- Weitere Funktionsenergien nach 000/001: Größenänderung, Kraftaufwand und andere
+  Zellfunktionen getrennt untersuchen; Engpässe können verwertbare Reserven hinterlassen.
 - Weiterentwicklung der spezialisierungsabhängigen Enzymexpression: kontinuierliche
   neuronale Aktivitätsregulation oder Beschränkung auf Aufnahmeereignisse.
 - Rechenaufgaben als Umwandlungsvoraussetzung als getrenntes Experiment prüfen;

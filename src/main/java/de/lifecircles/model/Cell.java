@@ -44,6 +44,9 @@ public class Cell implements SensableCell, Serializable {
     // Null in old saves means no conversion. Immutable genotype, never a shared mutable controller.
     private EnergyConversion energyConversion;
     private EnergyConversionProgram energyConversionProgram=EnergyConversionProgram.NONE;
+    private int energyUsageVersion=1; // Absent in previous saves: migrate once at simulation import/first step.
+    private transient boolean brainPaused;
+    private transient boolean brainDecisionAuthorized;
     private double age; // in seconds
     private int generation; // generation counter
     private transient boolean sunRayHit = false; // Flag to indicate if cell was hit by sun ray
@@ -68,6 +71,7 @@ public class Cell implements SensableCell, Serializable {
         this.sensorActors = this.createSensorActors(this);
         this.brain = cellBrain;
         if (cellBrain instanceof CellBrain neuralBrain) neuralBrain.ensureEnergyInputs(sensorActors.size());
+        // Raw body construction: factories assign founder budgets; births overwrite all stores from the parent.
         this.energy = SimulationConfig.CELL_MAX_ENERGY;
         this.age = 0.0;
         this.generation = 0; // initialize generation counter
@@ -332,6 +336,28 @@ public class Cell implements SensableCell, Serializable {
         return cellState & (EnergyConversionProgram.SPECIALIZATION_COUNT-1);
     }
     public EnergyConversionProgram getEnergyConversionProgram() { return energyConversionProgram; }
+    public boolean isBrainPaused() { return brainPaused; }
+    public void authorizeBrainDecision(boolean permitted) { brainDecisionAuthorized=permitted; }
+    public boolean consumeBrainDecisionAuthorization() {
+        boolean permitted=brainDecisionAuthorized;brainDecisionAuthorized=false;return permitted;
+    }
+    public void setBrainPaused(boolean paused) {
+        brainPaused=paused;
+        if(paused)brainDecisionAuthorized=false;
+        if(paused)for(SensorActor actor:sensorActors) {
+            actor.setForceStrength(0);actor.setEnergyDelivery(0);actor.setReproductionDesire(0);
+            // Keep the previously chosen absorption ports, so external supply can wake the cell.
+        }
+    }
+    public void migrateEnergyUsage() {
+        if(energyUsageVersion>=1)return;
+        if(!remains) {
+            double shifted=Math.min(energy*de.lifecircles.service.EnergyAllocationService.BRAIN_SHARE,
+                    getMaxEnergy(EnergyType.SECONDARY)-secondaryEnergy);
+            energy-=shifted;secondaryEnergy+=shifted;
+        }
+        energyUsageVersion=1;
+    }
     public void setEnergyConversionProgram(EnergyConversionProgram program) {
         energyConversionProgram=java.util.Objects.requireNonNull(program);
         energyConversion=null;

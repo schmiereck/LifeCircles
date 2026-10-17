@@ -25,7 +25,7 @@ public enum TrainMode {
             case HIGH_ENERGY -> "Selektion nach Primärenergie. Dieses ältere Szenario setzt die Energie pro Sonnenstrahl auf 0.02.";
             case HIGH_POSITION -> "Älteres Höhentraining (HIGH_POSITION).";
             case HIGH_POSITION2 -> "Älteres Höhentraining mit getrennten Trainingsbereichen (HIGH_POSITION2).";
-            case HIGH_POSITION3 -> "Physiktraining: Halten, Störungen, Größensteuerung, Aufbau. Keine Sonne; Energie gesichert.";
+            case HIGH_POSITION3 -> "Physiktraining: Halten, Störungen, Größensteuerung, Aufbau. Keine Sonne; Energie gesichert, Gehirne ausdrücklich kostenlos (auch bei anderem Gehirnregler).";
             case TEST_A -> "Fest verdrahteter mechanischer Testaufbau A (Schneemann).";
             case TEST_B -> "Fest verdrahteter Testaufbau B.";
             case TEST_C -> "Fest verdrahteter Testaufbau C.";

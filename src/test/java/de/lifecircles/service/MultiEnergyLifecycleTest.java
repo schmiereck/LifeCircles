@@ -41,13 +41,13 @@ class MultiEnergyLifecycleTest {
         assertEquals(.8,lineage.stream().mapToDouble(Cell::getEnergy).sum(),1e-13);
         assertEquals(.6,lineage.stream().mapToDouble(c->c.getEnergy(EnergyType.SECONDARY)).sum(),1e-13);
     }
-    @Test void metabolismAndSurvivalRemainPrimaryOnlyWithoutRescuingPrimaryStarvation() {
+    @Test void maintenanceUsesPrimaryAndBrainUsesSecondaryWithoutChangingSurvivalCriterion() {
         Environment world=new Environment(300,300);Cell p=parent(world,.25);
         var brain=(CellBrain)p.getBrain();brain.setInputs(new double[brain.getInputCount()]);brain.process();
         double cost=BrainEnergyCosts.DEFAULT.cost(brain.getSynapseCount(),brain.getProccessedSynapses(),.5);
         EnergyCellCalcService.decayEnergy(p,.5,true);
-        assertEquals(.8-SimulationConfig.ENERGY_DECAY_RATE*.5-cost,p.getEnergy(),1e-14);
-        assertEquals(.6,p.getEnergy(EnergyType.SECONDARY));
+        assertEquals(.8-SimulationConfig.ENERGY_DECAY_RATE*.5,p.getEnergy(),1e-14);
+        assertEquals(.6-cost,p.getEnergy(EnergyType.SECONDARY),1e-14);
         p.setAge(0);p.setEnergy(0);assertTrue(SimulationStepPolicy.NONE.isDead(p));
         p.setEnergy(.5);p.setEnergy(EnergyType.SECONDARY,0);assertFalse(SimulationStepPolicy.NONE.isDead(p));
     }
@@ -60,7 +60,7 @@ class MultiEnergyLifecycleTest {
     @Test void trainingFounderStartsAFreshEpisodeRatherThanDuplicatingParentalReserves() {
         Environment world=new Environment(300,300);Cell p=parent(world,.25);
         Cell founder=ReproductionManagerService.createTrainingFounder(config,world,p,new Vector2D(200,100),0,false);
-        assertEquals(1,founder.getEnergy());assertEquals(0,founder.getEnergy(EnergyType.SECONDARY));
+        assertEquals(.8,founder.getEnergy());assertEquals(.2,founder.getEnergy(EnergyType.SECONDARY));assertEquals(1,founder.getTotalEnergy());
         assertEquals(.8,p.getEnergy());assertEquals(.6,p.getEnergy(EnergyType.SECONDARY));
     }
 }

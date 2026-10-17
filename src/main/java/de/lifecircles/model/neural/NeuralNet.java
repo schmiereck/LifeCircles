@@ -1336,6 +1336,32 @@ public class NeuralNet implements Serializable {
         return countStoredSynapses(storageVisited);
     }
 
+    private transient IdentityHashMap<NeuralNet,Long> maximumWorkMemo;
+    /** All possible active layers, counting each module invocation, including shared definitions. */
+    public long getMaximumProcessedSynapses() {
+        if(maximumWorkMemo==null)maximumWorkMemo=new IdentityHashMap<>();
+        maximumWorkMemo.clear();
+        return maximumWork(maximumWorkMemo);
+    }
+    private long maximumWork(IdentityHashMap<NeuralNet,Long> memo) {
+        Long known=memo.get(this);
+        if(known!=null) {
+            if(known<0)throw new IllegalStateException("Cyclic neural module definition");
+            return known;
+        }
+        memo.put(this,-1L);long work=0;
+        for(Layer layer:hiddenLayerArr)for(NeuronInterface neuron:layer.getNeuronsArr())work=addWork(work,neuronWork(neuron,memo));
+        for(NeuronInterface neuron:outputNeuronArr)work=addWork(work,neuronWork(neuron,memo));
+        memo.put(this,work);return work;
+    }
+    private static long neuronWork(NeuronInterface neuron,IdentityHashMap<NeuralNet,Long> memo) {
+        long work=0;
+        for(int port=0;port<neuron.getNeuronTypeInfoData().getInputCount();port++)work=addWork(work,neuron.getInputSynapseArr(port).length);
+        NeuralNet module=neuron.getNeuronTypeInfoData().getNeuralNet();
+        return module==null?work:addWork(work,module.maximumWork(memo));
+    }
+    private static long addWork(long a,long b) { return a>Long.MAX_VALUE-b?Long.MAX_VALUE:a+b; }
+
     private int countStoredSynapses(Set<NeuralNet> visited) {
         if (!visited.add(this)) return 0;
         int count = synapseArray.length;

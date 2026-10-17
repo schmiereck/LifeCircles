@@ -6,8 +6,8 @@ Ergänzt um `CARRION_CONVERSION` mit Nahrung aus Energie 001 statt 000.
 ## Aufbau und Regeln
 
 - Acht Kammern à 400 × 600 mit Boden und durchgehenden Seitenwänden.
-- Eine lebende Gründerzelle je Kammer, identisch auf 0,18 Primärenergie initialisiert.
-  Alle anderen Reserven beginnen leer. Das ist eine ausdrücklich neue Trainingsepisode,
+- Eine lebende Gründerzelle je Kammer mit Gesamtenergie 0,18: 0,144 für Erhalt (000),
+  0,036 für das Gehirn (001). Alle anderen Reserven beginnen leer. Das ist eine ausdrücklich neue Trainingsepisode,
   keine biologische Teilung. Gehirnzustand, Alter und Bewegung werden zurückgesetzt.
 - Neue zufällige Genome verwenden den kompakten Default mit 48 versteckten Neuronen
   (24 gemeinsam + drei Zustandsgruppen à acht). Die 316 Eingänge und 133 Ausgänge
@@ -37,7 +37,9 @@ Eine Episode dauert 120 Simulationssekunden. Fitness:
 Kammerflucht setzt die Fitness auf null. Ein unverändertes Elitegenom und sieben
 mutierte Nachkommen aus den drei Besten starten die nächste Episode. Jede Kopie
 hat einen eigenen Gehirnzustand. Ohne Nahrungsaufnahme reichen selbst bei kostenlosen
-Gehirnen 0,18 Energie höchstens 60 Sekunden (Grundverbrauch 0,003/s).
+Gehirnen 0,144 Energie 000 höchstens 48 Sekunden (Grundverbrauch 0,003/s).
+Der erste Denkzyklus wird im ersten Weltschritt regulär finanziert; bis dahin sind
+die Aktorbefehle neutral. Zum Pausieren und Aufwachen siehe `FUNKTIONALE_ENERGIE.md`.
 
 Biologische Teilung ist hier gesperrt und kann nicht erlernt werden. Vermehrung findet
 als kontrollierter Genomwechsel zwischen Episoden statt. Der Aufnahmebonus belohnt
@@ -62,8 +64,8 @@ abgewiesen. Der Modus, Regler und Episodenzustand werden nicht in `.cells` gespe
 
 `CarrionRainTrainStrategyTest`, deterministische DNA ohne Synapsen, keine Gehirngebühr:
 
-- Fester Absorber: 120/120 Sekunden überlebt, rund 1,180 Primärenergie aufgenommen.
-- Keine Absorption: Tod nach 60 Sekunden, keine Aufnahme; Fitness 0,500.
+- Fester Absorber: 120/120 Sekunden überlebt, rund 1,200 Primärenergie aufgenommen.
+- Keine Absorption: Tod nach 48 Sekunden, keine Aufnahme; Fitness 0,400.
 - Die maximal eingestellte Sonne bleibt ohne Wirkung; Teilung trotz hohem
   Teilungswunsch gesperrt. Überreste, Energiebilanzen/Startwerte, Futterbegrenzung,
   Verfall und Auswahl des Elitegenoms werden geprüft.
@@ -89,7 +91,8 @@ Alternativ ist weiterhin `--trainMode=CARRION_RAIN` beim Programmstart möglich.
 
 Gleiche Kammern, Futterpositionen, Zufuhrmenge und Auswahlregeln, aber das Futter
 enthält ausschließlich 0,12 Energie 001 und **keine Primärenergie**. Die lebenden
-Gründer beginnen wie bisher mit 0,18 Primärenergie und leeren übrigen Speichern.
+Gründer beginnen wie die andere Variante mit 0,144 Energie 000 und 0,036 Energie 001;
+alle übrigen Speicher sind leer. Das Gesamtbudget bleibt 0,18.
 Neue Genome starten mit inaktiver Umwandlung. Es werden keine fertigen Stoffwechsel-
 Lösungen eingeschleust. Die Kapazität und Route müssen durch Mutation/Selektion
 entstehen; auch eine aus einer Datei geladene passende Route ist verwendbar.

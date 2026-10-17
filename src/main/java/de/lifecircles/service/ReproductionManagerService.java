@@ -80,6 +80,7 @@ public class ReproductionManagerService {
         NeuralNetwork network = parent.getBrain().mutate(rate, strength);
         environment.getProfiler().finish(SimulationProfiler.Phase.MUTATION, start);
         Cell founder = new Cell(position, config.getCellMaxRadiusSize() / 2, new CellBrain(network));
+        EnergyAllocationService.initializeFounder(founder,1);
         founder.startGrowthProcess();
         founder.setType(parent.getType());
         founder.setGeneration(parent.getGeneration() + (mutate ? 1 : 0));
@@ -90,7 +91,7 @@ public class ReproductionManagerService {
         founder.setCellState(state);
         network.rnnClearPreviousState();
         for (SensorActor actor : founder.getSensorActors()) actor.updateCachedPosition();
-        CellBrainService.think(founder);
+        // First decision is funded by the normal world step, after episode reserves are assigned.
         return founder;
     }
 
@@ -130,7 +131,7 @@ public class ReproductionManagerService {
         child.setCellState(state);
         calcActiveLayersByState(child);
         for (SensorActor actor : child.getSensorActors()) actor.updateCachedPosition();
-        CellBrainService.think(child);
+        // No free newborn decision; keep the resource split exact and think on its first world step.
         child.setMutationRateFactor(parent.getMutationRateFactor());
         child.setMutationStrengthFactor(parent.getMutationStrengthFactor());
         // Meta-mutation deliberately uses global settings, avoiding self-amplification.

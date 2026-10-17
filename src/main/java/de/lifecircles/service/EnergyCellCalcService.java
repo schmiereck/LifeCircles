@@ -1,6 +1,7 @@
 package de.lifecircles.service;
 
 import de.lifecircles.model.Cell;
+import de.lifecircles.model.EnergyType;
 
 /**
  * Service responsible for handling cell energy calculations.
@@ -17,15 +18,12 @@ public class EnergyCellCalcService {
         decayEnergy(cell, deltaTime, useSynapseEnergyCost ? BrainEnergyCosts.DEFAULT : new BrainEnergyCosts(0, 0));
     }
 
+    /** Post-decision meter for isolated callers. Worlds pre-fund brains separately and pass FREE here. */
     public static void decayEnergy(Cell cell, double deltaTime, BrainEnergyCosts costs) {
         if (cell.isRemains()) return;
-        final int synapseCount = cell.getBrain().getSynapseCount();
-        final long proccessedSynapses = cell.getBrain().getProccessedSynapses();
-        final double synapseEnergyCost =
-                costs.cost(synapseCount, proccessedSynapses, deltaTime);
-        final double newEnergy =
-                Math.max(0.0D,
-                        cell.getEnergy() - ((SimulationConfig.ENERGY_DECAY_RATE * deltaTime) + synapseEnergyCost));
-        cell.setEnergy(newEnergy);
+        final double synapseEnergyCost = costs.storage()==0 && costs.work()==0?0:
+                costs.cost(cell.getBrain().getSynapseCount(),cell.getBrain().getProccessedSynapses(),deltaTime);
+        cell.setEnergy(Math.max(0,cell.getEnergy()-SimulationConfig.ENERGY_DECAY_RATE*deltaTime));
+        cell.setEnergy(EnergyType.SECONDARY,Math.max(0,cell.getEnergy(EnergyType.SECONDARY)-synapseEnergyCost));
     }
 }

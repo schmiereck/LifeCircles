@@ -101,6 +101,7 @@ public class CalculationService implements Runnable {
         synchronized (simulationLock) {
             List<Cell> previous = new ArrayList<>(environment.getCellList());
             try {
+                for(Cell cell:loaded)cell.migrateEnergyUsage();
                 if (merge) environment.getCellList().addAll(loaded);
                 else environment.resetCells(loaded);
                 trainStrategy.onPopulationImported(environment, List.copyOf(loaded), merge);

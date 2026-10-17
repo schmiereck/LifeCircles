@@ -18,8 +18,9 @@ public class CellCalcService {
     }
 
     public static void updateCell(final Cell cell, final double deltaTime, final double[] inputs) {
-        CellBrainService.think(cell, inputs);
-        advanceCell(cell, deltaTime);
+        BrainEnergyCosts costs=SimulationConfig.getInstance().getBrainEnergyCosts();
+        if(BrainEnergyService.prepare(cell,deltaTime,costs))BrainEnergyService.thinkPrepared(cell,inputs,costs);
+        advanceCell(cell, deltaTime,BrainEnergyCosts.FREE);
     }
 
     /** Advance physics/metabolism after all cells have made their decisions. */
@@ -31,7 +32,7 @@ public class CellCalcService {
 
         // Newborns grow linearly toward the current brain target during their first
         // simulation second. Thinking may change that target, but never growthAge.
-        if (!cell.isRemains() && cell.isGrowing()) {
+        if (!cell.isRemains() && !cell.isBrainPaused() && cell.isGrowing()) {
             cell.incGrowthAge(deltaTime);
             if (cell.getGrowthAge() >= SimulationConfig.CELL_GROWTH_DURATION) {
                 // Wachstumsprozess abgeschlossen
@@ -46,7 +47,7 @@ public class CellCalcService {
         }
 
         // Adult smoothing advances once per simulation step, independently of thinking.
-        if (!cell.isRemains() && !cell.isGrowing()) {
+        if (!cell.isRemains() && !cell.isBrainPaused() && !cell.isGrowing()) {
             cell.applyDelayedSizeChange(deltaTime);
         }
 

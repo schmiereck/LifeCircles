@@ -68,10 +68,10 @@ public final class CarrionRainTrainStrategy implements TrainStrategy, Simulation
             Cell parent=genomes.get(i);
             Cell cell=ReproductionManagerService.createTrainingFounder(config,world,parent,
                     new Vector2D((i+.5)*WIDTH,HEIGHT-Environment.GroundBlockerHeight-20),parent.getCellState(),evolve && i!=0);
-            cell.setEnergy(INITIAL_ENERGY);
+            EnergyAllocationService.initializeFounder(cell,INITIAL_ENERGY);
             ((CellBrain)cell.getBrain()).getNeuralNetwork().rnnClearPreviousState();
             candidates.add(new Candidate(cell)); world.addCell(cell);
-            CellBrainService.think(cell,CellBrainService.generateInputs(cell,world));
+            // Initial commands stay neutral until the first paid decision in the world step.
         }
         rain(world,true); updateStatus();
     }

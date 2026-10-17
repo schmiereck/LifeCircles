@@ -61,7 +61,7 @@ class TrainingGenerationTest {
         assertEquals(.2,parent.getEnergy());
         for (int i = 0; i < world.getCellList().size(); i++) {
             Cell cell = world.getCellList().get(i);
-            assertEquals(1, cell.getEnergy(), 0);
+            assertEquals(.8, cell.getEnergy(), 0);assertEquals(.2,cell.getEnergy(EnergyType.SECONDARY));assertEquals(1,cell.getTotalEnergy());
             assertTrue(ReproductionManagerService.isFreePosition(world, cell.getPosition(), cell.getRadiusSize()));
             assertNotNull(cell.getSensorActors().getFirst().getCachedPosition());
             if (i > 0) {
@@ -150,7 +150,7 @@ class TrainingGenerationTest {
         Cell parent = add(world, 200, 800);
         assertNull(ReproductionManagerService.reproduce(config, world, parent));
         Cell child = ReproductionManagerService.createTrainingOffspring(config, world, parent, new Vector2D(300, 800), 0);
-        assertNotNull(child); assertEquals(1, child.getEnergy(), 0); assertEquals(0.2, parent.getEnergy(), 0);
+        assertNotNull(child); assertEquals(.8, child.getEnergy(), 0);assertEquals(.2,child.getEnergy(EnergyType.SECONDARY));assertEquals(0.2, parent.getEnergy(), 0);
         assertNull(ReproductionManagerService.reproduce(config, world, parent));
     }
 

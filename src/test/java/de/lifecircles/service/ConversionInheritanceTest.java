@@ -30,7 +30,7 @@ class ConversionInheritanceTest {
             assertEquals(gene,child.getEnergyConversion());assertEquals(.8,parent.getEnergy()+child.getEnergy(),1e-14);
             assertEquals(.6,parent.getEnergy(EnergyType.RGB_111)+child.getEnergy(EnergyType.RGB_111),1e-14);
             Cell founder=ReproductionManagerService.createTrainingFounder(config,world,parent,new Vector2D(200,100),0,false);
-            assertEquals(gene,founder.getEnergyConversion());assertEquals(1,founder.getEnergy());assertEquals(0,founder.getEnergy(EnergyType.RGB_111));
+            assertEquals(gene,founder.getEnergyConversion());assertEquals(.8,founder.getEnergy());assertEquals(.2,founder.getEnergy(EnergyType.SECONDARY));assertEquals(0,founder.getEnergy(EnergyType.RGB_111));
             child.setEnergyConversion(EnergyConversion.NONE);assertEquals(gene,parent.getEnergyConversion());
         } finally {NeuralNetwork.setRandom(previous);}
     }

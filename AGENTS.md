@@ -54,3 +54,9 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
   Spezialisierungen (untere drei cellState-Bits), nur eine aktive Route pro Zelle.
   Kind-Spezialisierung bestimmt das Gehirn; dieselbe DNA darf andere Rollen exprimieren.
   Alte Einzel-Enzyme in alle acht Einträge migrieren. Keine feste Kopplung an Zellfarben.
+- Verbrauch: 000 Erhalt/Tod, 001 Gehirn. Kein produktiver Denkzyklus ohne vorherige
+  Finanzierungsprüfung; tatsächliche Arbeit einmal abrechnen. Pause erhält Gedächtnis
+  und Takte, Aufnahme/Enzyme ermöglichen Erholung. Gründerbudgets 80:20 teilen;
+  biologische Geburten teilen vorhandene Vorräte und denken erst im bezahlten Schritt.
+  Altpopulationen via energyUsageVersion einmalig konservativ umstellen; tote Vorräte
+  unverändert lassen. HIGH_POSITION3 hat ausdrücklich freie Gehirne (Mechanikversuch).

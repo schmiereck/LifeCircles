@@ -48,9 +48,9 @@ class CarrionRainTrainStrategyTest {
         var strategy=new CarrionRainTrainStrategy(new Random(1));var world=setup(strategy,List.of(genome(true)));
         assertEquals(16,world.getCellList().size());assertEquals(10,world.getBlockerList().size());
         for(Cell cell:world.getCellList()) {
-            assertEquals(cell.isRemains()?.12:.18,cell.getEnergy());assertEquals(cell.getEnergy(),cell.getTotalEnergy());
+            assertEquals(cell.isRemains()?.12:.144,cell.getEnergy());assertEquals(cell.isRemains()?.12:.18,cell.getTotalEnergy());
             if(cell.isRemains()) assertSame(RemainsBrain.INSTANCE,cell.getBrain());
-            else { assertFalse(strategy.allowReproduction(cell));assertTrue(cell.getMaxReproductionDesire()>.9); }
+            else { assertFalse(strategy.allowReproduction(cell));assertEquals(.036,cell.getEnergy(EnergyType.SECONDARY));assertEquals(0,cell.getMaxReproductionDesire()); }
         }
         var grid=new SpatialGridPartitioningStrategy(world.getWidth(),world.getHeight(),80);
         step(strategy,world,grid,1.0/60);assertTrue(world.getSunRayList().isEmpty());assertEquals(100,config.getSunRayRate());
@@ -68,8 +68,8 @@ class CarrionRainTrainStrategyTest {
         assertEquals(evaluation.injected(),evaluation.expired()+evaluation.remainingFoodEnergy()+evaluation.totalHarvested(),1e-10);
         assertEquals(0,nonEater.getEnergy());assertTrue(eater.getEnergy()>0);
         assertFalse(world.getCellList().contains(eater));assertEquals(1,evaluation.generation());
-        Cell elite=world.getCellList().getFirst();assertEquals(.18,elite.getEnergy());assertEquals(0,elite.getAge());
-        assertTrue(elite.getSensorActors().getFirst().getEnergyAbsorption()>.99);
+        Cell elite=world.getCellList().getFirst();assertEquals(.144,elite.getEnergy());assertEquals(.036,elite.getEnergy(EnergyType.SECONDARY));assertEquals(0,elite.getAge());
+        assertEquals(0,elite.getSensorActors().getFirst().getEnergyAbsorption()); // First decision is paid in the next episode step.
     }
     @Test void uneatenFoodExpiresAndPopulationIsBoundedWithoutMetabolicSubsidy() {
         var strategy=new CarrionRainTrainStrategy(new Random(3));var world=setup(strategy,List.of(genome(false)));
@@ -79,7 +79,7 @@ class CarrionRainTrainStrategyTest {
             assertTrue(world.getCellList().size()<=8*(1+CarrionRainTrainStrategy.FOOD_LIMIT));
         }
         var evaluation=strategy.getLastEvaluation();assertNotNull(evaluation);
-        assertTrue(evaluation.survivalSeconds()<=60.1);assertEquals(0,evaluation.harvested(),1e-12);
+        assertEquals(48,evaluation.survivalSeconds(),.11);assertEquals(0,evaluation.harvested(),1e-12);
         assertTrue(evaluation.expired()>0);assertTrue(evaluation.injected()>evaluation.expired());
         assertEquals(evaluation.injected(),evaluation.expired()+evaluation.remainingFoodEnergy()+evaluation.totalHarvested(),1e-10);
     }

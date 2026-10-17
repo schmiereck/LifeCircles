@@ -122,6 +122,8 @@ public class Environment {
     }
 
     public void update(final double deltaTime, final PartitioningStrategy partitioner, final SimulationStepPolicy policy) {
+        if(!Double.isFinite(deltaTime) || deltaTime<0)throw new IllegalArgumentException("Invalid simulation time step");
+        for(Cell cell:cellList)cell.migrateEnergyUsage();
         // One immutable price snapshot for every cell in this step, including live GUI changes.
         final de.lifecircles.service.BrainEnergyCosts brainCosts = policy.brainEnergyCosts();
         long phaseStart = profiler.start();
@@ -175,21 +177,25 @@ public class Environment {
 
         profiler.finish(SimulationProfiler.Phase.INTEGRATION, phaseStart);
         phaseStart = profiler.start();
+        final boolean[] canThink=new boolean[cellList.size()];
+        for(int i=0;i<cellList.size();i++)canThink[i]=BrainEnergyService.prepare(cellList.get(i),deltaTime,brainCosts);
         // Freeze all sensed inputs before any worker changes energy, age or outputs.
-        final List<double[]> brainInputs = this.cellList.stream().map(cell -> cell.isRemains() ? null : CellBrainService.generateInputs(cell, this)).toList();
+        final List<double[]> brainInputs = IntStream.range(0,cellList.size()).mapToObj(i -> canThink[i]?
+                CellBrainService.generateInputs(cellList.get(i),this):null).toList();
         profiler.finish(SimulationProfiler.Phase.INPUTS, phaseStart);
         phaseStart = profiler.start();
         IntStream.range(0, this.cellList.size()).parallel().forEach(i -> {
             Cell cell = this.cellList.get(i);
-            if (cell.isRemains()) return;
-            CellBrainService.think(cell, brainInputs.get(i));
+            if (!canThink[i]) return;
+            BrainEnergyService.thinkPrepared(cell, brainInputs.get(i),brainCosts);
             if (policy != SimulationStepPolicy.NONE) policy.afterThinking(cell);
         });
         profiler.finish(SimulationProfiler.Phase.BRAINS, phaseStart);
         phaseStart = profiler.start();
         IntStream.range(0, this.cellList.size()).parallel().forEach(i -> {
             Cell cell = this.cellList.get(i);
-            CellCalcService.advanceCell(cell, deltaTime, brainCosts);
+            // Brain storage/work were already charged exactly once above.
+            CellCalcService.advanceCell(cell, deltaTime, de.lifecircles.service.BrainEnergyCosts.FREE);
             this.wrapPosition(cell);
             BlockerCellCalcService.handleBlockerCollisions(cell, this.blockerList, this);
             this.wrapPosition(cell);

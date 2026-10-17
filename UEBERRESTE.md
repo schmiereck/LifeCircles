@@ -10,6 +10,9 @@ Im NONE-Modus wird eine sterbende Zelle zum Überrest, wenn mindestens ein Vorra
 noch positiv ist. Alterstod erhält alle verbliebenen Vorräte; Primärenergiemangel
 kann andere Formen hinterlassen. Sind bereits alle Vorräte leer, wird sie entfernt.
 Die Altersgrenze und das bisherige Kriterium Primärenergie <= 0 bleiben bestehen.
+Ein leerer Gehirnvorrat 001 allein tötet nicht, sondern pausiert Denken; Details in
+`FUNKTIONALE_ENERGIE.md`. Überreste werden bei der Umstellung alter Dateien nicht
+umverteilt und behalten sämtliche tatsächlichen Restvorräte.
 
 Die Zelle behält Position, Größe, Rotation, Bewegung, Farbe und Sensor-Aktor-Punkte.
 Ihre neuronale DNA und ihr Netzgedächtnis werden durch einen gemeinsamen kleinen

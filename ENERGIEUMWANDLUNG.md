@@ -46,8 +46,9 @@ unteren drei Bits wie bei den vorhandenen Zustands-Sensoren.
   Kapazität; der reale Preis ist Quellverbrauch mit 20 % Umwandlungsverlust. Das ist
   eine erste experimentelle Regel, kein bereits austariertes Stoffwechselmodell.
 
-Unterhalt, Gehirn und bisherige Lebens-/Teilungsbedingungen verwenden weiterhin
-Primärenergie 000. Andere Formen werden nur über passende Umwandlung nutzbar.
+Unterhalt und bisherige Lebens-/Teilungsbedingungen verwenden Primärenergie 000.
+Gehirnspeicherung und Rechenarbeit verwenden jetzt 001. Andere Formen werden nur
+über passende Umwandlung nutzbar; Regeln zu Finanzierung und Pause in `FUNKTIONALE_ENERGIE.md`.
 Eine Zelle mit Engpass kann weiterhin mit Restvorräten anderer Formen sterben.
 Eine rechtzeitige Umwandlung nach 000 kann einen ansonsten tödlichen Engpass abwenden.
 Alterstod wird durch Umwandlung nicht verhindert.
@@ -81,8 +82,9 @@ dimensionen bleiben 316/133, ihre bisherigen Migrationen bleiben unverändert.
 
 ## Reihenfolge und Beobachtung
 
-Im Weltschritt: Sonne → normaler Austausch → Umwandlung aller Zellen → gemeinsame
-Momentaufnahme der eigenen und benachbarten Sensorsignale → Denken → Unterhalt/Tod.
+Im Weltschritt: Sonne → normaler Austausch → Umwandlung aller Zellen → Gehirnspeichergebühr/
+Finanzierungsprüfung → gemeinsame Momentaufnahme der eigenen und benachbarten
+Sensorsignale → bezahltes Denken oder Pause → Unterhalt/Tod.
 Alle Gehirne sehen somit dieselben abgeschlossenen Reaktionen. Neu umgewandelte
 Energie kann erst im nächsten Schritt an Nachbarn weitergereicht werden. Bereits
 erhaltene Nahrung kann noch vor dem nächsten Unterhalt umgewandelt werden.
@@ -117,7 +119,7 @@ acht Sensorkanäle erfasst. Der alte Energiebalken zeigt weiterhin nur Primären
   inklusive aller Umwandlungsverluste und Grundumsatz geprüft; identisches Ergebnis
   bei umgekehrter Zellliste und über dem periodischen Rand.
 
-Noch keine funktionenspezifischen Energiepreise, variablen Speicherkapazitäten,
+Außer 000-Erhalt/001-Gehirn noch keine weiteren funktionenspezifischen Energiepreise, variablen Speicherkapazitäten,
 kontinuierliche neuronale Enzymregulation oder durch Rechenaufgaben freigeschalteten
 Reaktionen. Das gemeinsame Programm ermöglicht je nach Zellrolle unterschiedliche
 Enzyme; es erzwingt keine Arbeitsteilung. Direkte Umwandlungen nach 000 bleiben

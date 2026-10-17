@@ -86,3 +86,16 @@ Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erl
   Grundumsatz stimmt, auch bei anderer Zellreihenfolge und über periodischen Rand.
 - 216 gezielte Tests erfolgreich; lokales Protokoll `target/specialized-conversion-final-tests.log`.
   Kein langer Evolutionslauf; Regeln und offene Selektionsfragen in `ENERGIEUMWANDLUNG.md`.
+
+## Getrennte Verbrauchsfunktionen (17.10.2026)
+
+- 000 bezahlt Grundumsatz, 001 Speicherung/Rechenarbeit. Entscheidung vorfinanzieren,
+  tatsächliche Synapsenarbeit einmal bezahlen, sonst ohne Gedächtnis-/Taktänderung pausieren.
+- Gedächtniserhalt, Aufnahme/Umwandlung als Wiederanlauf, Stilllegung von Aktorkräften/
+  Delivery/Teilung und Größe während Pause geprüft. Keine erneute Rechnung alter Arbeit.
+- Standard-Gründer 0,8/0,2 statt 1/0, Aasgründer 0,144/0,036 statt 0,18/0; gleiche
+  Gesamtenergie. Kein kostenloser erster Denkzyklus bei Geburten oder Trainingsgründern.
+- Alte lebende Dateien beim Load/Merge einmalig konservativ umstellen und versionieren;
+  Überreste behalten Vorräte. HIGH_POSITION3 bleibt expliziter Mechanikversuch ohne Gehirngebühr.
+- 315 unterschiedliche gezielte Tests erfolgreich; Details und Protokolle in
+  `FUNKTIONALE_ENERGIE.md`. Kein langer Evolutionslauf gestartet.

@@ -12,6 +12,8 @@ public interface CellBrainInterface {
     int getInputCount();
 
     long getProccessedSynapses();
+    /** Conservative work bound for reserving a full decision before executing it. Custom brains may override. */
+    default long getMaximumProcessedSynapses() { return Math.max(getSynapseCount(),getProccessedSynapses()); }
 
     NeuralNetwork mutate(double mutationRate, double mutationStrength);
 

@@ -25,7 +25,7 @@ class ExecutionPlanWorldTest {
             for(int i=0;i<8;i++)for(Environment world:new Environment[]{original,planned}) {
                 var brain=new NeuralNetwork(net);brain.getNeuralNet().setExecutionOptimizationEnabled(world==planned);
                 Cell cell=new Cell(new Vector2D(80+(i%4)*22,80+(i/4)*22),10,new CellBrain(brain));
-                cell.setType(new CellType(0,1,0));cell.setEnergy(.8);cell.setCellState(i);world.addCell(cell);
+                cell.setType(new CellType(0,1,0));cell.setEnergy(.8);cell.setEnergy(EnergyType.SECONDARY,.2);cell.setCellState(i);world.addCell(cell);
             }
             SpatialGridPartitioningStrategy aGrid=new SpatialGridPartitioningStrategy(300,300,60),bGrid=new SpatialGridPartitioningStrategy(300,300,60);
             SimulationStepPolicy policy=new SimulationStepPolicy() {
@@ -43,6 +43,8 @@ class ExecutionPlanWorldTest {
                 for(int i=0;i<original.getCellList().size();i++) {
                     Cell a=original.getCellList().get(i),b=planned.getCellList().get(i);
                     assertEquals(a.getEnergy(),b.getEnergy(),"energy step="+step);
+                    assertFalse(a.isBrainPaused());assertFalse(b.isBrainPaused());
+                    assertEquals(a.getEnergy(EnergyType.SECONDARY),b.getEnergy(EnergyType.SECONDARY));
                     assertEquals(a.getPosition().getX(),b.getPosition().getX());assertEquals(a.getPosition().getY(),b.getPosition().getY());
                     assertEquals(a.getVelocity().getX(),b.getVelocity().getX());assertEquals(a.getVelocity().getY(),b.getVelocity().getY());
                     assertEquals(a.getRotation(),b.getRotation());assertEquals(a.getAngularVelocity(),b.getAngularVelocity());

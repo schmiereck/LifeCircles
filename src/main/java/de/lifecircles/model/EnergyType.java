@@ -4,8 +4,8 @@ import java.util.List;
 
 /** Independent energy stores; no conversion or function-specific metabolism is implied. */
 public enum EnergyType {
-    PRIMARY(0, "000 · Primary"),
-    SECONDARY(1, "001 · Secondary"),
+    PRIMARY(0, "000 · Maintenance"),
+    SECONDARY(1, "001 · Brain"),
     RGB_010(2, "010"),
     RGB_011(3, "011"),
     RGB_100(4, "100"),

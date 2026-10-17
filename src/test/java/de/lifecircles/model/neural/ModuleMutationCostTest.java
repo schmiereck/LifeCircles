@@ -33,6 +33,7 @@ class ModuleMutationCostTest {
         assertEquals(original,inner.getSynapseList().getFirst().getWeight());
         assertEquals(5,outer.getNeuralNet().getStoredSynapseCount());
         outer.calcProcess(new double[]{.5}); assertEquals(6,outer.getProccessedSynapses());
+        assertEquals(6,outer.getNeuralNet().getMaximumProcessedSynapses());
     }
 
     @Test void boundedUnusedTypeNurseryPreservesLocalIdsDuringInterfaceInnovation() throws Exception {
