@@ -3,9 +3,8 @@
 - Horizontaler genetischer Austausch, etwa über virenartige Überträger.
 - Mehrzellige Arbeitsteilung: Gelenke, Sehnen, Knochen, Bindegewebe, Haut und Muskeln
   als funktionelle Entsprechungen aus Zellverbänden, auch mehrlagige Kugelpackungen.
-- Dauerhafte Zellverbindungen auf Basis der Aktorfelder: Tonus über Pause/Tod,
-  Farb-Affinität mit überwindbarer Fremdabweisung, eingerastete Aktorpaare,
-  Geburtsbindung für Fadenwachstum. Entwurf: `ZELLVERBINDUNGEN.md`.
+- Dauerhafte Zellverbindungen, Stufe 3/4: eingerastete Aktorpaare und Geburtsbindung
+  für Fadenwachstum. Entwurf in `ZELLVERBINDUNGEN.md` (Stufe 1/2 umgesetzt).
 - Weitere Funktionsenergien nach 000/001: Größenänderung, Kraftaufwand und andere
   Zellfunktionen getrennt untersuchen; Engpässe können verwertbare Reserven hinterlassen.
 - Weiterentwicklung der Enzymexpression: Beschränkung auf Aufnahmeereignisse oder ein

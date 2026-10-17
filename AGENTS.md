@@ -63,3 +63,8 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
   biologische Geburten teilen vorhandene Vorräte und denken erst im bezahlten Schritt.
   Altpopulationen via energyUsageVersion einmalig konservativ umstellen; tote Vorräte
   unverändert lassen. HIGH_POSITION3 hat ausdrücklich freie Gehirne (Mechanikversuch).
+- Zellhaftung (`ZELLVERBINDUNGEN.md`, Policy `OPEN_WORLD` der Default-NONE-Welt, GUI-Schalter):
+  Aktorkräfte folgen dem Gehirn mit Tonus, bleiben bei Pause erhalten und klingen bei
+  Überresten mit Halbwertszeit ab (∞ = Holz). Anziehung wirkt voll nur bei ähnlicher
+  Aktorfarbe **und** Körperfarbe, sonst teils als begrenzte, überwindbare Abweisung.
+  NONE/Trainings-Policies bleiben farbblind und ohne Tonus.

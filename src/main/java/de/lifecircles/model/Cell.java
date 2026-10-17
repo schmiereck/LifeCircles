@@ -353,11 +353,14 @@ public class Cell implements SensableCell, Serializable {
     public boolean consumeBrainDecisionAuthorization() {
         boolean permitted=brainDecisionAuthorized;brainDecisionAuthorized=false;return permitted;
     }
-    public void setBrainPaused(boolean paused) {
+    public void setBrainPaused(boolean paused) { setBrainPaused(paused,false); }
+    /** holdForces keeps the actor fields (tonus), so a funding pause does not dissolve a body. */
+    public void setBrainPaused(boolean paused,boolean holdForces) {
         brainPaused=paused;
         if(paused)brainDecisionAuthorized=false;
         if(paused)for(SensorActor actor:sensorActors) {
-            actor.setForceStrength(0);actor.setEnergyDelivery(0);actor.setReproductionDesire(0);
+            if(!holdForces)actor.setForceStrength(0);
+            actor.setEnergyDelivery(0);actor.setReproductionDesire(0);
             // Keep the previously chosen absorption ports, so external supply can wake the cell.
         }
     }
@@ -385,7 +388,9 @@ public class Cell implements SensableCell, Serializable {
     @Override public boolean isRemains() { return remains; }
 
     /** Preserve exact reserves, body and momentum; discard the brain and active commands. */
-    public void becomeRemains() {
+    public void becomeRemains() { becomeRemains(false); }
+    /** holdForces keeps the last actor fields; they then fade with the remains half-life. */
+    public void becomeRemains(boolean holdForces) {
         if (remains) return;
         remains = true;
         brain = RemainsBrain.INSTANCE;
@@ -393,7 +398,7 @@ public class Cell implements SensableCell, Serializable {
         isGrowing = false;
         resetSunRayHit();
         for (SensorActor actor : sensorActors) {
-            actor.setForceStrength(0);
+            if (!holdForces) actor.setForceStrength(0);
             actor.setEnergyAbsorption(0);
             actor.setEnergyDelivery(0);
             actor.setReproductionDesire(0);
@@ -584,7 +589,7 @@ public class Cell implements SensableCell, Serializable {
         for (SensorActor sensorActor : this.sensorActors) {
             sensorActor.setParentCell(this);
         }
-        if (remains) { remains = false; becomeRemains(); }
+        if (remains) { remains = false; becomeRemains(true); }
         else if (brain instanceof CellBrain neuralBrain) {
             neuralBrain.ensureEnergyInputs(sensorActors.size());
             neuralBrain.ensureEnzymeOutput(sensorActors.size());

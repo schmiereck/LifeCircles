@@ -18,8 +18,8 @@
 - [x] Folgelauf mit milderem Winter (50 %): Fremdzonen sterben weiterhin im ersten Jahr.
 - [x] Jahreszeiten auf angepasste Population (Fortsetzung von B) anwenden, mit Kontrolle.
 - [x] Evolutionsläufe mit Lebensdauer 2000 s wiederholt (1 + 3 Seeds); Besiedlung und erste Aasverwertung.
-- [ ] Stängel/Stützstrukturen: Entwurf dauerhafter Zellverbindungen (`ZELLVERBINDUNGEN.md`)
-  abstimmen und stufenweise umsetzen; Befund: Pause und Tod setzen Aktorkräfte auf 0.
+- [x] Zellhaftung Stufe 1/2 (Tonus über Pause/Tod, Farb-/Körperfarb-Affinität) umgesetzt.
+- [ ] Zonenläufe mit/ohne Zellhaftung vergleichen; danach Stufe 3/4 (Einrasten, Geburtsbindung).
 - [ ] Vorteil für Vorratshaltung schaffen/prüfen (Speicher über 000-Kapazität, Rückwandlung im Winter, ggf. Jahreszeitsensor).
 - [ ] Ursache der leeren 010-Zone klären (Zonenreihenfolge, Geländeblocker, Zuwanderung).
 - [ ] Warum wird Aas mit Fremdformen kaum gefressen? Aasfresser-Nische gezielt prüfen.

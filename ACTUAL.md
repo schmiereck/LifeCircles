@@ -2,6 +2,11 @@
 
 Aktualisiert: 17.10.2026. Branch `master`.
 
+- Zellhaftung Stufe 1/2 in der Default-NONE-Welt (GUI-Schalter, Standard an): Kräfte
+  bleiben bei Gehirnpause, Überreste lassen mit 300 s Halbwertszeit los (∞ = Holz),
+  Anziehung nur zwischen passender Aktor- und Körperfarbe, Fremde werden begrenzt
+  abgewiesen. Vergleichsläufe stehen aus. `ZELLVERBINDUNGEN.md`.
+
 - Langlauf 45 min Zonen ± Jahreszeiten: ohne Jahreszeiten stabile ~420 Zellen, 001- und
   teils 100-Zone besiedelt, Aas mit 100/010/001 (nie 000). Mit 25 % Winterlicht sterben
   alle Fremdzonen; Drossel driftet ohne Jahreszeiteneffekt. Folgelauf mit 50 % Winterlicht:

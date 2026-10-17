@@ -127,6 +127,7 @@ public class Environment {
         // One immutable price snapshot for every cell in this step, including live GUI changes.
         final de.lifecircles.service.BrainEnergyCosts brainCosts = policy.brainEnergyCosts();
         final boolean basalRespiration = policy.useBasalBrainRespiration();
+        final boolean adhesion = policy.useCellAdhesion();
         long phaseStart = profiler.start();
         // Calculate sun energy rays
         this.sunRayList.clear();
@@ -144,7 +145,8 @@ public class Environment {
         profiler.finish(SimulationProfiler.Phase.REPULSION, phaseStart);
         phaseStart = profiler.start();
         // Process sensor/actor interactions
-        SensorActorForceCellCalcService.processInteractions(this.cellList, partitioner, this);
+        SensorActorForceCellCalcService.processInteractions(this.cellList, partitioner, this,
+                adhesion ? SensorActorForceCellCalcService.Affinity.fromConfig() : null);
         profiler.finish(SimulationProfiler.Phase.INTERACTIONS, phaseStart);
         phaseStart = profiler.start();
         // Process energy transfers between cells
@@ -182,7 +184,7 @@ public class Environment {
         // Per-cell financing does not read neighbors. Finish every debit/output pause
         // before generating any inputs, so sensors still see one consistent state.
         IntStream.range(0,cellList.size()).parallel().forEach(i ->
-                canThink[i]=BrainEnergyService.prepare(cellList.get(i),deltaTime,brainCosts,basalRespiration));
+                canThink[i]=BrainEnergyService.prepare(cellList.get(i),deltaTime,brainCosts,basalRespiration,adhesion));
         profiler.finish(SimulationProfiler.Phase.BRAIN_FUNDING, phaseStart);
         phaseStart = profiler.start();
         // Freeze all sensed inputs before any worker changes energy, age or outputs.
@@ -196,6 +198,7 @@ public class Environment {
             BrainEnergyService.thinkPrepared(cell, brainInputs.get(i),brainCosts);
             if (policy != SimulationStepPolicy.NONE) policy.afterThinking(cell);
         });
+        if (adhesion) de.lifecircles.service.CellAdhesionService.settleForces(this.cellList, deltaTime);
         profiler.finish(SimulationProfiler.Phase.BRAINS, phaseStart);
         phaseStart = profiler.start();
         IntStream.range(0, this.cellList.size()).parallel().forEach(i -> {
@@ -234,7 +237,7 @@ public class Environment {
 
             // Dead cells cannot reproduce or serve as an automatic restart seed.
             if (policy.isDead(cell)) {
-                if (policy.keepRemains() && cell.getTotalEnergy() > 0) cell.becomeRemains();
+                if (policy.keepRemains() && cell.getTotalEnergy() > 0) cell.becomeRemains(adhesion);
                 else iterator.remove();
                 continue;
             }

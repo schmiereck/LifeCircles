@@ -77,9 +77,44 @@ public class EnvironmentPanel extends VBox {
             refreshSeason.run();
         });
         refreshSeason.run();
+        // Durable adhesion (ZELLVERBINDUNGEN.md); acts only in open NONE worlds.
+        CheckBox adhesion = new CheckBox("Cell adhesion: forces held during brain pause,\nattraction only between matching actor colour and body type");
+        adhesion.setId("cell-adhesion");
+        adhesion.setSelected(config.isCellAdhesion());
+        adhesion.selectedProperty().addListener((obs, old, next) -> config.setCellAdhesion(next));
+        Label adhesionValue = new Label();
+        // The last slider position means "never": dead cells keep carrying like wood.
+        Slider remainsHalfLife = new Slider(1, 61, Double.isInfinite(config.getRemainsForceHalfLife()) ? 61
+                : Math.min(60, config.getRemainsForceHalfLife() / 60));
+        remainsHalfLife.setId("remains-force-half-life");
+        remainsHalfLife.setShowTickLabels(true);
+        remainsHalfLife.setShowTickMarks(true);
+        remainsHalfLife.setMajorTickUnit(15);
+        remainsHalfLife.setPrefWidth(270);
+        Slider rejection = new Slider(0, 100, config.getAdhesionRejection() * 100);
+        rejection.setId("adhesion-rejection");
+        rejection.setShowTickLabels(true);
+        rejection.setShowTickMarks(true);
+        rejection.setMajorTickUnit(25);
+        rejection.setPrefWidth(270);
+        Runnable refreshAdhesion = () -> adhesionValue.setText(String.format("Remains hold: %s · foreign rejection %.0f %%",
+                Double.isInfinite(config.getRemainsForceHalfLife()) ? "forever (wood)"
+                        : String.format("half-life %.1f min", config.getRemainsForceHalfLife() / 60),
+                config.getAdhesionRejection() * 100));
+        remainsHalfLife.valueProperty().addListener((obs, old, next) -> {
+            config.setRemainsForceHalfLife(next.doubleValue() > 60.5 ? Double.POSITIVE_INFINITY : next.doubleValue() * 60);
+            refreshAdhesion.run();
+        });
+        rejection.valueProperty().addListener((obs, old, next) -> {
+            config.setAdhesionRejection(next.doubleValue() / 100);
+            refreshAdhesion.run();
+        });
+        refreshAdhesion.run();
         VBox content = new VBox(8, title, rate, value, hint, new Label("Sun energy form:"), sourceType, zones,
                 new Label("Year length (simulation minutes):"), seasonLength,
-                new Label("Winter light (% of summer):"), winter, seasonValue);
+                new Label("Winter light (% of summer):"), winter, seasonValue,
+                adhesion, new Label("Remains force half-life (minutes, right end = forever):"), remainsHalfLife,
+                new Label("Rejection of foreign attraction (%):"), rejection, adhesionValue);
         content.setPadding(new Insets(5));
         getChildren().add(new TitledPane("Environment", content));
     }

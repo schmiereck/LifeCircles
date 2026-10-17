@@ -1,5 +1,11 @@
 # Abgeschlossene Schritte
 
+## Zellhaftung Stufe 1/2 (17.10.2026)
+
+- Tonus, Kraft halten bei Pause, Abklingen bei Überresten, Affinität aus Aktor- und
+  Körperfarbe mit überwindbarer Abweisung; Policy `OPEN_WORLD`, GUI-Regler, 6 neue Tests,
+  Studienkennzahlen. `ZELLVERBINDUNGEN.md`.
+
 ## Bis 17.10.2026
 
 - Physik/Vererbung, NaN-Kontakte, Mehrport-Neuronen, Modulvererbung, Trainingshänger,

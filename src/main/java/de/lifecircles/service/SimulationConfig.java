@@ -89,6 +89,41 @@ public class SimulationConfig {
         winterIntensity = factor;
     }
 
+    //-------------------------------------------------------------------------
+    // Durable adhesion (ZELLVERBINDUNGEN.md), only in policies that opt in:
+
+    private volatile boolean cellAdhesion = true;
+    /** Time constant with which the effective actor force follows the brain command. */
+    private volatile double actorForceTonusSeconds = .5;
+    /** Half-life of the forces held by remains; infinity keeps them ("wood"). */
+    private volatile double remainsForceHalfLife = 300;
+    /** Exponent applied to actor-colour and to body-type similarity. */
+    private volatile double adhesionSharpness = 4;
+    /** Share of a foreign partner's attraction that acts as repulsion instead. */
+    private volatile double adhesionRejection = .5;
+    public boolean isCellAdhesion() { return cellAdhesion; }
+    public void setCellAdhesion(boolean adhesion) { cellAdhesion = adhesion; }
+    public double getActorForceTonusSeconds() { return actorForceTonusSeconds; }
+    public void setActorForceTonusSeconds(double seconds) {
+        if (!Double.isFinite(seconds) || seconds < 0) throw new IllegalArgumentException("Tonus time constant must be finite and >= 0");
+        actorForceTonusSeconds = seconds;
+    }
+    public double getRemainsForceHalfLife() { return remainsForceHalfLife; }
+    public void setRemainsForceHalfLife(double seconds) {
+        if (Double.isNaN(seconds) || seconds <= 0) throw new IllegalArgumentException("Half-life must be > 0 (infinity allowed)");
+        remainsForceHalfLife = seconds;
+    }
+    public double getAdhesionSharpness() { return adhesionSharpness; }
+    public void setAdhesionSharpness(double exponent) {
+        if (!Double.isFinite(exponent) || exponent < 0) throw new IllegalArgumentException("Sharpness must be finite and >= 0");
+        adhesionSharpness = exponent;
+    }
+    public double getAdhesionRejection() { return adhesionRejection; }
+    public void setAdhesionRejection(double share) {
+        if (!Double.isFinite(share) || share < 0 || share > 1) throw new IllegalArgumentException("Rejection must be in [0,1]");
+        adhesionRejection = share;
+    }
+
     /** Location-dependent forms (see SunSpectrum) instead of the single sun energy type. */
     private volatile boolean sunSpectralZones = false;
     public boolean isSunSpectralZones() { return sunSpectralZones; }

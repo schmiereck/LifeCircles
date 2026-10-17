@@ -16,6 +16,7 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
  * Writes target/zone-season-study/NAME.csv, NAME-summary.txt and the final population NAME.cells.
  * -Dzone.study.load=PATH continues a saved population (e.g. an earlier NAME.cells) instead of new founders;
  * the year then starts again at mid-summer. -Dzone.study.lifespan=SECONDS overrides the maximum cell age.
+ * -Dzone.study.adhesion=false runs the colour-blind control without force tonus (ZELLVERBINDUNGEN.md).
  */
 @EnabledIfSystemProperty(named="zone.study.seconds", matches="\\d+")
 class ZoneSeasonStudyTest {
@@ -32,6 +33,7 @@ class ZoneSeasonStudyTest {
         config.setSunSpectralZones(true);config.setSeasonDuration(year);config.setWinterIntensity(winter);
         String lifespan=System.getProperty("zone.study.lifespan");
         if(lifespan!=null && !lifespan.isBlank())config.setCellDeathAge(Double.parseDouble(lifespan));
+        config.setCellAdhesion(Boolean.parseBoolean(System.getProperty("zone.study.adhesion","true")));
         NeuralNetwork.setRandom(new Random(seed));
         var strategy=new DefaultTrainStrategy();
         Environment world=strategy.initializeEnvironment();strategy.initialize(world);
@@ -72,7 +74,7 @@ class ZoneSeasonStudyTest {
         return Math.min(ZONES-1,(int)u);
     }
     static String header() {
-        StringBuilder h=new StringBuilder("t,season,living,paused,remains,activeEnzyme,meanActivity,throttled,meanAge,lifted,maxLift");
+        StringBuilder h=new StringBuilder("t,season,living,paused,remains,activeEnzyme,meanActivity,throttled,meanAge,lifted,maxLift,attractive,pausedAttractive,largestCluster,clusterRemains,clusterLift");
         for(int z=0;z<ZONES;z++){String f=SunSpectrum.ZONES.get(z).getRgbCode();
             h.append(",z").append(f).append("_living,z").append(f).append("_ownStore,z").append(f).append("_toPrimary,z").append(f).append("_activity");}
         for(EnergyType t:EnergyType.ALL)h.append(",remains_").append(t.getRgbCode());
@@ -104,6 +106,14 @@ class ZoneSeasonStudyTest {
             if(lift>LIFTED_PX)lifted++;maxLift=Math.max(maxLift,lift);
         }
         row.append(',').append(fmt(living==0?0:age/living)).append(',').append(lifted).append(',').append(fmt(maxLift));
+        int actors=0,attracting=0,pausedActors=0,pausedAttracting=0;
+        for(Cell c:world.getCellList()) if(!c.isRemains()) for(SensorActor a:c.getSensorActors()) {
+            actors++;if(a.getForceStrength()<0)attracting++;
+            if(c.isBrainPaused()){pausedActors++;if(a.getForceStrength()<0)pausedAttracting++;}
+        }
+        int[] cluster=largestContactCluster(world);
+        row.append(',').append(fmt(actors==0?0:(double)attracting/actors)).append(',').append(fmt(pausedActors==0?0:(double)pausedAttracting/pausedActors))
+                .append(',').append(cluster[0]).append(',').append(cluster[1]).append(',').append(cluster[2]);
         for(int z=0;z<ZONES;z++) row.append(',').append(zoneLiving[z]).append(',').append(fmt(zoneLiving[z]==0?0:own[z]/zoneLiving[z]))
                 .append(',').append(toPrimary[z]).append(',').append(fmt(toPrimary[z]==0?0:zoneActivity[z]/toPrimary[z]));
         for(double e:remainsEnergy)row.append(',').append(fmt(e));
@@ -122,6 +132,25 @@ class ZoneSeasonStudyTest {
         }
         return Math.max(0,surface-bottom);
     }
+    /** Contact gap that still counts as connected: actor fields reach beyond touching surfaces. */
+    static final double CONTACT_PX=2;
+    /** Largest group of touching cells (living and remains): size, remains in it, highest lift of a member. */
+    static int[] largestContactCluster(Environment world) {
+        List<Cell> cells=world.getCellList();int n=cells.size();int[] parent=new int[n];
+        for(int i=0;i<n;i++)parent[i]=i;
+        for(int i=0;i<n;i++)for(int j=i+1;j<n;j++) {
+            Cell a=cells.get(i),b=cells.get(j);double reach=a.getRadiusSize()+b.getRadiusSize()+CONTACT_PX;
+            if(a.getPosition().getShortestDirectionWithWrapAround(b.getPosition(),world.getWidth(),world.getHeight()).lengthSquared()<=reach*reach)
+                parent[root(parent,i)]=root(parent,j);
+        }
+        Map<Integer,int[]> groups=new HashMap<>();
+        for(int i=0;i<n;i++) {
+            int[] g=groups.computeIfAbsent(root(parent,i),k->new int[3]);Cell c=cells.get(i);
+            g[0]++;if(c.isRemains())g[1]++;g[2]=Math.max(g[2],(int)Math.round(liftAboveTerrain(world,c)));
+        }
+        return groups.values().stream().max(Comparator.comparingInt(g->g[0])).orElse(new int[3]);
+    }
+    static int root(int[] parent,int i){while(parent[i]!=i){parent[i]=parent[parent[i]];i=parent[i];}return i;}
     static String fmt(double v){return String.format(Locale.ROOT,"%.4f",v);}
 
     static String summary(Environment world,String name,int seconds,double year,double winter,long seed) {
@@ -132,6 +161,7 @@ class ZoneSeasonStudyTest {
             routes.merge(key,1,Integer::sum);
         }
         StringBuilder s=new StringBuilder();
+        s.append("adhesion=").append(SimulationConfig.getInstance().isCellAdhesion()).append(' ');
         s.append("run=").append(name).append(" load=").append(System.getProperty("zone.study.load","-")).append(" seconds=").append(seconds).append(" year=").append(year)
                 .append(" winter=").append(winter).append(" seed=").append(seed).append('\n');
         s.append("expressed routes of living cells by zone:\n");

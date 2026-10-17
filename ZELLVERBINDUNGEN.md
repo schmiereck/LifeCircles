@@ -1,11 +1,46 @@
 # Dauerhafte Zellverbindungen – Entwurf
 
-Status: **Entwurf, nicht umgesetzt** (17.10.2026). Ziel sind Stängel und Stützstrukturen
+Status: **Stufe 1 und 2 umgesetzt** (17.10.2026), Stufe 3 und 4 Entwurf. Ziel sind Stängel und Stützstrukturen
 aus gemeinsamer DNA, die Gehirnpausen und einzelne Todesfälle überstehen. Dazu soll
 die Abweisung fremder Zellen kommen, die starkem Druck aber nachgibt. Grundlage sind
 die bestehenden Aktorfelder (`SensorActorForceCellCalcService`), keine zweite Mechanik.
 
-## Befund im aktuellen Code
+## Umsetzung Stufe 1 und 2 (17.10.2026)
+
+Entscheidungen des Nutzers: Überreste lassen nach 300 s Halbwertszeit los, „Holz“ (∞) ist
+wählbar; Haftung kostet vorerst nichts; Mimikry soll möglich, aber durch weitere Merkmale
+auflösbar sein; erst Stufe 1/2, dann messen.
+
+- Aktiv nur in der Policy `SimulationStepPolicy.OPEN_WORLD` (Default-NONE-Welt der GUI und
+  der Zonenstudie) und wenn der GUI-Schalter „Cell adhesion“ an ist (Standard an).
+  `SimulationStepPolicy.NONE` (Testwelten) und Trainings bleiben unverändert.
+- **Tonus** (`CellAdhesionService.settleForces`, nach dem Denken): wirksame Kraft
+  `F ← F_alt + (Befehl − F_alt)·(1 − e^(−dt/τ))`, τ = 0,5 s. Pausierte Zellen
+  (`BrainEnergyService.prepare(..., holdForces)`) behalten ihre Kräfte; Energieabgabe
+  und Teilungswunsch werden weiter genullt. Überreste (`becomeRemains(true)`) behalten
+  ihre Kräfte und verlieren sie mit Halbwertszeit `remainsForceHalfLife` (300 s, GUI 1–60 min
+  oder ∞). Gespeicherte Überreste behalten ihre gespeicherten Felder (ältere Dateien: 0).
+- **Erkennung** (`SensorActorForceCellCalcService.Affinity`):
+  `a = Ähnlichkeit(Aktorfarben)^k · Ähnlichkeit(Körperfarben)^k`, k = 4, Ähnlichkeit =
+  `CellType.similarity` (1 − RMS-Abstand). Anziehung `s < 0` wirkt als `s·a − s·(1 − a)·ρ`,
+  ρ = 0,5 (GUI 0–100 %). Abstoßung wirkt wie bisher auf alle. Die Körperfarbe ist
+  vererbt und mutiert nur langsam bei der Teilung, das Gehirn kann sie nicht steuern.
+  Aktorfarben-Mimikry allein genügt daher nicht: Gleiche Aktorfarbe auf fremdem Körper
+  wird weiter abgewiesen (Test). Eine langsam evolvierte Körperfarbe kann das aufheben.
+- **Überwindbar** (Test, zwei Zellen Radius 20, alle Aktoren −90, fremde Aktorfarbe,
+  äußerer Druck 3 s): Ein bis zwei Zellgewichte (Schwerkraft 29,4) werden mit Abstand
+  abgehalten, zehn Zellgewichte drücken die Zellen in Kontakt. Grenze bei ρ = 0,5 etwa
+  drei Zellgewichte. Bei Radius 10 wirkt das Feld nur ein Viertel so stark (Größenskalierung
+  `r₁·r₂/r_max²`), dort reicht ein Zellgewicht.
+- Tests: `CellAdhesionTest` (6), GUI in `MainControllerLayoutTest`; unverändert grün:
+  `ForceSignTest`, `PhysicsRegressionTest`, Gehirnenergie-, Notatmungs-, Drossel- und
+  Vererbungstests.
+- Zonenstudie: Schalter `-Dzone.study.adhesion=false` für die Kontrolle; neue Spalten
+  `attractive` (Anteil anziehender Aktoren lebender Zellen), `pausedAttractive` (dasselbe
+  bei pausierten), `largestCluster` (größte Gruppe sich berührender Zellen inkl. Überresten,
+  Spalt ≤ 2 px), `clusterRemains`, `clusterLift` (höchste Zelle dieser Gruppe über Gelände).
+
+## Befund vor der Umsetzung
 
 | Situation | Was mit den Aktorkräften passiert | Stelle |
 |---|---|---|

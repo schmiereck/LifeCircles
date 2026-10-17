@@ -17,6 +17,7 @@ public class SensorActor implements SensableActor, Serializable {
     private final double sinAngleOnCell;
     private CellType type;
     private double forceStrength; // Negative for attraction, positive for repulsion
+    private double heldForce; // Tonus: effective force after the last settle; old saves start relaxed at 0
     // temporarily stores the sensed actor and its cell
     private transient SensableActor sensedActor; // Nicht serialisierbar
     private transient SensableCell sensedCell;  // Nicht serialisierbar
@@ -94,6 +95,18 @@ public class SensorActor implements SensableActor, Serializable {
         } else {
             this.forceStrength = Math.min(SimulationConfig.getInstance().getCellActorMaxRepulsiveForceStrength(), forceStrength);
         }
+    }
+
+    /** Tonus: move from the held force toward the latest command by alpha; without a new command nothing changes. */
+    public void settleForce(double alpha) {
+        forceStrength = heldForce + (forceStrength - heldForce) * alpha;
+        heldForce = forceStrength;
+    }
+
+    /** Remains: the held force fades by factor, no command can renew it. */
+    public void decayForce(double factor) {
+        forceStrength *= factor;
+        heldForce = forceStrength;
     }
 
     /** Exposes parent cell for dynamic sensor field radius */

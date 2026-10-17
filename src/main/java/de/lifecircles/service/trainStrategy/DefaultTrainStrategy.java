@@ -12,7 +12,7 @@ import java.util.Random;
  * Default training strategy: no special behavior (random initialization, no selection).
  */
 public class DefaultTrainStrategy implements TrainStrategy {
-    @Override public SimulationStepPolicy stepPolicy() { return SimulationStepPolicy.NONE; }
+    @Override public SimulationStepPolicy stepPolicy() { return SimulationStepPolicy.OPEN_WORLD; }
     private final SimulationConfig config = SimulationConfig.getInstance();
 
     @Override

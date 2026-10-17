@@ -10,12 +10,19 @@ public interface SimulationStepPolicy {
         @Override public boolean keepRemains() { return true; }
     };
     SimulationStepPolicy DISCARD_REMAINS = new SimulationStepPolicy() {};
+    /** Open NONE worlds: remains plus the switchable durable adhesion (ZELLVERBINDUNGEN.md). */
+    SimulationStepPolicy OPEN_WORLD = new SimulationStepPolicy() {
+        @Override public boolean keepRemains() { return true; }
+        @Override public boolean useCellAdhesion() { return SimulationConfig.getInstance().isCellAdhesion(); }
+    };
     /** Training/evaluation episodes retain their former membership semantics unless opted in. */
     default boolean keepRemains() { return false; }
     default boolean useSunlight() { return true; }
     default boolean useEnergyConversion() { return true; }
     /** Innate on-demand 000 -> 001 brain respiration; follows the metabolism switch by default. */
     default boolean useBasalBrainRespiration() { return useEnergyConversion(); }
+    /** Force tonus across pause/death and colour/type affinity; off for legacy and training worlds. */
+    default boolean useCellAdhesion() { return false; }
     default BrainEnergyCosts brainEnergyCosts() { return SimulationConfig.getInstance().getBrainEnergyCosts(); }
     default void afterThinking(Cell cell) {}
     default boolean isDead(Cell cell) {

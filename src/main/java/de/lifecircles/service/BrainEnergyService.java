@@ -10,7 +10,9 @@ public final class BrainEnergyService {
     public static final double BASAL_MAX_INPUT_PER_SECOND=SimulationConfig.ENERGY_DECAY_RATE;
     private BrainEnergyService() {}
     public static boolean prepare(Cell cell,double dt,BrainEnergyCosts costs) { return prepare(cell,dt,costs,true); }
-    public static boolean prepare(Cell cell,double dt,BrainEnergyCosts costs,boolean basal) {
+    public static boolean prepare(Cell cell,double dt,BrainEnergyCosts costs,boolean basal) { return prepare(cell,dt,costs,basal,false); }
+    /** holdForces: a paused cell keeps its actor fields (tonus, see ZELLVERBINDUNGEN.md). */
+    public static boolean prepare(Cell cell,double dt,BrainEnergyCosts costs,boolean basal,boolean holdForces) {
         if(!Double.isFinite(dt) || dt<0)throw new IllegalArgumentException("Invalid brain time step");
         cell.authorizeBrainDecision(false);
         if(cell.isRemains())return false;
@@ -27,7 +29,7 @@ public final class BrainEnergyService {
         double remaining=Math.max(0,energy-storage);
         cell.setEnergy(EnergyType.SECONDARY,remaining);
         boolean permitted=maintained && remaining>=reserve;
-        cell.setBrainPaused(!permitted);
+        cell.setBrainPaused(!permitted,holdForces);
         cell.authorizeBrainDecision(permitted);
         return permitted;
     }

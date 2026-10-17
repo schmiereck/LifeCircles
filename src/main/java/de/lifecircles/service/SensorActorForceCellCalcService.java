@@ -7,13 +7,35 @@ import java.util.ArrayList;
 
 /** Sensor fields use negative strength for attraction and positive strength for repulsion. */
 public class SensorActorForceCellCalcService {
-    private record Candidate(Cell cell, double range, double scale) {}
+    private record Candidate(Cell cell, double range, double scale, double typeAffinity) {}
+
+    /**
+     * Key-lock adhesion: attraction acts in full only between similar actor colours on cells of
+     * similar body type; toward a foreign partner the rest of it acts as bounded repulsion.
+     */
+    public record Affinity(double sharpness, double rejection) {
+        public static Affinity fromConfig() {
+            SimulationConfig config = SimulationConfig.getInstance();
+            return new Affinity(config.getAdhesionSharpness(), config.getAdhesionRejection());
+        }
+        double of(CellType a, CellType b) { return Math.pow(Math.max(0, a.similarity(b)), sharpness); }
+        /** Symmetric in both partners, so action and reaction stay equal. */
+        double effective(double strength, double affinity) {
+            return strength < 0 ? strength * affinity - strength * (1 - affinity) * rejection : strength;
+        }
+    }
     public static void processInteractions(final List<Cell> cells, final PartitioningStrategy partitioner) {
         processInteractions(cells, partitioner, Environment.getInstance());
     }
 
     public static void processInteractions(final List<Cell> cells, final PartitioningStrategy partitioner,
                                            final Environment environment) {
+        processInteractions(cells, partitioner, environment, null);
+    }
+
+    /** affinity null keeps the original colour-blind fields. */
+    public static void processInteractions(final List<Cell> cells, final PartitioningStrategy partitioner,
+                                           final Environment environment, final Affinity affinity) {
         final double width = environment.getWidth();
         final double height = environment.getHeight();
         final double softening = SimulationConfig.getInstance().getActorFieldSofteningFraction();
@@ -38,7 +60,8 @@ public class SensorActorForceCellCalcService {
                 double cutoff = cell.getRadiusSize() + other.getRadiusSize() + Math.max(ownRange, otherRange);
                 if (cell.getPosition().getShortestDirectionWithWrapAround(other.getPosition(), width, height)
                         .lengthSquared() <= cutoff * cutoff)
-                    candidates.add(new Candidate(other, otherRange, cell.getRadiusSize() * other.getRadiusSize() / maxRadiusSquared));
+                    candidates.add(new Candidate(other, otherRange, cell.getRadiusSize() * other.getRadiusSize() / maxRadiusSquared,
+                            affinity == null ? 1 : affinity.of(cell.getType(), other.getType())));
             }
             for (SensorActor actor : cell.getSensorActors()) {
                 double nearest = Double.POSITIVE_INFINITY;
@@ -70,9 +93,15 @@ public class SensorActorForceCellCalcService {
                         if (distance <= 1e-12) continue;
                         // Received field plus the reaction to our emitted field.
                         double strength = 0;
-                        if (distance < otherRange) strength += otherActor.getForceStrength() * (1 - distance / otherRange)
+                        double received = otherActor.getForceStrength(), emitted = actor.getForceStrength();
+                        if (affinity != null && (received < 0 || emitted < 0)) {
+                            double a = candidate.typeAffinity() * affinity.of(actor.getType(), otherActor.getType());
+                            received = affinity.effective(received, a);
+                            emitted = affinity.effective(emitted, a);
+                        }
+                        if (distance < otherRange) strength += received * (1 - distance / otherRange)
                                 / Math.max(distance, otherRange * softening);
-                        if (distance < ownRange) strength += actor.getForceStrength() * (1 - distance / ownRange)
+                        if (distance < ownRange) strength += emitted * (1 - distance / ownRange)
                                 / Math.max(distance, ownRange * softening);
                         if (strength != 0) {
                             // towardOtherActor points TO the other actor. The minus sign
