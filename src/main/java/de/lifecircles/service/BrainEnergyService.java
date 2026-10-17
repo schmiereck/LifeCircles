@@ -11,11 +11,13 @@ public final class BrainEnergyService {
         cell.authorizeBrainDecision(false);
         if(cell.isRemains())return false;
         double energy=cell.getEnergy(EnergyType.SECONDARY);
-        double storage=costs.storageCost(cell.getBrain().getSynapseCount(),dt);
+        double storage=costs.storage()==0?0:costs.storageCost(cell.getBrain().getSynapseCount(),dt);
         boolean maintained=energy>=storage;
         double remaining=Math.max(0,energy-storage);
         cell.setEnergy(EnergyType.SECONDARY,remaining);
-        double reserve=costs.work()==0?0:costs.workCost(cell.getBrain().getMaximumProcessedSynapses());
+        // An unpaid storage bill already forbids thinking; do not walk the entire
+        // network again to reserve work that cannot run. Free experiments need no census.
+        double reserve=!maintained || costs.work()==0?0:costs.workCost(cell.getBrain().getMaximumProcessedSynapses());
         boolean permitted=maintained && remaining>=reserve;
         cell.setBrainPaused(!permitted);
         cell.authorizeBrainDecision(permitted);

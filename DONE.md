@@ -16,6 +16,16 @@
 
 Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erledigt markieren.
 
+## Performance der Gehirnfinanzierung (17.10.2026)
+
+- Serielle Vorabprüfung aus `daf8fb0` als zusätzlichen Engpass nachgewiesen;
+  Finanzierung und Eingabeerzeugung mit getrennten, vollständigen Phasenbarrieren parallelisiert.
+- Unnötige Genzählung bei kostenlosen Gehirnen und Arbeitsprüfung bei unbezahltem
+  Speicher entfallen. Energiepreise und Pausenregeln unverändert.
+- 2000-Zellen-Vergleich: 58,996 → 34,935 ms/Schritt; Zustandsprüfsumme über 180
+  Schritte bitgenau gleich. 139 gezielte Tests erfolgreich. Konkreter Nutzerlauf offen.
+- Messbedingungen und reproduzierbare Diagnose: `PERFORMANCE_REGRESSION_2026_10_17.md`.
+
 ## Acht Formen, Sensoren und Überreste (17.10.2026)
 
 - `3702b83`: dauerhaftes Projektgedächtnis und AGENTS-Regeln angelegt.

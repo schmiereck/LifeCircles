@@ -2,6 +2,12 @@
 
 Aktualisiert: 17.10.2026. Branch `master`.
 
+- Performance-Regression der neuen Gehirnfinanzierung behoben: unabhängige
+  Finanzierungsprüfungen und Eingabeerzeugung parallel, unveränderte Phasenbarrieren.
+  Lokaler Vergleich mit 2000 Zellen: 59 → 35 ms/Schritt, identische Zustandsprüfsumme
+  über 180 Schritte; 139 gezielte Tests erfolgreich. Der konkrete gemeldete 2500er-Lauf
+  ist noch nicht nachgemessen. Siehe `PERFORMANCE_REGRESSION_2026_10_17.md`.
+
 - Physik-, Vererbungs-, Netzsteuerungs-, Training- und Snapshotkorrekturen sind aktiv.
 - DNA-erhaltender Ausführungsplan aktiv; bisherige Energieabrechnung bleibt erhalten.
   Siehe `NETZAUSFUEHRUNG.md`: frühere Messung vor der Achtenergie-Erweiterung mit

@@ -178,9 +178,14 @@ public class Environment {
         profiler.finish(SimulationProfiler.Phase.INTEGRATION, phaseStart);
         phaseStart = profiler.start();
         final boolean[] canThink=new boolean[cellList.size()];
-        for(int i=0;i<cellList.size();i++)canThink[i]=BrainEnergyService.prepare(cellList.get(i),deltaTime,brainCosts);
+        // Per-cell financing does not read neighbors. Finish every debit/output pause
+        // before generating any inputs, so sensors still see one consistent state.
+        IntStream.range(0,cellList.size()).parallel().forEach(i ->
+                canThink[i]=BrainEnergyService.prepare(cellList.get(i),deltaTime,brainCosts));
+        profiler.finish(SimulationProfiler.Phase.BRAIN_FUNDING, phaseStart);
+        phaseStart = profiler.start();
         // Freeze all sensed inputs before any worker changes energy, age or outputs.
-        final List<double[]> brainInputs = IntStream.range(0,cellList.size()).mapToObj(i -> canThink[i]?
+        final List<double[]> brainInputs = IntStream.range(0,cellList.size()).parallel().mapToObj(i -> canThink[i]?
                 CellBrainService.generateInputs(cellList.get(i),this):null).toList();
         profiler.finish(SimulationProfiler.Phase.INPUTS, phaseStart);
         phaseStart = profiler.start();

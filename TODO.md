@@ -2,6 +2,9 @@
 
 ## Aktueller Auftrag
 
+- [x] Performance-Regression nach funktionaler Gehirnenergie untersuchen und seriellen Engpass beheben.
+- [ ] Wirkung des Fixes im gemeldeten langsamen 2500er-Lauf nach GUI-Neustart nachmessen.
+
 - [x] Feste Zuordnung 000 → Erhalt, 001 → Gehirn; Mangel, Erholung, Gründerbudgets und Altpopulationen prüfen.
 - [x] Umwandlungsregeln an Specialization koppeln; gemeinsame vererbbare Tabelle und Zellketten prüfen.
 - [x] Default-Gründer auf 48 versteckte Neuronen verkleinern, einschließlich Zustandsnetzen.
