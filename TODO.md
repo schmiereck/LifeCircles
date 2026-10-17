@@ -15,7 +15,8 @@
 - [x] Veralteten Test `InheritanceRegressionTest.reproductionUsesChildStateBeforeFirstThink…`
   an „kein kostenloser Geburtsgedanke“ angepasst: prüft die Eingaben der ersten Entscheidung.
 - [x] Langlauf mit Zonen: Fremdformen in lebenden Zellen und Überresten, Nischen an Grenzen.
-- [ ] Folgelauf mit milderem Winter (50 %) bzw. längerem Jahr; Drossel/Jahreszeit erneut prüfen.
+- [x] Folgelauf mit milderem Winter (50 %): Fremdzonen sterben weiterhin im ersten Jahr.
+- [ ] Jahreszeiten auf angepasste Population (Fortsetzung von B) bzw. längeres Jahr anwenden.
 - [ ] Ursache der leeren 010-Zone klären (Zonenreihenfolge, Geländeblocker, Zuwanderung).
 - [ ] Warum wird Aas mit Fremdformen kaum gefressen? Aasfresser-Nische gezielt prüfen.
 

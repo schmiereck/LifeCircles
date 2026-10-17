@@ -49,10 +49,37 @@ Enzyme in der zweiten Hälfte 0,973 (A) bzw. 0,974 (B); gedrosselt (< 0,99) 57 %
 bzw. 21 % (B). A: Sommer 0,987 vs. Winter 0,985, kein Jahreszeiteneffekt. Wahrscheinlich
 neutrale Drift der Bias-Mutationen, keine gelernte Vorratsstrategie.
 
+## Folgelauf C: Winterlicht 50 % (17.10.2026)
+
+Gleiche Einstellungen wie A, nur Winterlicht 50 %; Laufzeit 377 s. Daten:
+`target/zone-season-study/seasons50.*` (lokal).
+
+| | A (25 %) | C (50 %) | B (ohne) |
+|---|---|---|---|
+| Lebende Zellen, Min / Max | 12 / 367 | 44 / 344 | 227 / 528 |
+| Mittel zweite Hälfte | 59 | 99 | 422 |
+| Fremdzonen | ab ~420 s leer | ab ~180 s leer, 100 kurz wiederbesiedelt (19 Zellen bei 660 s) | 001 und 100 dauerhaft |
+| Aktivität aktiver Enzyme, Sommer / Winter* | 0,983 / 0,978 | 0,927 / 0,932 | — |
+| Anteil gedrosselt, zweite Hälfte | 57 % | 91 % | 21 % |
+
+\* gewichtet nach Zahl aktiver Enzyme, Messungen ohne aktives Enzym ausgelassen.
+
+- Auch 50 % Winterlicht reicht nicht: Die Population fällt jeden Winter von etwa
+  125–235 auf 50–95, die Fremdzonen sterben schon im ersten Jahr.
+- Aas (C, Ende): 010 ≈ 56, 100 ≈ 33, 001 ≈ 27, 000 = 0; seit der Laufmitte unverändert,
+  stammt also aus den ersten Jahren und wird nicht gefressen.
+- In der 000-Zone tragen lebende Zellen bereits Routen Fremdform → 000
+  (010 → 000: 11, 011 → 000: 5, 111 → 000: 4 von 64), aber kaum Fremdvorräte:
+  potenzielle Aasfresser, die das vorhandene Aas nicht erreichen oder nicht aufnehmen.
+- Die Drossel wird stärker genutzt als in A/B, aber wieder ohne Jahreszeiteneffekt:
+  weiterhin Drift, keine Vorratsstrategie.
+
 ## Folgerungen
 
-- 25 % Winterlicht ist in dieser Welt zu hart: Fremdzonen sterben, bevor Selektion
-  wirken kann. Nächster Versuch: Winterlicht 50 % und/oder längeres Jahr.
+- 25 % und auch 50 % Winterlicht sind ab Weltbeginn zu hart: Gründer in Fremdzonen
+  sterben, bevor passende Enzyme evolvieren; aus der 000-Zone wandert danach niemand
+  mit passender Route ein. Nächster Versuch: Jahreszeiten erst auf eine bereits
+  angepasste Population anwenden (Fortsetzung von B) und/oder deutlich längeres Jahr.
 - 010-Zone: ohne 000-Nachbarn keine Besiedlung beobachtet; prüfen, ob Zonenreihenfolge,
   Geländeblocker in diesem Bereich oder fehlende Zuwanderung die Ursache sind.
 - Aas mit Fremdformen entsteht, wird aber kaum gefressen. Mögliche Hebel: Aasdichte,
