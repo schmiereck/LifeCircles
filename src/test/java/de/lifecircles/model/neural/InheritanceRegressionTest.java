@@ -211,9 +211,12 @@ class InheritanceRegressionTest {
         Cell child = ReproductionManagerService.reproduce(config, world, parent);
         assertNotNull(child);
         assertEquals(7, child.getCellState()); assertEquals(5, child.getGeneration());
-        assertEquals(1, child.getBrain().getInputValue(GlobalInputFeature.MY_CELL_STATE_0.ordinal()), 0);
-        assertEquals(1, child.getBrain().getInputValue(GlobalInputFeature.MY_CELL_STATE_1.ordinal()), 0);
-        assertEquals(1, child.getBrain().getInputValue(GlobalInputFeature.MY_CELL_STATE_2.ordinal()), 0);
+        // Newborns no longer think for free at birth; their first funded decision must see state 7.
+        double[] firstInputs = CellBrainService.generateInputs(child);
+        assertEquals(1, firstInputs[GlobalInputFeature.MY_CELL_STATE_0.ordinal()], 0);
+        assertEquals(1, firstInputs[GlobalInputFeature.MY_CELL_STATE_1.ordinal()], 0);
+        assertEquals(1, firstInputs[GlobalInputFeature.MY_CELL_STATE_2.ordinal()], 0);
+        assertFalse(child.getBrain() instanceof CellBrain brain && brain.getProccessedSynapses() > 0);
         assertEquals(0.8, parent.getEnergy() + child.getEnergy(), 1e-12);
         assertEquals(0.2, child.getEnergy(), 1e-12);
         assertEquals(parent.getAngularVelocity(), child.getAngularVelocity(), 0);

@@ -12,8 +12,8 @@
 - [x] Jahreszeiten, in der GUI regelbar (Dauer, Wintertiefe).
 - [x] Neuronale Drosselung der Enzymaktivität (angehängter Ausgang, verlustfreie Migration).
 - [ ] Prüfen, ob Winter Vorratshaltung in Fremdformen belohnt und die Drossel genutzt wird.
-- [ ] Veralteten Test `InheritanceRegressionTest.reproductionUsesChildStateBeforeFirstThink…`
-  an „kein kostenloser Geburtsgedanke“ anpassen (schlug schon vor der Enzymdrossel fehl).
+- [x] Veralteten Test `InheritanceRegressionTest.reproductionUsesChildStateBeforeFirstThink…`
+  an „kein kostenloser Geburtsgedanke“ angepasst: prüft die Eingaben der ersten Entscheidung.
 - [ ] Langlauf mit Zonen: Fremdformen in lebenden Zellen und Überresten, Nischen an Grenzen.
 
 - [x] Performance-Regression nach funktionaler Gehirnenergie untersuchen und seriellen Engpass beheben.

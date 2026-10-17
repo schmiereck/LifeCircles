@@ -22,7 +22,8 @@ Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erl
   `Cell.enzymeThrottle`; Umwandlungsdurchsatz × Aktivität; Anzeige im Zelldialog.
 - `EnzymeThrottleTest` (Abbildung, bitgenaue Migration, Gründer, Altdatei, Durchsatz,
   feste Controller, Pause). 262 von 263 gezielten Tests erfolgreich,
-  `target/enzyme-throttle-tests.log`; der eine Fehlschlag bestand schon vorher (siehe TODO).
+  `target/enzyme-throttle-tests.log`; der eine Fehlschlag bestand schon vorher und ist
+  inzwischen angepasst (`InheritanceRegressionTest`, 12/12).
 
 ## Jahreszeiten und Sonnenkurve (17.10.2026)
 
