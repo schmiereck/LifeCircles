@@ -10,6 +10,20 @@ public class CellBrain implements CellBrainInterface, Serializable {
     private static final long serialVersionUID = 1L;
     private final NeuralNetwork network;
 
+    /** Compact founding genotype; interfaces do not determine the hidden network size. */
+    public static CellBrain createDefault() {
+        var factory = new ValuesNeuronValueFunctionFactory();
+        var network = new NeuralNetwork(factory,
+                de.lifecircles.model.CellFactory.calcInputCount(SimulationConfig.CELL_SENSOR_ACTOR_COUNT),
+                new int[]{SimulationConfig.DEFAULT_BRAIN_TRUNK_NEURONS},
+                de.lifecircles.model.CellFactory.calcOutputCount(SimulationConfig.CELL_SENSOR_ACTOR_COUNT),
+                SimulationConfig.DEFAULT_BRAIN_CONNECTIVITY, SimulationConfig.CELL_STATE_ACTIVE_LAYER_COUNT);
+        network.setEnableNeuronType(true);
+        network.getNeuralNet().addParallelStateLayers(factory, network.getNeuronValueFunction(),
+                SimulationConfig.DEFAULT_BRAIN_STATE_NEURONS, SimulationConfig.DEFAULT_BRAIN_STATE_CONNECTIVITY);
+        return new CellBrain(network);
+    }
+
     /**
      * Erstellt ein neues CellBrain mit angegebener Synapsen-Konnektivität.
      *

@@ -42,3 +42,16 @@ Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erl
   pausierter neuer Welt, aktualisiertem Fenstertitel und zurückgesetzter Kamera/Details.
 - Abschlussprüfung: 70 Tests erfolgreich; Protokoll lokal
   `target/carrion-scenario-complete-tests.log`. Kein langer Evolutionslauf gestartet.
+
+## Kompakte Default-Gründer (17.10.2026)
+
+- Default-Fabrik mit 48 versteckten Neuronen statt 590: 24 gemeinsam, drei
+  Zustandsgruppen à acht; 316 Eingänge/133 Ausgänge bleiben erhalten.
+- NONE und HIGH_ENERGY nutzen nun ebenfalls diese Default-Fabrik. Explizite
+  Versuchsdimensionen, geladene Genome und Vererbung bleiben unabhängig davon.
+- Wegen der kleineren Breite höhere Verbindungsdichten: 0,1 im gemeinsamen Netz,
+  0,025 für Zustandsgruppen. Einzelvergleich mit Seed 417: 4.275 → 1.303 Synapsen;
+  niedrigere Speichergebühr, keine gemessene Ganzwelt-Performanceaussage.
+- 71 gezielte Tests erfolgreich, darunter Sensorreaktion, Zustandssteuerung,
+  unabhängige Vererbung, Migration, Aasregen und bestehende Trainingsstrategien.
+  Lokales Protokoll: `target/compact-founder-final-tests.log`.

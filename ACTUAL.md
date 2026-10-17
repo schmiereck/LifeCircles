@@ -7,6 +7,11 @@ Aktualisiert: 17.10.2026. Branch `master`.
   Siehe `NETZAUSFUEHRUNG.md`: frühere Messung vor der Achtenergie-Erweiterung mit
   42,1 Mio. bitgenau gleichen Ausgaben und isoliert ca. 1,20× schnellerer Ausführung.
 - GUI unten: Environment (Sonnenrate/-energieform), Cell (Gehirnkosten/Lebensdauer).
+- Neue Default-Gründer (u.a. NONE, HIGH_ENERGY, CARRION_RAIN): 48 versteckte
+  Neuronen, davon 24 gemeinsam und 3 × 8 für Zustände. Schnittstelle weiterhin
+  316 Eingänge / 133 Ausgänge. Vorher 590 versteckte Neuronen. Bestehende/importierte
+  DNA und explizit parametrierte Versuchskonstruktoren werden nicht verkleinert.
+  71 gezielte Tests zum kompakten Default und betroffenen Netz-/Trainingspfaden bestehen.
 - Acht unabhängige Energieformen mit RGB-Codes 000..111, jeweils [0,1]. Alte Primär-
   und Sekundärwerte bleiben erhalten; sechs neue Vorräte beginnen leer. Siehe `MEHRERE_ENERGIEN.md`.
 - Eigene und benachbarte Vorräte sind vollständig sensorisch zugänglich. Für zwölf

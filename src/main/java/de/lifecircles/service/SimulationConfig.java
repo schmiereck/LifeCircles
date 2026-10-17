@@ -157,6 +157,13 @@ public class SimulationConfig {
     /**
      * Default synapse connectivity for the neural network (0 - 1.0).
      */
+    // Founders: 24 shared hidden neurons plus three independently gated experts of eight.
+    public static final int DEFAULT_BRAIN_TRUNK_NEURONS = 24;
+    public static final int DEFAULT_BRAIN_STATE_NEURONS = 8;
+    public static final double DEFAULT_BRAIN_CONNECTIVITY = 0.1;
+    public static final double DEFAULT_BRAIN_STATE_CONNECTIVITY = 0.025;
+
+    // Historical factor-based settings for explicit experimental constructors/studies only.
     public static double hiddenLayerSynapseConnectivityDefault = 0.025D;
     public static double stateHiddenLayerSynapseConnectivityDefault = 0.005D;
     public static double hiddenCountFactorDefault = 1.4D;

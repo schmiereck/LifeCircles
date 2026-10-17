@@ -8,6 +8,9 @@ Implementiert am 17.10.2026 als `TrainMode.CARRION_RAIN`.
 - Eine lebende Gründerzelle je Kammer, identisch auf 0,18 Primärenergie initialisiert.
   Alle anderen Reserven beginnen leer. Das ist eine ausdrücklich neue Trainingsepisode,
   keine biologische Teilung. Gehirnzustand, Alter und Bewegung werden zurückgesetzt.
+- Neue zufällige Genome verwenden den kompakten Default mit 48 versteckten Neuronen
+  (24 gemeinsam + drei Zustandsgruppen à acht). Die 316 Eingänge und 133 Ausgänge
+  kommen hinzu. Geladene Genome behalten ihre Größe; Evolution ist nicht auf 48 begrenzt.
 - Keine Sonne, unabhängig vom Sonnenregler. Keine biologische Teilung. Kräfte,
   Größensteuerung, Farben und Absorption bleiben evolvierbar; normale Physik gilt.
 - Ein Überrest mit Radius 8 und 0,12 Primärenergie pro Kammer zu Beginn, danach alle
@@ -34,6 +37,12 @@ Kammerflucht setzt die Fitness auf null. Ein unverändertes Elitegenom und siebe
 mutierte Nachkommen aus den drei Besten starten die nächste Episode. Jede Kopie
 hat einen eigenen Gehirnzustand. Ohne Nahrungsaufnahme reichen selbst bei kostenlosen
 Gehirnen 0,18 Energie höchstens 60 Sekunden (Grundverbrauch 0,003/s).
+
+Biologische Teilung ist hier gesperrt und kann nicht erlernt werden. Vermehrung findet
+als kontrollierter Genomwechsel zwischen Episoden statt. Der Aufnahmebonus belohnt
+Nahrungserwerb; er ist kein reines Effizienzkriterium und kann auch erhöhten Verbrauch
+mit anschließendem Nachfüllen honorieren. Fortpflanzungserfolg und Kooperation sind
+noch keine Auswahlkriterien dieses ersten Nahrungserwerb-Trainings.
 
 Statuszeile: Generation, Episodenzeit, insgesamt aufgenommene Futterenergie und
 Futterzufuhr der laufenden Episode; Bestwert der letzten Episode. Das Konsolenprotokoll

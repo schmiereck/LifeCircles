@@ -6,9 +6,7 @@ import de.lifecircles.service.SimulationConfig;
 public abstract class CellFactory {
 
     public static Cell createCell(final Vector2D position, final double radiusSize) {
-        return createCell(position, radiusSize, SimulationConfig.hiddenCountFactorDefault,
-                SimulationConfig.stateHiddenLayerSynapseConnectivityDefault,
-                SimulationConfig.hiddenLayerSynapseConnectivityDefault);
+        return new Cell(position, radiusSize, CellBrain.createDefault());
     }
 
     public static Cell createCell(final Vector2D position, final double radiusSize, final double hiddenCountFactor,

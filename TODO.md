@@ -2,6 +2,7 @@
 
 ## Aktueller Auftrag
 
+- [x] Default-Gründer auf 48 versteckte Neuronen verkleinern, einschließlich Zustandsnetzen.
 - [x] Aasregen-Training ohne Sonne mit kleinen Kontrollwelten und Futterbilanz.
 - [x] Oben „New…“ mit Szenarioauswahl und konsistentem Neustart anbieten.
 - [x] Energieformen auf acht RGB-Bitkombinationen erweitern.
