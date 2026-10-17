@@ -1,5 +1,9 @@
 # DNA-erhaltender Ausführungsplan und einstellbare Gehirnkosten
 
+Aktueller Modellzusatz: [acht Energieformen mit erweiterter Sensorik](MEHRERE_ENERGIEN.md)
+und [Überreste im NONE-Modus](UEBERRESTE.md). Die unten archivierten Zeitmessungen
+stammen vor dieser Erweiterung; sie sind keine Messung ihrer zusätzlichen Kosten.
+
 Stand: 16.10.2026, Java 25.0.3. Implementierung auf `master`, in der Simulation
 standardmäßig aktiv. Die GUI muss für diesen Stand neu gestartet werden.
 

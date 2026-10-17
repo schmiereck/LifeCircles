@@ -2,11 +2,11 @@
 
 ## Aktueller Auftrag
 
-- [ ] Energieformen auf acht RGB-Bitkombinationen erweitern.
-- [ ] Eigene und benachbarte Energievorräte sensorisch zugänglich machen.
-- [ ] Bestehende DNA/Dateien mit Tests migrieren; alte Sensorpositionen erhalten.
-- [ ] Überreste als normale, nicht denkende Zellen; normale Absorption bis leer.
-- [ ] Projektgedächtnis und thematische Dokumente auf Abschlussstand bringen.
+- [x] Energieformen auf acht RGB-Bitkombinationen erweitern.
+- [x] Eigene und benachbarte Energievorräte sensorisch zugänglich machen.
+- [x] Bestehende DNA/Dateien mit Tests migrieren; alte Sensorpositionen erhalten.
+- [x] Überreste als normale, nicht denkende Zellen; normale Absorption bis leer.
+- [x] Projektgedächtnis und thematische Dokumente auf Abschlussstand bringen.
 
 ## Anschließend
 

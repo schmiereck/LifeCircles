@@ -1,7 +1,8 @@
 # Energie zwischen Zellen
 
-Seit 17.10.2026 gelten die konservativen Transferregeln getrennt für Primär- und
-Sekundärenergie: [Mehrere Energieformen](MEHRERE_ENERGIEN.md).
+Seit 17.10.2026 gelten die konservativen Transferregeln getrennt für acht RGB-codierte
+Energieformen: [Mehrere Energieformen](MEHRERE_ENERGIEN.md). Überreste bleiben normale
+Zellen und lassen sich über dieselbe Absorption leeren: [UEBERRESTE.md](UEBERRESTE.md).
 
 ## Befund und Korrektur (16.10.2026)
 

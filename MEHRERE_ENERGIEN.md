@@ -1,114 +1,117 @@
-# Getrennte Energieformen: erster Umsetzungsschritt
+# Acht getrennte Energieformen
 
-Stand: 17.10.2026. Zwei Speicher sind implementiert; Umwandlungen, neue
-Verbrauchszuordnungen und tote Zellen als Überreste folgen in späteren Schritten.
+Stand: 17.10.2026. Acht Speicher, vollständige Energie-Sensorik und Überreste sind
+implementiert. Umwandlung und spezielle Verbrauchszuordnungen sind noch offen.
+Aktueller Überblick: [ACTUAL.md](ACTUAL.md), Aufgaben: [TODO.md](TODO.md).
 
-## Speicher und bestehende Regeln
+## RGB-Codes und Vorräte
 
-| Energieform | Kapazität pro Zelle | Anfangsvorrat neuer Zellen | Bisherige Funktion |
-|---|---:|---:|---|
-| `PRIMARY` / Primärenergie | 1,0 | 1,0 wie bisher | Grundumsatz, Gehirnkosten, Überlebens- und Teilungsbedingungen |
-| `SECONDARY` / Sekundärenergie | 1,0 | 0,0 | Getrennter Vorrat, noch ohne eigenen Verbrauch |
+| Code (R,G,B) | API-Bezeichnung | Anfangsvorrat einer neuen Zelle |
+|---|---|---:|
+| 000 | PRIMARY | 1,0 wie bisher |
+| 001 | SECONDARY | 0,0 |
+| 010 | RGB_010 | 0,0 |
+| 011 | RGB_011 | 0,0 |
+| 100 | RGB_100 | 0,0 |
+| 101 | RGB_101 | 0,0 |
+| 110 | RGB_110 | 0,0 |
+| 111 | RGB_111 | 0,0 |
 
-Die Namen legen keine chemische Bedeutung und keine spätere Zellrolle fest.
-Jeder Speicher wird unabhängig auf [0,1] begrenzt. Eine leere Sekundärreserve ist
-nicht tödlich; eine volle Sekundärreserve rettet noch nicht vor Primärenergiemangel.
-Altersgrenze und bisherige Todesregel bleiben unverändert. Beim Tod verschwinden
-Zellen weiterhin mitsamt verbleibenden Vorräten: Überreste sind noch nicht umgesetzt.
+Jede Form hat eine unabhängige Kapazität 1. RGB-Komponenten des Typs sind ausschließlich
+0 oder 1; 0,5, negative Werte und andere Komponenten werden zurückgewiesen. Die
+Füllstände selbst sind kontinuierlich in [0,1]. Diese Klassifizierung ist unabhängig
+von den bisherigen kontinuierlichen RGB-Farben der Zellen und Aktoren.
 
-Die vorhandenen Methoden `getEnergy()`, `setEnergy(value)` und `getMaxEnergy()`
-bezeichnen ausdrücklich Primärenergie. Typisierte Überladungen erlauben den Zugriff
-auf jede Form. `getTotalEnergy()` summiert die Speicher lediglich für Bilanzen;
-es ersetzt keine Überlebens-, Kosten- oder Trainingsentscheidung.
-Die beiden Vorräte liegen in skalaren Feldern; pro Zelle entstehen keine neuen
-Gehirne oder Ressourcen-Maps/-Arrays.
+Die bisherigen untypisierten Energiemethoden bezeichnen weiter PRIMARY/000.
+Gehirnkosten, Grundumsatz und Überlebens-/Teilungsbedingungen verwenden weiterhin
+Primärenergie. Andere Vorräte können nicht automatisch dafür einspringen. Getrennte
+Verbrauchsregeln und Umwandlungen werden in einem weiteren Schritt definiert.
+`getTotalEnergy()` ist eine Bilanzhilfe, keine neue Überlebensbedingung.
 
-## Sonne und GUI
+Die bisherigen serialisierten Felder für Primär- und Sekundärenergie bleiben erhalten.
+Die sechs weiteren Speicher werden nur bei Bedarf angelegt. Alte Dateien erhalten
+keine neue Energie; fehlende Vorräte sind leer. Neue Dateien speichern alle vorhandenen
+Werte und gegebenenfalls den Überrestzustand. Sie sollten mit diesem oder einem
+neueren Programmstand weiterverwendet werden.
 
-In **Environment → Sun energy form** ist Primary oder Secondary wählbar.
-Standard ist Primary. Ein Strahl liefert seine bisherige Energiemenge ausschließlich
-in den gewählten Speicher. Die Einstellung wird vor einer Strahlcharge gelesen;
-eine Änderung während der Berechnung gilt für die nächste Charge.
+## Sonne, Austausch und Teilung
 
-Ein voller Speicher leitet Energie nicht in den anderen um. Strahlzahl und Energie
-pro Strahl werden durch die Typwahl nicht erhöht. Sonnenkontakt bleibt das bisherige
-binäre Sensorsignal, unabhängig von der gewählten Form.
+Environment → Sun energy form enthält alle acht Codes. Jeder Strahl liefert seine
+bisherige Energiemenge in genau die gewählte Form. Die Einstellung gilt für eine
+vollständige Strahlcharge; es gibt keine zusätzliche Gesamtenergie durch die Auswahl.
+Ein voller Speicher leitet den Überschuss nicht in eine andere Form um.
 
-In den **Zelldetails** stehen beide Vorräte. Darstellungs-Snapshots enthalten beide
-getrennt und unveränderlich. Bisherige Energiebalken, Auswertungen und Save-best-Auswahl
-verwenden weiterhin Primärenergie. Die Quellenauswahl gilt für die laufende Anwendung
-und wird nicht als Weltkonfiguration in `.cells` gespeichert.
+Die vorhandenen Absorptions-/Delivery-Befehle wirken weiterhin gemeinsam auf alle
+Formen, werden jedoch je Form getrennt bilanziert. Pro Form/Aktor gelten die bisherigen
+Maximalraten 0,6/s für Absorption und 0,3/s für Delivery, jeweils multipliziert mit
+Ausgang, Distanzfaktor und Zeitschritt. Delivery schützt 0,1 der betreffenden Form;
+Absorption darf vollständig leeren. Knappheit und Empfängerkapazität werden proportional
+aufgeteilt. Frisch erhaltene Energie wird erst im nächsten Schritt weitergereicht.
 
-Für einen ersten Versuch kann man eine lebende Population zunächst mit Primärenergie
-versorgen und dann zeitweise Sekundärenergie einstrahlen. Dauerhaft ausschließlich
-Sekundärenergie ersetzt die notwendige Primärversorgung in diesem Schritt noch nicht.
+Leere Formen benötigen keinen eigenen Transferdurchlauf. Eine Belegungsmaske erkennt
+vorhandene Formen, ohne bei rein primären Populationen sechs nicht angelegte Speicher
+pro Zelle auslesen zu müssen. Acht gleichzeitig belegte Formen bedeuten trotzdem
+mehr Arbeit; eine neue Welt-Performancezahl wurde nicht gemessen.
 
-## Austausch und biologische Teilung
+Biologische Teilung verteilt jede Form mit dem gewählten Kindanteil. Eine gescheiterte
+Teilung verändert keinen Vorrat. Trainingsgründer sind frische Episoden mit den
+obigen Anfangswerten, keine Vervielfältigung elterlicher Ressourcen.
 
-Die bisherigen Aktorbefehle für Absorption und Delivery wirken auf **beide Formen
-getrennt**. Jede Form besitzt ihre eigene Spenderreserve, Empfängerkapazität und
-gleichzeitige Verrechnung. Es gibt keine Umwandlung und keinen Ausgleich zwischen
-den Formen. Ein voller Primärspeicher verhindert deshalb keine Sekundäraufnahme.
+## Eigene und benachbarte Energie-Sensoren
 
-Die bisherigen Raten gelten **pro Energieform und Aktor**:
+Alle acht eigenen Vorräte und die acht Vorräte des jeweils gewählten Nachbarn sind
+getrennt lesbar. Leere Sensorkanäle und Blocker liefern null. Die Energiewerte werden
+wie bisher nicht mit dem geometrischen Distanzsignal vermischt.
 
-- Delivery höchstens 0,3/s × Ausgang × Distanzfaktor; Abgabe bewahrt 0,1 dieser Form.
-- Absorption höchstens 0,6/s × Ausgang × Distanzfaktor; Entzug kann den Vorrat leeren.
+Für zwölf Aktoren hat die aktuelle Schnittstelle **316 Eingänge und 133 Ausgänge**:
 
-Bei zwei gefüllten Formen ist damit die Summe möglicher Transfers größer; jeder
-einzelne Vorrat bleibt konserviert. Beide Durchläufe sind unabhängig, ohne sofortige
-Weitergabe frisch empfangener Energie im selben Schritt. Bei ausschließlich primären
-Vorräten entfällt der zweite Transferdurchlauf; es bleibt nur eine Prüfung, ob überhaupt
-Sekundärenergie vorhanden ist. Diese Änderung enthält kein neues Performance-Versprechen
-für Populationen mit zwei aktiven Energieformen.
+- Eingänge 0..212: unveränderte ursprüngliche globale und Aktor-Sensorwerte.
+- 213..219: sieben zusätzliche eigene Energiestände.
+- 220..303: je sieben zusätzliche Nachbar-Energiestände für zwölf Aktoren.
+- 304..315: je ein Nachbarsignal für den Überrestzustand.
 
-Biologische Teilung verteilt **jede** Form mit demselben vom gewählten Aktor bestimmten
-Kindanteil. Sie erzeugt keine zusätzliche Reserve. Eine blockierte Teilung verändert
-keinen Speicher. Gehirn und Sensoren des Kindes werden erst mit seinen zugewiesenen
-Vorräten ausgewertet. Trainingsgründer bleiben dagegen ausdrücklich neue, normalisierte
-Episoden mit Primärenergie 1 und Sekundärenergie 0; sie kopieren keine Elternvorräte.
+Die Primärenergiewerte bleiben an ihren bisherigen Positionen. Indizes sind über
+`EnergyInputLayout` adressierbar; neue Werte wurden angehängt, nicht zwischen alte
+Sensorblöcke geschoben. Die Ausgabe-Schnittstelle bleibt unverändert. Unabhängige
+Austauschbefehle je Form wären eine weitere, noch offene DNA-Erweiterung.
 
-## DNA- und Dateikompatibilität
+## DNA-Migration und Kosten
 
-Die neuronale Schnittstelle bleibt bei **213 Eingängen und 133 Ausgängen** für zwölf
-Aktoren. Die vorhandenen Eigen-/Nachbar-Energiesignale melden weiterhin Primärenergie.
-Es gibt noch kein gesondertes Sekundärsignal und keine unabhängig nach Energieform
-steuerbaren Austauschbefehle. Neue Sensoren, spezialisierte Steuerung, Verbrauch und
-Umwandlung brauchen einen weiteren expliziten Schritt samt DNA-Migrationsregel.
+Alte Zellnetze mit 213 Eingängen und die zwischenzeitlichen Netze mit 304 Eingängen
+bekommen beim Laden beziehungsweise beim Binden an eine Zelle zusätzliche unverbundene
+Eingangsneuronen. Alte Positionen, Neuronen, Synapsen, Biases und Netzgedächtnis bleiben
+erhalten. Die Migration verbraucht keine Zufallsziehungen aus dem Evolutionsgenerator.
+Unabhängige kleine Labor-Netze werden nicht als Zellnetze umgedeutet.
 
-`Cell.serialVersionUID` und das bisherige Feld `double energy` bleiben erhalten.
-Die neue Sekundärreserve ist ein zusätzliches `double`-Feld; beim Lesen alter Dateien
-initialisiert Java es mit null. Alte gespeicherte Energie wird unverändert als
-Primärenergie übernommen, weder aufgeteilt noch um zusätzliche Vorräte ergänzt.
-Neue Dateien speichern beide Werte, auch bei Load & Merge.
+Die angehängten Neuronen erzeugen keine zusätzlichen Synapsengebühren oder abgearbeitete
+Verbindungen. Auslesen und Schreiben der längeren Sensorvektoren beansprucht allerdings
+CPU und Speicher. Neue Genome können von Anfang an Verbindungen zu diesen Signalen
+haben. Bei neuen Standard-Zellnetzen wird die versteckte Kapazität nach der bisherigen
+Basisdimension bemessen, damit die reine Sensorerweiterung nicht automatisch große
+zusätzliche versteckte Schichten erzeugt.
 
-Die Kompatibilitätsprüfung verwendet eine **echte Datei vom Stand vor der Änderung**:
-[Fixture und Prüfsumme](src/test/resources/energy/README.md). Die Rückwärtsrichtung
-ist nicht zugesichert: Alte Programmversionen kennen die neuen Reserven nicht und
-könnten sie beim erneuten Speichern verlieren. Neue Spielstände sollten daher mit
-diesem oder einem neueren Stand weiterverwendet werden.
+Gleiche alte Ausgaben beweisen nicht, dass alte DNA sofort auf neue Ressourcen reagiert:
+Die neuen Eingänge sind zunächst unverbunden. Eine solche Reaktion muss sich durch
+weitere Mutation/Evolution entwickeln. Erweiterte Genotypen haben außerdem zusätzliche
+mögliche Eingangsknoten für künftige Strukturmutation.
 
-## Prüfungen
+Eine echte Datei vor der Mehrenergie-Erweiterung liegt unter
+[src/test/resources/energy](src/test/resources/energy/README.md). Getestet sind außerdem
+warme rekurrente Netze vor und nach der Migration, mit identischen Ausgaben und
+abgerechneten Synapsenausführungen.
 
-158 gezielte Tests bestanden. Neue Tests sichern getrennte Kapazitäten, echte alte
-Dateien, neue Save/Load-Rundläufe, Sonnenquellenwahl, getrennte Transfers bei knappen
-Reserven, vollen Empfängern, 30/60/120 Hz, umsortierten dichten Kontakten und periodischen
-Welträndern. Teilung, gescheiterte und wiederholte Teilung sowie die unveränderte
-Primär-Sterberegel sind ebenfalls geprüft.
+## GUI, Überreste und Nachweise
 
-Eine deterministische Welt mit drei Zellen und fest verdrahteter Weitergabe läuft
-1000 Schritte mit vollständiger Physik und echter Sensorerkennung: Die Summe der
-Sekundärenergie bleibt 1,2; die anfänglich 2,4 Primärenergie sinkt exakt um den
-Grundumsatz aller drei Zellen. Sekundärenergie erreicht dabei die dritte Zelle.
-Das prüft den Kreislauf ohne Umwandlung und ohne zusätzliche Energiequelle.
+Zelldetails und unveränderliche Darstellungs-Snapshots enthalten alle acht Vorräte.
+Bisherige Energiebalken und Fitness-/Save-best-Auswahl verwenden weiterhin Primärenergie.
+Überreste bleiben normale Zellen und werden über die normale Absorption geleert;
+Regeln und Grenzen: [UEBERRESTE.md](UEBERRESTE.md).
 
-Zusätzlich bestanden bestehende Prüfungen für Sonnenindex, Physik, Darstellung,
-Dateiimport, Trainingsgenerationen und HIGH_POSITION3. Es wurden keine langen
-Evolutionsläufe gestartet und keine Standardkosten, Strahlraten oder Altersgrenzen
-für diesen Schritt geändert.
-
-Kleine Prüfauswahl:
+Die aktuelle Änderung ist durch **222 gezielte Tests** geprüft: RGB-Codes, Eigen- und
+Nachbarsensoren, DNA-/Dateimigration, Reserven, Sonnenquellen, Austausch, Teilung,
+Überreste, Darstellung und bisherige Netz-/Physik-/Trainingsregeln. Es wurden keine
+weiteren langen Evolutionsläufe gestartet.
 
 ```powershell
-mvn test '-Dtest=MultiEnergyStorageTest,MultiEnergyTransferTest,MultiEnergyLifecycleTest,MultiEnergySunTest,MultiEnergyWorldTest,MainControllerLayoutTest'
+mvn test '-Dtest=EightEnergySensorTest,MultiEnergyStorageTest,MultiEnergyTransferTest,MultiEnergyLifecycleTest,MultiEnergySunTest,RemainsTest,RemainsImportTest'
 ```
