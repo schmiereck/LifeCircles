@@ -36,6 +36,7 @@ class MainControllerLayoutTest {
                 var dialog=controller.createScenarioDialog();
                 @SuppressWarnings("unchecked") ComboBox<TrainMode> modes=(ComboBox<TrainMode>)dialog.getDialogPane().lookup("#new-scenario-choice");
                 assertTrue(modes.getItems().contains(TrainMode.CARRION_RAIN));
+                assertTrue(modes.getItems().contains(TrainMode.CARRION_CONVERSION));
                 assertFalse(modes.getItems().contains(TrainMode.EVOLUTIONARY));
                 TrainMode previousMode=config.getTrainMode();
                 modes.setValue(TrainMode.CARRION_RAIN);

@@ -66,3 +66,9 @@ Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erl
   vererbt; Elternfaktoren berücksichtigt. Überreste und mechanisches HIGH_POSITION3
   wandeln nicht um. Anzeige der Gene in Zelldetails und eigener Profilingabschnitt.
 - Details: `ENERGIEUMWANDLUNG.md`.
+- `6fab9bd`: begrenzte Umwandlung, Vererbung, Sensorik und Dateikompatibilität.
+- Variante `CARRION_CONVERSION`: ausschließlich 001-Futter, wählbar über New-Dialog.
+  Kontrollnetz mit Aufnahme + Enzym überlebt 120 s und nimmt 1,68 Energie 001 auf;
+  Aufnahme ohne Enzym, falsche Quelle und Enzym ohne Aufnahme genügen nicht.
+- 201 gezielte Tests erfolgreich; lokales Protokoll `target/energy-conversion-final-tests.log`.
+  Kein langer Evolutionslauf gestartet. Regeln und Grenzen in `AASREGEN.md`.

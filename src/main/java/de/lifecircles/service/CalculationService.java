@@ -46,6 +46,7 @@ public class CalculationService implements Runnable {
             paused.set(true);
             this.trainStrategy = switch (mode) {
                 case CARRION_RAIN -> new CarrionRainTrainStrategy();
+                case CARRION_CONVERSION -> new CarrionRainTrainStrategy(EnergyType.SECONDARY);
                 case HIGH_ENERGY -> new HighEnergyTrainStrategy();
                 case HIGH_POSITION -> new HighPositionTrainStrategy();
                 case HIGH_POSITION2 -> new HighPosition2TrainStrategy();

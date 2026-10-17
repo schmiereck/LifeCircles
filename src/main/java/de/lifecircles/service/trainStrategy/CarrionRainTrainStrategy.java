@@ -12,6 +12,7 @@ public final class CarrionRainTrainStrategy implements TrainStrategy, Simulation
     static final double INITIAL_ENERGY=.18, FOOD_ENERGY=.12, RAIN_SECONDS=6, FOOD_LIFETIME=60;
     private final SimulationConfig config=SimulationConfig.getInstance();
     private final Random random;
+    private final EnergyType foodEnergyType;
     private final List<Candidate> candidates=new ArrayList<>();
     private final List<Food> food=new ArrayList<>();
     private double elapsed, nextRain;
@@ -31,8 +32,12 @@ public final class CarrionRainTrainStrategy implements TrainStrategy, Simulation
                              double harvested, double injected, double expired,
                              double remainingFoodEnergy, double totalHarvested) {}
 
-    public CarrionRainTrainStrategy() { this(new Random()); }
-    CarrionRainTrainStrategy(Random random) { this.random=Objects.requireNonNull(random); }
+    public CarrionRainTrainStrategy() { this(new Random(),EnergyType.PRIMARY); }
+    public CarrionRainTrainStrategy(EnergyType foodEnergyType) { this(new Random(),foodEnergyType); }
+    CarrionRainTrainStrategy(Random random) { this(random,EnergyType.PRIMARY); }
+    CarrionRainTrainStrategy(Random random,EnergyType foodEnergyType) {
+        this.random=Objects.requireNonNull(random); this.foodEnergyType=Objects.requireNonNull(foodEnergyType);
+    }
     public SimulationStepPolicy stepPolicy() { return this; }
     public boolean useSunlight() { return false; }
     public boolean allowReproduction(Cell cell) { return false; }
@@ -78,7 +83,8 @@ public final class CarrionRainTrainStrategy implements TrainStrategy, Simulation
             if(food.stream().filter(f->f.slot==slot).count()>=FOOD_LIMIT) continue;
             Cell corpse=new Cell(new Vector2D((i+.5)*WIDTH+offset,initial?HEIGHT-Environment.GroundBlockerHeight-65:80),
                     8,RemainsBrain.INSTANCE);
-            corpse.setEnergy(FOOD_ENERGY); corpse.setType(new CellType(1,0,0)); corpse.becomeRemains();
+            corpse.setEnergy(0); corpse.setEnergy(foodEnergyType,FOOD_ENERGY);
+            corpse.setType(new CellType(1,0,0)); corpse.becomeRemains();
             world.addCell(corpse); food.add(new Food(corpse,i,elapsed)); injected+=FOOD_ENERGY;
         }
     }
@@ -107,21 +113,21 @@ public final class CarrionRainTrainStrategy implements TrainStrategy, Simulation
         for(Iterator<Food> iterator=food.iterator();iterator.hasNext();) {
             Food item=iterator.next();
             // Only ordinary conservative absorption can reduce these inert reserves.
-            if(item.cell.getEnergy()<=0 || elapsed-item.born>=FOOD_LIFETIME) {
-                candidates.get(item.slot).harvested+=FOOD_ENERGY-item.cell.getEnergy();
-                expired+=item.cell.getEnergy(); world.getCellList().remove(item.cell); iterator.remove();
+            if(item.cell.getEnergy(foodEnergyType)<=0 || elapsed-item.born>=FOOD_LIFETIME) {
+                candidates.get(item.slot).harvested+=FOOD_ENERGY-item.cell.getEnergy(foodEnergyType);
+                expired+=item.cell.getEnergy(foodEnergyType); world.getCellList().remove(item.cell); iterator.remove();
             }
         }
         if(elapsed+1e-9>=EPISODE_SECONDS) {
-            for(Food item:food) candidates.get(item.slot).harvested+=FOOD_ENERGY-item.cell.getEnergy();
+            for(Food item:food) candidates.get(item.slot).harvested+=FOOD_ENERGY-item.cell.getEnergy(foodEnergyType);
             List<Candidate> ranked=new ArrayList<>(candidates);
             ranked.sort(Comparator.comparingDouble(Candidate::score).reversed());
             Candidate best=ranked.getFirst();
-            double remaining=food.stream().mapToDouble(f->f.cell.getEnergy()).sum();
+            double remaining=food.stream().mapToDouble(f->f.cell.getEnergy(foodEnergyType)).sum();
             double totalHarvested=candidates.stream().mapToDouble(c->c.harvested).sum();
             lastEvaluation=new Evaluation(generation,best.score(),best.survival,best.harvested,injected,expired,remaining,totalHarvested);
-            System.out.printf(Locale.ROOT,"CARRION_RAIN G%d score=%.4f survival=%.2fs harvested=%.4f injected=%.4f expired=%.4f remaining=%.4f totalHarvested=%.4f%n",
-                    generation,best.score(),best.survival,best.harvested,injected,expired,remaining,totalHarvested);
+            System.out.printf(Locale.ROOT,"CARRION_RAIN food=%s G%d score=%.4f survival=%.2fs harvested=%.4f injected=%.4f expired=%.4f remaining=%.4f totalHarvested=%.4f%n",
+                    foodEnergyType.getRgbCode(),generation,best.score(),best.survival,best.harvested,injected,expired,remaining,totalHarvested);
             List<Cell> genomes=new ArrayList<>();
             for(int i=0;i<CANDIDATES;i++) genomes.add(ranked.get(i==0?0:random.nextInt(3)).founder);
             generation++; startEpisode(world,genomes,true);
@@ -130,8 +136,8 @@ public final class CarrionRainTrainStrategy implements TrainStrategy, Simulation
     }
     private void updateStatus() {
         double harvested=candidates.stream().mapToDouble(c->c.harvested).sum()
-                +food.stream().mapToDouble(f->FOOD_ENERGY-f.cell.getEnergy()).sum();
-        status=String.format(Locale.ROOT,"Aasregen · Sonne AUS · G%d · %.0f/120 s · aufgenommen %.3f · Zufuhr %.3f · Best %s",
-                generation,elapsed,harvested,injected,lastEvaluation==null?"—":String.format(Locale.ROOT,"%.3f",lastEvaluation.score));
+                +food.stream().mapToDouble(f->FOOD_ENERGY-f.cell.getEnergy(foodEnergyType)).sum();
+        status=String.format(Locale.ROOT,"Aasregen %s · Sonne AUS · G%d · %.0f/120 s · aufgenommen %.3f · Zufuhr %.3f · Best %s",
+                foodEnergyType.getRgbCode(),generation,elapsed,harvested,injected,lastEvaluation==null?"—":String.format(Locale.ROOT,"%.3f",lastEvaluation.score));
     }
 }

@@ -4,6 +4,7 @@
 
 - [x] Default-Gründer auf 48 versteckte Neuronen verkleinern, einschließlich Zustandsnetzen.
 - [x] Aasregen-Training ohne Sonne mit kleinen Kontrollwelten und Futterbilanz.
+- [x] Aasregen-Variante mit 001-Futter und notwendiger Umwandlung 001 → 000 prüfen.
 - [x] Oben „New…“ mit Szenarioauswahl und konsistentem Neustart anbieten.
 - [x] Energieformen auf acht RGB-Bitkombinationen erweitern.
 - [x] Eigene und benachbarte Energievorräte sensorisch zugänglich machen.

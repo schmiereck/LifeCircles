@@ -1,6 +1,7 @@
 # Aasregen: kontrollierter Nahrungserwerb
 
 Implementiert am 17.10.2026 als `TrainMode.CARRION_RAIN`.
+Ergänzt um `CARRION_CONVERSION` mit Nahrung aus Energie 001 statt 000.
 
 ## Aufbau und Regeln
 
@@ -31,7 +32,7 @@ Implementiert am 17.10.2026 als `TrainMode.CARRION_RAIN`.
 
 Eine Episode dauert 120 Simulationssekunden. Fitness:
 
-`Überlebenssekunden / 120 + 0,1 × aus Futter entnommene Primärenergie`
+`Überlebenssekunden / 120 + 0,1 × aus Futter entnommene Energie der angebotenen Form`
 
 Kammerflucht setzt die Fitness auf null. Ein unverändertes Elitegenom und sieben
 mutierte Nachkommen aus den drei Besten starten die nächste Episode. Jede Kopie
@@ -81,3 +82,33 @@ Die neue Welt beginnt pausiert, mit neuer Kamera, ohne alte Auswahl und mit neue
 Statistik. Gehirn-, Lebensdauer- und Sonnenregler bleiben eingestellt. Die Sonderregel
 „keine Sonne“ ist im Dialog und in der Statuszeile des Aastrainings sichtbar.
 Alternativ ist weiterhin `--trainMode=CARRION_RAIN` beim Programmstart möglich.
+
+## Variante CARRION_CONVERSION
+
+`New…` → `CARRION_CONVERSION` → `Erstellen` → `Start` (nach GUI-Neustart).
+
+Gleiche Kammern, Futterpositionen, Zufuhrmenge und Auswahlregeln, aber das Futter
+enthält ausschließlich 0,12 Energie 001 und **keine Primärenergie**. Die lebenden
+Gründer beginnen wie bisher mit 0,18 Primärenergie und leeren übrigen Speichern.
+Neue Genome starten mit inaktiver Umwandlung. Es werden keine fertigen Stoffwechsel-
+Lösungen eingeschleust. Die Kapazität und Route müssen durch Mutation/Selektion
+entstehen; auch eine aus einer Datei geladene passende Route ist verwendbar.
+
+Zum Überleben über die Anfangsreserve hinaus benötigt eine Zelle beides:
+
+1. Normale Aufnahme der Aasenergie 001.
+2. Genetische Umwandlung 001 → 000 mit ausreichendem Durchsatz.
+
+Beispiel aus dem deterministischen Kontrollversuch: Absorption + Route 001 → 000
+mit Kapazität 0,1 überlebt 120 Sekunden; der Sieger nimmt 1,68 Energie 001 auf.
+Absorber ohne Enzym verhungern trotz positiver 001-Reserve. Eine falsche Quellform
+oder das Enzym ohne Absorption reichen ebenfalls nicht. Die Gegenprobe verwendet
+fest verdrahtete Netze und kostenlose Gehirne; sie beweist Lösbarkeit, noch keine
+zuverlässige Evolution zufälliger Netze unter normalen Gehirngebühren.
+
+Die Futterbilanz gilt für 001 separat: `Zufuhr = Absorption + Verfall + Restfutter`.
+Nach der Absorption dissipieren bei Umwandlung weitere 20 %; diese Verluste sind
+nicht noch einmal Futterverfall. Status und Konsolenprotokoll nennen den Futtercode.
+Der Primärenergiebalken eines solchen Überrests ist leer, obwohl 001 noch gefüllt ist.
+
+Details der Enzyme und weitere Grenzen: `ENERGIEUMWANDLUNG.md`.

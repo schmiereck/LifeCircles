@@ -34,6 +34,11 @@ Aktualisiert: 17.10.2026. Branch `master`.
 - Neues Training `CARRION_RAIN`: acht Kammern, keine Sonne/Teilung, normale Überreste
   als begrenzte Futterzufuhr; Überlebenszeit und Aufnahme werden selektiert.
   Kontrollnetz überlebt 120 s, ohne Aufnahme Tod nach 60 s. Siehe `AASREGEN.md`.
+- `CARRION_CONVERSION` im New-Dialog bietet ausschließlich Energie 001 als Aas an.
+  Zum längeren Überleben sind Absorption und eine ausreichende Umwandlung 001 → 000
+  nötig. Feste Gegenprobe besteht; ein langer Evolutionslauf ist noch offen.
+- Stoffwechsel-/Szenarioabschluss: 201 gezielte Tests erfolgreich, einschließlich
+  acht Ressourcen, 56 Routen, Vererbung, echter Altdatei, Sensoren, GUI und Testwelten.
 - Szenariowechsel im Berechnungsdienst ersetzt Welt, Raster und Snapshot unter einer
   Sperre und startet pausiert. Oben „New…“ mit erklärter Szenarioauswahl; auch NONE
   und bestehende Trainings-/Testaufbauten sind ohne Codeänderung wählbar.

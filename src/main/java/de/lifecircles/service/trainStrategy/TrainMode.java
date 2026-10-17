@@ -6,6 +6,7 @@ package de.lifecircles.service.trainStrategy;
 public enum TrainMode {
     NONE,
     CARRION_RAIN,
+    CARRION_CONVERSION,
     EVOLUTIONARY,
     HIGH_ENERGY,
     HIGH_POSITION,
@@ -20,6 +21,7 @@ public enum TrainMode {
         return switch(this) {
             case NONE, EVOLUTIONARY -> "Offene Evolution ohne Trainingsauswahl. Sonnen- und Zellregler gelten wie eingestellt.";
             case CARRION_RAIN -> "Aasregen: acht Versuchskammern, keine Sonne, keine Teilung. Überleben und Energieaufnahme aus Überresten werden selektiert. Episoden: 120 Simulationssekunden. Gehirnkosten und Lebensdauer gelten wie eingestellt.";
+            case CARRION_CONVERSION -> "Aasregen mit Energie 001: Aufnahme allein reicht nicht. Zum Überleben muss eine Umwandlung 001 → 000 evolvieren. Keine Sonne/Teilung; 120-s-Episoden, normale Gehirnkosten und Lebensdauer. Neue Genome starten ohne aktive Umwandlung.";
             case HIGH_ENERGY -> "Selektion nach Primärenergie. Dieses ältere Szenario setzt die Energie pro Sonnenstrahl auf 0.02.";
             case HIGH_POSITION -> "Älteres Höhentraining (HIGH_POSITION).";
             case HIGH_POSITION2 -> "Älteres Höhentraining mit getrennten Trainingsbereichen (HIGH_POSITION2).";

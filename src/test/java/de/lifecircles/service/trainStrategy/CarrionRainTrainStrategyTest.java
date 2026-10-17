@@ -99,4 +99,24 @@ class CarrionRainTrainStrategyTest {
         assertThrows(IllegalArgumentException.class,()->strategy.beforeStep(world,Double.NaN));
         assertThrows(IllegalArgumentException.class,()->strategy.beforeStep(world,0));
     }
+    @Test void secondaryCarrionRequiresBothAbsorptionAndTheRightConversionAndKeepsEliteGenes() {
+        var strategy=new CarrionRainTrainStrategy(new Random(12),EnergyType.SECONDARY);
+        Cell eater=genome(true),converter=genome(true),wrongConverter=genome(true),nonEater=genome(false);
+        var enzyme=new EnergyConversion(EnergyType.SECONDARY,EnergyType.PRIMARY,.1);
+        converter.setEnergyConversion(enzyme);nonEater.setEnergyConversion(enzyme);
+        wrongConverter.setEnergyConversion(new EnergyConversion(EnergyType.RGB_111,EnergyType.PRIMARY,1));
+        var world=setup(strategy,List.of(eater,converter,wrongConverter,nonEater,eater,converter,wrongConverter,nonEater));
+        List<Cell> living=world.getCellList().stream().filter(c->!c.isRemains()).toList();
+        for(Cell food:world.getCellList())if(food.isRemains()) {
+            assertEquals(0,food.getEnergy());assertEquals(.12,food.getEnergy(EnergyType.SECONDARY));assertEquals(.12,food.getTotalEnergy());
+        }
+        var grid=new SpatialGridPartitioningStrategy(world.getWidth(),world.getHeight(),80);
+        for(int i=0;i<3600;i++)step(strategy,world,grid,1.0/30);
+        var result=strategy.getLastEvaluation();assertNotNull(result);assertEquals(120,result.survivalSeconds(),.04);
+        assertEquals(0,living.get(0).getEnergy());assertTrue(living.get(0).getEnergy(EnergyType.SECONDARY)>0);
+        assertEquals(0,living.get(2).getEnergy());assertEquals(0,living.get(3).getEnergy());
+        assertTrue(living.get(1).getEnergy()>0);assertEquals(enzyme,world.getCellList().getFirst().getEnergyConversion());
+        assertEquals(result.injected(),result.expired()+result.remainingFoodEnergy()+result.totalHarvested(),1e-10);
+        assertTrue(strategy.getStatus().contains("Aasregen 001"));
+    }
 }
