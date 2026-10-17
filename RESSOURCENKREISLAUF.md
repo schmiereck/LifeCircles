@@ -2,15 +2,19 @@
 
 Präzisierter Entwurf vom 16.10.2026 nach der Vorgabe des Nutzers. Diese Fassung ersetzt
 meinen früheren Vorschlag mit eigenständigen Überrestobjekten und Baustoffen.
-Es wurden noch keine zusätzlichen Energieformen oder Überreste implementiert.
+
+**Umsetzungsstand 17.10.2026:** Der erste Schritt mit zwei getrennten Energieformen,
+Sonnenquellenwahl, konservativem Austausch, Teilung und Dateikompatibilität ist umgesetzt.
+[Regeln und Tests](MEHRERE_ENERGIEN.md). Überreste und Umwandlung fehlen weiterhin.
 
 ## Tatsächlicher Bestand
 
-- `Cell` besitzt genau einen skalaren Speicher `energy`, begrenzt auf 0 bis 1.
-- Sonnenaufnahme, Grundumsatz, Gehirngebühren und Austausch verwenden diesen Speicher.
-- Absorption und Delivery sind zwei Transferrichtungen derselben Energieform.
+- `Cell` besitzt Primär- und Sekundärspeicher, jeweils begrenzt auf 0 bis 1.
+- Neue Sekundärspeicher beginnen leer; alte Spielstände erhalten keinen zusätzlichen Vorrat.
+- Sonnenaufnahme liefert wahlweise eine Form; Austausch und Teilung behandeln beide getrennt.
+- Grundumsatz, Gehirngebühren, neuronale Energiesignale und Überlebensregeln verwenden vorerst Primärenergie.
 - `CellType` beschreibt RGB-Eigenschaften, keine Energieform oder Stoffwechselklasse.
-- Ein zweiter Energiespeicher oder eine Zuordnung von Energieformen zu Zellfunktionen existiert nicht.
+- Spezialisierte Verbrauchs-/Umwandlungsregeln und Überreste sind noch nicht implementiert.
 
 ## Gewünschtes Modell
 

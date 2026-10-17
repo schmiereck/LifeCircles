@@ -1,6 +1,7 @@
 package de.lifecircles.service;
 
 import de.lifecircles.model.Vector2D;
+import de.lifecircles.model.EnergyType;
 import de.lifecircles.service.trainStrategy.TrainMode;
 
 /**
@@ -71,6 +72,12 @@ public class SimulationConfig {
     // Sun:
 
     private volatile double sunRayRate = 10.0;
+    private volatile EnergyType sunEnergyType = EnergyType.PRIMARY;
+
+    public EnergyType getSunEnergyType() { return sunEnergyType; }
+    public void setSunEnergyType(EnergyType energyType) {
+        sunEnergyType = java.util.Objects.requireNonNull(energyType);
+    }
     private volatile BrainEnergyCosts brainEnergyCosts = BrainEnergyCosts.DEFAULT;
 
     public BrainEnergyCosts getBrainEnergyCosts() { return brainEnergyCosts; }

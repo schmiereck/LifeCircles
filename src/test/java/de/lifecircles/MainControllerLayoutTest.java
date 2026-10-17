@@ -3,9 +3,11 @@ package de.lifecircles;
 import de.lifecircles.service.SimulationConfig;
 import de.lifecircles.view.EnvironmentPanel;
 import de.lifecircles.service.BrainEnergyCosts;
+import de.lifecircles.model.EnergyType;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Slider;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ScrollPane;
 import java.util.concurrent.CompletableFuture;
@@ -20,6 +22,7 @@ class MainControllerLayoutTest {
             SimulationConfig config=SimulationConfig.getInstance(); double sun=config.getSunRayRate();
             double brainMultiplier=config.getBrainEnergyCosts().work();
             double lifespan=config.getCellDeathAge();
+            EnergyType sunEnergyType=config.getSunEnergyType();
             MainController controller=null;
             try {
                 controller=new MainController();
@@ -34,6 +37,10 @@ class MainControllerLayoutTest {
                 Slider slider=(Slider)panel.lookup(".slider");
                 slider.setValue(0); assertEquals(0,config.getSunRayRate());
                 slider.setValue(37.5); assertEquals(37.5,config.getSunRayRate());
+                @SuppressWarnings("unchecked") ChoiceBox<EnergyType> sourceType=(ChoiceBox<EnergyType>)controller.lookup("#sun-energy-type");
+                assertEquals(sunEnergyType,sourceType.getValue());
+                sourceType.setValue(EnergyType.SECONDARY);assertEquals(EnergyType.SECONDARY,config.getSunEnergyType());
+                sourceType.setValue(EnergyType.PRIMARY);assertEquals(EnergyType.PRIMARY,config.getSunEnergyType());
                 Slider brainSlider=(Slider)controller.lookup("#brain-energy-slider");
                 assertEquals(2,brainSlider.getValue());
                 brainSlider.setValue(4);assertEquals(new BrainEnergyCosts(100,100),config.getBrainEnergyCosts());
@@ -48,7 +55,7 @@ class MainControllerLayoutTest {
                 lifespanSlider.setValue(3);assertEquals(1000,config.getCellDeathAge());
                 result.complete(null);
             } catch(Throwable failure) {result.completeExceptionally(failure);}
-            finally {config.setSunRayRate(sun);config.setBrainEnergyMultiplier(brainMultiplier);config.setCellDeathAge(lifespan); if(controller!=null) controller.shutdown();}
+            finally {config.setSunRayRate(sun);config.setSunEnergyType(sunEnergyType);config.setBrainEnergyMultiplier(brainMultiplier);config.setCellDeathAge(lifespan); if(controller!=null) controller.shutdown();}
         });
         try {result.get(45,TimeUnit.SECONDS);} finally {Platform.exit();}
     }

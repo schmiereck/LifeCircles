@@ -1,6 +1,7 @@
 package de.lifecircles.service.dto;
 
 import de.lifecircles.model.Blocker;
+import de.lifecircles.model.EnergyType;
 import de.lifecircles.model.SunRay;
 import de.lifecircles.model.Vector2D;
 import javafx.scene.paint.Color;
@@ -58,11 +59,18 @@ public class SimulationStateDto {
         private final double[] typeRGB;
         private final List<ActorStateDto> actors;
         private final double energy;
+        private final double secondaryEnergy;
         private final double age;
         private final int cellState; // Zell-Zustand
 
         public CellStateDto(Vector2D position, double rotation, double radiusSize,
                             double[] typeRGB, List<ActorStateDto> actors, double energy, double age, int cellState) {
+            this(position, rotation, radiusSize, typeRGB, actors, energy, 0, age, cellState);
+        }
+
+        public CellStateDto(Vector2D position, double rotation, double radiusSize,
+                            double[] typeRGB, List<ActorStateDto> actors, double energy, double secondaryEnergy,
+                            double age, int cellState) {
 
             this.position = new Vector2D(position.getX(), position.getY());
             this.rotation = rotation;
@@ -70,6 +78,7 @@ public class SimulationStateDto {
             this.typeRGB = typeRGB.clone();
             this.actors = List.copyOf(actors);
             this.energy = energy;
+            this.secondaryEnergy = secondaryEnergy;
             this.age = age;
             this.cellState = cellState; // Setze Zell-Zustand
         }
@@ -100,6 +109,13 @@ public class SimulationStateDto {
 
         public double getEnergy() {
             return energy;
+        }
+
+        public double getEnergy(EnergyType energyType) {
+            return switch (energyType) {
+                case PRIMARY -> energy;
+                case SECONDARY -> secondaryEnergy;
+            };
         }
 
         public int getCellState() {

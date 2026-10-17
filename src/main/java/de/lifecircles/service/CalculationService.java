@@ -208,6 +208,7 @@ public class CalculationService implements Runnable {
                         new double[]{cellType.getRed(), cellType.getGreen(), cellType.getBlue()},
                         actorStateDtos,
                         cell.getEnergy(),
+                        cell.getEnergy(EnergyType.SECONDARY),
                         cell.getAge(),
                         cell.getCellState() // Zell-Zustand hinzufügen
                 ));

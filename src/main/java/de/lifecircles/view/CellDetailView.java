@@ -1,6 +1,7 @@
 package de.lifecircles.view;
 
 import de.lifecircles.model.Cell;
+import de.lifecircles.model.EnergyType;
 import de.lifecircles.model.SensorActor;
 import de.lifecircles.model.Vector2D;
 import de.lifecircles.model.neural.*;
@@ -307,7 +308,8 @@ public class CellDetailView extends Stage {
                 currentCell.getType().getBlue()));
         stateLabel.setText(String.valueOf(currentCell.getCellState()));
         ageLabel.setText(String.format("%.2f", currentCell.getAge()));
-        energyLabel.setText(String.format("%.2f", currentCell.getEnergy()));
+        energyLabel.setText(String.format("Primär: %.2f / Sekundär: %.2f",
+                currentCell.getEnergy(EnergyType.PRIMARY), currentCell.getEnergy(EnergyType.SECONDARY)));
         generationLabel.setText(String.valueOf(currentCell.getGeneration()));
         // NEU: Synapsen-Anzahl anzeigen
         int synapseCount = 0;

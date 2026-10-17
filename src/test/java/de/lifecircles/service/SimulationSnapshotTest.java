@@ -67,6 +67,16 @@ class SimulationSnapshotTest {
         assertGeometry(before); assertGeometry(after);
     }
 
+    @Test void bothEnergyFormsAreDetachedAndLegacyDtoAccessStillMeansPrimary() {
+        Environment world=new Environment(300,300);Cell cell=cell(100);cell.setEnergy(.3);cell.setEnergy(EnergyType.SECONDARY,.7);world.addCell(cell);
+        CalculationService service=service(world,new Strategy());var before=service.getLatestState().getCells().getFirst();
+        assertEquals(.3,before.getEnergy());assertEquals(.3,before.getEnergy(EnergyType.PRIMARY));
+        assertEquals(.7,before.getEnergy(EnergyType.SECONDARY));
+        cell.setEnergy(EnergyType.SECONDARY,.2);service.update(0);
+        var after=service.getLatestState().getCells().getFirst();
+        assertEquals(.7,before.getEnergy(EnergyType.SECONDARY));assertEquals(.2,after.getEnergy(EnergyType.SECONDARY));
+    }
+
     @Test void overviewSnapshotsOmitActorsAndRestoreDetailsWithoutAdvancingSimulation() {
         Environment world = new Environment(300, 300); Cell cell = cell(100); world.addCell(cell);
         CalculationService service = service(world, new Strategy());

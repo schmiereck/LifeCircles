@@ -30,7 +30,9 @@ class CellFileImportTest {
     }
     private String file() throws Exception {
         String name = directory.resolve("population.cells").toString();
-        FileService.getInstance().saveCellsToFile(name,new ArrayList<>(List.of(cell(150),cell(200))));
+        Cell a=cell(150),b=cell(200);
+        a.setEnergy(EnergyType.SECONDARY,.625);b.setEnergy(EnergyType.SECONDARY,.375);
+        FileService.getInstance().saveCellsToFile(name,new ArrayList<>(List.of(a,b)));
         return name;
     }
 
@@ -52,6 +54,8 @@ class CellFileImportTest {
             assertEquals(0,cell.getAge()); assertEquals(actors ? 12 : 0,cell.getActors().size());
         }
         assertEquals(merge ? 3 : 2,service.getLatestState(!actors).getCells().size());
+        assertEquals(.625,after.getCells().get(merge ? 1 : 0).getEnergy(EnergyType.SECONDARY));
+        assertEquals(.375,after.getCells().get(merge ? 2 : 1).getEnergy(EnergyType.SECONDARY));
     }
 
     @Test void failedReadPreservesPopulationAndSnapshot() throws Exception {

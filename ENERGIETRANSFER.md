@@ -1,5 +1,8 @@
 # Energie zwischen Zellen
 
+Seit 17.10.2026 gelten die konservativen Transferregeln getrennt für Primär- und
+Sekundärenergie: [Mehrere Energieformen](MEHRERE_ENERGIEN.md).
+
 ## Befund und Korrektur (16.10.2026)
 
 Der bisherige Transfer erhält grundsätzlich die Gesamtenergie, hat aber mehrere Steuerungsfehler:

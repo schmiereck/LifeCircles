@@ -1,6 +1,7 @@
 package de.lifecircles.service;
 
 import de.lifecircles.model.Cell;
+import de.lifecircles.model.EnergyType;
 import de.lifecircles.model.Blocker;
 import de.lifecircles.model.SunRay;
 import de.lifecircles.model.Vector2D;
@@ -58,6 +59,8 @@ public class EnergySunCalcService {
             final double height,
             final SimulationConfig config,
             final double deltaTime) {
+        // One source type for the complete ray batch; sunlight never fills both stores for free.
+        final EnergyType energyType = config.getSunEnergyType();
         // This call calculates one step's sunlight, not lifetime exposure.
         // Reset even when the accumulator produces no rays or all rays are blocked.
         for (Cell cell : cells) cell.resetSunRayHit();
@@ -216,7 +219,7 @@ public class EnergySunCalcService {
             double rayHitT = tMax;
             if (hitCell != null && nearestCellHitT <= nearestBlockerHitT) {
                 rayHitT = nearestCellHitT;
-                hitCell.setEnergy(hitCell.getEnergy() + config.getEnergyPerRay());
+                hitCell.setEnergy(energyType, hitCell.getEnergy(energyType) + config.getEnergyPerRay());
                 hitCell.notifySunRayHit();
             } else if (nearestBlockerHitT < Double.POSITIVE_INFINITY) {
                 rayHitT = nearestBlockerHitT;
