@@ -69,10 +69,12 @@ class HighPosition3TrainStrategyTest {
     }
     @Test void candidatesStartAsIndependentSixtyCellBodies() {
         var strategy=strategy();var original=genome(.001,false);original.setAge(200);original.setVelocity(new Vector2D(50,40));
+        original.setEnergyConversion(new EnergyConversion(EnergyType.RGB_111,EnergyType.PRIMARY,.8));
         var world=setup(strategy,original);assertEquals(480,world.getCellList().size());
         Set<CellBrainInterface> brains=Collections.newSetFromMap(new IdentityHashMap<>());
         for(Cell cell:world.getCellList()) {
             brains.add(cell.getBrain());assertEquals(0,cell.getAge());assertEquals(0,cell.getVelocity().length());
+            assertEquals(original.getEnergyConversion(),cell.getEnergyConversion());
             assertEquals(20,cell.getRadiusSize());assertEquals(.75,cell.getEnergy());assertFalse(cell.isGrowing());
         }
         assertEquals(480,brains.size());assertFalse(brains.contains(original.getBrain()));

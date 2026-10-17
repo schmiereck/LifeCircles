@@ -149,6 +149,11 @@ public class Environment {
         profiler.finish(SimulationProfiler.Phase.TRANSFER, phaseStart);
         phaseStart = profiler.start();
 
+        // Complete all reactions before freezing own AND neighboring resource inputs.
+        if(policy.useEnergyConversion()) for(Cell cell:cellList) EnergyConversionService.convert(cell,deltaTime);
+        profiler.finish(SimulationProfiler.Phase.CONVERSION, phaseStart);
+        phaseStart = profiler.start();
+
         for (final Cell cell : this.cellList) {
         //this.cells.parallelStream().forEach(cell -> {
             // Apply viscosity

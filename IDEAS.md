@@ -5,7 +5,8 @@
   als funktionelle Entsprechungen aus Zellverbänden, auch mehrlagige Kugelpackungen.
 - Verschiedene Energieformen für verschiedene Funktionen; Tod an einem Engpass
   kann andere verwertbare Reserven hinterlassen.
-- Begrenzte Energieumwandlung, eventuell bei Aufnahme oder über evolvierbare Ausstattung.
+- Weiterentwicklung der ersten genetischen Umwandlungsroute: neuronale Aktivitäts-
+  regulation, Enzymexpression nach Zellrolle oder Beschränkung auf Aufnahmeereignisse.
 - Rechenaufgaben als Umwandlungsvoraussetzung als getrenntes Experiment prüfen;
   noch nicht als allgemeine Weltregel festgelegt.
 - Ressourcenwelten, in denen Kooperation und dynamische Regulation messbare Vorteile bieten.

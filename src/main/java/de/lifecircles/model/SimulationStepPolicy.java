@@ -13,6 +13,7 @@ public interface SimulationStepPolicy {
     /** Training/evaluation episodes retain their former membership semantics unless opted in. */
     default boolean keepRemains() { return false; }
     default boolean useSunlight() { return true; }
+    default boolean useEnergyConversion() { return true; }
     default BrainEnergyCosts brainEnergyCosts() { return SimulationConfig.getInstance().getBrainEnergyCosts(); }
     default void afterThinking(Cell cell) {}
     default boolean isDead(Cell cell) {

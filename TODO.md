@@ -14,7 +14,7 @@
 ## Anschließend
 
 - [ ] Verbrauchs-/Überlebensanforderungen je Energieform gemeinsam festlegen.
-- [ ] Begrenzte Umwandlungen und evolvierbare Kapazitäten entwerfen und bilanzieren.
+- [x] Begrenzte Umwandlungen mit evolvierbarer Route/Kapazität implementieren und bilanzieren.
 - [ ] Prüfen, ob Austauschbefehle getrennt nach Energieform evolvierbar werden sollen.
 - [ ] Neue Ökologietests: Produzenten, Räuber/Aasfresser und kooperierende Zellverbände.
 - [ ] Große/dichte Welten weiter profilieren; zusätzlichen Aufwand neuer Sensoren messen.

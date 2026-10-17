@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.LongAdder;
 /** Optional wall-clock phase timings; disabled by default, no per-cell clocks. */
 public final class SimulationProfiler {
     public enum Phase { GRID, SUN, REPULSION, INTERACTIONS, TRANSFER, INPUTS, BRAINS,
-        INTEGRATION, REPRODUCTION, MUTATION, SELECTION, STATISTICS, SNAPSHOT }
+        INTEGRATION, REPRODUCTION, MUTATION, SELECTION, STATISTICS, SNAPSHOT, CONVERSION }
     public record Timing(long calls, long nanos) {}
     private volatile boolean enabled = Boolean.getBoolean("life.profile");
     private final LongAdder[] nanos = new LongAdder[Phase.values().length];

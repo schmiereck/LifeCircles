@@ -41,6 +41,8 @@ public class Cell implements SensableCell, Serializable {
     // Lazily allocated for codes 010..111. Missing fields in old files mean empty stores.
     private double[] additionalEnergies;
     private boolean remains;
+    // Null in old saves means no conversion. Immutable genotype, never a shared mutable controller.
+    private EnergyConversion energyConversion;
     private double age; // in seconds
     private int generation; // generation counter
     private transient boolean sunRayHit = false; // Flag to indicate if cell was hit by sun ray
@@ -314,6 +316,13 @@ public class Cell implements SensableCell, Serializable {
         double total = energy + secondaryEnergy;
         if (additionalEnergies != null) for (double value : additionalEnergies) total += value;
         return total;
+    }
+
+    public EnergyConversion getEnergyConversion() {
+        return energyConversion==null?EnergyConversion.NONE:energyConversion;
+    }
+    public void setEnergyConversion(EnergyConversion conversion) {
+        this.energyConversion=java.util.Objects.requireNonNull(conversion);
     }
     /** Occupied forms without checking six absent stores in primary-only populations. */
     public int getEnergyPresenceMask() {

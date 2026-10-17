@@ -11,6 +11,11 @@
 - Kein zusätzliches Materie-, Biomasse- oder Baustoffmodell für Überreste.
 - Primärenergie-Verbrauch bleibt bis zu einer ausdrücklich definierten neuen
   Ressourcenregel erhalten. Keine stillen neuen Todesbedingungen oder Anfangssubventionen.
+- Erste Stoffwechselregel: maximal eine genetisch vererbbare, mutierbare Route je
+  Zelle; maximal 0,1 Quelle/s mal Kapazität, 80 % Ausbeute. Umwandlung vorhandener
+  Speicher erfolgt automatisch, zeitlich begrenzt und vor allen Energiesensoren.
+  Neue/alte Genome starten inaktiv; Überreste reagieren nicht. Details und noch
+  offene neuronale Regulation: `ENERGIEUMWANDLUNG.md`.
 - Physik muss Wachstum, Kontakte, Rotation und periodische Ränder sauber begrenzen.
 - DNA-erhaltende Ausführung spart CPU; genetische Reserven bleiben erhalten.
 - Default-Gründer beginnen mit 48 versteckten Neuronen (24 gemeinsam + 3 × 8

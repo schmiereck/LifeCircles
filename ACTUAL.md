@@ -24,8 +24,11 @@ Aktualisiert: 17.10.2026. Branch `master`.
 - Achtenergie-/Überrestestand: 222 gezielte Tests erfolgreich (`fa1060b`, `367d33f`).
   Aktueller Aasregen-/GUI-Schritt: 70 gezielte Tests erfolgreich, einschließlich
   Trainings-, Import-, Überrest-, Snapshot-, Dialog- und Nebenläufigkeitsprüfungen.
-- Energieverbrauch und Überleben verwenden bisher Primärenergie. Weitere Zuordnungen
-  und Umwandlungen sind noch nicht festgelegt.
+- Energieverbrauch und Überleben verwenden weiterhin Primärenergie. Eine vererbte,
+  mutierbare Umwandlungsroute je Zelle kann andere Vorräte umformen: maximal 0,1/s
+  mal Kapazität, 80 % Ausbeute. Neue/alte Genome beginnen ohne aktive Umwandlung.
+  Eigene/Nachbarsensoren sehen die abgeschlossene Umwandlung; Überreste reagieren nicht.
+  Siehe `ENERGIEUMWANDLUNG.md`. Spezielle Verbrauchszuordnungen bleiben offen.
 - Austauschbefehle wirken weiterhin gemeinsam auf alle Formen, mit getrennten Bilanzen.
 - Projektgedächtnis: `AGENTS.md`, `ACTUAL.md`, `TODO.md`, `CONCEPTS.md`, `IDEAS.md`, `DONE.md`.
 - Neues Training `CARRION_RAIN`: acht Kammern, keine Sonne/Teilung, normale Überreste

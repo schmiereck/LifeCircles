@@ -1,7 +1,8 @@
 # Acht getrennte Energieformen
 
 Stand: 17.10.2026. Acht Speicher, vollständige Energie-Sensorik und Überreste sind
-implementiert. Umwandlung und spezielle Verbrauchszuordnungen sind noch offen.
+implementiert. Begrenzte, genetisch evolvierbare Umwandlung ist ergänzt;
+siehe [ENERGIEUMWANDLUNG.md](ENERGIEUMWANDLUNG.md). Spezielle Verbrauchszuordnungen sind noch offen.
 Aktueller Überblick: [ACTUAL.md](ACTUAL.md), Aufgaben: [TODO.md](TODO.md).
 
 ## RGB-Codes und Vorräte
@@ -24,8 +25,8 @@ von den bisherigen kontinuierlichen RGB-Farben der Zellen und Aktoren.
 
 Die bisherigen untypisierten Energiemethoden bezeichnen weiter PRIMARY/000.
 Gehirnkosten, Grundumsatz und Überlebens-/Teilungsbedingungen verwenden weiterhin
-Primärenergie. Andere Vorräte können nicht automatisch dafür einspringen. Getrennte
-Verbrauchsregeln und Umwandlungen werden in einem weiteren Schritt definiert.
+Primärenergie. Andere Vorräte können nur über eine vorhandene aktive Umwandlung
+nach 000 dafür einspringen. Getrennte Verbrauchsregeln je Funktion bleiben offen.
 `getTotalEnergy()` ist eine Bilanzhilfe, keine neue Überlebensbedingung.
 
 Die bisherigen serialisierten Felder für Primär- und Sekundärenergie bleiben erhalten.
@@ -86,9 +87,8 @@ Unabhängige kleine Labor-Netze werden nicht als Zellnetze umgedeutet.
 Die angehängten Neuronen erzeugen keine zusätzlichen Synapsengebühren oder abgearbeitete
 Verbindungen. Auslesen und Schreiben der längeren Sensorvektoren beansprucht allerdings
 CPU und Speicher. Neue Genome können von Anfang an Verbindungen zu diesen Signalen
-haben. Bei neuen Standard-Zellnetzen wird die versteckte Kapazität nach der bisherigen
-Basisdimension bemessen, damit die reine Sensorerweiterung nicht automatisch große
-zusätzliche versteckte Schichten erzeugt.
+haben. Neue Standard-Zellnetze besitzen seit dem kompakten Gründer-Schritt insgesamt
+48 versteckte Neuronen, unabhängig von der Größe der Sensor-Schnittstelle.
 
 Gleiche alte Ausgaben beweisen nicht, dass alte DNA sofort auf neue Ressourcen reagiert:
 Die neuen Eingänge sind zunächst unverbunden. Eine solche Reaktion muss sich durch

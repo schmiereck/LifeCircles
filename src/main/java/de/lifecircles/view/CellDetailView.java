@@ -41,6 +41,7 @@ public class CellDetailView extends Stage {
     private final Label generationLabel;
     private final Label synapseCountLabel;
     private final Label cellSizeLabel;
+    private final Label conversionLabel;
     private AnimationTimer updateTimer;
     private boolean needsRedraw = true;
     private double zoomFactor = 1.0;
@@ -116,6 +117,10 @@ public class CellDetailView extends Stage {
         generationLabel = new Label();
         synapseCountLabel = new Label();
         cellSizeLabel = new Label();
+        conversionLabel = new Label();
+        conversionLabel.setId("cell-conversion-detail");
+        conversionLabel.setWrapText(true);
+        conversionLabel.setMaxWidth(220);
 
         // Zweispaltiges Layout: links und rechts jeweils 4 Details
         // Spalte 0/1: links, Spalte 2/3: rechts
@@ -134,7 +139,8 @@ public class CellDetailView extends Stage {
         infoPanel.add(synapseCountLabel, 3, 1);
         infoPanel.add(new Label("Zellgröße:"), 2, 2);
         infoPanel.add(cellSizeLabel, 3, 2);
-        // Platz für weitere Details in Zeile 3, Spalte 2/3
+        infoPanel.add(new Label("Umwandlung:"),2,3);
+        infoPanel.add(conversionLabel,3,3);
 
         // Haupt-Layout zusammenbauen
         mainLayout.setCenter(centerGridPane);
@@ -314,6 +320,10 @@ public class CellDetailView extends Stage {
             energyText.append(String.format("%s: %.2f", energyType.getRgbCode(), currentCell.getEnergy(energyType)));
         }
         energyLabel.setText(energyText.toString());
+        var conversion=currentCell.getEnergyConversion();
+        conversionLabel.setText(currentCell.isRemains()?"inaktiv (Überrest)":!conversion.active()?"keine":
+                String.format("%s → %s · %.0f%% Kapazität · 80%% Ausbeute",conversion.source().getRgbCode(),
+                        conversion.target().getRgbCode(),conversion.capacity()*100));
         generationLabel.setText(String.valueOf(currentCell.getGeneration()));
         // NEU: Synapsen-Anzahl anzeigen
         int synapseCount = 0;

@@ -55,3 +55,14 @@ Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erl
 - 71 gezielte Tests erfolgreich, darunter Sensorreaktion, Zustandssteuerung,
   unabhängige Vererbung, Migration, Aasregen und bestehende Trainingsstrategien.
   Lokales Protokoll: `target/compact-founder-final-tests.log`.
+
+## Begrenzte Energieumwandlung (17.10.2026)
+
+- Eine vererbte und mutierbare gerichtete Route mit Kapazität je Zelle; 80 % Ausbeute,
+  maximal 0,1 Quellenenergie/s mal Kapazität. Keine kostenlose Rettung alter Genome.
+- Alle 56 Routen, Verluste, Grenzen und Rückreaktionen geprüft. Save/Load erhält Gene;
+  echte alte Dateien bleiben inaktiv. Eigene/Nachbarsensoren nach vollständiger Reaktion.
+- Enzyme in biologischer Teilung, Trainingsnachkommen und HIGH_POSITION3-Körpern
+  vererbt; Elternfaktoren berücksichtigt. Überreste und mechanisches HIGH_POSITION3
+  wandeln nicht um. Anzeige der Gene in Zelldetails und eigener Profilingabschnitt.
+- Details: `ENERGIEUMWANDLUNG.md`.
