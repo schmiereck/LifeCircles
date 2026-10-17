@@ -32,6 +32,14 @@ public class StatisticsManagerService {
         return INSTANCE;
     }
 
+    /** A new world starts a new history, including while paused before the first step. */
+    public void reset(List<Cell> cells) {
+        totalHistory.clear();
+        remainsPopulation=(int)cells.stream().filter(Cell::isRemains).count();
+        totalPopulation.set(cells.size()-remainsPopulation);
+        averageUpdateTime=0; updateCount=0; lastUpdateTime=System.nanoTime();
+    }
+
     /**
      * Updates statistics based on current cell population.
      */

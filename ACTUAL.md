@@ -21,5 +21,10 @@ Aktualisiert: 17.10.2026. Branch `master`.
   und Umwandlungen sind noch nicht festgelegt.
 - Austauschbefehle wirken weiterhin gemeinsam auf alle Formen, mit getrennten Bilanzen.
 - Projektgedächtnis: `AGENTS.md`, `ACTUAL.md`, `TODO.md`, `CONCEPTS.md`, `IDEAS.md`, `DONE.md`.
+- Neues Training `CARRION_RAIN`: acht Kammern, keine Sonne/Teilung, normale Überreste
+  als begrenzte Futterzufuhr; Überlebenszeit und Aufnahme werden selektiert.
+  Kontrollnetz überlebt 120 s, ohne Aufnahme Tod nach 60 s. Siehe `AASREGEN.md`.
+- Szenariowechsel im Berechnungsdienst ersetzt Welt, Raster und Snapshot unter einer
+  Sperre und startet pausiert. GUI-Auswahl folgt als eigener Schritt.
 - Vorangegangene Kosten-/Funktionsstudien bewerten frühere Modellstände und ersetzen
   keinen neuen Ökologietest. Siehe `FUNKTIONS_ERGEBNISSE.md` und `NONE_LANGZEIT_ERGEBNISSE.md`.

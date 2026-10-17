@@ -2,6 +2,8 @@
 
 ## Aktueller Auftrag
 
+- [x] Aasregen-Training ohne Sonne mit kleinen Kontrollwelten und Futterbilanz.
+- [ ] Oben „New…“ mit Szenarioauswahl und konsistentem Neustart anbieten.
 - [x] Energieformen auf acht RGB-Bitkombinationen erweitern.
 - [x] Eigene und benachbarte Energievorräte sensorisch zugänglich machen.
 - [x] Bestehende DNA/Dateien mit Tests migrieren; alte Sensorpositionen erhalten.

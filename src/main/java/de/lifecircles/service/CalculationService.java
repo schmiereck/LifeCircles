@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Service responsible for running the simulation calculations in a separate thread.
  */
 public class CalculationService implements Runnable {
-    private final Environment environment;
+    private Environment environment;
     private final AtomicBoolean running;
     private final AtomicBoolean paused;
     private SimulationStateDto latestState;
@@ -24,49 +24,69 @@ public class CalculationService implements Runnable {
     private boolean snapshotIncludesActors = true;
     private boolean stateReadable = true;
     private final SimulationConfig config;
-    private final TrainStrategy trainStrategy;
+    private TrainStrategy trainStrategy;
+    private Thread worker;
     private int updateFpsCount = 0;
     private long lastFpsTime = System.nanoTime();
     private volatile double fps = 0.0;
     private final AtomicLong stepCount = new AtomicLong(0);
-    private final PartitioningStrategy partitioner;
+    private PartitioningStrategy partitioner;
 
     public CalculationService() {
         this.config = SimulationConfig.getInstance();
-        this.trainStrategy =
-                switch (config.getTrainMode()) {
-                    case HIGH_ENERGY -> new HighEnergyTrainStrategy();
-                    case HIGH_POSITION -> new HighPositionTrainStrategy();
-                    case HIGH_POSITION2 -> new HighPosition2TrainStrategy();
-                    case HIGH_POSITION3 -> new HighPosition3TrainStrategy();
-                    case TEST_A -> new TestATrainStrategy();
-                    case TEST_B -> new TestBTrainStrategy();
-                    case TEST_C -> new TestCTrainStrategy();
-                    default -> new DefaultTrainStrategy();
-                };
-        this.environment = this.trainStrategy.initializeEnvironment();
-
-        final double cellRadius = this.config.getCellMaxRadiusSize();
-        final double fieldRadius = this.config.getCellActorMaxFieldRadius();
-        final double interactionRadius = (cellRadius + fieldRadius) * 2.0D;
-
-        this.partitioner = PartitioningStrategyFactory.createStrategy(
-                this.environment.getWidth(), this.environment.getHeight(), interactionRadius);
-
         this.running = new AtomicBoolean(false);
-        this.paused = new AtomicBoolean(false);
-        this.initializeSimulation();
+        this.paused = new AtomicBoolean(true);
+        newSimulation(config.getTrainMode());
+    }
+
+    /** Replace world, strategy, spatial index and snapshot together; leave the new world paused. */
+    public void newSimulation(TrainMode mode) {
+        Objects.requireNonNull(mode);
+        synchronized (simulationLock) {
+            paused.set(true);
+            this.trainStrategy = switch (mode) {
+                case CARRION_RAIN -> new CarrionRainTrainStrategy();
+                case HIGH_ENERGY -> new HighEnergyTrainStrategy();
+                case HIGH_POSITION -> new HighPositionTrainStrategy();
+                case HIGH_POSITION2 -> new HighPosition2TrainStrategy();
+                case HIGH_POSITION3 -> new HighPosition3TrainStrategy();
+                case TEST_A -> new TestATrainStrategy();
+                case TEST_B -> new TestBTrainStrategy();
+                case TEST_C -> new TestCTrainStrategy();
+                default -> new DefaultTrainStrategy();
+            };
+            this.environment = this.trainStrategy.initializeEnvironment();
+            double interactionRadius = (config.getCellMaxRadiusSize() + config.getCellActorMaxFieldRadius()) * 2;
+            this.partitioner = PartitioningStrategyFactory.createStrategy(
+                    environment.getWidth(), environment.getHeight(), interactionRadius);
+            config.setTrainMode(mode);
+            resetCounters();
+            this.initializeSimulation();
+            StatisticsManagerService.getInstance().reset(environment.getCellList());
+        }
     }
 
     public void resetSimulation() {
         synchronized (simulationLock) {
-            stateReadable = false;
-            this.environment.resetCells();
-            this.trainStrategy.initialize(environment);
+            paused.set(true);
+            stateReadable=false;
+            environment.resetCells();
+            environment.getBlockerList().clear();
+            environment.getSunRayList().clear();
+            trainStrategy.initialize(environment);
+            resetCounters();
             stateVersion++;
-            stateReadable = true;
-            this.updateState();
+            stateReadable=true;
+            updateState();
+            StatisticsManagerService.getInstance().reset(environment.getCellList());
         }
+    }
+
+    private void resetCounters() {
+        stepCount.set(0);
+        fps=0;
+        updateFpsCount=0;
+        lastFpsTime=System.nanoTime();
     }
 
     /** Read outside the simulation lock; publish the complete import between steps. */
@@ -116,7 +136,6 @@ public class CalculationService implements Runnable {
 
     @Override
     public void run() {
-        this.running.set(true);
         long lastUpdateTime = System.nanoTime();
         final double calcTimeStep = this.config.getCalcTimeStep();
 
@@ -127,18 +146,20 @@ public class CalculationService implements Runnable {
                 final double targetRunTimeStep = this.config.getRunTimeStep();
 
                 if (deltaTime >= targetRunTimeStep) {
-                    this.update(calcTimeStep);
-
-                    // FPS tracking
-                    this.updateFpsCount++;
-                    long nowFps = System.nanoTime();
-                    if (nowFps - this.lastFpsTime >= 1_000_000_000L) {
-                        this.fps = this.updateFpsCount / ((nowFps - this.lastFpsTime) / 1_000_000_000.0D);
-                        this.updateFpsCount = 0;
-                        this.lastFpsTime = nowFps;
+                    synchronized (simulationLock) {
+                        // A scenario change or Pause may have arrived after the outer check.
+                        if (!running.get() || paused.get()) continue;
+                        this.update(calcTimeStep);
+                        // Reset and scenario replacement also clear these counters under this lock.
+                        this.updateFpsCount++;
+                        long nowFps = System.nanoTime();
+                        if (nowFps - this.lastFpsTime >= 1_000_000_000L) {
+                            this.fps = this.updateFpsCount / ((nowFps - this.lastFpsTime) / 1_000_000_000.0D);
+                            this.updateFpsCount = 0;
+                            this.lastFpsTime = nowFps;
+                        }
+                        lastUpdateTime = currentTime;
                     }
-
-                    lastUpdateTime = currentTime;
                 }
             }
 
@@ -176,7 +197,7 @@ public class CalculationService implements Runnable {
         }
     }
 
-    public String getTrainingStatus() { return trainStrategy.getStatus(); }
+    public String getTrainingStatus() { synchronized (simulationLock) { return trainStrategy.getStatus(); } }
 
     /** Caller holds simulationLock across the complete capture, not just publication. */
     private void updateState() {
@@ -271,23 +292,30 @@ public class CalculationService implements Runnable {
         }
     }
 
-    public void start() {
-        if (!this.running.get()) {
-            new Thread(this).start();
+    public synchronized void start() {
+        if (this.running.compareAndSet(false,true)) {
+            worker=new Thread(this,"LifeCircles calculation");
+            worker.start();
         }
         this.paused.set(false);
     }
 
     public void pause() {
-        this.paused.set(true);
+        synchronized (simulationLock) { this.paused.set(true); }
     }
 
     public void resume() {
         this.paused.set(false);
     }
 
-    public void stop() {
+    public synchronized void stop() {
         this.running.set(false);
+        if(worker!=null && worker!=Thread.currentThread()) {
+            worker.interrupt();
+            try { worker.join(); }
+            catch(InterruptedException e) { Thread.currentThread().interrupt(); }
+            worker=null;
+        }
     }
 
     public boolean isPaused() {

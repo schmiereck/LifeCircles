@@ -27,3 +27,13 @@ Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erl
   von 213/304 Eingängen, acht Ressourcenbilanzen, 1000-Schritte-Testwelt,
   leer gesaugter Überreste am Weltrand und Save/Load/Load & Merge.
 - Regeln und Grenzen: `MEHRERE_ENERGIEN.md`, `UEBERRESTE.md`.
+
+## Aasregen und Szenariowechsel (17.10.2026)
+
+- `CARRION_RAIN`: acht getrennte Kammern, normale Überreste als Futter, Sonne/Teilung
+  gesperrt, 120-s-Episoden, Auswahl nach Überleben und tatsächlicher Aufnahme.
+- Deterministischer Absorber überlebt 120 s und nimmt rund 1,180 Energie auf;
+  Nichtabsorber stirbt nach 60 s. Futterzufuhr = Aufnahme + Verfall + Restfutter.
+- Fünf Szenariotests einschließlich Fluchtausschluss; zwei Tests für Wechsel/Reset,
+  Pause und wiederholtes Start/Stop. Welt-/Raster-/Snapshotwechsel erfolgt atomar.
+- Details und Grenzen des ersten Curriculums in `AASREGEN.md`.
