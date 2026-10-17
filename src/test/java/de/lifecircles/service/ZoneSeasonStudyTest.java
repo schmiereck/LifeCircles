@@ -15,7 +15,7 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
  * mvn test -Dtest=ZoneSeasonStudyTest -Dzone.study.seconds=2700 -Dzone.study.year=600 -Dzone.study.name=seasons
  * Writes target/zone-season-study/NAME.csv, NAME-summary.txt and the final population NAME.cells.
  * -Dzone.study.load=PATH continues a saved population (e.g. an earlier NAME.cells) instead of new founders;
- * the year then starts again at mid-summer.
+ * the year then starts again at mid-summer. -Dzone.study.lifespan=SECONDS overrides the maximum cell age.
  */
 @EnabledIfSystemProperty(named="zone.study.seconds", matches="\\d+")
 class ZoneSeasonStudyTest {
@@ -30,6 +30,8 @@ class ZoneSeasonStudyTest {
         String name=System.getProperty("zone.study.name","run");
         var config=SimulationConfig.getInstance();
         config.setSunSpectralZones(true);config.setSeasonDuration(year);config.setWinterIntensity(winter);
+        String lifespan=System.getProperty("zone.study.lifespan");
+        if(lifespan!=null && !lifespan.isBlank())config.setCellDeathAge(Double.parseDouble(lifespan));
         NeuralNetwork.setRandom(new Random(seed));
         var strategy=new DefaultTrainStrategy();
         Environment world=strategy.initializeEnvironment();strategy.initialize(world);
@@ -70,7 +72,7 @@ class ZoneSeasonStudyTest {
         return Math.min(ZONES-1,(int)u);
     }
     static String header() {
-        StringBuilder h=new StringBuilder("t,season,living,paused,remains,activeEnzyme,meanActivity,throttled");
+        StringBuilder h=new StringBuilder("t,season,living,paused,remains,activeEnzyme,meanActivity,throttled,meanAge,lifted,maxLift");
         for(int z=0;z<ZONES;z++){String f=SunSpectrum.ZONES.get(z).getRgbCode();
             h.append(",z").append(f).append("_living,z").append(f).append("_ownStore,z").append(f).append("_toPrimary,z").append(f).append("_activity");}
         for(EnergyType t:EnergyType.ALL)h.append(",remains_").append(t.getRgbCode());
@@ -96,11 +98,29 @@ class ZoneSeasonStudyTest {
         StringBuilder row=new StringBuilder();
         row.append(t).append(',').append(fmt(season)).append(',').append(living).append(',').append(paused).append(',').append(remains)
                 .append(',').append(active).append(',').append(fmt(active==0?0:activity/active)).append(',').append(throttled);
+        double age=0;int lifted=0;double maxLift=0;
+        for(Cell c:world.getCellList()) if(!c.isRemains()) {
+            age+=c.getAge();double lift=liftAboveTerrain(world,c);
+            if(lift>LIFTED_PX)lifted++;maxLift=Math.max(maxLift,lift);
+        }
+        row.append(',').append(fmt(living==0?0:age/living)).append(',').append(lifted).append(',').append(fmt(maxLift));
         for(int z=0;z<ZONES;z++) row.append(',').append(zoneLiving[z]).append(',').append(fmt(zoneLiving[z]==0?0:own[z]/zoneLiving[z]))
                 .append(',').append(toPrimary[z]).append(',').append(fmt(toPrimary[z]==0?0:zoneActivity[z]/toPrimary[z]));
         for(double e:remainsEnergy)row.append(',').append(fmt(e));
         for(double e:livingEnergy)row.append(',').append(fmt(e));
         return row.toString();
+    }
+    /** One maximum-size cell: a lifted cell must rest on other cells, not on ground or a wall top. */
+    static final double LIFTED_PX=40;
+    /** Gap between the cell's bottom and the highest ground/blocker surface directly below its centre (y grows downward). */
+    static double liftAboveTerrain(Environment world,Cell cell) {
+        double x=cell.getPosition().getX(),bottom=cell.getPosition().getY()+cell.getRadiusSize();
+        double surface=world.getHeight();
+        for(Blocker b:world.getBlockerList()) {
+            double top=b.getPosition().getY()-b.getHeight()/2;
+            if(Math.abs(x-b.getPosition().getX())<=b.getWidth()/2 && top>=bottom-1e-6)surface=Math.min(surface,top);
+        }
+        return Math.max(0,surface-bottom);
     }
     static String fmt(double v){return String.format(Locale.ROOT,"%.4f",v);}
 
