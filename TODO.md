@@ -17,7 +17,8 @@
 - [x] Langlauf mit Zonen: Fremdformen in lebenden Zellen und Überresten, Nischen an Grenzen.
 - [x] Folgelauf mit milderem Winter (50 %): Fremdzonen sterben weiterhin im ersten Jahr.
 - [x] Jahreszeiten auf angepasste Population (Fortsetzung von B) anwenden, mit Kontrolle.
-- [ ] Evolutionsläufe mit kürzerer Lebensdauer (1000–2000 s) wiederholen; Altzellen blockieren Nischen.
+- [x] Evolutionsläufe mit Lebensdauer 2000 s wiederholt (1 + 3 Seeds); Besiedlung und erste Aasverwertung.
+- [ ] Stängel/Stützstrukturen: Mechanismus für dauerhafte Zellverbindung bzw. klaren Höhenvorteil prüfen.
 - [ ] Vorteil für Vorratshaltung schaffen/prüfen (Speicher über 000-Kapazität, Rückwandlung im Winter, ggf. Jahreszeitsensor).
 - [ ] Ursache der leeren 010-Zone klären (Zonenreihenfolge, Geländeblocker, Zuwanderung).
 - [ ] Warum wird Aas mit Fremdformen kaum gefressen? Aasfresser-Nische gezielt prüfen.

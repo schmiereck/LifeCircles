@@ -16,6 +16,11 @@
 
 Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erledigt markieren.
 
+## Läufe mit Lebensdauer 2000 s (17.10.2026)
+
+- Studienoptionen `zone.study.load` (`55c0ccc`) und `zone.study.lifespan` samt Höhenkennzahlen
+  (`79e6676`); Fortsetzungs- und Lebensdauerläufe in `ZONEN_JAHRESZEITEN_ERGEBNISSE.md`.
+
 ## Langlauf Zonen ± Jahreszeiten (17.10.2026)
 
 - `ZoneSeasonStudyTest` (opt-in), zwei Läufe à 2700 s. Ergebnisse und Grenzen in

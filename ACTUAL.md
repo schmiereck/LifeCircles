@@ -7,7 +7,10 @@ Aktualisiert: 17.10.2026. Branch `master`.
   alle Fremdzonen; Drossel driftet ohne Jahreszeiteneffekt. Folgelauf mit 50 % Winterlicht:
   ebenso, Fremdzonen im ersten Jahr leer. Fortsetzung einer angepassten Population mit
   50 % Winter: 001-Kolonie überlebt (langlebige Altzellen, Lebensdauer 10 000 s),
-  Randkolonie 100 schrumpft, Drossel weiter ohne Jahreszeiteneffekt. `ZONEN_JAHRESZEITEN_ERGEBNISSE.md`.
+  Randkolonie 100 schrumpft, Drossel weiter ohne Jahreszeiteneffekt. Mit Lebensdauer
+  2000 s: echte 100-Besiedlung ohne Winter, erste Aasverwertung (001-Aas, Seed 4713),
+  Winter 50 % in 1 von 3 Seeds Aussterben; Höhe stagniert (Haufen, keine Stängel).
+  `ZONEN_JAHRESZEITEN_ERGEBNISSE.md`.
 
 - Neuronale Enzymdrossel: angehängter Ausgang 133, Aktivität = clamp(2 × Ausgang, 0, 1),
   skaliert den Enzymdurchsatz. Alte Netze: unverbundener Ausgang = exakt volle Aktivität,

@@ -108,6 +108,43 @@ Start: Endpopulation von B (382 Zellen, 001- und 100-Zone besiedelt), gesichert 
   001 → 110: 43, 110 → 111: 32); lebende Zellen halten 011/101/111. Ob das adaptiv
   ist oder verlustreiche Drift kleiner Kapazitäten, ist ungeprüft.
 
+## Läufe mit Lebensdauer 2000 s (17.10.2026)
+
+Hintergrund (Nutzervorgabe): Die Lebensdauer 10 000 s war gewählt, damit entstehende
+Stützstrukturen („Stängel“) nicht sofort durch Alterstod zusammenfallen. 2000 s
+(≈ 33 min, 3,3 Jahre à 10 min) ist der Kompromiss für echten Generationswechsel.
+Alle Läufe 3600 s, Zonen an, Option `-Dzone.study.lifespan=2000` (`79e6676`).
+Neue Kennzahlen: `meanAge`, `lifted` = lebende Zellen > 40 px über der Gelände-/Blocker-
+oberfläche direkt unter ihnen (also auf Zellen liegend, nicht auf Wänden), `maxLift`.
+
+| Lauf | Seed | Ende | Min / Max lebend | Mittel 2. Hälfte | Fremdzonen |
+|---|---|---|---|---|---|
+| ohne Jahreszeiten | 4711 | 3600 s | 178 / 597 | 412 | 001 früh leer; 100-Zone ab ~3000 s 113–258 Zellen, 59–67 mit 100 → 000 |
+| Winter 50 % | 4711 | **ausgestorben 3120 s** | 0 / 260 | 4 | nach 3. Winter (~1100 s) 32 Zellen ohne Erholung |
+| Winter 50 % | 4712 | 3600 s | 42 / 378 | 120 | praktisch nur 000-Zone |
+| Winter 50 % | 4713 | 3600 s | 62 / 520 | 208 | 001-Zone ~420–3120 s besiedelt (41–230 Zellen, bis 132 mit 001 → 000), im Winter bei ~3300 s erloschen |
+
+Beobachtungen:
+
+- Ohne unsterbliche Gründer verschwindet die frühere statische 001-Kolonie (Lauf ohne
+  Jahreszeiten). Dafür evolviert dort nach einem Kohortensterben (~2940 s, 186 Zellen)
+  eine echte 100-Besiedlung mit passender Route; auch in der 000-Zone tragen dann
+  40 Zellen 100 → 000 (Zuwanderung/Grenzgänger).
+- Mit Winter 50 % streuen die Ergebnisse stark: 1 von 3 Läufen stirbt aus. Seed 4713
+  zeigt eine über ~45 min evolvierte, sich erneuernde 001-Kolonie (mittleres Alter
+  100–650 s), die erst in einem späten Winter erlischt.
+- **Erste beobachtete Aasverwertung (Seed 4713):** Aas-001 fällt bei beiden
+  Besiedlungsschüben der 001-Zone (300 → 420 s: 35 → 16; 2460 → 2940 s: 63 → 0),
+  zeitgleich sinkt die Zahl der Überreste (171 → 113). Überreste verschwinden nur, wenn
+  sie leergesaugt werden; die 001-Kolonisten verwerten also 001-Aas, das sie per
+  001 → 000 nutzen können. Aas mit 010/100 bleibt in allen Läufen unberührt.
+- Höhe: Im Lauf ohne Jahreszeiten liegen im Mittel ~215 Zellen > 40 px über dem Gelände,
+  `maxLift` bleibt aber über 60 min bei 135–205 px (≈ 4–10 Zellradien) ohne Trend.
+  Mit Winter brechen diese Haufen jeden Winter zusammen (`lifted` → 1–10). Das sind
+  Zellhaufen, keine wachsenden Stängel; ob Teile davon dauerhaft verbunden sind, misst
+  die Kennzahl nicht.
+- Drossel: weiterhin kein Jahreszeiteneffekt (4712: 0,982/0,980; 4713: 0,959/0,961).
+
 ## Folgerungen
 
 - 25 % und auch 50 % Winterlicht sind ab Weltbeginn zu hart: Gründer in Fremdzonen
@@ -116,7 +153,12 @@ Start: Endpopulation von B (382 Zellen, 001- und 100-Zone besiedelt), gesichert 
   angepasste Population anwenden (Fortsetzung von B) und/oder deutlich längeres Jahr.
   Ergebnis D: Die 001-Kolonie überlebt, aber als nahezu statische Gruppe alter Zellen.
 - Lebensdauer 10 000 s bremst die Evolution in Randnischen: Gründer überleben
-  Stunden und blockieren Platz. Für Evolutionsläufe kürzere Lebensdauer (z. B. 1000–2000 s) prüfen.
+  Stunden und blockieren Platz. Mit 2000 s entstehen echte, sich erneuernde Besiedlungen
+  (100-Zone ohne Winter, 001-Zone in Seed 4713) und erstmals Aasverwertung. Unter Winter
+  50 % wird das Aussterberisiko jedoch relevant (1/3 Läufe).
+- Für Stängel fehlt bisher jeder Hinweis auf wachsende Höhe. Dafür ist vermutlich ein
+  Mechanismus nötig, der Zellen dauerhaft verbindet (Haftung/Gelenk) bzw. Höhe einen
+  klaren Lichtvorteil gibt, den Haufen nicht schon erreichen.
 - Für eine Vorratsstrategie mit Drossel fehlt bisher ein klarer Vorteil: Weder Winter
   25/50 % noch Zonen zeigen Jahreszeitenregelung. Wahrscheinlich nötig: ein Speicher,
   der 000 im Sommer wirklich übersteigt (000 ist bei 1 voll) und dessen Rückwandlung im
