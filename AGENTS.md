@@ -1,0 +1,49 @@
+# LifeCircles: Arbeitsregeln und Projektgedächtnis
+
+## Ziel
+
+Eine offene Evolution in größeren Welten untersuchen. Langfristiges Ziel sind aus
+gemeinsamer DNA entstehende mehrzellige Organismen mit unterschiedlichen Zellrollen,
+Arbeitsteilung und koordiniertem Verhalten. Mechanik, Energieökologie, Gehirnleistung
+und Laufzeit gemeinsam betrachten. Training dient als Vorbereitung für NONE-Welten.
+
+## Vor Änderungen lesen
+
+- `ACTUAL.md`: aktueller Stand und Grenzen.
+- `TODO.md`: priorisierte nächste Arbeiten.
+- `CONCEPTS.md`: akzeptierte Modellentscheidungen.
+- `IDEAS.md`: Vorschläge, die noch nicht als Umsetzung beschlossen sind.
+- `DONE.md`: abgeschlossene Schritte und Belege.
+
+Diese Dateien sind das dauerhafte Projektgedächtnis. Bei fachlichen Änderungen
+mitpflegen; neuere ausdrückliche Nutzervorgaben haben Vorrang. Bereits implementierte
+Funktionen, Experimente und Zukunftsideen klar kennzeichnen. Wichtige Details in
+thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentieren.
+
+## Zusammenarbeit
+
+- Mit dem Nutzer auf Deutsch kommunizieren und autorisierte Arbeit vollständig erledigen.
+- Nach jedem abgeschlossenen logischen Schritt committen; Nutzeränderungen erhalten.
+- Lokal auf `master` arbeiten, sofern nicht anders gewünscht. Kein Push ohne Auftrag.
+- Keine Delegation an weitere Agents ohne ausdrücklichen Auftrag.
+- Für neue Modellregeln kleine deterministische Testwelten und sinnvolle Bilanztests bauen.
+- Keine pauschale vollständige Maven-Testsuite: alte Testklassen enthalten sehr lange
+  Studien. Gezielte Tests wählen; lange Evolutionsexperimente ausdrücklich starten.
+- Laufende GUI und laufende Studien nicht beenden. Änderungen beeinflussen ihre bereits
+  gestarteten JVMs nicht; Messreihen verschiedener Modellstände getrennt halten.
+
+## Technische Leitplanken
+
+- Java 25 / JavaFX. Maven: `C:/Users/thomas/.maven/maven-3.10.0/bin/mvn.cmd`.
+- Periodische Geometrie überall beachten; positive Y-Richtung zeigt nach unten.
+- Snapshots nur aus konsistentem Simulationszustand erzeugen.
+- DNA und Ausführung trennen. Optimierungen dürfen Ausgaben, Gedächtnis, Layer-Takt
+  oder Energiegebühren nicht still verändern. Topologieänderungen nach übersprungener
+  Ausführung erfordern eine frische Kopie oder einen expliziten Gedächtnisreset.
+- Ressourcen separat bilanzieren: keine kostenlose Energie bei Teilung, Tod oder
+  Umwandlung. Änderungen an DNA-Ein-/Ausgängen und Dateiformaten explizit migrieren.
+- Energie-Sensoren umfassen eigene **und benachbarte** Vorräte; neue Formen dort mitführen.
+- Überreste sind normale `Cell`-Objekte mit festem Verhalten und Restreserven. Kein
+  zusätzliches Materie-/Körpermaterialmodell. Sie verschwinden, wenn alle Vorräte leer sind.
+- Acht Energieformen entsprechend RGB-Bits 000 bis 111. Nur Komponenten 0 und 1;
+  keine Zwischenwerte oder negativen Typcodes. Energievorräte selbst bleiben kontinuierlich.
