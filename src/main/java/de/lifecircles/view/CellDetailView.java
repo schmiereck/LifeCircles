@@ -304,6 +304,13 @@ public class CellDetailView extends Stage {
         calculationService.readSimulationState(this::updateCellInfoFromState);
     }
 
+    /** Small but nonzero reserves must stay visible instead of rounding to 0.00. */
+    static String formatAmount(double value) {
+        if (value == 0) return "0";
+        if (Math.abs(value) >= 0.01) return String.format("%.3f", value);
+        return String.format("%.2e", value);
+    }
+
     private void updateCellInfoFromState() {
         if (currentCell == null) return;
 
@@ -318,14 +325,14 @@ public class CellDetailView extends Stage {
         StringBuilder energyText = new StringBuilder();
         for (EnergyType energyType : EnergyType.ALL) {
             if (!energyText.isEmpty()) energyText.append(energyType.getCode() == 4 ? "\n" : "   ");
-            energyText.append(String.format("%s: %.2f", energyType.getRgbCode(), currentCell.getEnergy(energyType)));
+            energyText.append(energyType.getRgbCode()).append(": ").append(formatAmount(currentCell.getEnergy(energyType)));
         }
         energyLabel.setText(energyText.toString());
         var conversion=currentCell.getEnergyConversion();
         conversionLabel.setText(currentCell.isRemains()?"inaktiv (Überrest)":!conversion.active()?
                 "Spez. "+currentCell.getSpecializationIndex()+": keine":
-                String.format("Spez. %d: %s → %s · %.0f%% Kapazität · 80%% Ausbeute",currentCell.getSpecializationIndex(),
-                        conversion.source().getRgbCode(),conversion.target().getRgbCode(),conversion.capacity()*100));
+                String.format("Spez. %d: %s → %s · %s%% Kapazität · 80%% Ausbeute",currentCell.getSpecializationIndex(),
+                        conversion.source().getRgbCode(),conversion.target().getRgbCode(),formatAmount(conversion.capacity()*100)));
         generationLabel.setText(String.valueOf(currentCell.getGeneration()));
         // NEU: Synapsen-Anzahl anzeigen
         int synapseCount = 0;
