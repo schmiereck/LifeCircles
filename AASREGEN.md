@@ -112,3 +112,10 @@ nicht noch einmal Futterverfall. Status und Konsolenprotokoll nennen den Futterc
 Der Primärenergiebalken eines solchen Überrests ist leer, obwohl 001 noch gefüllt ist.
 
 Details der Enzyme und weitere Grenzen: `ENERGIEUMWANDLUNG.md`.
+
+Seit der Spezialisierungserweiterung besitzt jedes Genom acht Stoffwechselregeln.
+Die jeweilige Kandidatenspezialisierung wählt ihre aktive Regel; alle Einträge
+werden bei der Auswahl vererbt und können mutieren. Beide Aasregen-Szenarien bleiben
+Einzellertests ohne biologische Teilung. Sie selektieren daher noch keine arbeitsteiligen
+Umwandlungsverbände; die funktionierende gleichgenetische Testkette ist separat in
+`SpecializedConversionTest` und `ENERGIEUMWANDLUNG.md` dokumentiert.

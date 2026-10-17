@@ -2,6 +2,7 @@
 
 ## Aktueller Auftrag
 
+- [x] Umwandlungsregeln an Specialization koppeln; gemeinsame vererbbare Tabelle und Zellketten prüfen.
 - [x] Default-Gründer auf 48 versteckte Neuronen verkleinern, einschließlich Zustandsnetzen.
 - [x] Aasregen-Training ohne Sonne mit kleinen Kontrollwelten und Futterbilanz.
 - [x] Aasregen-Variante mit 001-Futter und notwendiger Umwandlung 001 → 000 prüfen.

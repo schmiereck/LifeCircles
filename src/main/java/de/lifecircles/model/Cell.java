@@ -43,6 +43,7 @@ public class Cell implements SensableCell, Serializable {
     private boolean remains;
     // Null in old saves means no conversion. Immutable genotype, never a shared mutable controller.
     private EnergyConversion energyConversion;
+    private EnergyConversionProgram energyConversionProgram=EnergyConversionProgram.NONE;
     private double age; // in seconds
     private int generation; // generation counter
     private transient boolean sunRayHit = false; // Flag to indicate if cell was hit by sun ray
@@ -319,10 +320,21 @@ public class Cell implements SensableCell, Serializable {
     }
 
     public EnergyConversion getEnergyConversion() {
-        return energyConversion==null?EnergyConversion.NONE:energyConversion;
+        return energyConversionProgram.route(getSpecializationIndex());
     }
+    /** Uniform-rule convenience for old callers/test genomes. Use the program for differentiated cells. */
     public void setEnergyConversion(EnergyConversion conversion) {
         this.energyConversion=java.util.Objects.requireNonNull(conversion);
+        this.energyConversionProgram=EnergyConversionProgram.uniform(conversion);
+    }
+    public int getSpecializationIndex() {
+        // Same three bits as the existing state sensors and neural state experts.
+        return cellState & (EnergyConversionProgram.SPECIALIZATION_COUNT-1);
+    }
+    public EnergyConversionProgram getEnergyConversionProgram() { return energyConversionProgram; }
+    public void setEnergyConversionProgram(EnergyConversionProgram program) {
+        energyConversionProgram=java.util.Objects.requireNonNull(program);
+        energyConversion=null;
     }
     /** Occupied forms without checking six absent stores in primary-only populations. */
     public int getEnergyPresenceMask() {
@@ -521,6 +533,9 @@ public class Cell implements SensableCell, Serializable {
     @Serial
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
+        // Older cells had one state-independent enzyme. Preserve its behavior in all states.
+        if(energyConversionProgram==null) energyConversionProgram=energyConversion==null?EnergyConversionProgram.NONE:
+                EnergyConversionProgram.uniform(energyConversion);
         if (additionalEnergies != null && additionalEnergies.length != EnergyType.ALL.size() - 2)
             throw new InvalidObjectException("Invalid number of energy stores");
         // A loaded object is a new instance, including repeated loads of one saved cell.

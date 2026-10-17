@@ -72,3 +72,17 @@ Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erl
   Aufnahme ohne Enzym, falsche Quelle und Enzym ohne Aufnahme genügen nicht.
 - 201 gezielte Tests erfolgreich; lokales Protokoll `target/energy-conversion-final-tests.log`.
   Kein langer Evolutionslauf gestartet. Regeln und Grenzen in `AASREGEN.md`.
+
+## Umwandlung nach Specialization (17.10.2026)
+
+- Gemeinsame unveränderliche Genotyp-Tabelle mit acht Umwandlungsregeln, exprimiert
+  über vorhandene Zellzustandsbits. Volle Tabelle in Teilung, Training und Zellverbänden
+  vererbt; unabhängige Mutation je Genort. Keine neuen Sensor-/Output-Indizes.
+- Alte Einzel-Enzyme behalten Verhalten in allen acht Rollen; echte Kompatibilitätsdatei
+  aus `adb7158`, Herkunft und SHA-256 unter `src/test/resources/energy/README.md`.
+- Gleiche feste Controller, gleiche Zellfarbe und gleiches Programm ermöglichen drei
+  Stoffwechselschritte über normale Energieabgabe: Endenergie 0,146493 statt 0,097000
+  ohne mittlere Rolle, nach 1 s ab Startwert 0,1. Gesamtbilanz inklusive Verluste und
+  Grundumsatz stimmt, auch bei anderer Zellreihenfolge und über periodischen Rand.
+- 216 gezielte Tests erfolgreich; lokales Protokoll `target/specialized-conversion-final-tests.log`.
+  Kein langer Evolutionslauf; Regeln und offene Selektionsfragen in `ENERGIEUMWANDLUNG.md`.

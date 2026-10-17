@@ -321,9 +321,10 @@ public class CellDetailView extends Stage {
         }
         energyLabel.setText(energyText.toString());
         var conversion=currentCell.getEnergyConversion();
-        conversionLabel.setText(currentCell.isRemains()?"inaktiv (Überrest)":!conversion.active()?"keine":
-                String.format("%s → %s · %.0f%% Kapazität · 80%% Ausbeute",conversion.source().getRgbCode(),
-                        conversion.target().getRgbCode(),conversion.capacity()*100));
+        conversionLabel.setText(currentCell.isRemains()?"inaktiv (Überrest)":!conversion.active()?
+                "Spez. "+currentCell.getSpecializationIndex()+": keine":
+                String.format("Spez. %d: %s → %s · %.0f%% Kapazität · 80%% Ausbeute",currentCell.getSpecializationIndex(),
+                        conversion.source().getRgbCode(),conversion.target().getRgbCode(),conversion.capacity()*100));
         generationLabel.setText(String.valueOf(currentCell.getGeneration()));
         // NEU: Synapsen-Anzahl anzeigen
         int synapseCount = 0;

@@ -2,16 +2,32 @@
 
 Implementiert am 17.10.2026. Ergänzt die acht Vorräte aus `MEHRERE_ENERGIEN.md`.
 
-## Eine Route je Zelle
+## Eine aktive Route je Spezialisierung
 
-Eine lebende Zelle kann eine gerichtete Umwandlung besitzen:
+Der gemeinsame Genotyp enthält ein unveränderliches `EnergyConversionProgram` mit
+acht Regeln. „Show Specialization“ zeigt bereits den Zellzustand 0..7 an. Genau
+diese drei Zustandsbits wählen nun auch die aktive Stoffwechselregel:
 
 `Quellform → Zielform, Kapazität in [0,1]`
 
 Quelle und Ziel sind verschiedene RGB-Energiecodes; alle 56 gerichteten Routen sind
-möglich. Das unveränderliche `EnergyConversion`-Objekt ist ein vererbtes Zellmerkmal,
-ähnlich den vorhandenen Zellmerkmalen außerhalb des Netzes. Es ist unabhängig von
-den kontinuierlichen Zellfarben, dem aktuellen Zellzustand und dem Netzgedächtnis.
+möglich. Jede Spezialisierung kann eine andere Route/Kapazität oder keine aktive
+Umwandlung besitzen. Die Tabelle ist ein vererbtes Merkmal außerhalb des neuronalen
+Netzes, unabhängig von kontinuierlicher Zellfarbe und Netzgedächtnis. Pro Zelle wird
+weiterhin nur **eine** Regel ausgeführt; acht Genorte vervielfachen nicht den Durchsatz.
+
+Beispiel gleicher DNA und Zellfarbe: Spezialisierung 0 macht 111 → 010, Spezialisierung
+1 macht 010 → 001, Spezialisierung 2 macht 001 → 000. Dazwischen liegen die normalen
+konservativen Austauschvorgänge. Die Rollen haben keine fest vorgegebenen Routen;
+die Zuordnung selbst kann evolvieren.
+
+Das Gehirn bestimmt bereits über die drei STATE-Ausgänge jedes Teilungsaktors die
+Spezialisierung des Kindes. Die vollständige Enzymtabelle wird dabei vererbt; das
+Kind exprimiert den zu seiner eigenen Spezialisierung passenden Eintrag. Es braucht
+keine Mutation der DNA, um einen anderen Zelltyp innerhalb des Verbandes auszubilden.
+Eine Zustandsänderung wählt lediglich eine andere vorhandene Regel und verschiebt
+keine Energievorräte. Bei nichtkanonischen alten Zellzuständen gelten dieselben
+unteren drei Bits wie bei den vorhandenen Zustands-Sensoren.
 
 - Maximaler Quellverbrauch: `0,1 × Kapazität` Energie pro Simulationssekunde.
 - Zielform erhält 80 % der tatsächlich verbrauchten Quelle; 20 % dissipieren.
@@ -22,9 +38,10 @@ den kontinuierlichen Zellfarben, dem aktuellen Zellzustand und dem Netzgedächtn
 - Umgewandelt werden gespeicherte Vorräte, auch wenn sie bereits länger in der Zelle
   liegen. Die Einschränkung ist das einzelne Enzym samt Rate und Ausbeute. Eine reine
   Umwandlung beim Aufnahmeereignis wurde für diesen Schritt nicht gewählt.
-- Der Prozess ist zunächst automatisch. Das Gehirn steuert weiterhin Aufnahme und
-  Abgabe, aber noch nicht Route oder momentane Enzymaktivität. Keine zusätzlichen
-  neuronalen Ausgänge, keine Umdeutung alter Ausgänge.
+- Der Prozess ist automatisch innerhalb der gewählten Spezialisierung. Das Gehirn
+  steuert Aufnahme, Abgabe und die Spezialisierung seiner Kinder; es gibt noch keine
+  zusätzliche kontinuierliche Enzymaktivitätssteuerung. Keine neuen neuronalen
+  Ausgänge und keine Umdeutung alter Ausgänge.
 - Es gibt bisher keinen separaten Preis für Enzymsynthese oder das Vorhalten einer
   Kapazität; der reale Preis ist Quellverbrauch mit 20 % Umwandlungsverlust. Das ist
   eine erste experimentelle Regel, kein bereits austariertes Stoffwechselmodell.
@@ -37,11 +54,15 @@ Alterstod wird durch Umwandlung nicht verhindert.
 
 ## Vererbung und Mutation
 
-Neue Gründer und alte Dateien beginnen ohne aktive Umwandlung (Kapazität null).
-Die zunächst inaktive Route 001 → 000 ist nur ein Ausgangspunkt der Mutationen,
-keine automatische Fähigkeit oder Ressourcensubvention.
+Neue Gründer und Dateien aus der Zeit vor den Umwandlungen beginnen in allen acht
+Spezialisierungen ohne aktive Umwandlung (Kapazität null). Die zunächst inaktive
+Route 001 → 000 ist nur ein Ausgangspunkt der Mutationen, keine automatische
+Fähigkeit oder Ressourcensubvention. Dateien aus dem Einzel-Enzym-Stand behalten
+ihre bisherige Regel unverändert in allen acht Spezialisierungen. So entsteht durch
+Migration weder ein Verhaltensbruch noch zusätzlicher Durchsatz.
 
-Quelle, Ziel und Kapazität können jeweils mit der effektiven Mutationsrate variieren.
+Quelle, Ziel und Kapazität jedes der acht Einträge können unabhängig mit der
+effektiven Mutationsrate variieren, auch wenn der Eintrag im Elternteil inaktiv war.
 Kapazität ändert sich um einen gleichverteilten Wert in ± effektiver Mutationsstärke,
 begrenzt auf [0,1]. Quelle/Ziel bleiben stets verschieden. Elternfaktoren und
 Teilungsmultiplikator gelten wie bei der Gehirnmutation. Kapazität null kann positiv
@@ -50,11 +71,12 @@ werden und später wieder auf null sinken.
 Biologische Nachkommen und Trainingsnachkommen erben das Merkmal. Unmutierte Eliten,
 klonale Teilung und die Mitglieder eines HIGH_POSITION3-Körpers erhalten dieselben
 Enzymgene. Ein geteiltes unveränderliches Objekt hat keinen gemeinsamen Laufzeitzustand.
-Die acht Vorräte werden bei biologischer Teilung weiterhin einzeln aufgeteilt;
+Die gesamte Tabelle und alle noch ungenutzten Einträge werden kopiert, nicht nur die
+im Elternteil aktive Route. Die acht Vorräte werden bei biologischer Teilung weiterhin einzeln aufgeteilt;
 Trainingsgründer erhalten weiterhin die ausdrücklich definierten Episodenreserven.
 
-Das neue optionale Zellfeld wird mit `.cells` gespeichert. Alte Dateien bleiben
-ladbar und erhalten keine aktive Reaktion oder zusätzliche Energie. Eingangs-/Ausgangs-
+Die optionale Tabelle wird mit `.cells` gespeichert. Alte Dateien bleiben ladbar;
+vorhandene Einzelregeln werden erhalten, fehlende bleiben inaktiv. Keine zusätzliche Energie. Eingangs-/Ausgangs-
 dimensionen bleiben 316/133, ihre bisherigen Migrationen bleiben unverändert.
 
 ## Reihenfolge und Beobachtung
@@ -71,7 +93,7 @@ HIGH_POSITION3 erhält die Gene, unterdrückt Reaktionen aber ausdrücklich, um 
 Mechanikaufgabe nicht mit Stoffwechsel zu vermischen. Andere Welten verwenden die
 Regel regulär. Der Profiler erfasst den Abschnitt separat als `CONVERSION`.
 
-In den Zelldetails steht die Route mit Kapazität und Ausbeute; bei Überresten
+In den Zelldetails steht die aktive Spezialisierung samt Route, Kapazität und Ausbeute; bei Überresten
 „inaktiv“. Eigene und benachbarte Energiestände werden weiter über die vorhandenen
 acht Sensorkanäle erfasst. Der alte Energiebalken zeigt weiterhin nur Primärenergie.
 
@@ -84,9 +106,23 @@ acht Sensorkanäle erfasst. Der alte Energiebalken zeigt weiterhin nur Primären
 - Echte alte Datei ohne neue Genfelder sowie neue Save/Load-Rundreise geprüft.
 - Biologische und Trainingsvererbung, Elternfaktoren, klonale Abschaltung und Erwerb
   einer Kapazität aus einem inaktiven Gen geprüft.
+- Alle acht Spezialisierungen, unveränderliche Tabellen, inaktive Genorte, ganze
+  Tabellenvererbung bei anderer Kindspezialisierung und Save/Load geprüft.
+- Echte Datei mit Einzel-Enzym-Gen aus `adb7158` nach acht Regeln migriert; Fixture
+  und Herkunft unter `src/test/resources/energy`.
+- Drei gleichfarbige Zellen mit gleichem festen Controller und derselben Tabelle
+  führen 111 → 010 → 001 → 000 über normalen Delivery-Austausch aus. Nach einer
+  Sekunde erreicht die Endzelle 0,146493 Primärenergie statt 0,097000 bei fehlender
+  mittlerer Spezialisierung (Startwert 0,1, kostenlose feste Gehirne). Gesamtbilanz
+  inklusive aller Umwandlungsverluste und Grundumsatz geprüft; identisches Ergebnis
+  bei umgekehrter Zellliste und über dem periodischen Rand.
 
-Noch keine funktionenspezifischen Energiepreise, variable Speicherkapazitäten,
-neuronale Enzymregulation oder durch Rechenaufgaben freigeschalteten Reaktionen.
-Ein gemeinsames Organismusgenom mit je nach Zellrolle verschieden exprimierten
-Enzymen ist durch dieses einzelne Zellmerkmal noch nicht gelöst. Langzeit-Evolution
-und ökologische Balance müssen gesondert untersucht werden.
+Noch keine funktionenspezifischen Energiepreise, variablen Speicherkapazitäten,
+kontinuierliche neuronale Enzymregulation oder durch Rechenaufgaben freigeschalteten
+Reaktionen. Das gemeinsame Programm ermöglicht je nach Zellrolle unterschiedliche
+Enzyme; es erzwingt keine Arbeitsteilung. Direkte Umwandlungen nach 000 bleiben
+möglich und können in einfachen Umgebungen günstiger sein als eine Zellkette.
+Die Aasregen-Trainings bewerten weiterhin Einzelzellen, keine Mehrzeller. Die kleine
+Testkette belegt physikalische/mathematische Lösbarkeit, noch keine spontane Evolution
+oder stabile mehrzellige Lebensweise. Langzeit-Evolution und ökologischer Selektionsdruck
+müssen gesondert untersucht werden.

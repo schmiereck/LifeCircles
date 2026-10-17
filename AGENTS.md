@@ -50,3 +50,7 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
   zusätzliches Materie-/Körpermaterialmodell. Sie verschwinden, wenn alle Vorräte leer sind.
 - Acht Energieformen entsprechend RGB-Bits 000 bis 111. Nur Komponenten 0 und 1;
   keine Zwischenwerte oder negativen Typcodes. Energievorräte selbst bleiben kontinuierlich.
+- Stoffwechselprogramm vollständig vererben: acht Regeln für die bestehenden
+  Spezialisierungen (untere drei cellState-Bits), nur eine aktive Route pro Zelle.
+  Kind-Spezialisierung bestimmt das Gehirn; dieselbe DNA darf andere Rollen exprimieren.
+  Alte Einzel-Enzyme in alle acht Einträge migrieren. Keine feste Kopplung an Zellfarben.

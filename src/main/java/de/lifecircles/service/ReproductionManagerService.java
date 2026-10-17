@@ -86,7 +86,7 @@ public class ReproductionManagerService {
         founder.setMutationRateFactor(parent.getMutationRateFactor());
         founder.setMutationStrengthFactor(parent.getMutationStrengthFactor());
         if (mutate) founder.mutateMutationFactors(config.getMutationRate(), config.getMutationStrength());
-        founder.setEnergyConversion(parent.getEnergyConversion().mutate(NeuralNetwork.getRandom(),rate,strength));
+        founder.setEnergyConversionProgram(parent.getEnergyConversionProgram().mutate(NeuralNetwork.getRandom(),rate,strength));
         founder.setCellState(state);
         network.rnnClearPreviousState();
         for (SensorActor actor : founder.getSensorActors()) actor.updateCachedPosition();
@@ -136,7 +136,7 @@ public class ReproductionManagerService {
         // Meta-mutation deliberately uses global settings, avoiding self-amplification.
         if (birthRandom == null) child.mutateMutationFactors(divisionRate, config.getMutationStrength());
         else child.mutateMutationFactors(divisionRate, config.getMutationStrength(), birthRandom);
-        child.setEnergyConversion(parent.getEnergyConversion().mutate(traitRandom,effectiveMutationRate,effectiveMutationStrength));
+        child.setEnergyConversionProgram(parent.getEnergyConversionProgram().mutate(traitRandom,effectiveMutationRate,effectiveMutationStrength));
         return child;
     }
 

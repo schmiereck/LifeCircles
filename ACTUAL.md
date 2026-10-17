@@ -24,9 +24,11 @@ Aktualisiert: 17.10.2026. Branch `master`.
 - Achtenergie-/Überrestestand: 222 gezielte Tests erfolgreich (`fa1060b`, `367d33f`).
   Aktueller Aasregen-/GUI-Schritt: 70 gezielte Tests erfolgreich, einschließlich
   Trainings-, Import-, Überrest-, Snapshot-, Dialog- und Nebenläufigkeitsprüfungen.
-- Energieverbrauch und Überleben verwenden weiterhin Primärenergie. Eine vererbte,
-  mutierbare Umwandlungsroute je Zelle kann andere Vorräte umformen: maximal 0,1/s
-  mal Kapazität, 80 % Ausbeute. Neue/alte Genome beginnen ohne aktive Umwandlung.
+- Energieverbrauch und Überleben verwenden weiterhin Primärenergie. Der Genotyp
+  enthält acht vererbte, mutierbare Umwandlungsregeln, je eine pro „Specialization“
+  (Zellzustand 0..7). Aktiv ist nur die zur Zelle passende Regel: maximal 0,1/s mal
+  Kapazität, 80 % Ausbeute. Neue Genome sind inaktiv; alte Einzelregeln gelten nach
+  Migration unverändert in allen acht Rollen. Keine neuen neuronalen Kanäle.
   Eigene/Nachbarsensoren sehen die abgeschlossene Umwandlung; Überreste reagieren nicht.
   Siehe `ENERGIEUMWANDLUNG.md`. Spezielle Verbrauchszuordnungen bleiben offen.
 - Austauschbefehle wirken weiterhin gemeinsam auf alle Formen, mit getrennten Bilanzen.
@@ -39,6 +41,10 @@ Aktualisiert: 17.10.2026. Branch `master`.
   nötig. Feste Gegenprobe besteht; ein langer Evolutionslauf ist noch offen.
 - Stoffwechsel-/Szenarioabschluss: 201 gezielte Tests erfolgreich, einschließlich
   acht Ressourcen, 56 Routen, Vererbung, echter Altdatei, Sensoren, GUI und Testwelten.
+- Spezialisierungsabhängiger Stoffwechsel: 216 gezielte Tests erfolgreich. Gleiche
+  DNA/Zellfarbe kann über normale Energieabgabe eine dreistufige Kette ausführen;
+  fehlende Zwischenrolle unterbricht sie. Bilanz, Listenreihenfolge, periodischer Rand
+  und echte Einzel-Enzym-Altdatei geprüft. Noch kein Evolutionsnachweis für Mehrzeller.
 - Szenariowechsel im Berechnungsdienst ersetzt Welt, Raster und Snapshot unter einer
   Sperre und startet pausiert. Oben „New…“ mit erklärter Szenarioauswahl; auch NONE
   und bestehende Trainings-/Testaufbauten sind ohne Codeänderung wählbar.
