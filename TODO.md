@@ -16,7 +16,9 @@
   an „kein kostenloser Geburtsgedanke“ angepasst: prüft die Eingaben der ersten Entscheidung.
 - [x] Langlauf mit Zonen: Fremdformen in lebenden Zellen und Überresten, Nischen an Grenzen.
 - [x] Folgelauf mit milderem Winter (50 %): Fremdzonen sterben weiterhin im ersten Jahr.
-- [ ] Jahreszeiten auf angepasste Population (Fortsetzung von B) bzw. längeres Jahr anwenden.
+- [x] Jahreszeiten auf angepasste Population (Fortsetzung von B) anwenden, mit Kontrolle.
+- [ ] Evolutionsläufe mit kürzerer Lebensdauer (1000–2000 s) wiederholen; Altzellen blockieren Nischen.
+- [ ] Vorteil für Vorratshaltung schaffen/prüfen (Speicher über 000-Kapazität, Rückwandlung im Winter, ggf. Jahreszeitsensor).
 - [ ] Ursache der leeren 010-Zone klären (Zonenreihenfolge, Geländeblocker, Zuwanderung).
 - [ ] Warum wird Aas mit Fremdformen kaum gefressen? Aasfresser-Nische gezielt prüfen.
 
