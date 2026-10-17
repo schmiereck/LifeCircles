@@ -2,6 +2,10 @@
 
 Aktualisiert: 17.10.2026. Branch `master`.
 
+- Spektralzonen der Sonne (GUI-Schalter): 000 | 001 | 010 | 100 mit schmalen linearen
+  Mischstreifen, Form am Auftreffpunkt. Zelldialog zeigt kleine Vorräte sichtbar an.
+  Noch kein Langlauf zur Aas-/Nischenbildung. Siehe `SPEKTRALZONEN.md`.
+
 - Evolutionäre Sackgasse der 001-Gehirnenergie behoben: angeborene basale Notatmung
   000 → 001 (nur Bedarfslücke, 40 %, max. 0,003 000/s, Grundumsatz geschützt) plus
   Richtungsumkehr als Enzymmutation. Vererbte Enzyme bleiben doppelt so effizient.

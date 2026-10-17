@@ -61,6 +61,8 @@ public class EnergySunCalcService {
             final double deltaTime) {
         // One source type for the complete ray batch; sunlight never fills both stores for free.
         final EnergyType energyType = config.getSunEnergyType();
+        // Spectral zones choose each ray's form from where it hits; uniform mode draws no extra numbers.
+        final boolean zones = config.isSunSpectralZones();
         // This call calculates one step's sunlight, not lifetime exposure.
         // Reset even when the accumulator produces no rays or all rays are blocked.
         for (Cell cell : cells) cell.resetSunRayHit();
@@ -217,20 +219,27 @@ public class EnergySunCalcService {
                 }
             }
             double rayHitT = tMax;
+            EnergyType rayType = energyType;
+            boolean absorbed = false;
             if (hitCell != null && nearestCellHitT <= nearestBlockerHitT) {
                 rayHitT = nearestCellHitT;
                 if (!hitCell.isRemains()) {
-                    hitCell.setEnergy(energyType, hitCell.getEnergy(energyType) + config.getEnergyPerRay());
+                    if (zones) rayType = SunSpectrum.formAt(rayStartX + dirX * rayHitT, width, random.nextDouble());
+                    hitCell.setEnergy(rayType, hitCell.getEnergy(rayType) + config.getEnergyPerRay());
                     hitCell.notifySunRayHit();
+                    absorbed = true;
                 }
             } else if (nearestBlockerHitT < Double.POSITIVE_INFINITY) {
                 rayHitT = nearestBlockerHitT;
             }
             double finalRayEndX = rayStartX + dirX * rayHitT;
             double finalRayEndY = rayStartY + dirY * rayHitT;
+            // Unabsorbed rays are only drawn; show the dominant local form without consuming randomness.
+            if (zones && !absorbed) rayType = SunSpectrum.formAt(finalRayEndX, width, .5);
             rays.add(new SunRay(
                 new Vector2D(rayStartX, rayStartY),
-                new Vector2D(finalRayEndX, finalRayEndY)
+                new Vector2D(finalRayEndX, finalRayEndY),
+                rayType
             ));
         }
         return rays;

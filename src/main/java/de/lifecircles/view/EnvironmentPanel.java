@@ -3,6 +3,7 @@ package de.lifecircles.view;
 import de.lifecircles.service.SimulationConfig;
 import de.lifecircles.model.EnergyType;
 import javafx.geometry.Insets;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
@@ -43,7 +44,15 @@ public class EnvironmentPanel extends VBox {
         });
         sourceType.setValue(config.getSunEnergyType());
         sourceType.valueProperty().addListener((obs, old, next) -> config.setSunEnergyType(next));
-        VBox content = new VBox(8, title, rate, value, hint, new Label("Sun energy form:"), sourceType);
+        CheckBox zones = new CheckBox("Spectral zones: 000 | 001 | 010 | 100\n(narrow mixed borders, form chosen where a ray hits)");
+        zones.setId("sun-spectral-zones");
+        zones.setSelected(config.isSunSpectralZones());
+        sourceType.setDisable(zones.isSelected());
+        zones.selectedProperty().addListener((obs, old, next) -> {
+            config.setSunSpectralZones(next);
+            sourceType.setDisable(next);
+        });
+        VBox content = new VBox(8, title, rate, value, hint, new Label("Sun energy form:"), sourceType, zones);
         content.setPadding(new Insets(5));
         getChildren().add(new TitledPane("Environment", content));
     }

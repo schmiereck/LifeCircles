@@ -27,6 +27,8 @@
   Speicher erfolgt automatisch, zeitlich begrenzt und vor allen Energiesensoren.
   Neue Genome starten inaktiv, alte Einzelregeln gelten in allen Rollen; Überreste reagieren nicht. Details und noch
   offene neuronale Regulation: `ENERGIEUMWANDLUNG.md`.
+- Energieformen der Umwelt dürfen ortsabhängig sein (Spektralzonen). Druck zur
+  Spezialisierung soll möglichst aus der Umgebung kommen, nicht aus Zellsonderregeln.
 - Physik muss Wachstum, Kontakte, Rotation und periodische Ränder sauber begrenzen.
 - DNA-erhaltende Ausführung spart CPU; genetische Reserven bleiben erhalten.
 - Default-Gründer beginnen mit 48 versteckten Neuronen (24 gemeinsam + 3 × 8

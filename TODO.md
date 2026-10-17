@@ -7,6 +7,10 @@
 - [ ] Prüfen, ob der Enzymvorteil unter Notatmung stark genug selektiert (längerer Lauf,
   ggf. höhere Gehirnkosten oder schwächere Notatmung als Parameterstudie).
 - [ ] GUI-Gegenprobe des Nutzers auf zweitem Rechner (neue Welt und festgefahrener Altlauf).
+- [x] Spektralzonen 000 | 001 | 010 | 100 mit schmalen Mischstreifen, GUI-schaltbar.
+- [ ] Gesamtintensität der Sonne in der Populationskurve.
+- [ ] Jahreszeiten, in der GUI regelbar (Dauer, Wintertiefe).
+- [ ] Langlauf mit Zonen: Fremdformen in lebenden Zellen und Überresten, Nischen an Grenzen.
 
 - [x] Performance-Regression nach funktionaler Gehirnenergie untersuchen und seriellen Engpass beheben.
 - [ ] Wirkung des Fixes im gemeldeten langsamen 2500er-Lauf nach GUI-Neustart nachmessen.

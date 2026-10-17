@@ -74,6 +74,11 @@ public class SimulationConfig {
     private volatile double sunRayRate = 10.0;
     private volatile EnergyType sunEnergyType = EnergyType.PRIMARY;
 
+    /** Location-dependent forms (see SunSpectrum) instead of the single sun energy type. */
+    private volatile boolean sunSpectralZones = false;
+    public boolean isSunSpectralZones() { return sunSpectralZones; }
+    public void setSunSpectralZones(boolean zones) { sunSpectralZones = zones; }
+
     public EnergyType getSunEnergyType() { return sunEnergyType; }
     public void setSunEnergyType(EnergyType energyType) {
         sunEnergyType = java.util.Objects.requireNonNull(energyType);

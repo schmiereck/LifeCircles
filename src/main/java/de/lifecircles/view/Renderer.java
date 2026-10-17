@@ -1,6 +1,8 @@
 package de.lifecircles.view;
 
+import de.lifecircles.model.EnergyType;
 import de.lifecircles.model.Vector2D;
+import de.lifecircles.service.SunSpectrum;
 import de.lifecircles.service.SensorActorForceCellCalcService;
 import de.lifecircles.service.dto.SimulationStateDto;
 import de.lifecircles.service.SimulationConfig;
@@ -30,6 +32,9 @@ public class Renderer {
         if (config.isShowGrid()) {
             this.drawGrid();
         }
+        if (SimulationConfig.getInstance().isSunSpectralZones()) {
+            this.drawSpectralZones(simulationStateDto.getWidth(), simulationStateDto.getHeight());
+        }
 
         // Render blockers first (background)
         for (SimulationStateDto.BlockerStateDto blocker : simulationStateDto.getBlockers()) {
@@ -50,9 +55,9 @@ public class Renderer {
 
         // Render sun rays
         if (config.isShowSunRays()) {
-            gc.setStroke(config.SUN_COLOR);
             gc.setLineWidth(1.5);
             for (SimulationStateDto.SunRayStateDto ray : simulationStateDto.getSunRays()) {
+                gc.setStroke(sunRayColor(ray.getEnergyType(), .5));
                 Point2D start = camera.worldToScreen(new Vector2D(ray.getStartX(), ray.getStartY()));
                 Point2D end = camera.worldToScreen(new Vector2D(ray.getEndX(), ray.getEndY()));
                 gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
@@ -87,6 +92,22 @@ public class Renderer {
         return position.getX() + margin >= 0 && position.getY() + margin >= 0
                 && position.getX() - margin <= gc.getCanvas().getWidth()
                 && position.getY() - margin <= gc.getCanvas().getHeight();
+    }
+
+    /** 000 keeps the familiar sun color; other forms show their RGB bits, lifted for dark backgrounds. */
+    static javafx.scene.paint.Paint sunRayColor(EnergyType type, double opacity) {
+        if (type == null || type == EnergyType.PRIMARY) return ViewConfig.SUN_COLOR;
+        return Color.color(.3 + .7 * type.getRed(), .3 + .7 * type.getGreen(), .3 + .7 * type.getBlue(), opacity);
+    }
+
+    private void drawSpectralZones(double worldWidth, double worldHeight) {
+        double zoneWidth = worldWidth / SunSpectrum.ZONES.size();
+        for (int zone = 0; zone < SunSpectrum.ZONES.size(); zone++) {
+            EnergyType type = SunSpectrum.ZONES.get(zone);
+            gc.setFill(type == EnergyType.PRIMARY ? Color.color(1, 1, .4, .06) : (Color) sunRayColor(type, .08));
+            Point2D topLeft = camera.worldToScreen(new Vector2D(zone * zoneWidth, 0));
+            gc.fillRect(topLeft.getX(), topLeft.getY(), zoneWidth * camera.getScale(), worldHeight * camera.getScale());
+        }
     }
 
     private void clear() {

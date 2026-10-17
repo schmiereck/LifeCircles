@@ -16,6 +16,13 @@
 
 Neue Abschlüsse hier mit Commit/Testbeleg ergänzen; offene Ideen nicht als erledigt markieren.
 
+## Spektralzonen und Energieanzeige (17.10.2026)
+
+- `SunSpectrum`: vier Zonen, 15-%-Mischstreifen, periodisch; Form je Strahl am
+  Auftreffpunkt. GUI-Schalter, farbige Strahlen und Zonenhintergrund.
+- Zelldialog: kleine Vorräte/Kapazitäten wissenschaftlich statt `0,00` (`024df5c`).
+- 50 gezielte Tests erfolgreich, `target/spectral-zones-tests.log`. Siehe `SPEKTRALZONEN.md`.
+
 ## Basale Notatmung gegen Gehirnpause-Sackgasse (17.10.2026)
 
 - Ursache: Sonne nur 000, keine aktive Route 000 → 001, Teilung halbiert 001; pausierte

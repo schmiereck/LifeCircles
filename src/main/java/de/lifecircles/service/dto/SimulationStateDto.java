@@ -197,8 +197,10 @@ public class SimulationStateDto {
 
     public static class SunRayStateDto {
         private final double startX, startY, endX, endY;
+        private final EnergyType energyType;
 
         public SunRayStateDto(SunRay ray) {
+            this.energyType = ray.getEnergyType();
             this.startX = ray.getStart().getX();
             this.startY = ray.getStart().getY();
             this.endX = ray.getEnd().getX();
@@ -209,5 +211,6 @@ public class SimulationStateDto {
         public double getStartY() { return startY; }
         public double getEndX() { return endX; }
         public double getEndY() { return endY; }
+        public EnergyType getEnergyType() { return energyType; }
     }
 }
