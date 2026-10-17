@@ -6,7 +6,12 @@ import de.lifecircles.service.BrainEnergyCosts;
 
 /** Optional episode constraints. afterThinking runs concurrently on separate cells. */
 public interface SimulationStepPolicy {
-    SimulationStepPolicy NONE = new SimulationStepPolicy() {};
+    SimulationStepPolicy NONE = new SimulationStepPolicy() {
+        @Override public boolean keepRemains() { return true; }
+    };
+    SimulationStepPolicy DISCARD_REMAINS = new SimulationStepPolicy() {};
+    /** Training/evaluation episodes retain their former membership semantics unless opted in. */
+    default boolean keepRemains() { return false; }
     default boolean useSunlight() { return true; }
     default BrainEnergyCosts brainEnergyCosts() { return SimulationConfig.getInstance().getBrainEnergyCosts(); }
     default void afterThinking(Cell cell) {}

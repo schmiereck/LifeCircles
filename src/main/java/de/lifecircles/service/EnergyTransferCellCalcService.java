@@ -51,8 +51,7 @@ public class EnergyTransferCellCalcService {
         processEnergyType(cells, environment, deltaTime, EnergyType.PRIMARY);
         // Existing single-energy populations do not pay for a second transfer pass.
         int present = 0;
-        for (Cell cell : cells) for (EnergyType type : EnergyType.ALL)
-            if (type != EnergyType.PRIMARY && cell.getEnergy(type) > 0) present |= 1 << type.getCode();
+        for (Cell cell : cells) present |= cell.getEnergyPresenceMask() & ~1;
         for (EnergyType type : EnergyType.ALL) if ((present & (1 << type.getCode())) != 0)
             processEnergyType(cells, environment, deltaTime, type);
     }
@@ -62,6 +61,7 @@ public class EnergyTransferCellCalcService {
         for (Cell cell : cells) budgets.put(cell, new Budget(cell, energyType));
         List<Transfer> transfers = new ArrayList<>();
         for (Cell cell : cells) {
+            if (cell.isRemains()) continue;
             Budget own = budgets.get(cell);
             for (SensorActor sensor : cell.getSensorActors()) {
                 if (!(sensor.getSensedCell() instanceof Cell target) || target == cell
@@ -107,6 +107,7 @@ public class EnergyTransferCellCalcService {
     }
     private static void request(List<Transfer> transfers, Budget donor, Budget receiver, double amount, boolean delivery, EnergyType energyType) {
         if (donor.energy <= (delivery ? DELIVERY_RESERVE : 0)
+                || receiver.cell.isRemains()
                 || receiver.energy >= receiver.cell.getMaxEnergy(energyType)) return;
         if (amount > 0 && Double.isFinite(amount)) transfers.add(new Transfer(donor, receiver, amount, delivery));
     }

@@ -18,6 +18,7 @@ public class EnergyCellCalcService {
     }
 
     public static void decayEnergy(Cell cell, double deltaTime, BrainEnergyCosts costs) {
+        if (cell.isRemains()) return;
         final int synapseCount = cell.getBrain().getSynapseCount();
         final long proccessedSynapses = cell.getBrain().getProccessedSynapses();
         final double synapseEnergyCost =

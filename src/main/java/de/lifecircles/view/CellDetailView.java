@@ -306,7 +306,7 @@ public class CellDetailView extends Stage {
                 currentCell.getType().getRed(),
                 currentCell.getType().getGreen(),
                 currentCell.getType().getBlue()));
-        stateLabel.setText(String.valueOf(currentCell.getCellState()));
+        stateLabel.setText(currentCell.isRemains() ? "Überrest" : String.valueOf(currentCell.getCellState()));
         ageLabel.setText(String.format("%.2f", currentCell.getAge()));
         StringBuilder energyText = new StringBuilder();
         for (EnergyType energyType : EnergyType.ALL) {
@@ -353,16 +353,10 @@ public class CellDetailView extends Stage {
 
         gc.clearRect(0, 0, width, height);
 
-        gc.save(); // Transformation speichern
-        gc.translate(panOffsetX, panOffsetY); // Pan anwenden
-        gc.scale(zoomFactor, zoomFactor); // Zoom anwenden
-
         CellBrainInterface brainInterface = currentCell.getBrain();
-        if (brainInterface == null) {
-            return;
-        }
-
         if (!(brainInterface instanceof CellBrain)) {
+            gc.setFill(Color.LIGHTGRAY);
+            gc.fillText(currentCell.isRemains() ? "Überrest – keine neuronale Berechnung" : "Feste Steuerung", 20, 30);
             return;
         }
 
@@ -376,6 +370,9 @@ public class CellDetailView extends Stage {
         int[] layers = network.getLayerSizes();
 
         if (layers == null) return;
+        gc.save(); // Only save a drawing state for the neural branch, which restores it below.
+        gc.translate(panOffsetX, panOffsetY);
+        gc.scale(zoomFactor, zoomFactor);
 
         // Zeichenparameter berechnen
         // Knotengröße dynamisch berechnen

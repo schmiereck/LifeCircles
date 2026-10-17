@@ -132,8 +132,9 @@ class PopulationEnergyTest {
     @Test void ageExpiredParentCannotProduceChildrenOrRestartPopulation() {
         Environment world = new Environment(300, 300); parent(world, 0.8, 10);
         update(world, 0);
-        assertTrue(world.getCellList().isEmpty());
-        update(world, 0); assertTrue(world.getCellList().isEmpty());
+        assertEquals(1,world.getCellList().size());assertTrue(world.getCellList().getFirst().isRemains());
+        assertEquals(.8,totalEnergy(world));
+        update(world, 0);assertEquals(1,world.getCellList().size());assertEquals(.8,totalEnergy(world));
     }
 
     @Test void initiallyEmptyWorldDoesNotCreateFreeEnergy() {

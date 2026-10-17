@@ -86,14 +86,14 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
         if (phase != GENERATION_STEP) {
             return;
         }
-        List<Cell> cells = environment.getCellList();
+        List<Cell> cells = environment.getCellList().stream().filter(cell -> !cell.isRemains()).toList();
         if (cells.isEmpty()) {
             fitness.reset();
             return;
         }
         double xSpace = (environment.getWidth() / SeperatorCount);
 
-        final List<Cell> sortedCellList = fitness.ranked(environment);
+        final List<Cell> sortedCellList = fitness.ranked(environment).stream().filter(cell -> !cell.isRemains()).toList();
 
         List<Cell> winners = new ArrayList<>();
         int[] selectedPerSection = new int[SeperatorCount];

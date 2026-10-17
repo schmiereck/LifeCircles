@@ -40,6 +40,7 @@ public class Cell implements SensableCell, Serializable {
     private double secondaryEnergy;
     // Lazily allocated for codes 010..111. Missing fields in old files mean empty stores.
     private double[] additionalEnergies;
+    private boolean remains;
     private double age; // in seconds
     private int generation; // generation counter
     private transient boolean sunRayHit = false; // Flag to indicate if cell was hit by sun ray
@@ -314,6 +315,32 @@ public class Cell implements SensableCell, Serializable {
         if (additionalEnergies != null) for (double value : additionalEnergies) total += value;
         return total;
     }
+    /** Occupied forms without checking six absent stores in primary-only populations. */
+    public int getEnergyPresenceMask() {
+        int mask = (energy > 0 ? 1 : 0) | (secondaryEnergy > 0 ? 2 : 0);
+        if (additionalEnergies != null) for (int i = 0; i < additionalEnergies.length; i++)
+            if (additionalEnergies[i] > 0) mask |= 1 << (i + 2);
+        return mask;
+    }
+
+    @Override public boolean isRemains() { return remains; }
+
+    /** Preserve exact reserves, body and momentum; discard the brain and active commands. */
+    public void becomeRemains() {
+        if (remains) return;
+        remains = true;
+        brain = RemainsBrain.INSTANCE;
+        targetRadiusSize = radiusSize;
+        isGrowing = false;
+        resetSunRayHit();
+        for (SensorActor actor : sensorActors) {
+            actor.setForceStrength(0);
+            actor.setEnergyAbsorption(0);
+            actor.setEnergyDelivery(0);
+            actor.setReproductionDesire(0);
+            actor.setReproductionState(0);
+        }
+    }
 
     public CellBrainInterface getBrain() {
         return this.brain;
@@ -495,6 +522,7 @@ public class Cell implements SensableCell, Serializable {
         for (SensorActor sensorActor : this.sensorActors) {
             sensorActor.setParentCell(this);
         }
-        if (brain instanceof CellBrain neuralBrain) neuralBrain.ensureEnergyInputs(sensorActors.size());
+        if (remains) { remains = false; becomeRemains(); }
+        else if (brain instanceof CellBrain neuralBrain) neuralBrain.ensureEnergyInputs(sensorActors.size());
     }
 }

@@ -13,6 +13,7 @@ public interface SensableCell {
      * @return Die Energie des Objekts oder 0.0 wenn nicht anwendbar
      */
     double getEnergy();
+    default boolean isRemains() { return false; }
 
     /** Legacy objects expose only primary energy; actual cells override all typed accessors. */
     default double getEnergy(EnergyType energyType) {

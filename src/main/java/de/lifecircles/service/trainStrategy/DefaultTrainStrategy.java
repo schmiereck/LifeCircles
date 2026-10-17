@@ -3,6 +3,7 @@ package de.lifecircles.service.trainStrategy;
 import de.lifecircles.model.CellFactory;
 import de.lifecircles.model.Environment;
 import de.lifecircles.model.Vector2D;
+import de.lifecircles.model.SimulationStepPolicy;
 import de.lifecircles.service.SimulationConfig;
 
 import java.util.Random;
@@ -11,6 +12,7 @@ import java.util.Random;
  * Default training strategy: no special behavior (random initialization, no selection).
  */
 public class DefaultTrainStrategy implements TrainStrategy {
+    @Override public SimulationStepPolicy stepPolicy() { return SimulationStepPolicy.NONE; }
     private final SimulationConfig config = SimulationConfig.getInstance();
 
     @Override

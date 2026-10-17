@@ -17,7 +17,7 @@ public class ReproductionManagerService {
      * Checks if a cell is ready to reproduce.
      */
     public static boolean canReproduce(SimulationConfig config, Cell cell) {
-        return cell.getEnergy() >= config.getReproductionEnergyThreshold() &&
+        return !cell.isRemains() && cell.getEnergy() >= config.getReproductionEnergyThreshold() &&
                 cell.getAge() >= config.getReproductionAgeThreshold() &&
                 cell.getMaxReproductionDesire() >= config.getReproductionDesireThreshold();
     }
@@ -46,6 +46,7 @@ public class ReproductionManagerService {
 
     private static Cell reproduce(SimulationConfig config, Environment environment, Cell parentCell,
                                   double divisionMultiplier, Random birthRandom) {
+        if (parentCell.isRemains()) return null;
         SensorActor chosenActor = parentCell.getSensorActors().stream()
                 .filter(actor -> actor.getReproductionDesire() >= config.getReproductionDesireThreshold())
                 .max(Comparator.comparingDouble(SensorActor::getReproductionDesire)).orElse(null);
@@ -72,6 +73,7 @@ public class ReproductionManagerService {
     /** Fresh, equally initialized evaluation episode; elites copy genes without mutation. */
     public static Cell createTrainingFounder(SimulationConfig config, Environment environment,
                                              Cell parent, Vector2D position, int state, boolean mutate) {
+        if (parent.isRemains()) throw new IllegalArgumentException("Remains contain no living genome");
         double rate = mutate ? Math.min(1, config.getMutationRate() * parent.getMutationRateFactor()) : 0;
         double strength = mutate ? config.getMutationStrength() * parent.getMutationStrengthFactor() : 0;
         long start = environment.getProfiler().start();

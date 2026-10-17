@@ -214,7 +214,8 @@ public class CalculationService implements Runnable {
                         cell.getEnergy(EnergyType.SECONDARY),
                         additionalEnergies,
                         cell.getAge(),
-                        cell.getCellState() // Zell-Zustand hinzufügen
+                        cell.getCellState(),
+                        cell.isRemains()
                 ));
             }
         }

@@ -4,6 +4,8 @@ import de.lifecircles.model.*;
 import de.lifecircles.model.neural.*;
 import javafx.scene.paint.Color;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,7 +29,7 @@ class EightEnergySensorTest {
             for(EnergyType type:EnergyType.ALL)neighbor.setEnergy(type,(port+1)*.01+.08*type.getCode());
         }
         double[] inputs=CellBrainService.generateInputs(observer,world);
-        assertEquals(304,inputs.length);
+        assertEquals(316,inputs.length);
         for(EnergyType type:EnergyType.ALL) {
             assertEquals(observer.getEnergy(type),inputs[EnergyInputLayout.ownEnergy(12,type)]);
             for(int port=0;port<12;port++)assertEquals((port+1)*.01+.08*type.getCode(),inputs[EnergyInputLayout.neighborEnergy(12,port,type)],1e-14);
@@ -39,6 +41,11 @@ class EightEnergySensorTest {
             assertEquals(0,inputs[EnergyInputLayout.neighborEnergy(12,4,type)]);
             assertEquals(0,inputs[EnergyInputLayout.neighborEnergy(12,7,type)]);
         }
+        Cell dead=cell(122);dead.setEnergy(.5);dead.becomeRemains();observer.getSensorActors().get(6).setSensedCell(dead);
+        inputs=CellBrainService.generateInputs(observer,world);
+        assertEquals(1,inputs[EnergyInputLayout.neighborRemains(12,6)]);
+        assertEquals(0,inputs[EnergyInputLayout.neighborRemains(12,4)]);
+        assertEquals(0,inputs[EnergyInputLayout.neighborRemains(12,7)]);
     }
     @Test void oldInputIndicesRemainUnmovedAndNewChannelsDoNotOverlap() {
         Set<Integer> indices=new HashSet<>();
@@ -48,24 +55,31 @@ class EightEnergySensorTest {
             assertTrue(indices.add(EnergyInputLayout.ownEnergy(12,type)));
             for(int port=0;port<12;port++)assertTrue(indices.add(EnergyInputLayout.neighborEnergy(12,port,type)));
         }
-        assertEquals(304,indices.size());assertEquals(303,Collections.max(indices));
+        for(int actor=0;actor<12;actor++)assertTrue(indices.add(EnergyInputLayout.neighborRemains(12,actor)));
+        assertEquals(316,indices.size());assertEquals(315,Collections.max(indices));
     }
-    @Test void migrationAppendsDisconnectedInputsWithoutChangingOutputsWorkOrEvolutionRandomStream() {
+    @ParameterizedTest @ValueSource(ints={213,304})
+    void migrationAppendsDisconnectedInputsWithoutChangingOutputsWorkOrEvolutionRandomStream(int oldCount) throws Exception {
         var previous=NeuralNetwork.getRandom();
         try {
             NeuralNetwork.setRandom(new Random(482));
-            var old=new NeuralNetwork(new ValuesNeuronValueFunctionFactory(),213,new int[]{2,3,2},133,.05,3);
+            var old=new NeuralNetwork(new ValuesNeuronValueFunctionFactory(),oldCount,new int[]{2,3,2,2},133,.05,3);
+            var add=NeuralNet.class.getDeclaredMethod("addSynapse",Synapse.class);add.setAccessible(true);
+            add.invoke(old.getNeuralNet(),new Synapse(old.getOutputNeuronArr()[0],0,old.getHiddenLayerArr()[0].getNeuron(1),0,.15));
             var reference=new NeuralNetwork(old);var migrated=new NeuralNetwork(old);int stored=old.getSynapseCount();
+            for(int step=0;step<120;step++) {
+                double[] warm=new double[oldCount];java.util.Arrays.fill(warm,(step%7)*.1);
+                assertArrayEquals(reference.calcProcess(warm),migrated.calcProcess(warm));
+            }
             Random migrationRandom=new Random(992);NeuralNetwork.setRandom(migrationRandom);
-            Cell target=new Cell(new Vector2D(100,100),10,new CellBrain(migrated));
-            target.setCellState(7); // Match the reference's initially active fixed layers.
+            CellBrain target=new CellBrain(migrated);target.ensureEnergyInputs(12);
             assertEquals(new Random(992).nextLong(),migrationRandom.nextLong());
-            assertEquals(304,target.getBrain().getInputCount());assertEquals(stored,migrated.getSynapseCount());
+            assertEquals(316,target.getInputCount());assertEquals(stored,migrated.getSynapseCount());
             Random inputs=new Random(17);
             for(int step=0;step<1200;step++) {
-                double[] oldInput=new double[213],newInput=new double[304];
+                double[] oldInput=new double[oldCount],newInput=new double[316];
                 for(int i=0;i<newInput.length;i++)newInput[i]=inputs.nextDouble();
-                System.arraycopy(newInput,0,oldInput,0,213);
+                System.arraycopy(newInput,0,oldInput,0,oldCount);
                 assertArrayEquals(reference.calcProcess(oldInput),migrated.calcProcess(newInput));
                 assertEquals(reference.getProccessedSynapses(),migrated.getProccessedSynapses());
             }

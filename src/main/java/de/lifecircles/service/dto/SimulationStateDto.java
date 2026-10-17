@@ -61,6 +61,7 @@ public class SimulationStateDto {
         private final double energy;
         private final double secondaryEnergy;
         private final double[] additionalEnergies;
+        private final boolean remains;
         private final double age;
         private final int cellState; // Zell-Zustand
 
@@ -79,6 +80,12 @@ public class SimulationStateDto {
         public CellStateDto(Vector2D position, double rotation, double radiusSize,
                             double[] typeRGB, List<ActorStateDto> actors, double energy, double secondaryEnergy,
                             double[] additionalEnergies, double age, int cellState) {
+            this(position, rotation, radiusSize, typeRGB, actors, energy, secondaryEnergy, additionalEnergies, age, cellState, false);
+        }
+
+        public CellStateDto(Vector2D position, double rotation, double radiusSize,
+                            double[] typeRGB, List<ActorStateDto> actors, double energy, double secondaryEnergy,
+                            double[] additionalEnergies, double age, int cellState, boolean remains) {
 
             this.position = new Vector2D(position.getX(), position.getY());
             this.rotation = rotation;
@@ -88,6 +95,7 @@ public class SimulationStateDto {
             this.energy = energy;
             this.secondaryEnergy = secondaryEnergy;
             this.additionalEnergies = additionalEnergies.clone();
+            this.remains = remains;
             this.age = age;
             this.cellState = cellState; // Setze Zell-Zustand
         }
@@ -127,6 +135,7 @@ public class SimulationStateDto {
                 default -> additionalEnergies[energyType.getCode() - 2];
             };
         }
+        public boolean isRemains() { return remains; }
 
         public int getCellState() {
             return cellState;

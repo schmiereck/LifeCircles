@@ -23,7 +23,7 @@ public interface TrainStrategy {
 
     /** Called before building the spatial index. */
     default void beforeStep(Environment environment, double deltaTime) {}
-    default SimulationStepPolicy stepPolicy() { return SimulationStepPolicy.NONE; }
+    default SimulationStepPolicy stepPolicy() { return SimulationStepPolicy.DISCARD_REMAINS; }
     default void selectAndMutate(Environment environment, double deltaTime) { selectAndMutate(environment); }
     /** Import may restart an experimental episode using the imported genomes. */
     default void onPopulationImported(Environment environment, List<Cell> imported, boolean merge) {}

@@ -141,13 +141,19 @@ public class Renderer {
                 screenCellRadius * 2.0D,
                 screenCellRadius * 2.0D
             );
+            if (cell.isRemains() && screenCellRadius >= 4) {
+                double mark = screenCellRadius * .45;
+                gc.setStroke(Color.LIGHTGRAY);
+                gc.strokeLine(screenCellPos.getX()-mark,screenCellPos.getY()-mark,screenCellPos.getX()+mark,screenCellPos.getY()+mark);
+                gc.strokeLine(screenCellPos.getX()-mark,screenCellPos.getY()+mark,screenCellPos.getX()+mark,screenCellPos.getY()-mark);
+            }
 
             if (config.isShowActors() && screenCellRadius >= 8 && (this.camera.getScale() > 0.5D)) {
                 this.drawActors(cell);
             }
 
             // Draw cell state as a number in the center of the cell
-            if (this.config.isShowSpecialization() && screenCellRadius >= 10 && (this.camera.getScale() > 0.5D)) {
+            if (!cell.isRemains() && this.config.isShowSpecialization() && screenCellRadius >= 10 && (this.camera.getScale() > 0.5D)) {
                 this.drawCellState(cell, screenCellPos, rgb);
             }
 

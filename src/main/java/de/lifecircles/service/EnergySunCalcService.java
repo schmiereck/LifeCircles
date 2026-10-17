@@ -219,8 +219,10 @@ public class EnergySunCalcService {
             double rayHitT = tMax;
             if (hitCell != null && nearestCellHitT <= nearestBlockerHitT) {
                 rayHitT = nearestCellHitT;
-                hitCell.setEnergy(energyType, hitCell.getEnergy(energyType) + config.getEnergyPerRay());
-                hitCell.notifySunRayHit();
+                if (!hitCell.isRemains()) {
+                    hitCell.setEnergy(energyType, hitCell.getEnergy(energyType) + config.getEnergyPerRay());
+                    hitCell.notifySunRayHit();
+                }
             } else if (nearestBlockerHitT < Double.POSITIVE_INFINITY) {
                 rayHitT = nearestBlockerHitT;
             }

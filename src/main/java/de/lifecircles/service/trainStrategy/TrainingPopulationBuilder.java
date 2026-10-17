@@ -12,6 +12,7 @@ final class TrainingPopulationBuilder {
 
     static Optional<List<Cell>> build(Environment world, List<Cell> winners, int targetCount,
                                      boolean sections, Random random) {
+        winners = winners.stream().filter(cell -> !cell.isRemains()).toList();
         if (winners.isEmpty()) {
             LOG.log(System.Logger.Level.WARNING, "Training generation skipped: no winners available");
             return Optional.empty();

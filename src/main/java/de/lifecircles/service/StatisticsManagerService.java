@@ -16,6 +16,7 @@ public class StatisticsManagerService {
 
     // Current population counts
     private final IntegerProperty totalPopulation = new SimpleIntegerProperty(0);
+    private int remainsPopulation;
 
     // Population history for graphs
     private final List<Integer> totalHistory = new ArrayList<>();
@@ -45,10 +46,11 @@ public class StatisticsManagerService {
             this.averageUpdateTime = this.averageUpdateTime * 0.95 + updateTime * 0.05;
 
             // Update current counts
-            this.totalPopulation.set(cells.size());
+            remainsPopulation = (int) cells.stream().filter(Cell::isRemains).count();
+            this.totalPopulation.set(cells.size() - remainsPopulation);
 
             // Update history
-            this.updateHistory(this.totalHistory, cells.size());
+            this.updateHistory(this.totalHistory, cells.size() - remainsPopulation);
         }
     }
 
@@ -61,6 +63,7 @@ public class StatisticsManagerService {
 
     // Getters for current population
     public int getTotalPopulation() { return totalPopulation.get(); }
+    public int getRemainsPopulation() { return remainsPopulation; }
     public IntegerProperty totalPopulationProperty() { return totalPopulation; }
 
     // Getters for history

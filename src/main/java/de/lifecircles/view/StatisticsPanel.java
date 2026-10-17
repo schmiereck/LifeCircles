@@ -112,7 +112,7 @@ public class StatisticsPanel extends HBox {
     }
 
     private void updateLabels() {
-        totalLabel.setText(String.format("Total: %d", statistics.getTotalPopulation()));
+        totalLabel.setText(String.format("Living: %d | Remains: %d", statistics.getTotalPopulation(), statistics.getRemainsPopulation()));
         performanceLabel.setText(String.format("Update Time: %.1f ms", statistics.getAverageUpdateTime()));
     }
 

@@ -95,9 +95,10 @@ public class FileService {
      */
     public void saveBestCellsToFile(String filePath, List<Cell> cells, double environmentWidth) throws IOException {
         System.out.println("Starte Speichern der besten Zellen...");
+        cells = cells.stream().filter(cell -> !cell.isRemains()).toList();
 
         if (cells.isEmpty()) {
-            System.out.println("Keine Zellen zum Speichern vorhanden.");
+            System.out.println("Keine lebenden Zellen zum Speichern vorhanden.");
             return;
         }
 

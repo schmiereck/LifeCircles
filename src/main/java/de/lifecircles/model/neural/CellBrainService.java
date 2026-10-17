@@ -27,6 +27,7 @@ public class CellBrainService {
     }
 
     public static double[] generateInputs(final Cell cell, final Environment environment) {
+        if (cell.isRemains()) return new double[0];
         final List<SensorActor> myActorList = cell.getSensorActors();
         final int actorCount = myActorList.size();
         final CellBrainInterface cellBrain = cell.getBrain();
@@ -134,6 +135,10 @@ public class CellBrainService {
                     inputs[EnergyInputLayout.neighborEnergy(actorCount, actor, energyType)] = neighbor == null ? 0 : neighbor.getEnergy(energyType);
                 }
             }
+            for (int actor = 0; actor < actorCount; actor++) {
+                SensableCell neighbor = myActorList.get(actor).getSensedCell();
+                inputs[EnergyInputLayout.neighborRemains(actorCount, actor)] = neighbor != null && neighbor.isRemains() ? 1 : 0;
+            }
         }
 
         return inputs;
@@ -160,6 +165,7 @@ public class CellBrainService {
     }
 
     public static void applyOutputs(final Cell cell, final double[] outputs) {
+        if (cell.isRemains()) return;
         // Apply size output
         final SimulationConfig config = SimulationConfig.getInstance();
         cell.setRadiusSize((outputs[GlobalOutputFeature.SIZE.ordinal()] *
@@ -226,10 +232,12 @@ public class CellBrainService {
      * Updates the cell's behavior based on its current state and environment.
      */
     public static void think(final Cell cell) {
+        if (cell.isRemains()) return;
         think(cell, generateInputs(cell));
     }
 
     public static void think(final Cell cell, final double[] inputs) {
+        if (cell.isRemains()) return;
         final CellBrainInterface cellBrain = cell.getBrain();
         cellBrain.setInputs(inputs);
 

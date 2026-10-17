@@ -38,7 +38,8 @@ public class CellBrain implements CellBrainInterface, Serializable {
 
     /** Old cell interfaces get new disconnected channels; unrelated small lab networks stay intact. */
     public void ensureEnergyInputs(int actors) {
-        if (network.getNeuralNet().getInputCount() == EnergyInputLayout.legacyInputCount(actors))
+        if (network.getNeuralNet().getInputCount() == EnergyInputLayout.legacyInputCount(actors)
+                || network.getNeuralNet().getInputCount() == EnergyInputLayout.energyOnlyInputCount(actors))
             network.getNeuralNet().ensureInputCount(network.getNeuronValueFunction(), EnergyInputLayout.inputCount(actors));
     }
 

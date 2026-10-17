@@ -70,7 +70,7 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         if (stepCounter % GENERATION_STEP != 0) {
             return;
         }
-        List<Cell> cells = environment.getCellList();
+        List<Cell> cells = environment.getCellList().stream().filter(cell -> !cell.isRemains()).toList();
         if (cells.isEmpty()) {
             return;
         }

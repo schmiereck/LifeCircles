@@ -9,7 +9,14 @@ public final class EnergyInputLayout {
         return GlobalInputFeature.values().length + actors * SensorInputFeature.values().length;
     }
     public static int inputCount(int actors) {
+        return energyOnlyInputCount(actors) + actors;
+    }
+    public static int energyOnlyInputCount(int actors) {
         return legacyInputCount(actors) + (EnergyType.ALL.size() - 1) * (actors + 1);
+    }
+    public static int neighborRemains(int actors, int actor) {
+        if (actor < 0 || actor >= actors) throw new IndexOutOfBoundsException(actor);
+        return energyOnlyInputCount(actors) + actor;
     }
     public static int ownEnergy(int actors, EnergyType type) {
         return type == EnergyType.PRIMARY ? GlobalInputFeature.MY_CELL_ENERGY.ordinal()

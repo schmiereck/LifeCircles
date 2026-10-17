@@ -20,11 +20,11 @@ class LiveLifespanTest {
             assertEquals(2,world.getCellList().size());
             config.setCellDeathAge(100);
             grid.build(world.getCellList());world.update(0,grid);
-            assertEquals(1,world.getCellList().size());assertSame(younger,world.getCellList().getFirst());
+            assertEquals(2,world.getCellList().size());assertTrue(older.isRemains());assertFalse(younger.isRemains());
             config.setCellDeathAge(1000);younger.setAge(100);
-            grid.build(world.getCellList());world.update(0,grid);assertEquals(1,world.getCellList().size());
+            grid.build(world.getCellList());world.update(0,grid);assertFalse(younger.isRemains());
             younger.setAge(1000);
-            grid.build(world.getCellList());world.update(0,grid);assertTrue(world.getCellList().isEmpty());
+            grid.build(world.getCellList());world.update(0,grid);assertTrue(younger.isRemains());
         } finally {config.setCellDeathAge(previous);config.setSunRayRate(sun);}
     }
     @Test void rejectsUnusableLifespanWithoutChangingThePreviousSetting() {

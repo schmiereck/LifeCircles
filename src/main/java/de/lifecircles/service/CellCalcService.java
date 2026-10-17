@@ -31,7 +31,7 @@ public class CellCalcService {
 
         // Newborns grow linearly toward the current brain target during their first
         // simulation second. Thinking may change that target, but never growthAge.
-        if (cell.isGrowing()) {
+        if (!cell.isRemains() && cell.isGrowing()) {
             cell.incGrowthAge(deltaTime);
             if (cell.getGrowthAge() >= SimulationConfig.CELL_GROWTH_DURATION) {
                 // Wachstumsprozess abgeschlossen
@@ -46,7 +46,7 @@ public class CellCalcService {
         }
 
         // Adult smoothing advances once per simulation step, independently of thinking.
-        if (!cell.isGrowing()) {
+        if (!cell.isRemains() && !cell.isGrowing()) {
             cell.applyDelayedSizeChange(deltaTime);
         }
 
@@ -71,9 +71,10 @@ public class CellCalcService {
         cell.setRotation(rotation);
 
         // Update energy and age
-        EnergyCellCalcService.decayEnergy(cell, deltaTime, costs);
-
-        cell.incAge(deltaTime);
+        if (!cell.isRemains()) {
+            EnergyCellCalcService.decayEnergy(cell, deltaTime, costs);
+            cell.incAge(deltaTime);
+        }
     }
 
     /**

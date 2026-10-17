@@ -171,11 +171,12 @@ public class Environment {
         profiler.finish(SimulationProfiler.Phase.INTEGRATION, phaseStart);
         phaseStart = profiler.start();
         // Freeze all sensed inputs before any worker changes energy, age or outputs.
-        final List<double[]> brainInputs = this.cellList.stream().map(cell -> CellBrainService.generateInputs(cell, this)).toList();
+        final List<double[]> brainInputs = this.cellList.stream().map(cell -> cell.isRemains() ? null : CellBrainService.generateInputs(cell, this)).toList();
         profiler.finish(SimulationProfiler.Phase.INPUTS, phaseStart);
         phaseStart = profiler.start();
         IntStream.range(0, this.cellList.size()).parallel().forEach(i -> {
             Cell cell = this.cellList.get(i);
+            if (cell.isRemains()) return;
             CellBrainService.think(cell, brainInputs.get(i));
             if (policy != SimulationStepPolicy.NONE) policy.afterThinking(cell);
         });
@@ -198,6 +199,10 @@ public class Environment {
 
         while (iterator.hasNext()) {
             final Cell cell = iterator.next();
+            if (cell.isRemains()) {
+                if (cell.getTotalEnergy() <= 0) iterator.remove();
+                continue;
+            }
 
             // Get nearby cell types for the neural network via partitioner
             //List<Cell> neighborCells = partitioner.getNeighbors(cell);
@@ -212,7 +217,8 @@ public class Environment {
 
             // Dead cells cannot reproduce or serve as an automatic restart seed.
             if (policy.isDead(cell)) {
-                iterator.remove();
+                if (policy.keepRemains() && cell.getTotalEnergy() > 0) cell.becomeRemains();
+                else iterator.remove();
                 continue;
             }
 
