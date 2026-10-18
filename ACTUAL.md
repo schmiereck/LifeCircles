@@ -7,7 +7,8 @@ Aktualisiert: 17.10.2026. Branch `master`.
   Anziehung nur zwischen passender Aktor- und Körperfarbe, Fremde werden begrenzt
   abgewiesen. Vergleichslauf (je 1 Seed): mit Haftung deutlich mehr Zellen (Winter 50 %:
   437 statt 183), erstmals dauerhaft besiedelte 010-Zone samt 010-Aasverwertung; Höhe
-  unverändert, keine Stängel. `ZELLVERBINDUNGEN.md`.
+  unverändert, keine Stängel. Stufe 3/4 (Bindungen, Geburtsbindung) experimentell per
+  Schalter; gebundene Säulen bleiben formstabil, kippen aber als Ganzes. `ZELLVERBINDUNGEN.md`.
 
 - Langlauf 45 min Zonen ± Jahreszeiten: ohne Jahreszeiten stabile ~420 Zellen, 001- und
   teils 100-Zone besiedelt, Aas mit 100/010/001 (nie 000). Mit 25 % Winterlicht sterben

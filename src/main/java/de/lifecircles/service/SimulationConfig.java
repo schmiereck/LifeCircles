@@ -105,6 +105,21 @@ public class SimulationConfig {
     private volatile boolean adhesionHoldForces = true;
     /** Colour/body-type affinity; off means colour-blind fields as before. */
     private volatile boolean adhesionRecognition = true;
+    /** Stage 3: touching attractive actors lock into bonds (experimental, off by default). */
+    private volatile boolean adhesionBonds = false;
+    /** Stage 4: a daughter stays bonded to the mother if the dividing actor attracts (off by default). */
+    private volatile boolean adhesionBirthBonds = false;
+    /** A locked pair's field is this many times its frozen attraction (a plain field is a weak spring). */
+    private volatile double bondFieldFactor = 3;
+    public double getBondFieldFactor() { return bondFieldFactor; }
+    public void setBondFieldFactor(double factor) {
+        if (!Double.isFinite(factor) || factor <= 0) throw new IllegalArgumentException("Bond factor must be > 0");
+        bondFieldFactor = factor;
+    }
+    public boolean isAdhesionBonds() { return adhesionBonds; }
+    public void setAdhesionBonds(boolean bonds) { adhesionBonds = bonds; }
+    public boolean isAdhesionBirthBonds() { return adhesionBirthBonds; }
+    public void setAdhesionBirthBonds(boolean bonds) { adhesionBirthBonds = bonds; }
     public boolean isAdhesionHoldForces() { return adhesionHoldForces; }
     public void setAdhesionHoldForces(boolean hold) { adhesionHoldForces = hold; }
     public boolean isAdhesionRecognition() { return adhesionRecognition; }

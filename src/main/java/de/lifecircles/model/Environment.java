@@ -213,6 +213,8 @@ public class Environment {
             this.wrapPosition(cell);
             for (SensorActor actor : cell.getSensorActors()) actor.updateCachedPosition();
         });
+        // Bonds are kept or dissolved even when forming new ones is switched off.
+        if (adhesion) de.lifecircles.service.CellAdhesionService.updateBonds(this.cellList, this, deltaTime);
 
         profiler.finish(SimulationProfiler.Phase.INTEGRATION, phaseStart);
         phaseStart = profiler.start();
@@ -249,6 +251,8 @@ public class Environment {
             if (policy.allowReproduction(cell) && ReproductionManagerService.canReproduce(this.config, cell)) {
                 final Cell childCell = policy.reproduce(this, cell);
                 if (Objects.nonNull(childCell)) {
+                    if (adhesion && this.config.isAdhesionBirthBonds())
+                        de.lifecircles.service.CellAdhesionService.bindAtBirth(cell, childCell, this);
                     policy.onBirth(cell, childCell);
                     newCells.add(childCell);
                 }

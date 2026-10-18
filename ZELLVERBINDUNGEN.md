@@ -1,6 +1,7 @@
 # Dauerhafte Zellverbindungen – Entwurf
 
-Status: **Stufe 1 und 2 umgesetzt** (17.10.2026), Stufe 3 und 4 Entwurf. Ziel sind Stängel und Stützstrukturen
+Status: **Stufe 1 und 2 umgesetzt** (17.10.2026, Standard an); **Stufe 3 und 4 experimentell
+umgesetzt** (18.10.2026, eigene Schalter, Standard aus). Ziel sind Stängel und Stützstrukturen
 aus gemeinsamer DNA, die Gehirnpausen und einzelne Todesfälle überstehen. Dazu soll
 die Abweisung fremder Zellen kommen, die starkem Druck aber nachgibt. Grundlage sind
 die bestehenden Aktorfelder (`SensorActorForceCellCalcService`), keine zweite Mechanik.
@@ -39,6 +40,51 @@ auflösbar sein; erst Stufe 1/2, dann messen.
   `attractive` (Anteil anziehender Aktoren lebender Zellen), `pausedAttractive` (dasselbe
   bei pausierten), `largestCluster` (größte Gruppe sich berührender Zellen inkl. Überresten,
   Spalt ≤ 2 px), `clusterRemains`, `clusterLift` (höchste Zelle dieser Gruppe über Gelände).
+
+## Umsetzung Stufe 3 und 4 (18.10.2026, experimentell)
+
+Der Nutzer wollte beide Stufen nur schaltbar haben. GUI: zwei Kästchen „Experimental“
+im Umweltpanel. Config: `adhesionBonds` (Stufe 3) und `adhesionBirthBonds` (Stufe 4),
+beide standardmäßig aus. Sie wirken nur, wenn die Zellhaftung (OPEN_WORLD) an ist.
+Studie: `-Dzone.study.bonds=true`, `-Dzone.study.birthbonds=true`.
+
+- **Bindung** (`SensorActor.bond`): Beide Aktoren speichern Partner und eingefrorene
+  Stärke. Im Feld dieses Paares (`SensorActorForceCellCalcService`) wirkt statt der
+  Gehirnbefehle und der Farb-Affinität die Bindungsstärke × `bondFieldFactor` (3). Alle
+  anderen Paare bleiben unverändert. Mit Faktor 1 war eine Bindung eine zu weiche Feder:
+  Eine Säule verlor bei einem Seitenstoß 3 von 6 Bindungen. Mit 2–3 hielten alle.
+- **Einrasten** (`CellAdhesionService.updateBonds`): Der Durchgang läuft sequentiell
+  nach der Bewegung, die Reihenfolge ist fest. Bedingungen:
+  - zwei lebende Zellen, deren Aktoren sich gegenseitig als nächsten Aktor wahrnehmen;
+  - beide Aktoren anziehend;
+  - Affinität ≥ 0,8 (bei aktiver Erkennung);
+  - Abstand ≤ halbe Feldreichweite, 0,5 s lang.
+  Die Stärke ist die schwächere der beiden Anziehungen. Jeder Aktor hat höchstens einen
+  Partner.
+- **Lösen:**
+  - Der Abstand übersteigt die größere Feldreichweite.
+  - Ein denkendes Gehirn steuert den Aktor 0,5 s lang abstoßend. Pausierte Zellen
+    lösen nicht.
+  - Der Partner hat die Welt verlassen oder wurde nicht mitgespeichert.
+  - Bei Überresten klingt die Stärke mit deren Halbwertszeit ab; unter 0,001 endet die
+    Bindung.
+- **Geburtsbindung** (`CellAdhesionService.bindAtBirth`, nach erfolgreicher Teilung):
+  Der Aktor der Mutter, der dem Kind am nächsten ist, wird mit dem Aktor des Kindes
+  verbunden, der zur Mutter zeigt. Voraussetzung ist, dass der Mutteraktor anzieht und
+  noch frei ist. Die Bindung übernimmt die Stärke des Mutteraktors. Das Kind ist anfangs
+  sehr klein, die Feldskala `r₁·r₂/r_max²` wächst mit ihm.
+- Speicherung: Partner werden mitserialisiert, alte Dateien haben keine Bindungen.
+- Nicht umgesetzt (aus dem Entwurf): bevorzugte Wahrnehmung des Partners und ein
+  Gehirneingang „gebunden“.
+- Tests: `CellBondTest` (6), unter anderem eine Säule aus vier Zellen mit Seitenstoß.
+  - Lose Säule: zerfällt (Endabstand 40 px).
+  - Säule mit je zwei Bindungen pro Gelenk: bleibt ein gerader Körper (Endabstand 108 statt
+    120 px durch etwa 10 % Kontaktüberlappung, Abweichung 0), **kippt aber als Ganzes um**.
+  - Ein steifer Stab auf einer runden Fußzelle ist instabil. Stehen braucht eine breite,
+    verbundene Basis oder Halt am Boden; beides gibt es bisher nicht.
+- Kurzer Rauchtest (Zonenstudie, 180 s, beide Schalter an): 179 Bindungen, größter
+  gebundener Körper 15 Zellen, höchstes Glied 141 px über Gelände. Die Rechenzeit war
+  spürbar höher; vier weitere Läufe liefen parallel, ein sauberer Vergleich fehlt.
 
 ## Vergleichsläufe Stufe 1/2 (17./18.10.2026)
 

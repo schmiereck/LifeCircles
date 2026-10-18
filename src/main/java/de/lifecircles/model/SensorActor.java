@@ -18,6 +18,10 @@ public class SensorActor implements SensableActor, Serializable {
     private CellType type;
     private double forceStrength; // Negative for attraction, positive for repulsion
     private double heldForce; // Tonus: effective force after the last settle; old saves start relaxed at 0
+    // Bond (ZELLVERBINDUNGEN.md stage 3/4): symmetric partner and frozen field strength on both actors.
+    private SensorActor bondPartner;
+    private double bondStrength;
+    private transient double bondTimer; // lock-in or release progress
     // temporarily stores the sensed actor and its cell
     private transient SensableActor sensedActor; // Nicht serialisierbar
     private transient SensableCell sensedCell;  // Nicht serialisierbar
@@ -108,6 +112,29 @@ public class SensorActor implements SensableActor, Serializable {
         forceStrength *= factor;
         heldForce = forceStrength;
     }
+
+    public SensorActor getBondPartner() { return bondPartner; }
+    public double getBondStrength() { return bondStrength; }
+    public double getBondTimer() { return bondTimer; }
+    public void setBondTimer(double seconds) { bondTimer = seconds; }
+
+    /** Links both actors with one frozen attraction; replaces neither actor's commanded field elsewhere. */
+    public static void bond(SensorActor a, SensorActor b, double strength) {
+        if (a == b || !(strength < 0)) throw new IllegalArgumentException("A bond needs two actors and an attraction");
+        a.bondPartner = b; b.bondPartner = a;
+        a.bondStrength = strength; b.bondStrength = strength;
+        a.bondTimer = 0; b.bondTimer = 0;
+    }
+
+    /** Dissolves this actor's bond on both sides (partner only if it still points back). */
+    public void releaseBond() {
+        SensorActor partner = bondPartner;
+        bondPartner = null; bondStrength = 0; bondTimer = 0;
+        if (partner != null && partner.bondPartner == this) partner.releaseBond();
+    }
+
+    /** Remains: bonds fade like their other fields. */
+    public void fadeBond(double factor) { bondStrength *= factor; }
 
     /** Exposes parent cell for dynamic sensor field radius */
     public Cell getParentCell() {

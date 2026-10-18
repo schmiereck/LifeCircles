@@ -68,3 +68,4 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
   Überresten mit Halbwertszeit ab (∞ = Holz). Anziehung wirkt voll nur bei ähnlicher
   Aktorfarbe **und** Körperfarbe, sonst teils als begrenzte, überwindbare Abweisung.
   NONE/Trainings-Policies bleiben farbblind und ohne Tonus.
+  Bindungen (Stufe 3) und Geburtsbindung (Stufe 4) sind experimentell und nur per Schalter aktiv.

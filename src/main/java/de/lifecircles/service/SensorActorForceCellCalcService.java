@@ -19,6 +19,10 @@ public class SensorActorForceCellCalcService {
             return new Affinity(config.getAdhesionSharpness(), config.getAdhesionRejection());
         }
         double of(CellType a, CellType b) { return Math.pow(Math.max(0, a.similarity(b)), sharpness); }
+        /** Complete affinity of two actors: actor colours times body types. */
+        public double between(SensorActor a, SensorActor b) {
+            return of(a.getType(), b.getType()) * of(a.getParentCell().getType(), b.getParentCell().getType());
+        }
         /** Symmetric in both partners, so action and reaction stay equal. */
         double effective(double strength, double affinity) {
             return strength < 0 ? strength * affinity - strength * (1 - affinity) * rejection : strength;
@@ -39,6 +43,7 @@ public class SensorActorForceCellCalcService {
         final double width = environment.getWidth();
         final double height = environment.getHeight();
         final double softening = SimulationConfig.getInstance().getActorFieldSofteningFraction();
+        final double bondFactor = SimulationConfig.getInstance().getBondFieldFactor();
         final double maxRadiusSquared = Math.pow(SimulationConfig.getInstance().getCellMaxRadiusSize(), 2);
         cells.parallelStream().forEach(cell -> {
             for (SensorActor actor : cell.getSensorActors()) {
@@ -94,7 +99,10 @@ public class SensorActorForceCellCalcService {
                         // Received field plus the reaction to our emitted field.
                         double strength = 0;
                         double received = otherActor.getForceStrength(), emitted = actor.getForceStrength();
-                        if (affinity != null && (received < 0 || emitted < 0)) {
+                        if (actor.getBondPartner() == otherActor) {
+                            // A bond replaces this pair's fields with its frozen, already recognised attraction.
+                            received = actor.getBondStrength() * bondFactor; emitted = received;
+                        } else if (affinity != null && (received < 0 || emitted < 0)) {
                             double a = candidate.typeAffinity() * affinity.of(actor.getType(), otherActor.getType());
                             received = affinity.effective(received, a);
                             emitted = affinity.effective(emitted, a);

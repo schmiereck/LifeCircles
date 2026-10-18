@@ -1,5 +1,10 @@
 # Abgeschlossene Schritte
 
+## Zellhaftung Stufe 3/4 experimentell (18.10.2026)
+
+- Eingerastete Aktorpaare und Geburtsbindung, GUI-/Studienschalter (Standard aus),
+  Ablationsschalter für Tonus/Halten/Erkennung, `CellBondTest` (6). `ZELLVERBINDUNGEN.md`.
+
 ## Zellhaftung Stufe 1/2 (17.10.2026)
 
 - Tonus, Kraft halten bei Pause, Abklingen bei Überresten, Affinität aus Aktor- und

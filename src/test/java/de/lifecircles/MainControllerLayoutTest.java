@@ -59,6 +59,10 @@ class MainControllerLayoutTest {
                 sourceType.setValue(EnergyType.PRIMARY);assertEquals(EnergyType.PRIMARY,config.getSunEnergyType());
                 CheckBox adhesion=(CheckBox)controller.lookup("#cell-adhesion");
                 adhesion.setSelected(false);assertFalse(config.isCellAdhesion());adhesion.setSelected(true);assertTrue(config.isCellAdhesion());
+                CheckBox bonds=(CheckBox)controller.lookup("#adhesion-bonds"),birthBonds=(CheckBox)controller.lookup("#adhesion-birth-bonds");
+                assertFalse(bonds.isSelected());assertFalse(birthBonds.isSelected());
+                bonds.setSelected(true);assertTrue(config.isAdhesionBonds());bonds.setSelected(false);assertFalse(config.isAdhesionBonds());
+                birthBonds.setSelected(true);assertTrue(config.isAdhesionBirthBonds());birthBonds.setSelected(false);assertFalse(config.isAdhesionBirthBonds());
                 Slider halfLife=(Slider)controller.lookup("#remains-force-half-life");
                 halfLife.setValue(10);assertEquals(600,config.getRemainsForceHalfLife());
                 halfLife.setValue(61);assertEquals(Double.POSITIVE_INFINITY,config.getRemainsForceHalfLife());

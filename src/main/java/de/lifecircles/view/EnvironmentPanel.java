@@ -82,6 +82,15 @@ public class EnvironmentPanel extends VBox {
         adhesion.setId("cell-adhesion");
         adhesion.setSelected(config.isCellAdhesion());
         adhesion.selectedProperty().addListener((obs, old, next) -> config.setCellAdhesion(next));
+        // Experimental stages 3/4, off by default; they need cell adhesion to act.
+        CheckBox bonds = new CheckBox("Experimental: touching matching attractive actors lock into bonds");
+        bonds.setId("adhesion-bonds");
+        bonds.setSelected(config.isAdhesionBonds());
+        bonds.selectedProperty().addListener((obs, old, next) -> config.setAdhesionBonds(next));
+        CheckBox birthBonds = new CheckBox("Experimental: daughter stays bonded if the dividing actor attracts");
+        birthBonds.setId("adhesion-birth-bonds");
+        birthBonds.setSelected(config.isAdhesionBirthBonds());
+        birthBonds.selectedProperty().addListener((obs, old, next) -> config.setAdhesionBirthBonds(next));
         Label adhesionValue = new Label();
         // The last slider position means "never": dead cells keep carrying like wood.
         Slider remainsHalfLife = new Slider(1, 61, Double.isInfinite(config.getRemainsForceHalfLife()) ? 61
@@ -113,7 +122,7 @@ public class EnvironmentPanel extends VBox {
         VBox content = new VBox(8, title, rate, value, hint, new Label("Sun energy form:"), sourceType, zones,
                 new Label("Year length (simulation minutes):"), seasonLength,
                 new Label("Winter light (% of summer):"), winter, seasonValue,
-                adhesion, new Label("Remains force half-life (minutes, right end = forever):"), remainsHalfLife,
+                adhesion, bonds, birthBonds, new Label("Remains force half-life (minutes, right end = forever):"), remainsHalfLife,
                 new Label("Rejection of foreign attraction (%):"), rejection, adhesionValue);
         content.setPadding(new Insets(5));
         getChildren().add(new TitledPane("Environment", content));
