@@ -126,12 +126,18 @@ Befund:
   Skript übersetzt jetzt einmal vorab und setzt `-Dsurefire.failIfNoSpecifiedTests=true`.
 
 Folgerung: Mechanisch hält der Bodenhalt (Tests oben). In der Evolution bleibt er bisher
-fast ungenutzt und erzeugt keine aufrechten Formen. Wie bei den Bindungen fehlt ein Grund,
-nach oben zu wachsen. Bodenfeld und Anker bleiben experimentell und standardmäßig aus.
-Mögliche nächste Schritte, nicht beschlossen:
-- Höhenvorteil, etwa Licht, das nach oben zunimmt;
-- weniger strenge Ankerbedingung, etwa ohne Farberkennung des Bodens;
-- Materialfarbe je Blockertyp als Nische.
+fast ungenutzt und erzeugt keine aufrechten Formen. Bodenfeld und Anker bleiben
+experimentell und standardmäßig aus.
+
+Kein künstlicher Höhenvorteil (Nutzervorgabe 18.10.2026): Ein Lichtgradient wäre ein
+künstlicher Weg. Höhe soll sich in der NONE-Welt aus Konkurrenz um Licht ergeben
+(Barrieren werfen Schatten; wer höher baut, fängt die Energie). In den HIGH_POSITION-Welten
+belohnt die Selektion Höhe; dort soll die nötige Physik entdeckt werden.
+
+**Hindernis:** Trainingswelten verwenden `SimulationStepPolicy.DISCARD_REMAINS` bzw. eine
+eigene Policy. `useCellAdhesion()` ist dort `false`. Tonus, Farbaffinität, Bindungen und
+Bodenhalt wirken in HIGH_POSITION2/3 also gar nicht, unabhängig von den GUI-Schaltern.
+Ein Opt-in für diese Welten ist nicht umgesetzt.
 
 ---
 
