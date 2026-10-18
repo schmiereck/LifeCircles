@@ -40,6 +40,62 @@ auflösbar sein; erst Stufe 1/2, dann messen.
   bei pausierten), `largestCluster` (größte Gruppe sich berührender Zellen inkl. Überresten,
   Spalt ≤ 2 px), `clusterRemains`, `clusterLift` (höchste Zelle dieser Gruppe über Gelände).
 
+## Vergleichsläufe Stufe 1/2 (17./18.10.2026)
+
+Zonenstudie (`ZoneSeasonStudyTest`, Modellstand `c3679a6`), je 3600 s, Lebensdauer 2000 s,
+Spektralzonen an, vier Läufe parallel. Haftung an gegen Kontrolle
+(`-Dzone.study.adhesion=false`, entspricht dem Modell vor Stufe 1/2). Ohne Jahreszeiten
+Seed 4711, mit Jahr 600 s und Winterlicht 50 % Seed 4713. Daten:
+`target/zone-season-study/{adh,ctrl}-{noseasons,seasons50}.csv` (nicht versioniert).
+
+Werte: Mittel über die zweite Hälfte (t > 1800 s) / Maximum über den ganzen Lauf.
+
+| Kennzahl | Haftung, ohne JZ | Kontrolle, ohne JZ | Haftung, Winter 50 % | Kontrolle, Winter 50 % |
+|---|---|---|---|---|
+| Lebende Zellen | 437 / 627 | 316 / 391 | 437 / 723 | 183 / 383 |
+| Minimum lebend | 221 | 234 | 127 | 55 |
+| Pausierte Gehirne | 1,3 / 28 | 14 / 38 | 13 / 88 | 20 / 79 |
+| Überreste | 132 / 181 | 212 / 280 | 123 / 201 | 164 / 206 |
+| Anziehende Aktoren pausierter Zellen | 0,4 | 0 | 0,4 | 0 |
+| Zone 001 lebend | 0 / 24 | 0,2 / 45 | **92 / 399** | 0,9 / 51 |
+| Zone 010 lebend | 0 / 24 | 0 / 7 | **151 / 307** | 0 / 28 |
+| Zone 100 lebend | 58 / 215 | 14 / 46 | 7,5 / 56 | 3,7 / 23 |
+| Zellen mit Zonenform → 000 (001/010/100) | 0 / 0 / 7 | 0 / 0 / 0 | **36 / 55 / 0** | 0,2 / 0 / 0 |
+| Größter Kontaktverband | 387 / 623 | 411 / 531 | 207 / 517 | 142 / 350 |
+| davon Überreste | 4,6 | 102 | 3,9 | 1,4 |
+| Höchste Zelle dieses Verbands über Gelände (px) | 153 / 205 | 169 / 195 | 124 / 205 | 128 / 215 |
+| `maxLift` (px) | 154 / 205 | 169 / 195 | 135 / **500** | 136 / 216 |
+| Mittleres Alter (s) | 343 | 500 | 348 | 158 |
+
+Beobachtungen:
+
+- Mit Haftung leben in beiden Bedingungen deutlich mehr Zellen, mit Winter mehr als doppelt
+  so viele. Das Minimum im Winter liegt bei 127 statt 55.
+- **Erstmals ist die 010-Zone dauerhaft besiedelt** (Winterlauf mit Haftung, ab etwa 800 s,
+  bis 307 Zellen, bis 86 mit 010 → 000), dazu die 001-Zone über den ganzen Lauf. In der
+  Kontrolle sind beide Fremdzonen ab etwa 300 s praktisch leer.
+- Aas: Im Winterlauf mit Haftung sinkt das 010-Aas von 48 (300 s) auf 3–15. In der
+  Kontrolle bleiben 001- und 010-Aas unverändert liegen (45–50 bzw. 33,4).
+- Ohne Jahreszeiten ist die 100-Zone mit Haftung stärker besiedelt (58 statt 14 im Mittel).
+- In der Kontrolle besteht der größte Kontaktverband ohne Jahreszeiten zu einem Viertel aus
+  Überresten (102 von 411). Mit Haftung sind es kaum welche, insgesamt gibt es weniger
+  Überreste. Ursache ungeprüft: Abweisung oder ein schnellerer Abbau könnten beitragen.
+- **Höhe:** Der größte Verband ist mit Haftung nicht höher (Spitze etwa 205 px in allen
+  Läufen). Der einmalige `maxLift` von 500 px (900 s, Winter mit Haftung) gehört nicht zum
+  größten Verband. Ob das eine gehaltene Struktur oder eine geschleuderte bzw. fallende Zelle
+  war, verrät die Momentaufnahme nicht. **Stängel sind weiterhin nicht nachgewiesen.**
+- Pausierte Zellen halten wie vorgesehen Anziehung (Anteil 0,4 gegen 0).
+
+Grenzen: Pro Bedingung gibt es nur einen Lauf, und Läufe mit gleichem Seed sind nicht
+bitgenau reproduzierbar. Ein früherer Kontrolllauf mit Seed 4713 (Lebensdauer 2000 s)
+hatte selbst eine 001-Kolonie (ZONEN_JAHRESZEITEN_ERGEBNISSE.md). Der Vorteil der Haftung
+ist also ein deutlicher Hinweis, aber noch kein gesicherter Effekt. Wodurch die Haftung
+Besiedlung und Population fördert, ist ungeklärt. Mögliche Ursachen:
+- Zusammenhalt verwandter Zellen in Pausen;
+- Abweisung fremder Zellen;
+- ruhigere Kräfte durch den Tonus.
+Das wäre mit getrennten Schaltern zu prüfen.
+
 ## Befund vor der Umsetzung
 
 | Situation | Was mit den Aktorkräften passiert | Stelle |

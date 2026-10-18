@@ -19,7 +19,9 @@
 - [x] Jahreszeiten auf angepasste Population (Fortsetzung von B) anwenden, mit Kontrolle.
 - [x] Evolutionsläufe mit Lebensdauer 2000 s wiederholt (1 + 3 Seeds); Besiedlung und erste Aasverwertung.
 - [x] Zellhaftung Stufe 1/2 (Tonus über Pause/Tod, Farb-/Körperfarb-Affinität) umgesetzt.
-- [ ] Zonenläufe mit/ohne Zellhaftung vergleichen; danach Stufe 3/4 (Einrasten, Geburtsbindung).
+- [x] Zonenläufe mit/ohne Zellhaftung verglichen (je 1 Seed): Population und Besiedlung besser, Höhe gleich.
+- [ ] Haftungseffekt mit weiteren Seeds absichern; Tonus, Pausenhalten und Abweisung getrennt schalten.
+- [ ] Stufe 3/4 (Einrasten, Geburtsbindung) für echte Stängel.
 - [ ] Vorteil für Vorratshaltung schaffen/prüfen (Speicher über 000-Kapazität, Rückwandlung im Winter, ggf. Jahreszeitsensor).
 - [ ] Ursache der leeren 010-Zone klären (Zonenreihenfolge, Geländeblocker, Zuwanderung).
 - [ ] Warum wird Aas mit Fremdformen kaum gefressen? Aasfresser-Nische gezielt prüfen.
