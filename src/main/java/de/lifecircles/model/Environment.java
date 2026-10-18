@@ -149,7 +149,8 @@ public class Environment {
         phaseStart = profiler.start();
         // Process sensor/actor interactions
         SensorActorForceCellCalcService.processInteractions(this.cellList, partitioner, this,
-                recognition ? SensorActorForceCellCalcService.Affinity.fromConfig() : null);
+                recognition ? SensorActorForceCellCalcService.Affinity.fromConfig() : null,
+                adhesion && this.config.isGroundAdhesion() ? SensorActorForceCellCalcService.Ground.fromConfig(recognition) : null);
         profiler.finish(SimulationProfiler.Phase.INTERACTIONS, phaseStart);
         phaseStart = profiler.start();
         // Process energy transfers between cells

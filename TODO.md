@@ -26,7 +26,8 @@
 - [x] Zonenläufe mit Bindungen/Geburtsbindung gegen Stufe 1/2 verglichen (4 Seeds): Verbände größer und höher, Population gleich.
 - [x] Form gebundener Verbände geprüft (Momentaufnahme, Überstand-Kennzahl): dichte Haufen, keine Stängel.
 - [ ] Standfestigkeit: Halt am Boden oder breite Basis; ein gebundener Stab kippt auf der runden Fußzelle.
-  Entwurf Bodenfeld + Anker in `BODENHALT.md`, wartet auf Entscheidungen.
+  Bodenfeld + Anker experimentell umgesetzt (`BODENHALT.md`, `GroundHoldTest`).
+- [ ] Zonenläufe Bodenhalt: Bindungen gegen Bindungen + Bodenfeld gegen Bindungen + Bodenfeld + Anker (4 Seeds).
 - [ ] Vorteil für Vorratshaltung schaffen/prüfen (Speicher über 000-Kapazität, Rückwandlung im Winter, ggf. Jahreszeitsensor).
 - [ ] Ursache der leeren 010-Zone klären (Zonenreihenfolge, Geländeblocker, Zuwanderung).
 - [ ] Warum wird Aas mit Fremdformen kaum gefressen? Aasfresser-Nische gezielt prüfen.

@@ -1,5 +1,6 @@
 package de.lifecircles.service;
 
+import de.lifecircles.model.Blocker;
 import de.lifecircles.model.Cell;
 import de.lifecircles.model.Environment;
 import de.lifecircles.model.SensorActor;
@@ -50,6 +51,8 @@ public final class CellAdhesionService {
     public static void updateBonds(final List<Cell> cells, final Environment environment, final double dt) {
         final SimulationConfig config = SimulationConfig.getInstance();
         final boolean form = config.isAdhesionBonds();
+        final boolean anchors = config.isGroundAdhesion() && config.isGroundAnchors();
+        final SensorActorForceCellCalcService.Ground ground = SensorActorForceCellCalcService.Ground.fromConfig(config.isAdhesionRecognition());
         final SensorActorForceCellCalcService.Affinity affinity = config.isAdhesionRecognition()
                 ? SensorActorForceCellCalcService.Affinity.fromConfig() : null;
         final double fade = remainsFade(config, dt);
@@ -57,6 +60,16 @@ public final class CellAdhesionService {
         present.addAll(cells);
         for (Cell cell : cells) {
             for (SensorActor actor : cell.getSensorActors()) {
+                if (actor.getAnchor() != null) {
+                    // Stage B (BODENHALT.md): same release rules as a bond; the anchor must still lie on terrain.
+                    if (cell.isRemains()) actor.fadeBond(fade);
+                    actor.setBondTimer(pushes(cell, actor) ? actor.getBondTimer() + dt : 0);
+                    if (!onTerrain(actor.getAnchor(), environment)
+                            || actor.calcPosition().getShortestDirectionWithWrapAround(actor.getAnchor(), environment.getWidth(), environment.getHeight()).length() > reach(cell, cell)
+                            || actor.getBondTimer() >= LOCK_SECONDS - 1e-9
+                            || -actor.getBondStrength() < MIN_BOND_STRENGTH) actor.releaseBond();
+                    continue;
+                }
                 SensorActor partner = actor.getBondPartner();
                 if (partner != null) {
                     Cell other = partner.getParentCell();
@@ -74,7 +87,25 @@ public final class CellAdhesionService {
                             || -actor.getBondStrength() < MIN_BOND_STRENGTH) actor.releaseBond();
                     continue;
                 }
-                if (!form || cell.isRemains()) continue;
+                if (cell.isRemains()) continue;
+                if (anchors && actor.getForceStrength() < 0) {
+                    // Stage B: like a partner actor, the nearest terrain must stay within half the field range.
+                    // Resting cells rarely have an actor inside a blocker, so touching is not required.
+                    Vector2D at = actor.calcPosition(), offset = null;
+                    Blocker nearest = null;
+                    for (Blocker blocker : environment.getBlockerList()) {
+                        if (config.isGroundAnchorsGroundOnly() && blocker.getBlockerType() != Blocker.BlockerType.GROUND) continue;
+                        Vector2D o = blocker.offsetToSurface(at, environment.getWidth(), environment.getHeight());
+                        if (offset == null || o.lengthSquared() < offset.lengthSquared()) { offset = o; nearest = blocker; }
+                    }
+                    if (nearest != null && offset.length() <= LOCK_RANGE_FRACTION * reach(cell, cell)
+                            && ground.affinity(actor.getType(), nearest) >= LOCK_MIN_AFFINITY) {
+                        actor.setBondTimer(actor.getBondTimer() + dt);
+                        if (actor.getBondTimer() >= LOCK_SECONDS - 1e-9) actor.anchor(at.add(offset), actor.getForceStrength());
+                        continue;
+                    }
+                }
+                if (!form) { actor.setBondTimer(0); continue; }
                 if (!(actor.getSensedActor() instanceof SensorActor candidate) || candidate.getBondPartner() != null
                         || candidate.getSensedActor() != actor) { actor.setBondTimer(0); continue; }
                 Cell other = candidate.getParentCell();
@@ -109,6 +140,13 @@ public final class CellAdhesionService {
             if (d < bestDistance) { bestDistance = d; best = actor; }
         }
         return best;
+    }
+
+    /** Anchors loaded into another world, or whose blocker is gone, no longer lie on terrain. */
+    static boolean onTerrain(Vector2D point, Environment environment) {
+        for (Blocker blocker : environment.getBlockerList())
+            if (blocker.offsetToSurface(point, environment.getWidth(), environment.getHeight()).lengthSquared() <= 1e-12) return true;
+        return false;
     }
 
     private static boolean pushes(Cell cell, SensorActor actor) {

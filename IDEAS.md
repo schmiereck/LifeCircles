@@ -5,8 +5,8 @@
   als funktionelle Entsprechungen aus Zellverbänden, auch mehrlagige Kugelpackungen.
 - Dauerhafte Zellverbindungen, Stufe 3/4: eingerastete Aktorpaare und Geburtsbindung
   für Fadenwachstum. Entwurf in `ZELLVERBINDUNGEN.md` (Stufe 1/2 umgesetzt, 3/4 experimentell).
-- Halt am Boden: Blockeroberflächen als Aktorfeld (Stufe A) und einrastende Ankerpunkte
-  (Stufe B). Entwurf in `BODENHALT.md`, offene Entscheidungen dort.
+- Halt am Boden: experimentell umgesetzt (`BODENHALT.md`). Offen: Materialfarbe je
+  Blockertyp als Nischenversuch, Kosten für Anker und Bindungen.
 - Weitere Funktionsenergien nach 000/001: Größenänderung, Kraftaufwand und andere
   Zellfunktionen getrennt untersuchen; Engpässe können verwertbare Reserven hinterlassen.
 - Weiterentwicklung der Enzymexpression: Beschränkung auf Aufnahmeereignisse oder ein

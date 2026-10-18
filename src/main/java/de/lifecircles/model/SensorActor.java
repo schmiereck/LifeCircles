@@ -22,6 +22,8 @@ public class SensorActor implements SensableActor, Serializable {
     private SensorActor bondPartner;
     private double bondStrength;
     private transient double bondTimer; // lock-in or release progress
+    // Ground anchor (BODENHALT.md stage B): fixed world point on a blocker, used instead of a partner.
+    private Vector2D anchor;
     // temporarily stores the sensed actor and its cell
     private transient SensableActor sensedActor; // Nicht serialisierbar
     private transient SensableCell sensedCell;  // Nicht serialisierbar
@@ -126,10 +128,18 @@ public class SensorActor implements SensableActor, Serializable {
         a.bondTimer = 0; b.bondTimer = 0;
     }
 
-    /** Dissolves this actor's bond on both sides (partner only if it still points back). */
+    public Vector2D getAnchor() { return anchor; }
+
+    /** Anchors this free actor at a fixed point with a frozen attraction; it then holds no partner. */
+    public void anchor(Vector2D point, double strength) {
+        if (point == null || bondPartner != null || !(strength < 0)) throw new IllegalArgumentException("An anchor needs a free actor and an attraction");
+        anchor = point; bondStrength = strength; bondTimer = 0;
+    }
+
+    /** Dissolves this actor's bond on both sides (partner only if it still points back) or its anchor. */
     public void releaseBond() {
         SensorActor partner = bondPartner;
-        bondPartner = null; bondStrength = 0; bondTimer = 0;
+        bondPartner = null; anchor = null; bondStrength = 0; bondTimer = 0;
         if (partner != null && partner.bondPartner == this) partner.releaseBond();
     }
 

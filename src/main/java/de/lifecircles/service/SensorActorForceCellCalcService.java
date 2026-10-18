@@ -32,14 +32,35 @@ public class SensorActorForceCellCalcService {
         processInteractions(cells, partitioner, Environment.getInstance());
     }
 
+    /**
+     * Stage A of BODENHALT.md: a blocker surface acts like an actor everywhere on it. Only the actor's own
+     * attraction, weighted with its colour affinity to the blocker material, and the blockers' stickiness
+     * pull toward the nearest surface point; there is no rejection and no push off the ground.
+     */
+    public record Ground(double stickiness, double sharpness) {
+        /** Without recognition every actor colour holds fully. */
+        public static Ground fromConfig(boolean recognition) {
+            SimulationConfig config = SimulationConfig.getInstance();
+            return new Ground(config.getGroundStickiness(), recognition ? config.getAdhesionSharpness() : 0);
+        }
+        public double affinity(CellType actor, Blocker blocker) {
+            return Math.pow(Math.max(0, actor.similarity(blocker.getType())), sharpness);
+        }
+    }
+
     public static void processInteractions(final List<Cell> cells, final PartitioningStrategy partitioner,
                                            final Environment environment) {
         processInteractions(cells, partitioner, environment, null);
     }
 
-    /** affinity null keeps the original colour-blind fields. */
     public static void processInteractions(final List<Cell> cells, final PartitioningStrategy partitioner,
                                            final Environment environment, final Affinity affinity) {
+        processInteractions(cells, partitioner, environment, affinity, null);
+    }
+
+    /** affinity null keeps the original colour-blind fields, ground null keeps blockers without fields. */
+    public static void processInteractions(final List<Cell> cells, final PartitioningStrategy partitioner,
+                                           final Environment environment, final Affinity affinity, final Ground ground) {
         final double width = environment.getWidth();
         final double height = environment.getHeight();
         final double softening = SimulationConfig.getInstance().getActorFieldSofteningFraction();
@@ -80,6 +101,28 @@ public class SensorActorForceCellCalcService {
                 if (touchingBlocker != null) {
                     actor.setSensedCell(touchingBlocker);
                     actor.setSensedActor(touchingBlocker);
+                }
+                // Blockers do not move: the reaction goes into the terrain. Scale as for a maximum-size partner.
+                final double groundScale = cell.getRadiusSize() / Math.sqrt(maxRadiusSquared);
+                if (actor.getAnchor() != null) {
+                    // An anchor replaces the surface fields with its frozen attraction, like a bond (sent and received).
+                    Vector2D towardAnchor = actor.getCachedPosition().getShortestDirectionWithWrapAround(actor.getAnchor(), width, height);
+                    double d = towardAnchor.length();
+                    if (d > 1e-12 && d < ownRange) {
+                        double strength = 2 * actor.getBondStrength() * bondFactor * (1 - d / ownRange) / Math.max(d, ownRange * softening);
+                        cell.applyForce(towardAnchor.multiply(-strength * groundScale), actor.getCachedPosition());
+                    }
+                } else if (ground != null) {
+                    double emitted = Math.min(0, actor.getForceStrength());
+                    for (Blocker blocker : environment.getBlockerList()) {
+                        double strength = emitted * ground.affinity(actor.getType(), blocker) + ground.stickiness();
+                        if (strength == 0) continue;
+                        Vector2D towardSurface = blocker.offsetToSurface(actor.getCachedPosition(), width, height);
+                        double d = towardSurface.length();
+                        if (d <= 1e-12 || d >= ownRange) continue;
+                        strength *= (1 - d / ownRange) / Math.max(d, ownRange * softening);
+                        cell.applyForce(towardSurface.multiply(-strength * groundScale), actor.getCachedPosition());
+                    }
                 }
                 for (Candidate candidate : candidates) {
                     final Cell other = candidate.cell();

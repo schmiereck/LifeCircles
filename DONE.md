@@ -1,5 +1,10 @@
 # Abgeschlossene Schritte
 
+## Bodenhalt Stufe A/B experimentell (18.10.2026)
+
+- Bodenfeld für anziehende Aktoren, Anker an Geländepunkten, GUI-/Studienschalter (Standard
+  aus), Ankerkennzahlen und -zeichnung, `GroundHoldTest` (10). `BODENHALT.md`.
+
 ## Momentaufnahme mit Bindungen und Überstand-Kennzahl (18.10.2026)
 
 - PNG-Momentaufnahmen in der Zonenstudie und als Nachzeichnung gespeicherter Populationen,

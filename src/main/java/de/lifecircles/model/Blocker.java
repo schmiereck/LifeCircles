@@ -235,6 +235,18 @@ public class Blocker implements SensableActor, SensableCell {
         return Math.abs(local.getX()) <= width / 2 && Math.abs(local.getY()) <= height / 2;
     }
 
+    /**
+     * Shortest offset from point to the periodic rectangle, zero inside or on it. A rectangle covering a full
+     * axis has no edge on that axis (BODENHALT.md: surface fields and anchors).
+     */
+    public Vector2D offsetToSurface(Vector2D point, double worldWidth, double worldHeight) {
+        Vector2D local = position.getShortestDirectionWithWrapAround(point, worldWidth, worldHeight);
+        double halfX = width >= worldWidth ? Double.POSITIVE_INFINITY : width / 2;
+        double halfY = height >= worldHeight ? Double.POSITIVE_INFINITY : height / 2;
+        double x = local.getX(), y = local.getY();
+        return new Vector2D(Math.max(-halfX, Math.min(x, halfX)) - x, Math.max(-halfY, Math.min(y, halfY)) - y);
+    }
+
     /** Circle overlap with the periodic rectangle; exact tangency is allowed. */
     public boolean overlapsCircle(Vector2D point, double radius, double worldWidth, double worldHeight) {
         Vector2D local = position.getShortestDirectionWithWrapAround(point, worldWidth, worldHeight);

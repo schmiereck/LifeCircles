@@ -13,6 +13,10 @@ Aktualisiert: 17.10.2026. Branch `master`.
   (4 Seeds) sind die Verbände mit Bindungen größer und höher (Ø 173 gegen 112 px),
   Population gleich. Momentaufnahmen mit Bindungslinien zeigen dichte Haufen mit kurzen
   Bindungen; am Ende ragt kein gebundener Körper mehr als 27 px heraus, keine Stängel. `ZELLVERBINDUNGEN.md`.
+- Bodenhalt experimentell (Schalter aus): Bodenfeld für anziehende Aktoren (Halt gegen
+  Abheben, gegen Rollen nur bei einseitiger Anziehung) und Anker an festen Geländepunkten
+  (seitlich und an Wänden). Eine gebundene Säule mit zwei Fußankern bleibt nach Seitenstoß
+  stehen (3,6° statt 90°). Anker brauchen graue Aktoren; Zonenläufe fehlen. `BODENHALT.md`.
 
 - Langlauf 45 min Zonen ± Jahreszeiten: ohne Jahreszeiten stabile ~420 Zellen, 001- und
   teils 100-Zone besiedelt, Aas mit 100/010/001 (nie 000). Mit 25 % Winterlicht sterben

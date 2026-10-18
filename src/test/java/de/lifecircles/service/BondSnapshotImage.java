@@ -13,13 +13,13 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Study snapshot (ZELLVERBINDUNGEN.md): cells in body colour, remains dark, terrain grey and bonds as
- * yellow lines between the bonded actors. Periodic geometry: everything is placed by its shortest offset
+ * Study snapshot (ZELLVERBINDUNGEN.md): cells in body colour, remains dark, terrain grey, bonds as
+ * yellow lines between the bonded actors and ground anchors as orange diamonds (BODENHALT.md). Periodic geometry: everything is placed by its shortest offset
  * from the view centre, so a view may cross the world border.
  */
 final class BondSnapshotImage {
     static final Color BACKGROUND = new Color(20, 20, 30), TERRAIN = new Color(105, 105, 105),
-            BOND = new Color(255, 220, 0), HIGHLIGHT = Color.WHITE, TEXT = new Color(230, 230, 230);
+            BOND = new Color(255, 220, 0), ANCHOR = new Color(255, 120, 0), HIGHLIGHT = Color.WHITE, TEXT = new Color(230, 230, 230);
 
     private BondSnapshotImage() {}
 
@@ -67,6 +67,19 @@ final class BondSnapshotImage {
                 Vector2D step = from.getShortestDirectionWithWrapAround(partner.calcPosition(), world.getWidth(), world.getHeight());
                 double qx = p[0] + step.getX() * scale, qy = p[1] + step.getY() * scale;
                 if (view.visible(p, 0) || view.visible(new double[]{qx, qy}, 0)) g.draw(new Line2D.Double(p[0], p[1], qx, qy));
+            }
+            // Ground anchors (BODENHALT.md): a line to the anchor point and a small diamond on it.
+            for (Cell c : world.getCellList()) for (SensorActor a : c.getSensorActors()) {
+                if (a.getAnchor() == null) continue;
+                Vector2D from = a.calcPosition();
+                double[] p = view.screen(from);
+                Vector2D step = from.getShortestDirectionWithWrapAround(a.getAnchor(), world.getWidth(), world.getHeight());
+                double qx = p[0] + step.getX() * scale, qy = p[1] + step.getY() * scale, k = Math.max(2, 3 * scale);
+                if (!view.visible(new double[]{qx, qy}, k)) continue;
+                g.setColor(BOND);
+                g.draw(new Line2D.Double(p[0], p[1], qx, qy));
+                g.setColor(ANCHOR);
+                g.fill(new java.awt.geom.Path2D.Double() {{ moveTo(qx, qy - k); lineTo(qx + k, qy); lineTo(qx, qy + k); lineTo(qx - k, qy); closePath(); }});
             }
             if (label != null) {
                 g.setColor(TEXT); g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 13));

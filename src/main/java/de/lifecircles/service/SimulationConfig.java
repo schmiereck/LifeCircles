@@ -116,6 +116,26 @@ public class SimulationConfig {
         if (!Double.isFinite(factor) || factor <= 0) throw new IllegalArgumentException("Bond factor must be > 0");
         bondFieldFactor = factor;
     }
+    // Ground hold (BODENHALT.md), experimental, off by default and only with cell adhesion:
+    /** Stage A: blocker surfaces attract an actor's own attraction. */
+    private volatile boolean groundAdhesion = false;
+    /** Stage B: actors touching a blocker while attracting lock to a fixed anchor point (needs stage A). */
+    private volatile boolean groundAnchors = false;
+    /** Anchors only on GROUND blockers, no climbing on walls or platforms. */
+    private volatile boolean groundAnchorsGroundOnly = false;
+    /** Field strength of the blockers themselves (<= 0): a sticky floor for every actor. */
+    private volatile double groundStickiness = 0;
+    public boolean isGroundAdhesion() { return groundAdhesion; }
+    public void setGroundAdhesion(boolean ground) { groundAdhesion = ground; }
+    public boolean isGroundAnchors() { return groundAnchors; }
+    public void setGroundAnchors(boolean anchors) { groundAnchors = anchors; }
+    public boolean isGroundAnchorsGroundOnly() { return groundAnchorsGroundOnly; }
+    public void setGroundAnchorsGroundOnly(boolean groundOnly) { groundAnchorsGroundOnly = groundOnly; }
+    public double getGroundStickiness() { return groundStickiness; }
+    public void setGroundStickiness(double strength) {
+        if (!Double.isFinite(strength) || strength > 0) throw new IllegalArgumentException("Ground stickiness must be finite and <= 0");
+        groundStickiness = strength;
+    }
     public boolean isAdhesionBonds() { return adhesionBonds; }
     public void setAdhesionBonds(boolean bonds) { adhesionBonds = bonds; }
     public boolean isAdhesionBirthBonds() { return adhesionBirthBonds; }

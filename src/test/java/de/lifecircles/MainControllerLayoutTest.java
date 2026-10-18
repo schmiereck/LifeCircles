@@ -63,6 +63,15 @@ class MainControllerLayoutTest {
                 assertFalse(bonds.isSelected());assertFalse(birthBonds.isSelected());
                 bonds.setSelected(true);assertTrue(config.isAdhesionBonds());bonds.setSelected(false);assertFalse(config.isAdhesionBonds());
                 birthBonds.setSelected(true);assertTrue(config.isAdhesionBirthBonds());birthBonds.setSelected(false);assertFalse(config.isAdhesionBirthBonds());
+                CheckBox groundHold=(CheckBox)controller.lookup("#ground-adhesion"),anchors=(CheckBox)controller.lookup("#ground-anchors"),
+                        groundOnly=(CheckBox)controller.lookup("#ground-anchors-ground-only");
+                assertFalse(groundHold.isSelected());assertFalse(anchors.isSelected());assertFalse(groundOnly.isSelected());
+                groundHold.setSelected(true);assertTrue(config.isGroundAdhesion());groundHold.setSelected(false);assertFalse(config.isGroundAdhesion());
+                anchors.setSelected(true);assertTrue(config.isGroundAnchors());anchors.setSelected(false);assertFalse(config.isGroundAnchors());
+                groundOnly.setSelected(true);assertTrue(config.isGroundAnchorsGroundOnly());groundOnly.setSelected(false);assertFalse(config.isGroundAnchorsGroundOnly());
+                Slider stickiness=(Slider)controller.lookup("#ground-stickiness");
+                stickiness.setValue(50);assertEquals(-.5*config.getCellActorMaxAttractiveForceStrength(),config.getGroundStickiness(),1e-9);
+                stickiness.setValue(0);assertEquals(0,config.getGroundStickiness(),1e-12);
                 Slider halfLife=(Slider)controller.lookup("#remains-force-half-life");
                 halfLife.setValue(10);assertEquals(600,config.getRemainsForceHalfLife());
                 halfLife.setValue(61);assertEquals(Double.POSITIVE_INFINITY,config.getRemainsForceHalfLife());

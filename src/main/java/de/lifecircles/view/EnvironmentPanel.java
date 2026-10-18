@@ -91,6 +91,34 @@ public class EnvironmentPanel extends VBox {
         birthBonds.setId("adhesion-birth-bonds");
         birthBonds.setSelected(config.isAdhesionBirthBonds());
         birthBonds.selectedProperty().addListener((obs, old, next) -> config.setAdhesionBirthBonds(next));
+        // Ground hold (BODENHALT.md), experimental: surface fields and anchors.
+        CheckBox groundHold = new CheckBox("Experimental: terrain attracts attracting actors (grey matches best)");
+        groundHold.setId("ground-adhesion");
+        groundHold.setSelected(config.isGroundAdhesion());
+        groundHold.selectedProperty().addListener((obs, old, next) -> config.setGroundAdhesion(next));
+        CheckBox anchors = new CheckBox("Experimental: actors gripping terrain for 0.5 s anchor there");
+        anchors.setId("ground-anchors");
+        anchors.setSelected(config.isGroundAnchors());
+        anchors.selectedProperty().addListener((obs, old, next) -> config.setGroundAnchors(next));
+        CheckBox groundOnly = new CheckBox("Anchors only on the ground (no climbing walls/platforms)");
+        groundOnly.setId("ground-anchors-ground-only");
+        groundOnly.setSelected(config.isGroundAnchorsGroundOnly());
+        groundOnly.selectedProperty().addListener((obs, old, next) -> config.setGroundAnchorsGroundOnly(next));
+        Label stickinessValue = new Label();
+        double maxAttraction = config.getCellActorMaxAttractiveForceStrength();
+        Slider stickiness = new Slider(0, 100, -config.getGroundStickiness() / maxAttraction * 100);
+        stickiness.setId("ground-stickiness");
+        stickiness.setShowTickLabels(true);
+        stickiness.setShowTickMarks(true);
+        stickiness.setMajorTickUnit(25);
+        stickiness.setPrefWidth(270);
+        Runnable refreshStickiness = () -> stickinessValue.setText(String.format("Terrain stickiness: %.0f %% of maximum attraction",
+                -config.getGroundStickiness() / maxAttraction * 100));
+        stickiness.valueProperty().addListener((obs, old, next) -> {
+            config.setGroundStickiness(-next.doubleValue() / 100 * maxAttraction);
+            refreshStickiness.run();
+        });
+        refreshStickiness.run();
         Label adhesionValue = new Label();
         // The last slider position means "never": dead cells keep carrying like wood.
         Slider remainsHalfLife = new Slider(1, 61, Double.isInfinite(config.getRemainsForceHalfLife()) ? 61
@@ -123,7 +151,8 @@ public class EnvironmentPanel extends VBox {
                 new Label("Year length (simulation minutes):"), seasonLength,
                 new Label("Winter light (% of summer):"), winter, seasonValue,
                 adhesion, bonds, birthBonds, new Label("Remains force half-life (minutes, right end = forever):"), remainsHalfLife,
-                new Label("Rejection of foreign attraction (%):"), rejection, adhesionValue);
+                new Label("Rejection of foreign attraction (%):"), rejection, adhesionValue,
+                groundHold, anchors, groundOnly, new Label("Terrain stickiness (% of max attraction):"), stickiness, stickinessValue);
         content.setPadding(new Insets(5));
         getChildren().add(new TitledPane("Environment", content));
     }

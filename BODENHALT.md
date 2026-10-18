@@ -1,7 +1,80 @@
-# Halt am Boden (Entwurf)
+# Halt am Boden
 
-Status: **Entwurf** (18.10.2026), nichts umgesetzt. Baut auf `ZELLVERBINDUNGEN.md` auf
-(Stufe 1/2 Haftung, Stufe 3 Bindungen).
+Status: **Stufe A und B experimentell umgesetzt** (18.10.2026), eigene Schalter, Standard
+aus. Entscheidungen 1–5 unten wie vorgeschlagen angenommen. Baut auf `ZELLVERBINDUNGEN.md`
+auf (Stufe 1/2 Haftung, Stufe 3 Bindungen). Unten folgen der ursprüngliche Entwurf und die
+Abweichungen der Umsetzung.
+
+## Umsetzung (18.10.2026)
+
+- **Config:** `groundAdhesion` (A), `groundAnchors` (B, wirkt nur zusammen mit A),
+  `groundAnchorsGroundOnly`, `groundStickiness` (≤ 0); alle aus bzw. 0.
+  - GUI: drei Kästchen und ein Schieber „Terrain stickiness“ (in % der maximalen
+    Anziehung) im Umweltpanel.
+  - Studie: `-Dzone.study.ground=true`, `-Dzone.study.anchors=true`,
+    `-Dzone.study.groundonly=true`.
+- **Stufe A** (`SensorActorForceCellCalcService.Ground`, `Blocker.offsetToSurface`):
+  - Kraft zum nächsten Oberflächenpunkt jedes Blockers in Reichweite `R`, Stärke
+    `min(0, Befehl) · a + s_B`.
+  - `a = sim(Aktorfarbe, Grau)^k`, ohne Erkennung 1.
+  - Skala `r / r_max`.
+  - **Abweichung vom Entwurf:** Abstoßende Aktoren wirken nicht auf den Boden. Stufe A ist
+    reiner Halt, kein Abstoßen vom Gelände; sonst könnten Zellen neu „schweben“ oder
+    springen.
+  - Ein Aktor im Blocker (Abstand 0) erhält keine Kraft. Der Weltumbruch ist beachtet; der
+    Boden ist breiter als die Welt.
+- **Stufe B** (`SensorActor.anchor`, `CellAdhesionService.updateBonds`):
+  - Ankerpunkt und eingefrorene Stärke liegen im Aktor, wie bei einer Bindung, aber ohne
+    Partner. Das Feld zum Anker ist `2 · Stärke · bondFieldFactor` mit derselben Form.
+    Es ersetzt für diesen Aktor das Bodenfeld.
+  - **Abweichung vom Entwurf:** Zum Einrasten muss der Aktor den Blocker nicht berühren.
+    Der nächste Geländepunkt muss 0,5 s lang innerhalb der halben Feldreichweite liegen,
+    wie bei Zellbindungen. Im ersten Rauchlauf entstand mit „berühren“ kein einziger Anker:
+    Nach der Kollisionskorrektur liegen Aktoren ruhender Zellen praktisch nie im Blocker.
+  - Der Ankerpunkt ist der nächste Oberflächenpunkt, bei einem Aktor im Blocker dessen
+    eigene Lage.
+  - Lösen: wie geplant. Zusätzlich wird ein Anker gelöst, dessen Punkt auf keinem Blocker
+    mehr liegt, etwa nach dem Laden in eine andere Welt.
+  - Anker werden gespeichert.
+- **Momentaufnahme:** Anker als gelbe Linie mit oranger Raute.
+- **Neue Studienspalten:**
+  - `anchors`, `anchoredCells`;
+  - `rootedBodies`: gebundene Körper mit mindestens einem Anker;
+  - `rootedRise`, `rootedSpan`.
+
+Tests: `GroundHoldTest` (10), alle mit r = 20.
+
+| Prüfung | Ergebnis |
+|---|---|
+| Ohne Schalter / abstoßend / neutral / außer Reichweite | keine Bodenkraft |
+| Weltkante gegen Mitte | gleiche Kraft |
+| Rote statt graue Aktoren | Faktor 0,5⁴ = 0,0625; ohne Erkennung gleich; nie abstoßend |
+| Eigenhaftung −45 bei neutralen Aktoren | wie eigener Befehl −45 auf neutralem Boden |
+| Aufwärtszug 3 s lang | ohne Halt hebt 1,5 g die Zelle ab (51 px); mit Halt halten 2 g und 4 g (Spalt 0); 10 g reißt ab |
+| Drehstoß 2 rad/s, nur Fußaktoren (2–4) ziehen | größte Drehung 0,61 statt 4,0 rad |
+| Seitlicher Zug 1 g | Stufe A unverändert (gleitet); drei Anker: 1,2 statt 101 px |
+| Wand, Schwerkraft | nur Feld: rutscht 101 px; drei Anker: 1,2 px |
+| Einrasten | nur mit beiden Schaltern, grau, anziehend, ≤ halbe Reichweite; 0,5 s |
+| „Nur Boden“ | an der Wand kein Anker, sonst drei |
+| Lösen | aktives Abstoßen ja, Pause nein; Abriss; kein Gelände mehr; Überreste mit Halbwertszeit, Holz bleibt |
+| Speichern/Laden | Anker bleibt in gleicher Welt, wird ohne Gelände gelöst |
+| Säule aus `CellBondTest`, Seitenstoß | lose: 90° (umgekippt); zwei verankerte Fußaktoren: 3,6° |
+
+Befunde und Grenzen:
+- **Rollen wird nur gebremst, wenn die Anziehung einseitig ist.** Ziehen alle zwölf Aktoren
+  an, ist die Zelle ein „Magnetrad“ mit 30°-Rastung. Ein Drehstoß dreht sie durch
+  (insgesamt gedreht 3,98 statt 4,0 rad). Halt gegen Rollen entsteht erst, wenn vor allem die Fußseite
+  anzieht. Das muss das Gehirn lernen.
+- **Seitlich hält nur der Anker.** Das Bodenfeld wirkt senkrecht, wie geplant.
+- **Anker brauchen graue Aktoren.** Im ersten Rauchlauf (180 s, Seed 4711, Bindungen an)
+  hatten am Ende von 369 anziehenden Aktoren nahe am Gelände nur 8 eine Boden-Affinität
+  ≥ 0,8. Mit der geänderten Einrastregel entstanden im zweiten Rauchlauf trotzdem 34 Anker
+  an 33 Zellen und 8 verankerte gebundene Körper (bis 148 px Spanne).
+- Zonenläufe zum Vergleich stehen noch aus (siehe TODO).
+
+---
+
+## Ursprünglicher Entwurf
 
 ## Anlass
 

@@ -69,3 +69,6 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
   Aktorfarbe **und** Körperfarbe, sonst teils als begrenzte, überwindbare Abweisung.
   NONE/Trainings-Policies bleiben farbblind und ohne Tonus.
   Bindungen (Stufe 3) und Geburtsbindung (Stufe 4) sind experimentell und nur per Schalter aktiv.
+- Bodenhalt (`BODENHALT.md`, experimentell, Schalter aus): Gelände zieht nur anziehende Aktoren
+  an (Affinität zu Grau, keine Abweisung, kein Abstoßen); Anker sind Bindungen an einen festen
+  Geländepunkt mit denselben Lösungsregeln.

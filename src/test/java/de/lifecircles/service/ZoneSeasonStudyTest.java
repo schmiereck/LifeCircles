@@ -18,7 +18,8 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
  * the year then starts again at mid-summer. -Dzone.study.lifespan=SECONDS overrides the maximum cell age.
  * -Dzone.study.adhesion=false runs the colour-blind control without force tonus (ZELLVERBINDUNGEN.md);
  * ablations: -Dzone.study.tonus=SECONDS (0 = none), -Dzone.study.hold=false, -Dzone.study.recognition=false;
- * experimental stages: -Dzone.study.bonds=true (lock-in), -Dzone.study.birthbonds=true.
+ * experimental stages: -Dzone.study.bonds=true (lock-in), -Dzone.study.birthbonds=true; ground hold
+ * (BODENHALT.md): -Dzone.study.ground=true (surface fields), -Dzone.study.anchors=true, -Dzone.study.groundonly=true.
  * Bond snapshots (PNG overview plus crops of the most protruding bonded bodies) are written at the end and,
  * with -Dzone.study.snapshot=SECONDS, at that interval: NAME-tSECONDS.png, NAME-tSECONDS-bodyN.png.
  */
@@ -43,6 +44,9 @@ class ZoneSeasonStudyTest {
         config.setAdhesionRecognition(Boolean.parseBoolean(System.getProperty("zone.study.recognition","true")));
         config.setAdhesionBonds(Boolean.getBoolean("zone.study.bonds"));
         config.setAdhesionBirthBonds(Boolean.getBoolean("zone.study.birthbonds"));
+        config.setGroundAdhesion(Boolean.getBoolean("zone.study.ground"));
+        config.setGroundAnchors(Boolean.getBoolean("zone.study.anchors"));
+        config.setGroundAnchorsGroundOnly(Boolean.getBoolean("zone.study.groundonly"));
         NeuralNetwork.setRandom(new Random(seed));
         var strategy=new DefaultTrainStrategy();
         Environment world=strategy.initializeEnvironment();strategy.initialize(world);
@@ -86,7 +90,7 @@ class ZoneSeasonStudyTest {
         return Math.min(ZONES-1,(int)u);
     }
     static String header() {
-        StringBuilder h=new StringBuilder("t,season,living,paused,remains,activeEnzyme,meanActivity,throttled,meanAge,lifted,maxLift,attractive,pausedAttractive,largestCluster,clusterRemains,clusterLift,bonds,largestBonded,bondedLift,bondedSpan,bondedRise,riseCells");
+        StringBuilder h=new StringBuilder("t,season,living,paused,remains,activeEnzyme,meanActivity,throttled,meanAge,lifted,maxLift,attractive,pausedAttractive,largestCluster,clusterRemains,clusterLift,bonds,largestBonded,bondedLift,bondedSpan,bondedRise,riseCells,anchors,anchoredCells,rootedBodies,rootedRise,rootedSpan");
         for(int z=0;z<ZONES;z++){String f=SunSpectrum.ZONES.get(z).getRgbCode();
             h.append(",z").append(f).append("_living,z").append(f).append("_ownStore,z").append(f).append("_toPrimary,z").append(f).append("_activity");}
         for(EnergyType t:EnergyType.ALL)h.append(",remains_").append(t.getRgbCode());
@@ -132,6 +136,16 @@ class ZoneSeasonStudyTest {
         for(List<Cell> body:bondedBodies(world)){double[] shape=bodyShape(world,body);span=Math.max(span,shape[0]);
             if(riseCells==0||shape[1]>rise){rise=shape[1];riseCells=body.size();}}
         row.append(',').append(fmt(span)).append(',').append(fmt(rise)).append(',').append(riseCells);
+        // Ground anchors (BODENHALT.md): rooted bodies are bonded bodies with at least one anchored member.
+        int anchorCount=0,anchoredCells=0;
+        for(Cell c:world.getCellList()){int n=0;for(SensorActor a:c.getSensorActors())if(a.getAnchor()!=null)n++;anchorCount+=n;if(n>0)anchoredCells++;}
+        int rooted=0;double rootedRise=0,rootedSpan=0;
+        for(List<Cell> body:bondedBodies(world)) if(body.stream().anyMatch(c->c.getSensorActors().stream().anyMatch(a->a.getAnchor()!=null))) {
+            double[] shape=bodyShape(world,body);
+            if(rooted==0||shape[1]>rootedRise)rootedRise=shape[1];rootedSpan=Math.max(rootedSpan,shape[0]);rooted++;
+        }
+        row.append(',').append(anchorCount).append(',').append(anchoredCells).append(',').append(rooted)
+                .append(',').append(fmt(rootedRise)).append(',').append(fmt(rootedSpan));
         for(int z=0;z<ZONES;z++) row.append(',').append(zoneLiving[z]).append(',').append(fmt(zoneLiving[z]==0?0:own[z]/zoneLiving[z]))
                 .append(',').append(toPrimary[z]).append(',').append(fmt(toPrimary[z]==0?0:zoneActivity[z]/toPrimary[z]));
         for(double e:remainsEnergy)row.append(',').append(fmt(e));
@@ -250,7 +264,9 @@ class ZoneSeasonStudyTest {
         var c=SimulationConfig.getInstance();
         s.append("adhesion=").append(c.isCellAdhesion()).append(" tonus=").append(c.getActorForceTonusSeconds())
                 .append(" hold=").append(c.isAdhesionHoldForces()).append(" recognition=").append(c.isAdhesionRecognition())
-                .append(" bonds=").append(c.isAdhesionBonds()).append(" birthbonds=").append(c.isAdhesionBirthBonds()).append(' ');
+                .append(" bonds=").append(c.isAdhesionBonds()).append(" birthbonds=").append(c.isAdhesionBirthBonds())
+                .append(" ground=").append(c.isGroundAdhesion()).append(" anchors=").append(c.isGroundAnchors())
+                .append(" groundonly=").append(c.isGroundAnchorsGroundOnly()).append(' ');
         s.append("run=").append(name).append(" load=").append(System.getProperty("zone.study.load","-")).append(" seconds=").append(seconds).append(" year=").append(year)
                 .append(" winter=").append(winter).append(" seed=").append(seed).append('\n');
         s.append("expressed routes of living cells by zone:\n");
