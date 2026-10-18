@@ -16,7 +16,8 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
  * Writes target/zone-season-study/NAME.csv, NAME-summary.txt and the final population NAME.cells.
  * -Dzone.study.load=PATH continues a saved population (e.g. an earlier NAME.cells) instead of new founders;
  * the year then starts again at mid-summer. -Dzone.study.lifespan=SECONDS overrides the maximum cell age.
- * -Dzone.study.adhesion=false runs the colour-blind control without force tonus (ZELLVERBINDUNGEN.md).
+ * -Dzone.study.adhesion=false runs the colour-blind control without force tonus (ZELLVERBINDUNGEN.md);
+ * ablations: -Dzone.study.tonus=SECONDS (0 = none), -Dzone.study.hold=false, -Dzone.study.recognition=false.
  */
 @EnabledIfSystemProperty(named="zone.study.seconds", matches="\\d+")
 class ZoneSeasonStudyTest {
@@ -34,6 +35,9 @@ class ZoneSeasonStudyTest {
         String lifespan=System.getProperty("zone.study.lifespan");
         if(lifespan!=null && !lifespan.isBlank())config.setCellDeathAge(Double.parseDouble(lifespan));
         config.setCellAdhesion(Boolean.parseBoolean(System.getProperty("zone.study.adhesion","true")));
+        config.setActorForceTonusSeconds(Double.parseDouble(System.getProperty("zone.study.tonus",".5")));
+        config.setAdhesionHoldForces(Boolean.parseBoolean(System.getProperty("zone.study.hold","true")));
+        config.setAdhesionRecognition(Boolean.parseBoolean(System.getProperty("zone.study.recognition","true")));
         NeuralNetwork.setRandom(new Random(seed));
         var strategy=new DefaultTrainStrategy();
         Environment world=strategy.initializeEnvironment();strategy.initialize(world);
@@ -161,7 +165,9 @@ class ZoneSeasonStudyTest {
             routes.merge(key,1,Integer::sum);
         }
         StringBuilder s=new StringBuilder();
-        s.append("adhesion=").append(SimulationConfig.getInstance().isCellAdhesion()).append(' ');
+        var c=SimulationConfig.getInstance();
+        s.append("adhesion=").append(c.isCellAdhesion()).append(" tonus=").append(c.getActorForceTonusSeconds())
+                .append(" hold=").append(c.isAdhesionHoldForces()).append(" recognition=").append(c.isAdhesionRecognition()).append(' ');
         s.append("run=").append(name).append(" load=").append(System.getProperty("zone.study.load","-")).append(" seconds=").append(seconds).append(" year=").append(year)
                 .append(" winter=").append(winter).append(" seed=").append(seed).append('\n');
         s.append("expressed routes of living cells by zone:\n");

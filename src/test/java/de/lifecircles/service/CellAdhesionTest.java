@@ -19,6 +19,7 @@ class CellAdhesionTest {
     @AfterEach void restore() {
         config.setActorForceTonusSeconds(tau); config.setRemainsForceHalfLife(halfLife);
         config.setAdhesionSharpness(sharpness); config.setAdhesionRejection(rejection);
+        config.setAdhesionHoldForces(true); config.setAdhesionRecognition(true);
     }
 
     static Cell cell(double x, CellType body, CellType actors, double force) { return cell(x, 10, body, actors, force); }
@@ -62,7 +63,8 @@ class CellAdhesionTest {
             @Override public boolean useSunlight() { return false; }
             @Override public boolean useBasalBrainRespiration() { return false; }
         };
-        for (SimulationStepPolicy policy : new SimulationStepPolicy[]{noRespiration, legacy}) {
+        for (SimulationStepPolicy policy : new SimulationStepPolicy[]{noRespiration, legacy, noRespiration}) {
+            boolean ablated = policy == noRespiration && !config.isAdhesionHoldForces();
             Cell cell = new Cell(new Vector2D(100, 100), 10, new BasalBrainRespirationTest.FixedBrain(10, 5, 3));
             cell.setType(BODY); cell.setEnergy(1); cell.setEnergy(EnergyType.SECONDARY, 0);
             for (SensorActor actor : cell.getSensorActors()) { actor.setForceStrength(-90); actor.settleForce(1); }
@@ -70,7 +72,11 @@ class CellAdhesionTest {
             var grid = new SpatialGridPartitioningStrategy(300, 300, 60); grid.build(world.getCellList());
             world.update(DT, grid, policy);
             assertTrue(cell.isBrainPaused());
-            assertEquals(policy == legacy ? 0 : -90, cell.getSensorActors().getFirst().getForceStrength(), 1e-12);
+            // Without holding, the pause acts like a zero command that the tonus still smooths.
+            double expected = policy == legacy ? 0 : ablated ? -90 * Math.exp(-DT / config.getActorForceTonusSeconds()) : -90;
+            assertEquals(expected, cell.getSensorActors().getFirst().getForceStrength(), 1e-12);
+            // Third pass: the hold switch alone restores the legacy pause.
+            config.setAdhesionHoldForces(false);
         }
     }
 

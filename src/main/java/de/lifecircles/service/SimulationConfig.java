@@ -101,6 +101,14 @@ public class SimulationConfig {
     private volatile double adhesionSharpness = 4;
     /** Share of a foreign partner's attraction that acts as repulsion instead. */
     private volatile double adhesionRejection = .5;
+    /** Paused brains and remains keep their fields (otherwise both drop them to 0 as before). */
+    private volatile boolean adhesionHoldForces = true;
+    /** Colour/body-type affinity; off means colour-blind fields as before. */
+    private volatile boolean adhesionRecognition = true;
+    public boolean isAdhesionHoldForces() { return adhesionHoldForces; }
+    public void setAdhesionHoldForces(boolean hold) { adhesionHoldForces = hold; }
+    public boolean isAdhesionRecognition() { return adhesionRecognition; }
+    public void setAdhesionRecognition(boolean recognition) { adhesionRecognition = recognition; }
     public boolean isCellAdhesion() { return cellAdhesion; }
     public void setCellAdhesion(boolean adhesion) { cellAdhesion = adhesion; }
     public double getActorForceTonusSeconds() { return actorForceTonusSeconds; }

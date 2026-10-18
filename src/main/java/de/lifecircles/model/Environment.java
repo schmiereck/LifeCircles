@@ -128,6 +128,9 @@ public class Environment {
         final de.lifecircles.service.BrainEnergyCosts brainCosts = policy.brainEnergyCosts();
         final boolean basalRespiration = policy.useBasalBrainRespiration();
         final boolean adhesion = policy.useCellAdhesion();
+        // Separately switchable parts of adhesion, so their effects can be measured apart.
+        final boolean holdForces = adhesion && this.config.isAdhesionHoldForces();
+        final boolean recognition = adhesion && this.config.isAdhesionRecognition();
         long phaseStart = profiler.start();
         // Calculate sun energy rays
         this.sunRayList.clear();
@@ -146,7 +149,7 @@ public class Environment {
         phaseStart = profiler.start();
         // Process sensor/actor interactions
         SensorActorForceCellCalcService.processInteractions(this.cellList, partitioner, this,
-                adhesion ? SensorActorForceCellCalcService.Affinity.fromConfig() : null);
+                recognition ? SensorActorForceCellCalcService.Affinity.fromConfig() : null);
         profiler.finish(SimulationProfiler.Phase.INTERACTIONS, phaseStart);
         phaseStart = profiler.start();
         // Process energy transfers between cells
@@ -184,7 +187,7 @@ public class Environment {
         // Per-cell financing does not read neighbors. Finish every debit/output pause
         // before generating any inputs, so sensors still see one consistent state.
         IntStream.range(0,cellList.size()).parallel().forEach(i ->
-                canThink[i]=BrainEnergyService.prepare(cellList.get(i),deltaTime,brainCosts,basalRespiration,adhesion));
+                canThink[i]=BrainEnergyService.prepare(cellList.get(i),deltaTime,brainCosts,basalRespiration,holdForces));
         profiler.finish(SimulationProfiler.Phase.BRAIN_FUNDING, phaseStart);
         phaseStart = profiler.start();
         // Freeze all sensed inputs before any worker changes energy, age or outputs.
@@ -237,7 +240,7 @@ public class Environment {
 
             // Dead cells cannot reproduce or serve as an automatic restart seed.
             if (policy.isDead(cell)) {
-                if (policy.keepRemains() && cell.getTotalEnergy() > 0) cell.becomeRemains(adhesion);
+                if (policy.keepRemains() && cell.getTotalEnergy() > 0) cell.becomeRemains(holdForces);
                 else iterator.remove();
                 continue;
             }
