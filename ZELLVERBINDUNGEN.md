@@ -220,6 +220,59 @@ ist zurückgezogen; sie war ein Einzellauf. Ein belastbarer Populationsvergleich
 etwa 8–10 Läufe je Bedingung. Auf dieser Rechenzeit lohnt das eher mit kürzeren Läufen
 oder einer kleineren Welt.
 
+## Vergleich Bindungen gegen Stufe 1/2 (18.10.2026)
+
+Modellstand `4e8e678` (eigener Worktree), Seeds 4711–4714, je 3600 s, Lebensdauer 2000 s,
+Jahr 600 s, Winterlicht 50 %, zwei Läufe parallel.
+- `bond`: Stufe 3 und 4 an (`-Dzone.study.bonds=true -Dzone.study.birthbonds=true`).
+- `base`: nur Stufe 1/2, auf demselben Stand neu gerechnet.
+
+Daten: `LifeCircles-runs/target/zone-season-study/{bond,base}-*.csv` (nicht versioniert).
+Werte: Mittel der zweiten Hälfte (t > 1800 s), falls nicht anders angegeben.
+- Gebunden: größter gebundener Körper (Zellen) und Höhe seines höchsten Glieds über
+  Gelände. Gemessen wird die Lücke unter der Zelle, darunterliegende Zellen zählen mit.
+- Spitze: Maximum über den ganzen Lauf.
+
+| Lauf | Seed | Lebend | Min | Ende | Z000 | Z001 | Z100 | Pause % | Überreste | Verband | Verband Höhe | maxLift | Bindungen | Gebunden | Gebunden Höhe | Spitze Körper / Höhe |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Bindungen | 4711 | 82 | 35 | 43 | 82 | 0 | 0 | 6 | 167 | 52 | 84 | 82 | 60 | 6 | 25 | 21 / 119 |
+| Bindungen | 4712 | 243 | 27 | 483 | 210 | 0 | 33 | 25 | 188 | 260 | 198 | 195 | 162 | 12 | 120 | 26 / 211 |
+| Bindungen | 4713 | 292 | 47 | 531 | 254 | 0 | 38 | 2 | 241 | 366 | 241 | 233 | 126 | 15 | 133 | 45 / 261 |
+| Bindungen | 4714 | 296 | 72 | 430 | 267 | 0 | 28 | 3 | 174 | 360 | 168 | 171 | 130 | 9 | 113 | 14 / 191 |
+| Stufe 1/2 | 4711 | 357 | 79 | 447 | 227 | 87 | 43 | 6 | 120 | 232 | 131 | 149 | – | – | – | – |
+| Stufe 1/2 | 4712 | 94 | 39 | 132 | 94 | 0 | 0 | 7 | 195 | 59 | 75 | 97 | – | – | – | – |
+| Stufe 1/2 | 4713 | 113 | 9 | 45 | 113 | 0 | 0 | 22 | 162 | 92 | 83 | 110 | – | – | – | – |
+| Stufe 1/2 | 4714 | 299 | 123 | 416 | 245 | 22 | 32 | 3 | 190 | 226 | 158 | 163 | – | – | – | – |
+| **Ø Bindungen** | 4 | 228 | 45 | 372 | 203 | 0 | 25 | 9 | 193 | 259 | 173 | 170 | 119 | 11 | 98 | 26 / 196 |
+| **Ø Stufe 1/2** | 4 | 216 | 62 | 260 | 170 | 27 | 19 | 9 | 167 | 152 | 112 | 130 | – | – | – | – |
+
+Die 010-Zone ist in keinem Lauf besiedelt.
+
+Befund:
+- **Bindungen entstehen und halten:** etwa 120 gleichzeitig, der größte gebundene Körper hat
+  im Mittel 11 Zellen, die Spitze lag bei 45 Zellen.
+- **Höhere Verbände:** Mit Bindungen ist der größte Kontaktverband im Mittel größer (259
+  gegen 152 Zellen) und höher (173 gegen 112 px). Auch `maxLift` ist höher (170 gegen
+  130 px). Bei drei von vier Seeds liegt der Verband über 160 px; ohne Bindungen schaffen
+  das nur einer von acht Stufe-1/2-Läufen (dieser Abschnitt und der vorige).
+- **Gebundene Körper ragen nicht allein auf:** Ihre Höhe (Ø 98 px, Spitze 261 px) liegt
+  unter der des Kontaktverbands. Sie sitzen also in oder auf dem Haufen. Ob es dort
+  selbsttragende Stäbe gibt, zeigen die Kennzahlen nicht; dafür fehlen Momentaufnahmen mit
+  Bindungen. **Stängel sind weiterhin nicht nachgewiesen.**
+- **Population:** gleich im Rahmen der Streuung (228 gegen 216).
+- **Fremdzonen:** Mit Bindungen ist die 001-Zone in keinem Lauf besiedelt, mit Stufe 1/2
+  zweimal. Bei vier Läufen ist das nur ein Hinweis.
+- **Streuung:** Gleiche Einstellung, gleicher Seed, verschiedene Läufe von Stufe 1/2 liegen
+  bei 357 gegen 151 (4711) oder 113 gegen 437 (4713) lebenden Zellen. Populationsunterschiede
+  unter etwa Faktor 2 sind mit vier Läufen nicht zu trennen. Über alle acht Läufe von
+  Stufe 1/2 liegt das Mittel bei 226, die Kontrolle ohne Haftung bei 168 (4 Läufe).
+- Rechenzeit: Mit Bindungen ist sie kaum anders. Je Paar dauerte ein Lauf etwa 20–35 min.
+
+Folgerung: Bindungen sind die erste Regel, die die Verbände messbar größer und höher macht.
+Sie bleiben trotzdem experimentell und standardmäßig aus, bis klar ist, welche Form diese
+Verbände haben. Nächster Schritt wäre eine Momentaufnahme mit Bindungslinien bzw. eine
+Kennzahl „Höhe über dem Rest des Verbands“, dazu die Standfestigkeit (Bodenhalt, Basis).
+
 ## Befund vor der Umsetzung
 
 | Situation | Was mit den Aktorkräften passiert | Stelle |

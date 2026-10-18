@@ -1,5 +1,10 @@
 # Abgeschlossene Schritte
 
+## Vergleich Bindungen gegen Stufe 1/2 (18.10.2026)
+
+- 4 Seeds mit Bindungen und Geburtsbindung gegen 4 Seeds nur Stufe 1/2 (Winter 50 %,
+  3600 s): Verbände größer und höher, Population gleich. `ZELLVERBINDUNGEN.md`.
+
 ## Seed-Wiederholung und Ablation Zellhaftung (18.10.2026)
 
 - 4 Seeds Haftung/Kontrolle, je 2 Seeds ohne Halten, Erkennung bzw. Tonus (Winter 50 %,

@@ -9,7 +9,9 @@ Aktualisiert: 17.10.2026. Branch `master`.
   010-Zone) hat sich mit 4 Seeds nicht bestätigt (Ø 236 gegen 168, ein Seed klar
   schlechter, 010-Zone nur einmal). Ohne Halten am schwächsten, farbblind größere Verbände;
   keine Stängel. Stufe 3/4 (Bindungen, Geburtsbindung) experimentell per
-  Schalter; gebundene Säulen bleiben formstabil, kippen aber als Ganzes. `ZELLVERBINDUNGEN.md`.
+  Schalter; gebundene Säulen bleiben formstabil, kippen aber als Ganzes. In Zonenläufen
+  (4 Seeds) sind die Verbände mit Bindungen größer und höher (Ø 173 gegen 112 px),
+  Population gleich; Stängel nicht nachgewiesen. `ZELLVERBINDUNGEN.md`.
 
 - Langlauf 45 min Zonen ± Jahreszeiten: ohne Jahreszeiten stabile ~420 Zellen, 001- und
   teils 100-Zone besiedelt, Aas mit 100/010/001 (nie 000). Mit 25 % Winterlicht sterben
