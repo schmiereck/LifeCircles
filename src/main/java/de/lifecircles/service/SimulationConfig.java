@@ -93,6 +93,10 @@ public class SimulationConfig {
     // Durable adhesion (ZELLVERBINDUNGEN.md), only in policies that opt in:
 
     private volatile boolean cellAdhesion = true;
+    /** Training worlds (all modes except NONE) use adhesion only with this opt-in. */
+    private volatile boolean trainingAdhesion = false;
+    public boolean isTrainingAdhesion() { return trainingAdhesion; }
+    public void setTrainingAdhesion(boolean training) { trainingAdhesion = training; }
     /** Time constant with which the effective actor force follows the brain command. */
     private volatile double actorForceTonusSeconds = .5;
     /** Half-life of the forces held by remains; infinity keeps them ("wood"). */

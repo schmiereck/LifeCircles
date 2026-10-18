@@ -39,6 +39,7 @@ public final class CarrionRainTrainStrategy implements TrainStrategy, Simulation
         this.random=Objects.requireNonNull(random); this.foodEnergyType=Objects.requireNonNull(foodEnergyType);
     }
     public SimulationStepPolicy stepPolicy() { return this; }
+    public boolean useCellAdhesion() { return SimulationStepPolicy.trainingAdhesion(); }
     public boolean useSunlight() { return false; }
     public boolean allowReproduction(Cell cell) { return false; }
     public String getStatus() { return status; }

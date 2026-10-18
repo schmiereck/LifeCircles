@@ -67,7 +67,9 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
   Aktorkräfte folgen dem Gehirn mit Tonus, bleiben bei Pause erhalten und klingen bei
   Überresten mit Halbwertszeit ab (∞ = Holz). Anziehung wirkt voll nur bei ähnlicher
   Aktorfarbe **und** Körperfarbe, sonst teils als begrenzte, überwindbare Abweisung.
-  NONE/Trainings-Policies bleiben farbblind und ohne Tonus.
+  Trainingswelten (alle TrainModes außer NONE/EVOLUTIONARY) nutzen Haftung mit Tonus, Erkennung,
+  Bindungen und Bodenhalt nur mit dem Schalter `trainingAdhesion` (Standard aus, Policy `TRAINING`);
+  die Alt-Policy `SimulationStepPolicy.NONE` bleibt farbblind und ohne Tonus.
   Bindungen (Stufe 3) und Geburtsbindung (Stufe 4) sind experimentell und nur per Schalter aktiv.
 - Bodenhalt (`BODENHALT.md`, experimentell, Schalter aus): Gelände zieht nur anziehende Aktoren
   an (Affinität zu Grau, keine Abweisung, kein Abstoßen); Anker sind Bindungen an einen festen

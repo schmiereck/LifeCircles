@@ -1,5 +1,11 @@
 # Abgeschlossene Schritte
 
+## Haftung in Trainingswelten per Schalter (18.10.2026)
+
+- Schalter `trainingAdhesion` (Standard aus, GUI): Trainingswelten nutzen dann Tonus,
+  Erkennung, Bindungen und Bodenhalt wie die NONE-Welt. `CalculationService.strategyFor`,
+  `TrainingAdhesionTest` (2).
+
 ## Zonenläufe Bodenhalt (18.10.2026)
 
 - Je 4 Seeds: nur Bindungen, dazu Bodenfeld, dazu Bodenfeld und Anker. Wenige Anker (Ø 9),

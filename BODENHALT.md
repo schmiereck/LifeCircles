@@ -137,7 +137,10 @@ belohnt die Selektion Höhe; dort soll die nötige Physik entdeckt werden.
 **Hindernis:** Trainingswelten verwenden `SimulationStepPolicy.DISCARD_REMAINS` bzw. eine
 eigene Policy. `useCellAdhesion()` ist dort `false`. Tonus, Farbaffinität, Bindungen und
 Bodenhalt wirken in HIGH_POSITION2/3 also gar nicht, unabhängig von den GUI-Schaltern.
-Ein Opt-in für diese Welten ist nicht umgesetzt.
+Seit 18.10.2026 gibt es dafür den Schalter `trainingAdhesion` (GUI „Adhesion, bonds and
+ground hold also in training worlds“, Standard aus). Mit ihm folgen alle Trainingswelten
+denselben Haftungsschaltern wie die NONE-Welt (Policy `SimulationStepPolicy.TRAINING`,
+eigene Policies von HIGH_POSITION3 und Aasregen ebenso). Test: `TrainingAdhesionTest`.
 
 ---
 

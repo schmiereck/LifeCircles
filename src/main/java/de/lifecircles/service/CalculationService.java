@@ -44,18 +44,7 @@ public class CalculationService implements Runnable {
         Objects.requireNonNull(mode);
         synchronized (simulationLock) {
             paused.set(true);
-            this.trainStrategy = switch (mode) {
-                case CARRION_RAIN -> new CarrionRainTrainStrategy();
-                case CARRION_CONVERSION -> new CarrionRainTrainStrategy(EnergyType.SECONDARY);
-                case HIGH_ENERGY -> new HighEnergyTrainStrategy();
-                case HIGH_POSITION -> new HighPositionTrainStrategy();
-                case HIGH_POSITION2 -> new HighPosition2TrainStrategy();
-                case HIGH_POSITION3 -> new HighPosition3TrainStrategy();
-                case TEST_A -> new TestATrainStrategy();
-                case TEST_B -> new TestBTrainStrategy();
-                case TEST_C -> new TestCTrainStrategy();
-                default -> new DefaultTrainStrategy();
-            };
+            this.trainStrategy = strategyFor(mode);
             this.environment = this.trainStrategy.initializeEnvironment();
             double interactionRadius = (config.getCellMaxRadiusSize() + config.getCellActorMaxFieldRadius()) * 2;
             this.partitioner = PartitioningStrategyFactory.createStrategy(
@@ -65,6 +54,21 @@ public class CalculationService implements Runnable {
             this.initializeSimulation();
             StatisticsManagerService.getInstance().reset(environment.getCellList());
         }
+    }
+
+    public static TrainStrategy strategyFor(TrainMode mode) {
+        return switch (mode) {
+            case CARRION_RAIN -> new CarrionRainTrainStrategy();
+            case CARRION_CONVERSION -> new CarrionRainTrainStrategy(EnergyType.SECONDARY);
+            case HIGH_ENERGY -> new HighEnergyTrainStrategy();
+            case HIGH_POSITION -> new HighPositionTrainStrategy();
+            case HIGH_POSITION2 -> new HighPosition2TrainStrategy();
+            case HIGH_POSITION3 -> new HighPosition3TrainStrategy();
+            case TEST_A -> new TestATrainStrategy();
+            case TEST_B -> new TestBTrainStrategy();
+            case TEST_C -> new TestCTrainStrategy();
+            default -> new DefaultTrainStrategy();
+        };
     }
 
     public void resetSimulation() {

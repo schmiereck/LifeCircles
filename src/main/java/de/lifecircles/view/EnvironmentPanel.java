@@ -77,11 +77,15 @@ public class EnvironmentPanel extends VBox {
             refreshSeason.run();
         });
         refreshSeason.run();
-        // Durable adhesion (ZELLVERBINDUNGEN.md); acts only in open NONE worlds.
+        // Durable adhesion (ZELLVERBINDUNGEN.md); open NONE worlds, training worlds only with the opt-in.
         CheckBox adhesion = new CheckBox("Cell adhesion: forces held during brain pause,\nattraction only between matching actor colour and body type");
         adhesion.setId("cell-adhesion");
         adhesion.setSelected(config.isCellAdhesion());
         adhesion.selectedProperty().addListener((obs, old, next) -> config.setCellAdhesion(next));
+        CheckBox trainingAdhesion = new CheckBox("Adhesion, bonds and ground hold also in training worlds");
+        trainingAdhesion.setId("training-adhesion");
+        trainingAdhesion.setSelected(config.isTrainingAdhesion());
+        trainingAdhesion.selectedProperty().addListener((obs, old, next) -> config.setTrainingAdhesion(next));
         // Experimental stages 3/4, off by default; they need cell adhesion to act.
         CheckBox bonds = new CheckBox("Experimental: touching matching attractive actors lock into bonds");
         bonds.setId("adhesion-bonds");
@@ -150,7 +154,7 @@ public class EnvironmentPanel extends VBox {
         VBox content = new VBox(8, title, rate, value, hint, new Label("Sun energy form:"), sourceType, zones,
                 new Label("Year length (simulation minutes):"), seasonLength,
                 new Label("Winter light (% of summer):"), winter, seasonValue,
-                adhesion, bonds, birthBonds, new Label("Remains force half-life (minutes, right end = forever):"), remainsHalfLife,
+                adhesion, trainingAdhesion, bonds, birthBonds, new Label("Remains force half-life (minutes, right end = forever):"), remainsHalfLife,
                 new Label("Rejection of foreign attraction (%):"), rejection, adhesionValue,
                 groundHold, anchors, groundOnly, new Label("Terrain stickiness (% of max attraction):"), stickiness, stickinessValue);
         content.setPadding(new Insets(5));

@@ -15,6 +15,15 @@ public interface SimulationStepPolicy {
         @Override public boolean keepRemains() { return true; }
         @Override public boolean useCellAdhesion() { return SimulationConfig.getInstance().isCellAdhesion(); }
     };
+    /** Training episodes: remains discarded; adhesion only with the explicit training opt-in. */
+    SimulationStepPolicy TRAINING = new SimulationStepPolicy() {
+        @Override public boolean useCellAdhesion() { return trainingAdhesion(); }
+    };
+    /** Cell adhesion switch plus the separate opt-in for training worlds (off by default). */
+    static boolean trainingAdhesion() {
+        final SimulationConfig config = SimulationConfig.getInstance();
+        return config.isCellAdhesion() && config.isTrainingAdhesion();
+    }
     /** Training/evaluation episodes retain their former membership semantics unless opted in. */
     default boolean keepRemains() { return false; }
     default boolean useSunlight() { return true; }

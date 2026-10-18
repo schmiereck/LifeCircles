@@ -36,6 +36,7 @@ public class HighPosition3TrainStrategy implements TrainStrategy, SimulationStep
     public String getStatus() { return status; }
     public Evaluation getLastEvaluation() { return lastEvaluation; }
     public SimulationStepPolicy stepPolicy() { return this; }
+    public boolean useCellAdhesion() { return SimulationStepPolicy.trainingAdhesion(); }
     public boolean useSunlight() { return false; }
     public boolean useEnergyConversion() { return false; } // Isolate mechanical selection from metabolism.
     public BrainEnergyCosts brainEnergyCosts() { return BrainEnergyCosts.FREE; } // Explicit mechanical experiment, secured energy.

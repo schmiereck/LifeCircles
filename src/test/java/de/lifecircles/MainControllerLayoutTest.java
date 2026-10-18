@@ -59,6 +59,9 @@ class MainControllerLayoutTest {
                 sourceType.setValue(EnergyType.PRIMARY);assertEquals(EnergyType.PRIMARY,config.getSunEnergyType());
                 CheckBox adhesion=(CheckBox)controller.lookup("#cell-adhesion");
                 adhesion.setSelected(false);assertFalse(config.isCellAdhesion());adhesion.setSelected(true);assertTrue(config.isCellAdhesion());
+                CheckBox training=(CheckBox)controller.lookup("#training-adhesion");
+                assertFalse(training.isSelected());
+                training.setSelected(true);assertTrue(config.isTrainingAdhesion());training.setSelected(false);assertFalse(config.isTrainingAdhesion());
                 CheckBox bonds=(CheckBox)controller.lookup("#adhesion-bonds"),birthBonds=(CheckBox)controller.lookup("#adhesion-birth-bonds");
                 assertFalse(bonds.isSelected());assertFalse(birthBonds.isSelected());
                 bonds.setSelected(true);assertTrue(config.isAdhesionBonds());bonds.setSelected(false);assertFalse(config.isAdhesionBonds());
