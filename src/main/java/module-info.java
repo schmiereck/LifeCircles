@@ -4,6 +4,7 @@ module de.lifecircles {
     requires javafx.controls;
     requires javafx.graphics;
     requires java.prefs;
+    requires java.desktop; // AWT/ImageIO for headless study snapshots (tests run inside this module)
 
     exports de.lifecircles;
     exports de.lifecircles.model;

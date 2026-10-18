@@ -11,7 +11,8 @@ Aktualisiert: 17.10.2026. Branch `master`.
   keine Stängel. Stufe 3/4 (Bindungen, Geburtsbindung) experimentell per
   Schalter; gebundene Säulen bleiben formstabil, kippen aber als Ganzes. In Zonenläufen
   (4 Seeds) sind die Verbände mit Bindungen größer und höher (Ø 173 gegen 112 px),
-  Population gleich; Stängel nicht nachgewiesen. `ZELLVERBINDUNGEN.md`.
+  Population gleich. Momentaufnahmen mit Bindungslinien zeigen dichte Haufen mit kurzen
+  Bindungen; am Ende ragt kein gebundener Körper mehr als 27 px heraus, keine Stängel. `ZELLVERBINDUNGEN.md`.
 
 - Langlauf 45 min Zonen ± Jahreszeiten: ohne Jahreszeiten stabile ~420 Zellen, 001- und
   teils 100-Zone besiedelt, Aas mit 100/010/001 (nie 000). Mit 25 % Winterlicht sterben

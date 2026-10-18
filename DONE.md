@@ -1,5 +1,11 @@
 # Abgeschlossene Schritte
 
+## Momentaufnahme mit Bindungen und Überstand-Kennzahl (18.10.2026)
+
+- PNG-Momentaufnahmen in der Zonenstudie und als Nachzeichnung gespeicherter Populationen,
+  Spalten `bondedSpan`/`bondedRise`/`riseCells`, `BondShapeTest` (3). Befund: dichte
+  Haufen, keine Stängel. `ZELLVERBINDUNGEN.md`, Bilder in `docs/cell-bonds/`.
+
 ## Vergleich Bindungen gegen Stufe 1/2 (18.10.2026)
 
 - 4 Seeds mit Bindungen und Geburtsbindung gegen 4 Seeds nur Stufe 1/2 (Winter 50 %,

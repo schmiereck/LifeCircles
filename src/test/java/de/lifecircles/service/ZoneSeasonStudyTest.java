@@ -19,6 +19,8 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
  * -Dzone.study.adhesion=false runs the colour-blind control without force tonus (ZELLVERBINDUNGEN.md);
  * ablations: -Dzone.study.tonus=SECONDS (0 = none), -Dzone.study.hold=false, -Dzone.study.recognition=false;
  * experimental stages: -Dzone.study.bonds=true (lock-in), -Dzone.study.birthbonds=true.
+ * Bond snapshots (PNG overview plus crops of the most protruding bonded bodies) are written at the end and,
+ * with -Dzone.study.snapshot=SECONDS, at that interval: NAME-tSECONDS.png, NAME-tSECONDS-bodyN.png.
  */
 @EnabledIfSystemProperty(named="zone.study.seconds", matches="\\d+")
 class ZoneSeasonStudyTest {
@@ -58,6 +60,7 @@ class ZoneSeasonStudyTest {
         // The service owns the season phase; read it reflectively instead of widening the model API for a study.
         var sunField=Environment.class.getDeclaredField("energySunCalcService");sunField.setAccessible(true);
         var sun=(EnergySunCalcService)sunField.get(world);
+        int snapshotEvery=Integer.getInteger("zone.study.snapshot",0);
         long start=System.nanoTime();
         try(var csv=new PrintWriter(Files.newBufferedWriter(dir.resolve(name+".csv")))) {
             csv.println(header());
@@ -67,10 +70,12 @@ class ZoneSeasonStudyTest {
                     String row=sample(world,s,year>0?EnergySunCalcService.seasonFactor(sun.getSeasonPhase(),winter):1);
                     csv.println(row);csv.flush();
                     System.out.printf("ZONESTUDY %s t=%ds wall=%.0fs %s%n",name,s,(System.nanoTime()-start)/1e9,row);
+                    if(snapshotEvery>0&&s%snapshotEvery==0&&s<seconds)writeSnapshots(world,dir,name,s);
                     if(world.getCellList().stream().noneMatch(c->!c.isRemains())){System.out.println("ZONESTUDY "+name+" extinct");break;}
                 }
             }
         }
+        writeSnapshots(world,dir,name,seconds);
         List<Cell> living=world.getCellList().stream().filter(c->!c.isRemains()).toList();
         FileService.getInstance().saveCellsToFile(dir.resolve(name+".cells").toString(),new ArrayList<>(living));
         Files.writeString(dir.resolve(name+"-summary.txt"),summary(world,name,seconds,year,winter,seed));
@@ -81,7 +86,7 @@ class ZoneSeasonStudyTest {
         return Math.min(ZONES-1,(int)u);
     }
     static String header() {
-        StringBuilder h=new StringBuilder("t,season,living,paused,remains,activeEnzyme,meanActivity,throttled,meanAge,lifted,maxLift,attractive,pausedAttractive,largestCluster,clusterRemains,clusterLift,bonds,largestBonded,bondedLift");
+        StringBuilder h=new StringBuilder("t,season,living,paused,remains,activeEnzyme,meanActivity,throttled,meanAge,lifted,maxLift,attractive,pausedAttractive,largestCluster,clusterRemains,clusterLift,bonds,largestBonded,bondedLift,bondedSpan,bondedRise,riseCells");
         for(int z=0;z<ZONES;z++){String f=SunSpectrum.ZONES.get(z).getRgbCode();
             h.append(",z").append(f).append("_living,z").append(f).append("_ownStore,z").append(f).append("_toPrimary,z").append(f).append("_activity");}
         for(EnergyType t:EnergyType.ALL)h.append(",remains_").append(t.getRgbCode());
@@ -123,6 +128,10 @@ class ZoneSeasonStudyTest {
                 .append(',').append(cluster[0]).append(',').append(cluster[1]).append(',').append(cluster[2]);
         int[] bonded=largestBondedBody(world);
         row.append(',').append(bonded[0]).append(',').append(bonded[1]).append(',').append(bonded[2]);
+        double span=0,rise=0;int riseCells=0;
+        for(List<Cell> body:bondedBodies(world)){double[] shape=bodyShape(world,body);span=Math.max(span,shape[0]);
+            if(riseCells==0||shape[1]>rise){rise=shape[1];riseCells=body.size();}}
+        row.append(',').append(fmt(span)).append(',').append(fmt(rise)).append(',').append(riseCells);
         for(int z=0;z<ZONES;z++) row.append(',').append(zoneLiving[z]).append(',').append(fmt(zoneLiving[z]==0?0:own[z]/zoneLiving[z]))
                 .append(',').append(toPrimary[z]).append(',').append(fmt(toPrimary[z]==0?0:zoneActivity[z]/toPrimary[z]));
         for(double e:remainsEnergy)row.append(',').append(fmt(e));
@@ -173,6 +182,59 @@ class ZoneSeasonStudyTest {
         for(int i=0;i<n;i++){int[] g=groups.computeIfAbsent(root(parent,i),k->new int[2]);g[0]++;g[1]=Math.max(g[1],(int)Math.round(liftAboveTerrain(world,cells.get(i))));}
         int[] best=groups.values().stream().filter(g->g[0]>1).max(Comparator.comparingInt(g->g[0])).orElse(new int[2]);
         return new int[]{bonds,best[0],best[1]};
+    }
+    /** Bonded bodies of at least two cells; bonds to cells outside the list are ignored. */
+    static List<List<Cell>> bondedBodies(Environment world) {
+        List<Cell> cells=world.getCellList();int n=cells.size();int[] parent=new int[n];
+        Map<Cell,Integer> index=new IdentityHashMap<>();
+        for(int i=0;i<n;i++){parent[i]=i;index.put(cells.get(i),i);}
+        for(int i=0;i<n;i++)for(SensorActor a:cells.get(i).getSensorActors()) {
+            SensorActor p=a.getBondPartner();if(p==null)continue;
+            Integer j=index.get(p.getParentCell());if(j!=null)parent[root(parent,i)]=root(parent,j);
+        }
+        Map<Integer,List<Cell>> groups=new LinkedHashMap<>();
+        for(int i=0;i<n;i++)groups.computeIfAbsent(root(parent,i),k->new ArrayList<>()).add(cells.get(i));
+        return groups.values().stream().filter(g->g.size()>1).toList();
+    }
+    /**
+     * {span, rise} of a bonded body in px. Span: lowest member bottom to highest member top. Rise: how far the
+     * top member reaches above everything else under the body's horizontal extent: other cells (living or
+     * remains) and terrain whose bottom reaches at least the body's top. A cell lying on the body counts, so a
+     * buried body has negative rise; things wholly above it (ceilings, falling cells) do not. A stalk standing
+     * out of a heap has a rise of several cell diameters, a chain lying on top about one diameter.
+     */
+    static double[] bodyShape(Environment world,List<Cell> body) {
+        double w=world.getWidth(),h=world.getHeight();Vector2D anchor=body.get(0).getPosition();
+        Set<Cell> members=Collections.newSetFromMap(new IdentityHashMap<>());members.addAll(body);
+        double left=Double.POSITIVE_INFINITY,right=Double.NEGATIVE_INFINITY,top=Double.POSITIVE_INFINITY,bottom=Double.NEGATIVE_INFINITY;
+        for(Cell c:body){double x=anchor.getShortestDirectionWithWrapAround(c.getPosition(),w,h).getX(),r=c.getRadiusSize(),y=c.getPosition().getY();
+            left=Math.min(left,x-r);right=Math.max(right,x+r);top=Math.min(top,y-r);bottom=Math.max(bottom,y+r);}
+        double surface=h;
+        for(Blocker b:world.getBlockerList()){double x=anchor.getShortestDirectionWithWrapAround(b.getPosition(),w,h).getX();
+            if(x+b.getWidth()/2>=left&&x-b.getWidth()/2<=right&&b.getPosition().getY()+b.getHeight()/2>=top-CONTACT_PX)
+                surface=Math.min(surface,b.getPosition().getY()-b.getHeight()/2);}
+        for(Cell c:world.getCellList()){if(members.contains(c))continue;
+            double x=anchor.getShortestDirectionWithWrapAround(c.getPosition(),w,h).getX(),r=c.getRadiusSize(),y=c.getPosition().getY();
+            if(x+r>=left&&x-r<=right&&y+r>=top-CONTACT_PX)surface=Math.min(surface,y-r);}
+        return new double[]{bottom-top,surface-top};
+    }
+    /** Overview of the whole world, crops of the three bonded bodies with the largest rise and of the largest body. */
+    static void writeSnapshots(Environment world,Path dir,String name,int t) throws IOException {
+        System.setProperty("java.awt.headless","true");
+        List<List<Cell>> bodies=new ArrayList<>(bondedBodies(world));
+        Map<List<Cell>,double[]> shapes=new IdentityHashMap<>();
+        for(List<Cell> b:bodies)shapes.put(b,bodyShape(world,b));
+        bodies.sort(Comparator.comparingDouble(b->-shapes.get(b)[1]));
+        long bonds=world.getCellList().stream().flatMap(c->c.getSensorActors().stream()).filter(a->a.getBondPartner()!=null).count()/2;
+        BondSnapshotImage.writeOverview(world,dir.resolve(name+"-t"+t+".png"),.25,
+                String.format(Locale.ROOT,"%s t=%ds cells=%d bonds=%d bodies=%d",name,t,world.getCellList().size(),bonds,bodies.size()));
+        for(int i=0;i<Math.min(3,bodies.size());i++){List<Cell> b=bodies.get(i);double[] s=shapes.get(b);
+            BondSnapshotImage.writeBody(world,b,dir.resolve(name+"-t"+t+"-body"+(i+1)+".png"),480,1.5,
+                    String.format(Locale.ROOT,"%s t=%ds body %d: %d cells, span %.0f px, rise %.0f px",name,t,i+1,b.size(),s[0],s[1]));}
+        bodies.stream().max(Comparator.comparingInt(List::size)).ifPresent(b->{double[] s=shapes.get(b);
+            try{BondSnapshotImage.writeBody(world,b,dir.resolve(name+"-t"+t+"-largest.png"),480,1.5,
+                    String.format(Locale.ROOT,"%s t=%ds largest body: %d cells, span %.0f px, rise %.0f px",name,t,b.size(),s[0],s[1]));}
+            catch(IOException e){throw new UncheckedIOException(e);}});
     }
     static int root(int[] parent,int i){while(parent[i]!=i){parent[i]=parent[parent[i]];i=parent[i];}return i;}
     static String fmt(double v){return String.format(Locale.ROOT,"%.4f",v);}

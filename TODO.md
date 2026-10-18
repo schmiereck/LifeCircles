@@ -24,7 +24,7 @@
 - [ ] Bei Bedarf belastbarer Populationsvergleich (8–10 Läufe je Bedingung, kürzer oder kleinere Welt).
 - [x] Stufe 3/4 (Einrasten, Geburtsbindung) experimentell und schaltbar umgesetzt.
 - [x] Zonenläufe mit Bindungen/Geburtsbindung gegen Stufe 1/2 verglichen (4 Seeds): Verbände größer und höher, Population gleich.
-- [ ] Form gebundener Verbände prüfen: Momentaufnahme mit Bindungen, Kennzahl „Höhe über dem eigenen Verband“.
+- [x] Form gebundener Verbände geprüft (Momentaufnahme, Überstand-Kennzahl): dichte Haufen, keine Stängel.
 - [ ] Standfestigkeit: Halt am Boden oder breite Basis; ein gebundener Stab kippt auf der runden Fußzelle.
 - [ ] Vorteil für Vorratshaltung schaffen/prüfen (Speicher über 000-Kapazität, Rückwandlung im Winter, ggf. Jahreszeitsensor).
 - [ ] Ursache der leeren 010-Zone klären (Zonenreihenfolge, Geländeblocker, Zuwanderung).

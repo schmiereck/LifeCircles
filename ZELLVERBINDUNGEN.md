@@ -273,6 +273,56 @@ Sie bleiben trotzdem experimentell und standardmäßig aus, bis klar ist, welche
 Verbände haben. Nächster Schritt wäre eine Momentaufnahme mit Bindungslinien bzw. eine
 Kennzahl „Höhe über dem Rest des Verbands“, dazu die Standfestigkeit (Bodenhalt, Basis).
 
+## Momentaufnahmen und Überstand gebundener Körper (18.10.2026)
+
+Werkzeuge (nur Testcode, `module-info` braucht dafür `java.desktop`):
+- **Momentaufnahme** (`BondSnapshotImage`): PNG mit Zellen in Körperfarbe, Überresten
+  abgedunkelt, Gelände grau und Bindungen als gelbe Linien zwischen den gebundenen Aktoren.
+  Die Zonenstudie schreibt am Ende, mit `-Dzone.study.snapshot=SEKUNDEN` auch zwischendurch:
+  - `NAME-tT.png`: ganze Welt, Maßstab 1:4;
+  - `NAME-tT-body1..3.png`: Ausschnitte der drei Körper mit dem größten Überstand;
+  - `NAME-tT-largest.png`: Ausschnitt des größten Körpers (480 px, Maßstab 1,5, Körper
+    weiß umrandet).
+  `BondSnapshotReplayTest` (`-Dbond.snapshot.load=PATH`) zeichnet eine gespeicherte
+  Population nach. Gespeichert sind nur lebende Zellen, Bindungen zu Überresten fehlen also.
+- **Kennzahlen** je gebundenem Körper (`ZoneSeasonStudyTest.bodyShape`), neue Spalten
+  `bondedSpan`, `bondedRise`, `riseCells`:
+  - Spanne: von der Unterkante des tiefsten bis zur Oberkante des höchsten Glieds.
+  - **Überstand:** Wie weit ragt die Oberkante des Körpers über alles andere unter seiner
+    waagrechten Ausdehnung hinaus? Gezählt werden fremde Zellen (auch Überreste) und
+    Gelände, die mindestens bis zur Körperoberkante hinabreichen.
+    - Eine Decke oder fallende Zellen darüber zählen nicht.
+    - Ein verschütteter Körper hat einen negativen Überstand.
+    - Eine Kette, die oben aufliegt, hat etwa einen Zelldurchmesser.
+    - Ein Stängel hätte mehrere Durchmesser.
+  - Die Spalten sind das Maximum über alle Körper. `riseCells` ist die Größe des Körpers
+    mit dem größten Überstand.
+- Tests: `BondShapeTest` (3), unter anderem stehende Säule, verschütteter Körper,
+  Körper über den Weltrand und eine Zeichnung ohne Umbruchlinien.
+
+Nachgezeichnete Endzustände der vier Bindungsläufe (`bond-4711` … `bond-4714`):
+
+![Haufen mit kurzen Bindungen, Seed 4714](docs/cell-bonds/bond-4714-heap.png)
+![Größter Körper, Seed 4713](docs/cell-bonds/bond-4713-largest.png)
+
+Weitere Bilder: [Seed 4711](docs/cell-bonds/bond-4711-largest.png),
+[Übersicht Seed 4712](docs/cell-bonds/bond-4712-overview.png).
+
+- **Die hohen Verbände sind dichte, fast kristallin gepackte Haufen**, keine Stängel. Sie
+  füllen die Senken zwischen den Geländepfosten und wölben sich darüber.
+- Bindungen sind kurze Kontaktpunkte zwischen Nachbarn. Sie verbinden nur einen kleinen
+  Teil der Zellen zu Körpern aus 2–12 Zellen, die im Haufen verstreut liegen.
+- Körper ab 5 Zellen liegen fast alle verschüttet (Überstand meist −30 bis 0 px, höchstens
+  15 px). Die größten Überstände am Ende (19–27 px, etwa ein Radius) haben Gruppen aus 2–3
+  Zellen auf der Oberfläche. Kein Körper ragt mehrere Durchmesser heraus.
+- Der größte Körper von 4713 ist eine gebogene Kette aus 5 Zellen, senkrecht im Haufen
+  eingebettet: Spanne 113 px, Überstand −27 px. Er hält seine Form, wird aber vom Haufen
+  getragen.
+- Der größere und höhere Kontaktverband mit Bindungen (vorheriger Abschnitt) ist damit
+  vor allem ein **zusammenhaltender Haufen**: Bindungen verhindern, dass er auseinanderrollt,
+  und er wächst höher, bevor er abrutscht. Für Stängel fehlt ein Grund, nach oben zu
+  wachsen, und eine Basis, die eine schmale Säule trägt.
+
 ## Befund vor der Umsetzung
 
 | Situation | Was mit den Aktorkräften passiert | Stelle |
