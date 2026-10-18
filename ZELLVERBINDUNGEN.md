@@ -140,7 +140,85 @@ Besiedlung und Population fördert, ist ungeklärt. Mögliche Ursachen:
 - Zusammenhalt verwandter Zellen in Pausen;
 - Abweisung fremder Zellen;
 - ruhigere Kräfte durch den Tonus.
-Das wäre mit getrennten Schaltern zu prüfen.
+Das wäre mit getrennten Schaltern zu prüfen. **Ergebnis: siehe nächster Abschnitt; der Vorteil
+hat sich nicht bestätigt.**
+
+## Seed-Wiederholung und Ablation Stufe 1/2 (18.10.2026)
+
+Modellstand `03a03fc`, in einem eigenen Worktree, damit Codeänderungen die Läufe nicht
+berühren. Alle Läufe: Zonenstudie 3600 s, Lebensdauer 2000 s, Jahr 600 s, Winterlicht 50 %,
+vier Läufe parallel. Seed 4713 sind die Läufe `adh-seasons50`/`ctrl-seasons50` aus dem
+vorigen Abschnitt. Ablationen mit je einem abgeschalteten Teil, die übrigen Teile bleiben an:
+- `nohold`: `-Dzone.study.hold=false`, Pause wirkt wie ein Nullbefehl;
+- `norecog`: `-Dzone.study.recognition=false`, farbblind;
+- `notonus`: `-Dzone.study.tonus=0`.
+Daten: `LifeCircles-runs/target/zone-season-study/abl-*.csv` (nicht versioniert).
+Auswertung: Skript im Sitzungs-Scratchpad.
+
+Spalten:
+- Lebende Zellen: Mittel über den ganzen Lauf, Minimum ab 300 s, Endwert, Mittel der
+  zweiten Hälfte (t > 1800 s).
+- Zonen und Folgespalten: Mittel der zweiten Hälfte.
+- Zonen ≥ 5: Zahl der Zonen mit mindestens fünf lebenden Zellen.
+- Verband: größter Kontaktverband.
+
+| Lauf | Seed | Ø | Min | Ende | 2. Hälfte | Z000 | Z001 | Z010 | Z100 | Zonen ≥ 5 | Pause % | Verband | Verband Höhe | maxLift |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Haftung | 4711 | 160 | 40 | 180 | 151 | 147 | 0 | 0 | 5 | 1,1 | 15 | 95 | 97 | 111 |
+| Haftung | 4712 | 222 | 55 | 239 | 219 | 201 | 0 | 0 | 18 | 1,8 | 2 | 209 | 169 | 172 |
+| Haftung | 4713 | 383 | 127 | 543 | 437 | 186 | 92 | 151 | 7 | 3,3 | 3 | 207 | 124 | 135 |
+| Haftung | 4714 | 144 | 29 | 165 | 136 | 133 | 0 | 0 | 3 | 1,1 | 23 | 80 | 83 | 106 |
+| Kontrolle | 4711 | 161 | 25 | 34 | 110 | 52 | 56 | 0 | 2 | 1,6 | 3 | 78 | 70 | 73 |
+| Kontrolle | 4712 | 186 | 66 | 204 | 170 | 170 | 0 | 0 | 1 | 1,1 | 2 | 130 | 112 | 119 |
+| Kontrolle | 4713 | 159 | 57 | 297 | 183 | 178 | 1 | 0 | 4 | 1,3 | 10 | 142 | 128 | 136 |
+| Kontrolle | 4714 | 209 | 55 | 328 | 210 | 197 | 3 | 0 | 10 | 1,5 | 20 | 221 | 138 | 155 |
+| ohne Halten | 4711 | 106 | 33 | 277 | 110 | 109 | 0 | 0 | 0 | 1,0 | 40 | 104 | 89 | 105 |
+| ohne Halten | 4713 | 150 | 45 | 298 | 134 | 133 | 0 | 0 | 0 | 1,0 | 17 | 83 | 93 | 109 |
+| ohne Erkennung | 4711 | 180 | 20 | 180 | 166 | 158 | 0 | 0 | 7 | 1,4 | 18 | 122 | 111 | 118 |
+| ohne Erkennung | 4713 | 228 | 76 | 403 | 263 | 243 | 0 | 0 | 21 | 1,7 | 7 | 260 | 256 | 256 |
+| ohne Tonus | 4711 | 202 | 59 | 306 | 224 | 87 | 137 | 0 | 0 | 2,0 | 9 | 143 | 96 | 107 |
+| ohne Tonus | 4713 | 181 | 37 | 246 | 153 | 150 | 0 | 0 | 3 | 1,2 | 10 | 98 | 98 | 107 |
+| **Ø Haftung** | 4 | 227 | 63 | 282 | 236 | 167 | 23 | 38 | 8 | 1,8 | 11 | 148 | 118 | 131 |
+| **Ø Kontrolle** | 4 | 179 | 51 | 216 | 168 | 149 | 15 | 0 | 4 | 1,4 | 9 | 143 | 112 | 121 |
+| Ø ohne Halten | 2 | 128 | 39 | 288 | 122 | 121 | 0 | 0 | 0 | 1,0 | 28 | 93 | 91 | 107 |
+| Ø ohne Erkennung | 2 | 204 | 48 | 292 | 215 | 200 | 0 | 0 | 14 | 1,6 | 12 | 191 | 183 | 187 |
+| Ø ohne Tonus | 2 | 192 | 48 | 276 | 189 | 118 | 68 | 0 | 2 | 1,6 | 10 | 120 | 97 | 107 |
+
+Befund:
+- **Der große Vorteil aus Seed 4713 wiederholt sich nicht.**
+  - Zweite Hälfte, Haftung minus Kontrolle je Seed: +41, +49, +254, −74. Bei 4714 ist
+    die Kontrolle klar besser.
+  - Winterminimum: zwei Seeds besser, zwei schlechter.
+  - Die dauerhaft besiedelte 010-Zone gibt es nur im Lauf 4713 mit Haftung. Kein anderer
+    Lauf zeigt sie, auch keine Ablation mit Seed 4713.
+  - Gleicher Seed bedeutet hier keinen gepaarten Vergleich, weil die Läufe nicht bitgenau
+    reproduzierbar sind und schon kleine Regeländerungen die Geschichte umlenken.
+  - Im Mittel liegt die Haftung etwas vorn (236 gegen 168 lebende Zellen). Das hängt aber
+    fast ganz an 4713 und liegt in der Streuung zwischen den Läufen. Ein Nutzen ist
+    **nicht gesichert**, ein Schaden aber auch nicht.
+- **Ohne Halten** ist in beiden Seeds der schwächste Haftungsstand:
+  - 122 lebende Zellen in der zweiten Hälfte, nur die 000-Zone besiedelt;
+  - deutlich mehr pausierte Gehirne (28 % gegen 11 %).
+  - Ohne Halten wirkt eine Pause wie ein Nullbefehl, der durch den Tonus nachgeführt
+    wird; Verwandte verlieren in Pausen also ihre Anziehung.
+  - Das liegt auch unter der Kontrolle (168). Nur 2 Seeds, also ein schwacher Hinweis:
+    Tonus und Abweisung ohne Halten scheinen eher zu schaden.
+- **Ohne Erkennung** (farbblinde Anziehung):
+  - größere und höhere Kontaktverbände (Ø 191 Zellen, Verbandshöhe 183 px, Seed 4713:
+    256 px, der höchste Wert der Reihe);
+  - Population etwa wie mit voller Haftung.
+  - Wenn alle sich anziehen, klumpt mehr zusammen. Für Höhe ist die Abweisung damit eher
+    hinderlich.
+- **Ohne Tonus**: kein klares Bild. Seed 4711 hat eine 001-Kolonie (137 Zellen), die auch
+  die Kontrolle 4711 kurzzeitig hatte. Seed 4713 liegt bei der Kontrolle.
+- Höhe: kein Lauf zeigt Stängel. `maxLift` liegt in der zweiten Hälfte im Mittel bei
+  105–190 px.
+
+Folgerung: Stufe 1/2 bleibt eingeschaltet, weil sie die beabsichtigte Mechanik liefert und
+nicht messbar schadet. Die frühere Aussage „deutlich mehr Zellen und besiedelte 010-Zone“
+ist zurückgezogen; sie war ein Einzellauf. Ein belastbarer Populationsvergleich bräuchte
+etwa 8–10 Läufe je Bedingung. Auf dieser Rechenzeit lohnt das eher mit kürzeren Läufen
+oder einer kleineren Welt.
 
 ## Befund vor der Umsetzung
 

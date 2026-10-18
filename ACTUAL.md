@@ -5,9 +5,10 @@ Aktualisiert: 17.10.2026. Branch `master`.
 - Zellhaftung Stufe 1/2 in der Default-NONE-Welt (GUI-Schalter, Standard an): Kräfte
   bleiben bei Gehirnpause, Überreste lassen mit 300 s Halbwertszeit los (∞ = Holz),
   Anziehung nur zwischen passender Aktor- und Körperfarbe, Fremde werden begrenzt
-  abgewiesen. Vergleichslauf (je 1 Seed): mit Haftung deutlich mehr Zellen (Winter 50 %:
-  437 statt 183), erstmals dauerhaft besiedelte 010-Zone samt 010-Aasverwertung; Höhe
-  unverändert, keine Stängel. Stufe 3/4 (Bindungen, Geburtsbindung) experimentell per
+  abgewiesen. Der Vorteil des ersten Vergleichslaufs (437 statt 183 Zellen, besiedelte
+  010-Zone) hat sich mit 4 Seeds nicht bestätigt (Ø 236 gegen 168, ein Seed klar
+  schlechter, 010-Zone nur einmal). Ohne Halten am schwächsten, farbblind größere Verbände;
+  keine Stängel. Stufe 3/4 (Bindungen, Geburtsbindung) experimentell per
   Schalter; gebundene Säulen bleiben formstabil, kippen aber als Ganzes. `ZELLVERBINDUNGEN.md`.
 
 - Langlauf 45 min Zonen ± Jahreszeiten: ohne Jahreszeiten stabile ~420 Zellen, 001- und

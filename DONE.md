@@ -1,5 +1,10 @@
 # Abgeschlossene Schritte
 
+## Seed-Wiederholung und Ablation Zellhaftung (18.10.2026)
+
+- 4 Seeds Haftung/Kontrolle, je 2 Seeds ohne Halten, Erkennung bzw. Tonus (Winter 50 %,
+  3600 s). Früherer Vorteil nicht bestätigt. `ZELLVERBINDUNGEN.md`.
+
 ## Zellhaftung Stufe 3/4 experimentell (18.10.2026)
 
 - Eingerastete Aktorpaare und Geburtsbindung, GUI-/Studienschalter (Standard aus),

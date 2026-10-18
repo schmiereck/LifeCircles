@@ -20,7 +20,8 @@
 - [x] Evolutionsläufe mit Lebensdauer 2000 s wiederholt (1 + 3 Seeds); Besiedlung und erste Aasverwertung.
 - [x] Zellhaftung Stufe 1/2 (Tonus über Pause/Tod, Farb-/Körperfarb-Affinität) umgesetzt.
 - [x] Zonenläufe mit/ohne Zellhaftung verglichen (je 1 Seed): Population und Besiedlung besser, Höhe gleich.
-- [ ] Haftungseffekt mit weiteren Seeds absichern; Tonus, Pausenhalten und Abweisung getrennt schalten.
+- [x] Haftungseffekt mit 4 Seeds und Ablation geprüft: nicht gesichert (Streuung), ohne Halten am schwächsten.
+- [ ] Bei Bedarf belastbarer Populationsvergleich (8–10 Läufe je Bedingung, kürzer oder kleinere Welt).
 - [x] Stufe 3/4 (Einrasten, Geburtsbindung) experimentell und schaltbar umgesetzt.
 - [ ] Zonenläufe mit Bindungen/Geburtsbindung gegen Stufe 1/2 vergleichen (Höhe gebundener Körper).
 - [ ] Standfestigkeit: Halt am Boden oder breite Basis; ein gebundener Stab kippt auf der runden Fußzelle.
