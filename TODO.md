@@ -27,7 +27,8 @@
 - [x] Form gebundener Verbände geprüft (Momentaufnahme, Überstand-Kennzahl): dichte Haufen, keine Stängel.
 - [ ] Standfestigkeit: Halt am Boden oder breite Basis; ein gebundener Stab kippt auf der runden Fußzelle.
   Bodenfeld + Anker experimentell umgesetzt (`BODENHALT.md`, `GroundHoldTest`).
-- [ ] Zonenläufe Bodenhalt: Bindungen gegen Bindungen + Bodenfeld gegen Bindungen + Bodenfeld + Anker (4 Seeds).
+- [x] Zonenläufe Bodenhalt (je 4 Seeds): wenige Anker, verankerte Körper flach, keine Stängel; Bodenfeld verkleinert gebundene Körper (`BODENHALT.md`).
+- [ ] Grund für Höhe entscheiden (z. B. Licht nimmt nach oben zu), bevor weitere Halt-Mechanik gebaut wird.
 - [ ] Vorteil für Vorratshaltung schaffen/prüfen (Speicher über 000-Kapazität, Rückwandlung im Winter, ggf. Jahreszeitsensor).
 - [ ] Ursache der leeren 010-Zone klären (Zonenreihenfolge, Geländeblocker, Zuwanderung).
 - [ ] Warum wird Aas mit Fremdformen kaum gefressen? Aasfresser-Nische gezielt prüfen.

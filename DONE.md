@@ -1,5 +1,11 @@
 # Abgeschlossene Schritte
 
+## Zonenläufe Bodenhalt (18.10.2026)
+
+- Je 4 Seeds: nur Bindungen, dazu Bodenfeld, dazu Bodenfeld und Anker. Wenige Anker (Ø 9),
+  verankerte Körper flach (Überstand Ø 4 px). Das Bodenfeld verkleinert gebundene Körper
+  (6–7 gegen 11 Zellen). Population gleich. `BODENHALT.md`.
+
 ## Bodenhalt Stufe A/B experimentell (18.10.2026)
 
 - Bodenfeld für anziehende Aktoren, Anker an Geländepunkten, GUI-/Studienschalter (Standard

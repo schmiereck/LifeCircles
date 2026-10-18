@@ -70,7 +70,68 @@ Befunde und Grenzen:
   hatten am Ende von 369 anziehenden Aktoren nahe am Gelände nur 8 eine Boden-Affinität
   ≥ 0,8. Mit der geänderten Einrastregel entstanden im zweiten Rauchlauf trotzdem 34 Anker
   an 33 Zellen und 8 verankerte gebundene Körper (bis 148 px Spanne).
-- Zonenläufe zum Vergleich stehen noch aus (siehe TODO).
+
+## Zonenläufe (18.10.2026)
+
+Modellstand `2f01126`, `ZoneSeasonStudyTest`, je 3600 s, Lebensdauer 2000 s, Jahr 600 s,
+Winterlicht 50 %, Seeds 4711–4714, Bindungen und Geburtsbindung immer an. Drei Varianten:
+- `gbond`: nur Bindungen (Referenz, auf demselben Stand neu gerechnet);
+- `gfield`: dazu Bodenfeld (Stufe A);
+- `ganchor`: dazu Bodenfeld und Anker (Stufe B).
+
+Zwei Läufe liefen gleichzeitig, ein Lauf dauerte etwa 20–50 min. Lokale Daten (nicht
+eingecheckt): `LifeCircles-runs/target/zone-season-study/g*-*.csv`, `-summary.txt`, `.cells`
+und PNG-Momentaufnahmen.
+
+Mittel über die zweite Hälfte (t > 1800 s), Ø der vier Seeds, Spitzen als Mittel der
+Laufmaxima:
+
+| | gbond | gfield | ganchor |
+|---|---|---|---|
+| Lebende Zellen, ganzer Lauf / Ende | 193 / 323 | 207 / 324 | 200 / 352 |
+| Lebende Zellen, zweite Hälfte | 184 | 199 | 194 |
+| Zone 001 lebend (je Seed) | 0 / 1 / 0 / 2 | 3 / 0 / 0 / 0 | **34** / 0 / 0 / **36** |
+| Überreste | 161 | 183 | 164 |
+| Größter Kontaktverband: Zellen / Höhe px | 140 / 125 | 184 / 136 | 152 / 130 |
+| Bindungen | 102 | 75 | 81 |
+| Größter gebundener Körper | 11 | 6 | 7 |
+| Überstand gebundener Körper Ø / Spitze px | 36 / 52 | 33 / 64 | 32 / 56 |
+| Anker (je Seed) | – | – | 9 (17 / 6 / 10 / 4) |
+| Verankerte Zellen | – | – | 9 |
+| Verankerte gebundene Körper | – | – | 2 |
+| Überstand verankerter Körper Ø / Spitze px | – | – | 4 / 39 |
+| Spanne verankerter Körper, Spitze px | – | – | 100 |
+
+Befund:
+- **Anker sind selten.** Gleichzeitig bestehen nur 3–20 Anker, fast immer einer je Zelle.
+  Das liegt an der Affinitätsschwelle: Nur graue anziehende Aktoren rasten ein (siehe
+  Rauchlauf oben). Die Population nutzt den Bodenhalt kaum.
+- **Verankerte Körper liegen flach am Boden.** Es sind kurze Ketten aus 2–5 Zellen. Im
+  Mittel ragen sie 4 px heraus, höchstens 30–52 px. In den Momentaufnahmen liegen
+  sie als Reihen auf dem Boden. **Keine Stängel.**
+- **Das Bodenfeld macht gebundene Körper kleiner.** Mit Bodenfeld gibt es weniger Bindungen
+  (75–81 gegen 102), und der größte gebundene Körper ist kleiner (6–7 gegen 11 Zellen).
+  Vermutlich ziehen anziehende Aktoren am Boden und nicht mehr am Nachbarn. Der
+  Kontaktverband ist dabei eher größer (152–184 gegen 140), also kein Zerfall der Haufen.
+  Bei vier Seeds ist das ein Hinweis.
+- **Population:** gleich im Rahmen der bekannten Streuung (184–199).
+- **Zone 001:** Nur mit Ankern wird sie in zwei Seeds lange besiedelt (4711: 20–55 Zellen,
+  4714: 25–61 Zellen bis ~3000 s, im letzten Winter fast erloschen). In den acht anderen Läufen
+  ist sie nach dem ersten Winter leer. Ein früherer Lauf ohne Bindungen
+  (`ZONEN_JAHRESZEITEN_ERGEBNISSE.md`, 4713) besiedelte sie aber auch. Mit zwei Läufen
+  ist ein Zusammenhang mit den Ankern **nicht belegt**.
+- **Betriebsfehler:** Im ersten Durchgang liefen vier Läufe (alle drei mit 4711, dazu
+  `gbond-4712`) nicht. Zwei gleichzeitige Maven-Aufrufe übersetzten die Testklassen parallel
+  neu, und Surefire meldete ohne gefundenen Test Erfolg. Die Läufe wurden nachgeholt. Das
+  Skript übersetzt jetzt einmal vorab und setzt `-Dsurefire.failIfNoSpecifiedTests=true`.
+
+Folgerung: Mechanisch hält der Bodenhalt (Tests oben). In der Evolution bleibt er bisher
+fast ungenutzt und erzeugt keine aufrechten Formen. Wie bei den Bindungen fehlt ein Grund,
+nach oben zu wachsen. Bodenfeld und Anker bleiben experimentell und standardmäßig aus.
+Mögliche nächste Schritte, nicht beschlossen:
+- Höhenvorteil, etwa Licht, das nach oben zunimmt;
+- weniger strenge Ankerbedingung, etwa ohne Farberkennung des Bodens;
+- Materialfarbe je Blockertyp als Nische.
 
 ---
 

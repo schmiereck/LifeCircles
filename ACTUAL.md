@@ -16,7 +16,9 @@ Aktualisiert: 17.10.2026. Branch `master`.
 - Bodenhalt experimentell (Schalter aus): Bodenfeld für anziehende Aktoren (Halt gegen
   Abheben, gegen Rollen nur bei einseitiger Anziehung) und Anker an festen Geländepunkten
   (seitlich und an Wänden). Eine gebundene Säule mit zwei Fußankern bleibt nach Seitenstoß
-  stehen (3,6° statt 90°). Anker brauchen graue Aktoren; Zonenläufe fehlen. `BODENHALT.md`.
+  stehen (3,6° statt 90°). Anker brauchen graue Aktoren. In Zonenläufen (4 Seeds) gibt es
+  nur etwa 9 Anker gleichzeitig. Verankerte Körper liegen flach, keine Stängel.
+  Population gleich. `BODENHALT.md`.
 
 - Langlauf 45 min Zonen ± Jahreszeiten: ohne Jahreszeiten stabile ~420 Zellen, 001- und
   teils 100-Zone besiedelt, Aas mit 100/010/001 (nie 000). Mit 25 % Winterlicht sterben
