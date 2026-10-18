@@ -24,7 +24,7 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
  * with -Dzone.study.snapshot=SECONDS, at that interval: NAME-tSECONDS.png, NAME-tSECONDS-bodyN.png.
  */
 @EnabledIfSystemProperty(named="zone.study.seconds", matches="\\d+")
-class ZoneSeasonStudyTest {
+public class ZoneSeasonStudyTest {
     static final double DT=1.0/60;
     static final int ZONES=SunSpectrum.ZONES.size();
 
@@ -89,7 +89,7 @@ class ZoneSeasonStudyTest {
         double u=((cell.getPosition().getX()%width)+width)%width/width*ZONES;
         return Math.min(ZONES-1,(int)u);
     }
-    static String header() {
+    public static String header() {
         StringBuilder h=new StringBuilder("t,season,living,paused,remains,activeEnzyme,meanActivity,throttled,meanAge,lifted,maxLift,attractive,pausedAttractive,largestCluster,clusterRemains,clusterLift,bonds,largestBonded,bondedLift,bondedSpan,bondedRise,riseCells,anchors,anchoredCells,rootedBodies,rootedRise,rootedSpan");
         for(int z=0;z<ZONES;z++){String f=SunSpectrum.ZONES.get(z).getRgbCode();
             h.append(",z").append(f).append("_living,z").append(f).append("_ownStore,z").append(f).append("_toPrimary,z").append(f).append("_activity");}
@@ -98,7 +98,7 @@ class ZoneSeasonStudyTest {
         return h.toString();
     }
     /** Per zone: living, mean store of the zone's own form, cells expressing zoneForm -> 000, their mean activity. */
-    static String sample(Environment world,int t,double season) {
+    public static String sample(Environment world,int t,double season) {
         double width=world.getWidth();
         int living=0,paused=0,remains=0,active=0,throttled=0;double activity=0;
         int[] zoneLiving=new int[ZONES],toPrimary=new int[ZONES];double[] own=new double[ZONES],zoneActivity=new double[ZONES];
@@ -233,7 +233,7 @@ class ZoneSeasonStudyTest {
         return new double[]{bottom-top,surface-top};
     }
     /** Overview of the whole world, crops of the three bonded bodies with the largest rise and of the largest body. */
-    static void writeSnapshots(Environment world,Path dir,String name,int t) throws IOException {
+    public static void writeSnapshots(Environment world,Path dir,String name,int t) throws IOException {
         System.setProperty("java.awt.headless","true");
         List<List<Cell>> bodies=new ArrayList<>(bondedBodies(world));
         Map<List<Cell>,double[]> shapes=new IdentityHashMap<>();
