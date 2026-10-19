@@ -1,5 +1,11 @@
 # Abgeschlossene Schritte
 
+## HIGH_POSITION2 mit 120-s-Generationen (19.10.2026)
+
+- `off`/`full`, 60 Generationen; Seeds 4711/4712 vollständig, 4713 teilweise, Rest nach
+  Speichermangel nicht gelaufen. Beide Varianten höher als mit 50 s, Haftung ohne Vorteil.
+  `BODENHALT.md`.
+
 ## Trainingsläufe mit Haftung (19.10.2026)
 
 - `TrainModeStudyTest`; HIGH_POSITION2/3 × off/adhesion/full × 4 Seeds. Kein Höhenvorteil

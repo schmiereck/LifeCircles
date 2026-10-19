@@ -206,6 +206,35 @@ Außerdem überlebte `xargs` den Abbruch der Warteschlange und lief neben der zw
 Beide Warteschlangen wurden beendet, danach liefen alle Läufe einzeln mit `surefire:test`,
 ohne Übersetzung im Job. Doppelt gelaufene Läufe wurden wiederholt.
 
+### HIGH_POSITION2 mit 120-s-Generationen (19.10.2026)
+
+Modellstand `4c92243`, `-Dtrainmode.study.generation=120`, je 7200 s (60 Generationen),
+Bewertung weiter in den letzten 10 s. Varianten nur `off` und `full`. Die Warteschlange wurde
+nach vier vollständigen Läufen wegen Speichermangel des Rechners beendet; `off-4713` (26
+Generationen) und `full-4713` (2) sind unvollständig, 4714 fehlt.
+
+Gehaltene Höhe in px, erste 10 / letzte 10 Generationen (Höchstwert); zum Vergleich dieselben
+Seeds mit 50-s-Generationen (48 Generationen):
+
+| Seed | off 120 s | full 120 s | off 50 s | full 50 s |
+|---|---|---|---|---|
+| 4711 | 230 / 318 (380) | 197 / 214 (230) | 89 / 138 (185) | 95 / 216 (283) |
+| 4712 | 232 / 276 (397) | 233 / 335 (393) | 102 / 192 (245) | 87 / 96 (123) |
+| 4713 (unvollst.) | 188 / 262 (312) | 147 (2 Gen.) | | |
+
+- **Längere Generationen heben die Höhe deutlich**, aber in beiden Varianten: Schon die ersten
+  Generationen liegen bei etwa 200–230 statt 90 px, weil die Haufen mehr Zeit zum Wachsen haben.
+  Das ist vor allem mehr Masse, keine neue Form.
+- **Bindungen und Bodenhalt bringen weiterhin keinen Vorteil.** Je Seed gewinnt einmal `off`,
+  einmal `full`; die Streuung zwischen Seeds ist größer als der Unterschied der Varianten.
+- **Formen bleiben Haufen**, mit `full` etwas kompakter (921 Zellen, 459 Bindungen, 178
+  gebundene Körper bei 4712), aber ohne Stängel oder Türme.
+
+![HIGH_POSITION2 full, 120-s-Generationen, Seed 4712, Ende](docs/cell-bonds/hp2g120-full-4712-t7199.png)
+
+Grenzen: zwei vollständige Seeds je Variante. Die gehaltene Höhe misst den höchsten Punkt der
+Sieger, nicht die Form; ein großer Haufen erreicht dieselbe Höhe wie ein Turm.
+
 ---
 
 ## Ursprünglicher Entwurf
