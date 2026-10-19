@@ -15,6 +15,7 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
     private final Random random;
     private final EvaluationObserver observer;
     private long stepCounter = 0;
+    private final int generationSteps;
     private final GroundedColonyFitness fitness = new GroundedColonyFitness(SeperatorCount);
 
     @FunctionalInterface
@@ -25,7 +26,12 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
 
     public HighPosition2TrainStrategy() { this(new Random(), null); }
 
-    HighPosition2TrainStrategy(Random random, EvaluationObserver observer) {
+    HighPosition2TrainStrategy(Random random, EvaluationObserver observer) { this(random, observer, GENERATION_STEP); }
+
+    /** Studies may lengthen generations; the evaluation window stays the final ten seconds. */
+    HighPosition2TrainStrategy(Random random, EvaluationObserver observer, int generationSteps) {
+        if (generationSteps <= EVALUATION_WINDOW_STEPS) throw new IllegalArgumentException("Generation must exceed the evaluation window");
+        this.generationSteps = generationSteps;
         this.random = Objects.requireNonNull(random);
         this.observer = observer;
     }
@@ -80,10 +86,10 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
     @Override
     public void selectAndMutate(Environment environment) {
         stepCounter++;
-        long phase = (stepCounter - 1) % GENERATION_STEP + 1;
-        if (phase > GENERATION_STEP - EVALUATION_WINDOW_STEPS && phase % SAMPLE_INTERVAL_STEPS == 0)
+        long phase = (stepCounter - 1) % generationSteps + 1;
+        if (phase > generationSteps - EVALUATION_WINDOW_STEPS && phase % SAMPLE_INTERVAL_STEPS == 0)
             fitness.sample(environment);
-        if (phase != GENERATION_STEP) {
+        if (phase != generationSteps) {
             return;
         }
         List<Cell> cells = environment.getCellList().stream().filter(cell -> !cell.isRemains()).toList();

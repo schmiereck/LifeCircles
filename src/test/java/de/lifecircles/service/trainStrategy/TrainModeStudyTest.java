@@ -15,7 +15,7 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
  * mvn test -Dtest=TrainModeStudyTest -Dtrainmode.study.mode=HIGH_POSITION2 -Dtrainmode.study.variant=full
  * -Dtrainmode.study.seconds=1800 -Dtrainmode.study.seed=4711 -Dtrainmode.study.name=hp2-full-4711
  * Variants: off (as before), adhesion (tonus, hold, recognition), full (adhesion plus bonds, birth bonds,
- * ground field and anchors). Writes target/trainmode-study/NAME.csv (ZoneSeasonStudyTest columns every 30 s
+ * ground field and anchors). -Dtrainmode.study.generation=SECONDS lengthens HIGH_POSITION2 generations (default 50). Writes target/trainmode-study/NAME.csv (ZoneSeasonStudyTest columns every 30 s
  * plus the mode's own fitness, at 29, 59, ... s), NAME-generations.csv and bond snapshots at 599, 1199, ... s.
  */
 @EnabledIfSystemProperty(named="trainmode.study.seconds", matches="\\d+")
@@ -44,12 +44,13 @@ class TrainModeStudyTest {
             // HIGH_POSITION2 reports the sustained height of its winners (px above the ground), like HighPosition2EvolutionStudyTest.
             case HIGH_POSITION2 -> { generations.println("t,generation,cells,sustainedHeight");
                 int[] generation={0};
+                int generationSteps=(int)Math.round(Double.parseDouble(System.getProperty("trainmode.study.generation","50"))/DT);
                 yield new HighPosition2TrainStrategy(new Random(seed+2),(world,colony,winners)->{
                     double floor=world.getHeight()-Environment.GroundBlockerHeight;
                     double sustained=winners.stream().mapToDouble(colony::persistentScore).max().orElse(0)*floor;
                     fitness[0]=String.format(Locale.ROOT,"%.1f",sustained);
                     generations.printf(Locale.ROOT,"%.0f,%d,%d,%.3f%n",steps[0]*DT,++generation[0],world.getCellList().size(),sustained);generations.flush();
-                }); }
+                },generationSteps); }
             case HIGH_POSITION3 -> { generations.println("t,generation,stage,score,height,support,contacts,form"); yield new HighPosition3TrainStrategy(new Random(seed+2)); }
             default -> { generations.println("t,status"); yield CalculationService.strategyFor(mode); }
         };
