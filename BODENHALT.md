@@ -142,6 +142,70 @@ ground hold also in training worlds“, Standard aus). Mit ihm folgen alle Train
 denselben Haftungsschaltern wie die NONE-Welt (Policy `SimulationStepPolicy.TRAINING`,
 eigene Policies von HIGH_POSITION3 und Aasregen ebenso). Test: `TrainingAdhesionTest`.
 
+## Trainingsläufe mit Haftung (19.10.2026)
+
+Modellstand `668a4b4`, `TrainModeStudyTest`, je 2400 s, Seeds 4711–4714, drei Varianten:
+- `off`: wie bisher, ohne Haftung;
+- `adhesion`: Tonus, Halten und Farberkennung;
+- `full`: dazu Bindungen, Geburtsbindung, Bodenfeld und Anker.
+
+Gemessen wird jeweils eine Sekunde vor jeder 30-s-Marke, weil HIGH_POSITION3 seine Episode
+genau dort neu startet. Lokale Daten: `LifeCircles-runs/target/trainmode-study/`, je
+`NAME.csv`, `NAME-generations.csv` und PNG-Momentaufnahmen. HIGH_POSITION lief nicht: Die
+Population wächst dort stark, und zwei Läufe brauchten je über 1 GB.
+
+**HIGH_POSITION2** (48 Generationen zu 50 s). Gehaltene Höhe der Sieger in px über dem Boden,
+wie in `HighPosition2EvolutionStudyTest`, Ø der vier Seeds. Die übrigen Spalten sind Mittel
+ab 1200 s.
+
+| | off | adhesion | full |
+|---|---|---|---|
+| Gehaltene Höhe, erste 10 / letzte 10 Generationen | 89 / 150 | 97 / 158 | 82 / 153 |
+| Höchster Generationswert | 194 | 195 | 194 |
+| Letzte 10 je Seed | 138 / 192 / 131 / 140 | 134 / 132 / 179 / 186 | 216 / 96 / 131 / 171 |
+| Lebende Zellen | 378 | 406 | 345 |
+| Höhe größter Kontaktverband px | 86 | 97 | 84 |
+| Bindungen / größter gebundener Körper | 0 | 0 | 71 / 4 |
+| Anker / verankerte gebundene Körper | 0 | 0 | 7 / 2 |
+
+- **Kein Höhenvorteil.** Alle drei Varianten steigen ähnlich von etwa 90 auf etwa 150 px. Der
+  gute Seed 4711 mit `full` (216 px) war Zufall; 4712 mit `full` ist der schlechteste Lauf.
+- **Die Formen sind wieder Haufen.** Sie wölben sich zwischen den Trennwänden. Gebundene
+  Körper liegen im Haufen (größter: 18 Zellen, Überstand −19 px). Anker sitzen in der
+  untersten Reihe.
+
+![HIGH_POSITION2 full, Seed 4711, Ende](docs/cell-bonds/hp2-full-4711-overview.png)
+
+**HIGH_POSITION3** (80 Episoden zu 30 s). Stufe HOLD gilt als gemeistert, wenn der Block
+aus 60 Zellen dreimal in Folge seine Höhe (≥ 0,9) und Form (Formfehler ≤ 0,5) hält.
+
+| | off | adhesion | full |
+|---|---|---|---|
+| Über HOLD hinaus | 0 von 4 | 0 von 4 | **1 von 4** (4713: RECOVER ab Episode 65, SIZE ab 68) |
+| Bestwert der Episoden, Ø | 0,24 | 0,21 | 0,46 |
+| Mittel der letzten 20, Ø | 0,16 | 0,19 | 0,28 |
+| Bindungen (480 Zellen) | 0 | 0 | ~1100 |
+
+- **Mit Bindungen halten Blöcke ihre Form besser.** Das ist mechanisch zu erwarten: Bindungen
+  erhalten die Ausgangsform und sind dafür kostenlos. Ein Seed schaffte HOLD und RECOVER und
+  blieb dann bei SIZE stecken.
+- Ohne Bindungen zerfließen die Blöcke; Tonus und Farberkennung allein ändern daran
+  nichts Messbares.
+
+![HIGH_POSITION3 full, Seed 4713, t = 1799 s](docs/cell-bonds/hp3-full-4713-t1799.png)
+
+Folgerung: In HIGH_POSITION2 entdeckt die Selektion mit Bindungen und Bodenhalt binnen
+48 Generationen keine höheren Formen. In HIGH_POSITION3 helfen Bindungen beim Halten
+einer vorgegebenen Form. Aufbauen müssen die Zellen dort noch nicht. Grenzen: vier Seeds,
+eine Laufdauer. HIGH_POSITION2 hat nur 50 s pro Generation; in dieser Zeit wachsen die
+Gründer zu Haufen, bevor bewertet wird.
+
+Betrieb: Der erste Start brach ab. Maven übersetzte die Testklassen in jedem Job neu, und
+parallele Jobs löschten sich die Klassen gegenseitig; jetzt meldet der Job das als Fehler.
+Außerdem überlebte `xargs` den Abbruch der Warteschlange und lief neben der zweiten weiter.
+Beide Warteschlangen wurden beendet, danach liefen alle Läufe einzeln mit `surefire:test`,
+ohne Übersetzung im Job. Doppelt gelaufene Läufe wurden wiederholt.
+
 ---
 
 ## Ursprünglicher Entwurf

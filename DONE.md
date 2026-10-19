@@ -1,5 +1,11 @@
 # Abgeschlossene Schritte
 
+## Trainingsläufe mit Haftung (19.10.2026)
+
+- `TrainModeStudyTest`; HIGH_POSITION2/3 × off/adhesion/full × 4 Seeds. Kein Höhenvorteil
+  in HIGH_POSITION2; in HIGH_POSITION3 schaffte nur ein Lauf mit Bindungen HOLD und RECOVER.
+  `BODENHALT.md`.
+
 ## Haftung in Trainingswelten per Schalter (18.10.2026)
 
 - Schalter `trainingAdhesion` (Standard aus, GUI): Trainingswelten nutzen dann Tonus,

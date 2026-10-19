@@ -29,7 +29,8 @@
   Bodenfeld + Anker experimentell umgesetzt (`BODENHALT.md`, `GroundHoldTest`).
 - [x] Zonenläufe Bodenhalt (je 4 Seeds): wenige Anker, verankerte Körper flach, keine Stängel; Bodenfeld verkleinert gebundene Körper (`BODENHALT.md`).
 - [x] Haftung, Bindungen und Bodenhalt in Trainingswelten per Schalter `trainingAdhesion` nutzbar (`TrainingAdhesionTest`).
-- [ ] TrainMode-Läufe mit/ohne Haftung vergleichen, vor allem HIGH_POSITION2/3. Kein künstlicher Lichtgradient: Höhe soll aus Selektion (HIGH_POSITION) bzw. Lichtkonkurrenz (NONE) kommen.
+- [x] TrainMode-Läufe mit/ohne Haftung (HIGH_POSITION2/3, je 4 Seeds): kein Höhenvorteil in HIGH_POSITION2; in HIGH_POSITION3 halten Bindungen die Form besser (`BODENHALT.md`).
+- [ ] HIGH_POSITION mit Haftung nur mit Speicherbegrenzung oder kleinerer Population vergleichen. Kein künstlicher Lichtgradient: Höhe soll aus Selektion (HIGH_POSITION) bzw. Lichtkonkurrenz (NONE) kommen.
 - [ ] Vorteil für Vorratshaltung schaffen/prüfen (Speicher über 000-Kapazität, Rückwandlung im Winter, ggf. Jahreszeitsensor).
 - [ ] Ursache der leeren 010-Zone klären (Zonenreihenfolge, Geländeblocker, Zuwanderung).
 - [ ] Warum wird Aas mit Fremdformen kaum gefressen? Aasfresser-Nische gezielt prüfen.
