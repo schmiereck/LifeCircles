@@ -75,6 +75,7 @@ public class EnergySunCalcService {
         final EnergyType energyType = config.getSunEnergyType();
         // Spectral zones choose each ray's form from where it hits; uniform mode draws no extra numbers.
         final boolean zones = config.isSunSpectralZones();
+        final double zoneWidth = SunSpectrum.zoneWidth(width, config.getSunZoneWidth());
         // This call calculates one step's sunlight, not lifetime exposure.
         // Reset even when the accumulator produces no rays or all rays are blocked.
         for (Cell cell : cells) cell.resetSunRayHit();
@@ -241,7 +242,7 @@ public class EnergySunCalcService {
             if (hitCell != null && nearestCellHitT <= nearestBlockerHitT) {
                 rayHitT = nearestCellHitT;
                 if (!hitCell.isRemains()) {
-                    if (zones) rayType = SunSpectrum.formAt(rayStartX + dirX * rayHitT, width, random.nextDouble());
+                    if (zones) rayType = SunSpectrum.formAt(rayStartX + dirX * rayHitT, width, zoneWidth, random.nextDouble());
                     hitCell.setEnergy(rayType, hitCell.getEnergy(rayType) + config.getEnergyPerRay());
                     hitCell.notifySunRayHit();
                     absorbed = true;
@@ -252,7 +253,7 @@ public class EnergySunCalcService {
             double finalRayEndX = rayStartX + dirX * rayHitT;
             double finalRayEndY = rayStartY + dirY * rayHitT;
             // Unabsorbed rays are only drawn; show the dominant local form without consuming randomness.
-            if (zones && !absorbed) rayType = SunSpectrum.formAt(finalRayEndX, width, .5);
+            if (zones && !absorbed) rayType = SunSpectrum.formAt(finalRayEndX, width, zoneWidth, .5);
             rays.add(new SunRay(
                 new Vector2D(rayStartX, rayStartY),
                 new Vector2D(finalRayEndX, finalRayEndY),

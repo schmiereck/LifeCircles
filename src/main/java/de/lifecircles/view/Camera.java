@@ -10,7 +10,7 @@ import javafx.geometry.Point2D;
 public class Camera {
     private double scale;
     private Vector2D position;
-    private final double minScale = 0.1;
+    private final double minScale = 0.02; // WORLD2 is 25 600 px wide
     private final double maxScale = 10.0;
 
     public Camera() {

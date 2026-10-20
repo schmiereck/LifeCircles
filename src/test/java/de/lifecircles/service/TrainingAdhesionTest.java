@@ -18,7 +18,7 @@ class TrainingAdhesionTest {
 
     @Test void everyTrainingModeFollowsTheOptInWhileOpenWorldsFollowCellAdhesion() {
         for (TrainMode mode : TrainMode.values()) {
-            boolean open = mode == TrainMode.NONE || mode == TrainMode.EVOLUTIONARY;
+            boolean open = mode == TrainMode.NONE || mode == TrainMode.EVOLUTIONARY || mode == TrainMode.WORLD2;
             SimulationStepPolicy policy = CalculationService.strategyFor(mode).stepPolicy();
             assertEquals(open, policy.useCellAdhesion(), mode + " default");
             config.setTrainingAdhesion(true);

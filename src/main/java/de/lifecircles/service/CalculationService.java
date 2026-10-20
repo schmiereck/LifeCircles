@@ -64,6 +64,7 @@ public class CalculationService implements Runnable {
             case HIGH_POSITION -> new HighPositionTrainStrategy();
             case HIGH_POSITION2 -> new HighPosition2TrainStrategy();
             case HIGH_POSITION3 -> new HighPosition3TrainStrategy();
+            case WORLD2 -> new World2TrainStrategy();
             case TEST_A -> new TestATrainStrategy();
             case TEST_B -> new TestBTrainStrategy();
             case TEST_C -> new TestCTrainStrategy();

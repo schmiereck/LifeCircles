@@ -101,12 +101,14 @@ public class Renderer {
     }
 
     private void drawSpectralZones(double worldWidth, double worldHeight) {
-        double zoneWidth = worldWidth / SunSpectrum.ZONES.size();
-        for (int zone = 0; zone < SunSpectrum.ZONES.size(); zone++) {
-            EnergyType type = SunSpectrum.ZONES.get(zone);
+        double zoneWidth = SunSpectrum.zoneWidth(worldWidth, SimulationConfig.getInstance().getSunZoneWidth());
+        // Repeating zones; the last one is cut at the world edge if the width is no whole number of zones.
+        for (int zone = 0; zone * zoneWidth < worldWidth; zone++) {
+            EnergyType type = SunSpectrum.ZONES.get(zone % SunSpectrum.ZONES.size());
             gc.setFill(type == EnergyType.PRIMARY ? Color.color(1, 1, .4, .06) : (Color) sunRayColor(type, .08));
             Point2D topLeft = camera.worldToScreen(new Vector2D(zone * zoneWidth, 0));
-            gc.fillRect(topLeft.getX(), topLeft.getY(), zoneWidth * camera.getScale(), worldHeight * camera.getScale());
+            gc.fillRect(topLeft.getX(), topLeft.getY(), Math.min(zoneWidth, worldWidth - zone * zoneWidth) * camera.getScale(),
+                    worldHeight * camera.getScale());
         }
     }
 

@@ -13,6 +13,9 @@ import javafx.util.StringConverter;
 
 /** Live controls for environmental energy supply. */
 public class EnvironmentPanel extends VBox {
+    /** Shows config values a scenario set on creation (e.g. WORLD2 switches on zones and adhesion). */
+    private final Runnable syncFromConfig;
+
     public EnvironmentPanel() {
         SimulationConfig config = SimulationConfig.getInstance();
         setPadding(new Insets(10));
@@ -52,6 +55,21 @@ public class EnvironmentPanel extends VBox {
             config.setSunSpectralZones(next);
             sourceType.setDisable(next);
         });
+        Label zoneWidthValue = new Label();
+        Slider zoneWidth = new Slider(0, 3200, config.getSunZoneWidth());
+        zoneWidth.setId("sun-zone-width");
+        zoneWidth.setShowTickLabels(true);
+        zoneWidth.setShowTickMarks(true);
+        zoneWidth.setMajorTickUnit(800);
+        zoneWidth.setBlockIncrement(100);
+        zoneWidth.setPrefWidth(270);
+        Runnable refreshZoneWidth = () -> zoneWidthValue.setText(config.getSunZoneWidth() == 0 ? "Zone width: one cycle per world (0)"
+                : String.format("Zone width: %.0f px, zones repeat every %.0f px", config.getSunZoneWidth(), 4 * config.getSunZoneWidth()));
+        zoneWidth.valueProperty().addListener((obs, old, next) -> {
+            config.setSunZoneWidth(Math.round(next.doubleValue() / 100) * 100);
+            refreshZoneWidth.run();
+        });
+        refreshZoneWidth.run();
         Label seasonValue = new Label();
         Slider seasonLength = new Slider(0, 60, config.getSeasonDuration() / 60);
         seasonLength.setId("season-length");
@@ -151,7 +169,18 @@ public class EnvironmentPanel extends VBox {
             refreshAdhesion.run();
         });
         refreshAdhesion.run();
+        syncFromConfig = () -> {
+            rate.setMax(Math.max(rate.getMax(), config.getSunRayRate())); rate.setValue(config.getSunRayRate());
+            sourceType.setValue(config.getSunEnergyType()); zones.setSelected(config.isSunSpectralZones());
+            zoneWidth.setValue(config.getSunZoneWidth()); refreshZoneWidth.run();
+            seasonLength.setValue(config.getSeasonDuration() / 60); winter.setValue(config.getWinterIntensity() * 100);
+            adhesion.setSelected(config.isCellAdhesion()); trainingAdhesion.setSelected(config.isTrainingAdhesion());
+            bonds.setSelected(config.isAdhesionBonds()); birthBonds.setSelected(config.isAdhesionBirthBonds());
+            groundHold.setSelected(config.isGroundAdhesion()); anchors.setSelected(config.isGroundAnchors());
+            groundOnly.setSelected(config.isGroundAnchorsGroundOnly());
+        };
         VBox content = new VBox(8, title, rate, value, hint, new Label("Sun energy form:"), sourceType, zones,
+                new Label("Spectral zone width (px, 0 = one cycle per world):"), zoneWidth, zoneWidthValue,
                 new Label("Year length (simulation minutes):"), seasonLength,
                 new Label("Winter light (% of summer):"), winter, seasonValue,
                 adhesion, trainingAdhesion, bonds, birthBonds, new Label("Remains force half-life (minutes, right end = forever):"), remainsHalfLife,
@@ -160,4 +189,7 @@ public class EnvironmentPanel extends VBox {
         content.setPadding(new Insets(5));
         getChildren().add(new TitledPane("Environment", content));
     }
+
+    /** Re-read the switches and sliders from the config, e.g. after a new scenario. */
+    public void syncFromConfig() { syncFromConfig.run(); }
 }

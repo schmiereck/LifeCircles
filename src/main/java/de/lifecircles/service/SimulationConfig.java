@@ -175,6 +175,13 @@ public class SimulationConfig {
     private volatile boolean sunSpectralZones = false;
     public boolean isSunSpectralZones() { return sunSpectralZones; }
     public void setSunSpectralZones(boolean zones) { sunSpectralZones = zones; }
+    /** Width of one spectral zone in px; the four zones repeat. 0 = one cycle per world (a quarter of the width). */
+    private volatile double sunZoneWidth = 0;
+    public double getSunZoneWidth() { return sunZoneWidth; }
+    public void setSunZoneWidth(double width) {
+        if (!Double.isFinite(width) || width < 0) throw new IllegalArgumentException("Zone width must be finite and >= 0");
+        sunZoneWidth = width;
+    }
 
     public EnergyType getSunEnergyType() { return sunEnergyType; }
     public void setSunEnergyType(EnergyType energyType) {

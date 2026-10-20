@@ -38,6 +38,7 @@ class MainControllerLayoutTest {
                 @SuppressWarnings("unchecked") ComboBox<TrainMode> modes=(ComboBox<TrainMode>)dialog.getDialogPane().lookup("#new-scenario-choice");
                 assertTrue(modes.getItems().contains(TrainMode.CARRION_RAIN));
                 assertTrue(modes.getItems().contains(TrainMode.CARRION_CONVERSION));
+                assertTrue(modes.getItems().contains(TrainMode.WORLD2));
                 assertFalse(modes.getItems().contains(TrainMode.EVOLUTIONARY));
                 TrainMode previousMode=config.getTrainMode();
                 modes.setValue(TrainMode.CARRION_RAIN);
@@ -59,6 +60,11 @@ class MainControllerLayoutTest {
                 sourceType.setValue(EnergyType.PRIMARY);assertEquals(EnergyType.PRIMARY,config.getSunEnergyType());
                 CheckBox adhesion=(CheckBox)controller.lookup("#cell-adhesion");
                 adhesion.setSelected(false);assertFalse(config.isCellAdhesion());adhesion.setSelected(true);assertTrue(config.isCellAdhesion());
+                Slider zoneWidth=(Slider)controller.lookup("#sun-zone-width");
+                double savedZoneWidth=config.getSunZoneWidth();
+                zoneWidth.setValue(1630);assertEquals(1600,config.getSunZoneWidth());zoneWidth.setValue(0);assertEquals(0,config.getSunZoneWidth());
+                config.setSunZoneWidth(800);panel.syncFromConfig();assertEquals(800,zoneWidth.getValue());
+                config.setSunZoneWidth(savedZoneWidth);panel.syncFromConfig();
                 CheckBox training=(CheckBox)controller.lookup("#training-adhesion");
                 assertFalse(training.isSelected());
                 training.setSelected(true);assertTrue(config.isTrainingAdhesion());training.setSelected(false);assertFalse(config.isTrainingAdhesion());
