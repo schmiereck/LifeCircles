@@ -21,7 +21,8 @@ Aktualisiert: 17.10.2026. Branch `master`.
   Population gleich. Haftung lässt sich in Trainingswelten zuschalten (`trainingAdhesion`).
   HIGH_POSITION2 wird damit nicht höher. In HIGH_POSITION3 halten Bindungen die Blöcke
   besser: 1 von 4 Seeds kam über HOLD hinaus, ohne Bindungen 0 von 8. Mit 120-s-Generationen
-  wird HIGH_POSITION2 in beiden Varianten höher (~300 px), aber als größere Haufen. `BODENHALT.md`.
+  wird HIGH_POSITION2 in beiden Varianten höher (293 / 251 px statt ~150), aber als größere
+  Haufen; mit Bindungen eher niedriger. `BODENHALT.md`.
 
 - Langlauf 45 min Zonen ± Jahreszeiten: ohne Jahreszeiten stabile ~420 Zellen, 001- und
   teils 100-Zone besiedelt, Aas mit 100/010/001 (nie 000). Mit 25 % Winterlicht sterben

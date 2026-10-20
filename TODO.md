@@ -30,7 +30,7 @@
 - [x] Zonenläufe Bodenhalt (je 4 Seeds): wenige Anker, verankerte Körper flach, keine Stängel; Bodenfeld verkleinert gebundene Körper (`BODENHALT.md`).
 - [x] Haftung, Bindungen und Bodenhalt in Trainingswelten per Schalter `trainingAdhesion` nutzbar (`TrainingAdhesionTest`).
 - [x] TrainMode-Läufe mit/ohne Haftung (HIGH_POSITION2/3, je 4 Seeds): kein Höhenvorteil in HIGH_POSITION2; in HIGH_POSITION3 halten Bindungen die Form besser (`BODENHALT.md`).
-- [x] HIGH_POSITION2 mit 120-s-Generationen (2 vollständige Seeds je off/full, Rest wegen Speichermangel abgebrochen): beide Varianten höher (~300 px), Haftung ohne Vorteil, weiter Haufen (`BODENHALT.md`).
+- [x] HIGH_POSITION2 mit 120-s-Generationen (4 Seeds je off/full): beide Varianten höher (off 293, full 251 px statt ~150), Haftung ohne Vorteil, weiter Haufen (`BODENHALT.md`).
 - [ ] HIGH_POSITION mit Haftung nur mit Speicherbegrenzung oder kleinerer Population vergleichen. Kein künstlicher Lichtgradient: Höhe soll aus Selektion (HIGH_POSITION) bzw. Lichtkonkurrenz (NONE) kommen.
 - [ ] Vorteil für Vorratshaltung schaffen/prüfen (Speicher über 000-Kapazität, Rückwandlung im Winter, ggf. Jahreszeitsensor).
 - [ ] Ursache der leeren 010-Zone klären (Zonenreihenfolge, Geländeblocker, Zuwanderung).

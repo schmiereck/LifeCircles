@@ -209,30 +209,43 @@ ohne Übersetzung im Job. Doppelt gelaufene Läufe wurden wiederholt.
 ### HIGH_POSITION2 mit 120-s-Generationen (19.10.2026)
 
 Modellstand `4c92243`, `-Dtrainmode.study.generation=120`, je 7200 s (60 Generationen),
-Bewertung weiter in den letzten 10 s. Varianten nur `off` und `full`. Die Warteschlange wurde
-nach vier vollständigen Läufen wegen Speichermangel des Rechners beendet; `off-4713` (26
-Generationen) und `full-4713` (2) sind unvollständig, 4714 fehlt.
+Bewertung weiter in den letzten 10 s. Varianten nur `off` und `full`, Seeds 4711–4714, alle
+vollständig. Claude Code beendete zwar das Warteschlangenskript wegen Speichermangel, die
+laufenden `xargs`-Jobs rechneten die Warteschlange aber zu Ende (ein Job je Lauf, keine Doppelläufe).
 
 Gehaltene Höhe in px, erste 10 / letzte 10 Generationen (Höchstwert); zum Vergleich dieselben
-Seeds mit 50-s-Generationen (48 Generationen):
+Seeds mit 50-s-Generationen (48 Generationen, letzte 10):
 
 | Seed | off 120 s | full 120 s | off 50 s | full 50 s |
 |---|---|---|---|---|
-| 4711 | 230 / 318 (380) | 197 / 214 (230) | 89 / 138 (185) | 95 / 216 (283) |
-| 4712 | 232 / 276 (397) | 233 / 335 (393) | 102 / 192 (245) | 87 / 96 (123) |
-| 4713 (unvollst.) | 188 / 262 (312) | 147 (2 Gen.) | | |
+| 4711 | 230 / 318 (380) | 197 / 214 (230) | 138 | 216 |
+| 4712 | 232 / 276 (397) | 233 / 335 (393) | 192 | 96 |
+| 4713 | 188 / 272 (408) | 176 / 258 (333) | 131 | 131 |
+| 4714 | 183 / 306 (349) | 165 / 199 (237) | 140 | 171 |
+| Ø | **208 / 293 (384)** | **193 / 251 (298)** | 150 | 153 |
 
-- **Längere Generationen heben die Höhe deutlich**, aber in beiden Varianten: Schon die ersten
-  Generationen liegen bei etwa 200–230 statt 90 px, weil die Haufen mehr Zeit zum Wachsen haben.
-  Das ist vor allem mehr Masse, keine neue Form.
-- **Bindungen und Bodenhalt bringen weiterhin keinen Vorteil.** Je Seed gewinnt einmal `off`,
-  einmal `full`; die Streuung zwischen Seeds ist größer als der Unterschied der Varianten.
-- **Formen bleiben Haufen**, mit `full` etwas kompakter (921 Zellen, 459 Bindungen, 178
-  gebundene Körper bei 4712), aber ohne Stängel oder Türme.
+Mittel ab 3600 s:
+
+| | off | full |
+|---|---|---|
+| Lebende Zellen | 959 | 830 |
+| Höhe größter Kontaktverband px | 206 | 173 |
+| Bindungen / größter gebundener Körper | 0 | 383 / 21 (4714: 111 / 5) |
+| Anker / verankerte gebundene Körper | 0 | 20 / 8 (4714: keine) |
+| Überstand gebundener Körper px | – | 43 |
+
+- **Längere Generationen heben die Höhe deutlich**, in beiden Varianten: Schon die ersten
+  Generationen liegen bei etwa 200 statt 90 px, am Ende bei 250–290 statt 150 px. Die Gründer
+  haben mehr Zeit zum Wachsen; es entstehen größere Haufen, keine neue Form.
+- **Bindungen und Bodenhalt schaden eher.** `full` liegt im Mittel 40 px unter `off` und ist nur
+  bei Seed 4712 vorn. `full` hat weniger Zellen; gebundene Körper bleiben klein (≤ 47 Zellen)
+  und ragen kaum aus dem Haufen.
+- **Formen bleiben Haufen** zwischen den Trennwänden, ohne Stängel oder Türme; Anker sitzen in
+  der untersten Reihe.
 
 ![HIGH_POSITION2 full, 120-s-Generationen, Seed 4712, Ende](docs/cell-bonds/hp2g120-full-4712-t7199.png)
 
-Grenzen: zwei vollständige Seeds je Variante. Die gehaltene Höhe misst den höchsten Punkt der
+Grenzen: vier Seeds je Variante, ein Lauf je Seed. Die gehaltene Höhe misst den höchsten Punkt der
 Sieger, nicht die Form; ein großer Haufen erreicht dieselbe Höhe wie ein Turm.
 
 ---
