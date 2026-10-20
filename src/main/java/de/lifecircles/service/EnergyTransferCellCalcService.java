@@ -48,25 +48,30 @@ public class EnergyTransferCellCalcService {
     public static void processEnergyTransfers(List<Cell> cells, Environment environment, double deltaTime) {
         if (!Double.isFinite(deltaTime) || deltaTime < 0) throw new IllegalArgumentException("Invalid transfer time step");
         if (deltaTime == 0 || cells.isEmpty()) return;
-        processEnergyType(cells, environment, deltaTime, EnergyType.PRIMARY);
+        // Ports and their distance factors do not depend on the energy form: compute them once per step.
+        List<Link> links = links(cells, environment);
+        processEnergyType(cells, links, deltaTime, EnergyType.PRIMARY);
         // Existing single-energy populations do not pay for a second transfer pass.
         int present = 0;
         for (Cell cell : cells) present |= cell.getEnergyPresenceMask() & ~1;
         for (EnergyType type : EnergyType.ALL) if ((present & (1 << type.getCode())) != 0)
-            processEnergyType(cells, environment, deltaTime, type);
+            processEnergyType(cells, links, deltaTime, type);
     }
 
-    private static void processEnergyType(List<Cell> cells, Environment environment, double deltaTime, EnergyType energyType) {
-        var budgets = new IdentityHashMap<Cell, Budget>(cells.size());
-        for (Cell cell : cells) budgets.put(cell, new Budget(cell, energyType));
-        List<Transfer> transfers = new ArrayList<>();
-        for (Cell cell : cells) {
+    /** One active port from a living cell to an actor of another listed cell, by list index. */
+    private record Link(int cell, int target, double delivery, double absorption, double deliveryFactor, double absorptionFactor) {}
+
+    private static List<Link> links(List<Cell> cells, Environment environment) {
+        var index = new IdentityHashMap<Cell, Integer>(cells.size());
+        for (int i = 0; i < cells.size(); i++) index.putIfAbsent(cells.get(i), i);
+        List<Link> links = new ArrayList<>();
+        for (int i = 0; i < cells.size(); i++) {
+            Cell cell = cells.get(i);
             if (cell.isRemains()) continue;
-            Budget own = budgets.get(cell);
             for (SensorActor sensor : cell.getSensorActors()) {
                 if (!(sensor.getSensedCell() instanceof Cell target) || target == cell
                         || !(sensor.getSensedActor() instanceof SensorActor actor) || actor.getParentCell() != target) continue;
-                Budget other = budgets.get(target);
+                Integer other = index.get(target);
                 if (other == null) continue;
                 double delivery = sensor.getEnergyDelivery(), absorption = sensor.getEnergyAbsorption();
                 if (!(delivery > 0) && !(absorption > 0)) continue;
@@ -79,9 +84,22 @@ public class EnergyTransferCellCalcService {
                 double strength = cell.getRadiusSize() / SimulationConfig.getInstance().getCellMaxRadiusSize();
                 double deliveryFactor = 1 - (1 - SimulationConfig.CELL_ENERGY_DELIVERY_FACTOR_FAR) * normDistance * strength;
                 double absorptionFactor = 1 - (1 - SimulationConfig.CELL_ENERGY_ABSORPTION_FACTOR_FAR) * normDistance * strength;
-                request(transfers, own, other, DELIVERY_PER_SECOND * delivery * deliveryFactor * deltaTime, true, energyType);
-                request(transfers, other, own, ABSORPTION_PER_SECOND * absorption * absorptionFactor * deltaTime, false, energyType);
+                links.add(new Link(index.get(cell), other, delivery, absorption, deliveryFactor, absorptionFactor));
             }
+        }
+        return links;
+    }
+
+    private static void processEnergyType(List<Cell> cells, List<Link> links, double deltaTime, EnergyType energyType) {
+        // A cell listed twice shares one budget, as with the former identity map.
+        var budgets = new Budget[cells.size()];
+        var byCell = new IdentityHashMap<Cell, Budget>(cells.size());
+        for (int i = 0; i < cells.size(); i++) budgets[i] = byCell.computeIfAbsent(cells.get(i), c -> new Budget(c, energyType));
+        List<Transfer> transfers = new ArrayList<>();
+        for (Link link : links) {
+            Budget own = budgets[link.cell()], other = budgets[link.target()];
+            request(transfers, own, other, DELIVERY_PER_SECOND * link.delivery() * link.deliveryFactor() * deltaTime, true, energyType);
+            request(transfers, other, own, ABSORPTION_PER_SECOND * link.absorption() * link.absorptionFactor() * deltaTime, false, energyType);
         }
         // First enforce the voluntary delivery reserve across ALL ports.
         for (Transfer t : transfers) {
@@ -99,7 +117,7 @@ public class EnergyTransferCellCalcService {
             t.donor.delta -= amount;
             t.receiver.delta += amount;
         }
-        for (Budget b : budgets.values()) b.cell.setEnergy(energyType, b.energy + b.delta);
+        for (Budget b : byCell.values()) b.cell.setEnergy(energyType, b.energy + b.delta);
     }
 
     private static double scale(double available, double requested) {
