@@ -45,6 +45,31 @@ gleich altem Verhalten, Sonne nutzt die eingestellte Breite), `MainControllerLay
 Test: `World2TrainStrategyTest` (Breite, Zonenbreite, Schalter, Policy, 1 + 4 × 55 Blocker
 innerhalb der Welt, Schattendach in allen vier Lichtformen, Gründer in allen Abschnitten).
 
-## Leistung
+## Leistung (20.10.2026)
 
-Siehe unten, Messlauf.
+`TrainModeStudyTest`, `-Dtrainmode.study.mode=WORLD2`, Seed 4711, 600 s, ohne GUI, eine JVM
+(1,5 GB), dieser Rechner. Die Welt ist nach etwa 2 min mit 1200–1700 lebenden Zellen und
+350–550 Überresten besiedelt, in mehreren Kolonien, überwiegend in den 000-Zonen.
+
+| Modellstand | Simulationssekunden je Wandsekunde | lebend Ø | Überreste Ø |
+|---|---|---|---|
+| erster Lauf (`a7cfd9b`, bis 419 s) | 0,22 | 1375 | 467 |
+| + Gelände-Vorfilter und x-Index, Transferports je Schritt (`9395573`) | 0,43 | 1353 | 412 |
+| + Transferbudgets nur für Zellen mit Port (`f3a3b68`) | **0,49** | 1223 | 445 |
+
+Engpässe des ersten Laufs (Stapelproben): Ankersuche und Bodenfeld prüften jeden Aktor
+gegen alle 221 Blocker der Welt (in NONE 56); der Energietransfer berechnete die Geometrie
+aller Ports für jede vorhandene Energieform neu und legte je Form Budgets für alle Zellen an.
+Alle drei Änderungen lassen die Ergebnisse unverändert:
+- `TerrainIndex` liefert alle Blocker in Reichweite in Listenreihenfolge (`TerrainIndexTest`);
+  `GroundHoldTest` und `CellBondTest` geben dieselben Zahlen wie vorher.
+- `EnergyTransferLinkRegressionTest` vergleicht den Transfer bitgenau mit dem alten Algorithmus.
+
+Jetzt verteilt sich die Zeit auf Aktorfelder zwischen Zellen, Gehirne und Sensoreingaben;
+das ist Arbeit je Zelle und wächst mit der Population. Eine Stunde Simulation braucht
+etwa zwei Stunden. Die GUI kostet zusätzlich Zeichenzeit; beim Herauszoomen auf die
+ganze Welt mehr.
+
+Parameter: Lichtdichte, Lebensdauer und Gehirnkosten sind wie in NONE gelassen. Wird es zu
+langsam, sind die nächsten Hebel weniger Licht je px (Sonnenregler: weniger Zellen je
+Fläche) oder eine kürzere Halbwertszeit der Überreste (weniger Überreste).

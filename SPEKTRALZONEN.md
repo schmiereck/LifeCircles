@@ -16,6 +16,9 @@ in Zellen ansammeln und als Aas zurückbleiben, ohne Sonderregeln in den Zellen.
 - Darstellung: Strahlen in ihrer RGB-Farbe (000 weiterhin gelb), Zonen dezent hinterlegt.
 - Die Einstellung ist eine globale, live änderbare Umweltgröße und wird nicht mit
   `.cells` gespeichert.
+- **Feste Zonenbreite** (20.10.2026): `sunZoneWidth` / GUI-Regler „Spectral zone width“.
+  0 = wie oben ein Zyklus je Welt; ein Wert > 0 wiederholt 000 | 001 | 010 | 100 alle
+  4 × Breite px. Für breite Welten (`WORLD2`, `WELT2.md`).
 
 Erwartete Dynamik (noch nicht durch Langlauf belegt): In 001 genügt die Startroute
 001 → 000 mit positiver Kapazität (eine Mutation). In 010/100 ist X → 000 über eine

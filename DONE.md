@@ -1,5 +1,12 @@
 # Abgeschlossene Schritte
 
+## WORLD2 und wiederholte Spektralzonen (20.10.2026)
+
+- `sunZoneWidth` (GUI-Regler), `SunSpectrum` mit Zonenbreite, `World2TrainStrategy`,
+  Umweltpanel übernimmt Szenariowerte. Beschleunigung ohne Ergebnisänderung: Geländesuche
+  über x-Index (`TerrainIndex`), Energietransfer berechnet Ports einmal je Schritt
+  (`EnergyTransferLinkRegressionTest` vergleicht bitgenau mit dem alten Algorithmus). `WELT2.md`.
+
 ## HIGH_POSITION2 mit 120-s-Generationen (19.10.2026)
 
 - `off`/`full`, 60 Generationen, Seeds 4711–4714 vollständig. Beide Varianten höher als mit

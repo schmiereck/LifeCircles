@@ -38,8 +38,12 @@ Aktualisiert: 17.10.2026. Branch `master`.
   skaliert den Enzymdurchsatz. Alte Netze: unverbundener Ausgang = exakt volle Aktivität,
   alte Ausgänge bitgenau unverändert. Jetzt 316/134. Siehe `ENERGIEUMWANDLUNG.md`.
 
+- WORLD2: offene Welt, 25 600 px breit (4 × NONE), NONE-Nischen viermal je um eine Zone
+  versetzt, Spektralzonen mit fester Breite 1600 px wiederholt; schaltet Zonen, Haftung,
+  Bindungen, Geburtsbindung, Bodenfeld und Anker ein. Etwa 1400 lebende Zellen nach 2 min,
+  Studie rechnet mit etwa halber Echtzeit. `WELT2.md`.
 - Spektralzonen der Sonne (GUI-Schalter): 000 | 001 | 010 | 100 mit schmalen linearen
-  Mischstreifen, Form am Auftreffpunkt. Zelldialog zeigt kleine Vorräte sichtbar an.
+  Mischstreifen, Form am Auftreffpunkt; Zonenbreite fest einstellbar (wiederholt). Zelldialog zeigt kleine Vorräte sichtbar an.
   Noch kein Langlauf zur Aas-/Nischenbildung. Siehe `SPEKTRALZONEN.md`.
 - Jahreszeiten (GUI: Jahreslänge 0–60 min, Winterlicht 0–100 %, Standard aus) und
   angebotene Sonnenenergie als gelbe Kurve im Populationsdiagramm; Historie jetzt in
