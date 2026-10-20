@@ -58,6 +58,7 @@ public final class CellAdhesionService {
         final double fade = remainsFade(config, dt);
         final Set<Cell> present = Collections.newSetFromMap(new IdentityHashMap<>());
         present.addAll(cells);
+        final TerrainIndex terrain = anchors ? new TerrainIndex(environment.getBlockerList(), environment.getWidth(), maxReach(cells)) : null;
         for (Cell cell : cells) {
             for (SensorActor actor : cell.getSensorActors()) {
                 if (actor.getAnchor() != null) {
@@ -94,7 +95,7 @@ public final class CellAdhesionService {
                     Vector2D at = actor.calcPosition(), offset = null;
                     Blocker nearest = null;
                     final double lockRange = LOCK_RANGE_FRACTION * reach(cell, cell);
-                    for (Blocker blocker : environment.getBlockerList()) {
+                    for (Blocker blocker : terrain.near(at.getX())) {
                         if (config.isGroundAnchorsGroundOnly() && blocker.getBlockerType() != Blocker.BlockerType.GROUND) continue;
                         // Farther blockers cannot be the anchor: the nearest one must lie within lock range.
                         if (blocker.horizontalGap(at.getX(), environment.getWidth()) > lockRange + 1e-6) continue;
@@ -154,6 +155,13 @@ public final class CellAdhesionService {
 
     private static boolean pushes(Cell cell, SensorActor actor) {
         return !cell.isRemains() && !cell.isBrainPaused() && actor.getForceStrength() > 0;
+    }
+
+    /** Largest sensor radius of the step; bounds every lock range for the terrain index. */
+    private static double maxReach(List<Cell> cells) {
+        double max = 0;
+        for (Cell cell : cells) max = Math.max(max, SensorActorForceCellCalcService.calcSensorRadius(cell.getRadiusSize(), cell.getSensorActors().size()));
+        return max;
     }
 
     private static double reach(Cell a, Cell b) {

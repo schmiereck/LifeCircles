@@ -66,6 +66,9 @@ public class SensorActorForceCellCalcService {
         final double softening = SimulationConfig.getInstance().getActorFieldSofteningFraction();
         final double bondFactor = SimulationConfig.getInstance().getBondFieldFactor();
         final double maxRadiusSquared = Math.pow(SimulationConfig.getInstance().getCellMaxRadiusSize(), 2);
+        double maxRange = 0;
+        if (ground != null) for (Cell cell : cells) maxRange = Math.max(maxRange, calcSensorRadius(cell.getRadiusSize(), cell.getSensorActors().size()));
+        final TerrainIndex terrain = ground == null ? null : new TerrainIndex(environment.getBlockerList(), width, maxRange);
         cells.parallelStream().forEach(cell -> {
             for (SensorActor actor : cell.getSensorActors()) {
                 actor.updateCachedPosition();
@@ -114,8 +117,7 @@ public class SensorActorForceCellCalcService {
                     }
                 } else if (ground != null) {
                     double emitted = Math.min(0, actor.getForceStrength());
-                    for (Blocker blocker : environment.getBlockerList()) {
-                        if (blocker.horizontalGap(actor.getCachedPosition().getX(), width) > ownRange + 1e-6) continue;
+                    for (Blocker blocker : terrain.near(actor.getCachedPosition().getX())) {
                         double strength = emitted * ground.affinity(actor.getType(), blocker) + ground.stickiness();
                         if (strength == 0) continue;
                         Vector2D towardSurface = blocker.offsetToSurface(actor.getCachedPosition(), width, height);
