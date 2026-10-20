@@ -247,6 +247,16 @@ public class Blocker implements SensableActor, SensableCell {
         return new Vector2D(Math.max(-halfX, Math.min(x, halfX)) - x, Math.max(-halfY, Math.min(y, halfY)) - y);
     }
 
+    /**
+     * Horizontal gap between x and the periodic rectangle, without allocation; a lower bound of the
+     * surface distance. Lets wide worlds skip far blockers before the exact {@link #offsetToSurface}.
+     */
+    public double horizontalGap(double x, double worldWidth) {
+        if (width >= worldWidth) return 0;
+        double dx = Math.abs(x - position.getX()) % worldWidth;
+        return Math.max(0, Math.min(dx, worldWidth - dx) - width / 2);
+    }
+
     /** Circle overlap with the periodic rectangle; exact tangency is allowed. */
     public boolean overlapsCircle(Vector2D point, double radius, double worldWidth, double worldHeight) {
         Vector2D local = position.getShortestDirectionWithWrapAround(point, worldWidth, worldHeight);

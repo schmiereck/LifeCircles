@@ -47,6 +47,13 @@ class World2TrainStrategyTest {
             roofLight.add(SunSpectrum.formAt(x, world.getWidth(), config.getSunZoneWidth(), .5));
         }
         assertEquals(Set.copyOf(SunSpectrum.ZONES), roofLight);
+        // The horizontal prefilter of terrain searches never exceeds the exact surface distance.
+        Random random = new Random(3);
+        for (int i = 0; i < 2000; i++) {
+            Vector2D p = new Vector2D(random.nextDouble() * 3 * world.getWidth() - world.getWidth(), random.nextDouble() * world.getHeight());
+            for (Blocker b : blockers)
+                assertTrue(b.horizontalGap(p.getX(), world.getWidth()) <= b.offsetToSurface(p, world.getWidth(), world.getHeight()).length() + 1e-9);
+        }
         // Founders spread over all segments.
         for (int segment = 0; segment < 4; segment++) {
             final int s = segment;

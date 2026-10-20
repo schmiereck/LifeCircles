@@ -93,12 +93,15 @@ public final class CellAdhesionService {
                     // Resting cells rarely have an actor inside a blocker, so touching is not required.
                     Vector2D at = actor.calcPosition(), offset = null;
                     Blocker nearest = null;
+                    final double lockRange = LOCK_RANGE_FRACTION * reach(cell, cell);
                     for (Blocker blocker : environment.getBlockerList()) {
                         if (config.isGroundAnchorsGroundOnly() && blocker.getBlockerType() != Blocker.BlockerType.GROUND) continue;
+                        // Farther blockers cannot be the anchor: the nearest one must lie within lock range.
+                        if (blocker.horizontalGap(at.getX(), environment.getWidth()) > lockRange + 1e-6) continue;
                         Vector2D o = blocker.offsetToSurface(at, environment.getWidth(), environment.getHeight());
                         if (offset == null || o.lengthSquared() < offset.lengthSquared()) { offset = o; nearest = blocker; }
                     }
-                    if (nearest != null && offset.length() <= LOCK_RANGE_FRACTION * reach(cell, cell)
+                    if (nearest != null && offset.length() <= lockRange
                             && ground.affinity(actor.getType(), nearest) >= LOCK_MIN_AFFINITY) {
                         actor.setBondTimer(actor.getBondTimer() + dt);
                         if (actor.getBondTimer() >= LOCK_SECONDS - 1e-9) actor.anchor(at.add(offset), actor.getForceStrength());
