@@ -52,6 +52,8 @@ class TrainModeStudyTest {
                     generations.printf(Locale.ROOT,"%.0f,%d,%d,%.3f%n",steps[0]*DT,++generation[0],world.getCellList().size(),sustained);generations.flush();
                 },generationSteps); }
             case HIGH_POSITION3 -> { generations.println("t,generation,stage,score,height,support,contacts,form"); yield new HighPosition3TrainStrategy(new Random(seed+2)); }
+            // WORLD2 sets its own switches (all new physics); the variant only matters for training worlds.
+            case WORLD2 -> { generations.println("t,status"); yield new World2TrainStrategy(new Random(seed+2)); }
             default -> { generations.println("t,status"); yield CalculationService.strategyFor(mode); }
         };
         Environment world=strategy.initializeEnvironment();strategy.initialize(world);
