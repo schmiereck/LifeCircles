@@ -91,13 +91,13 @@ public class EnergyTransferCellCalcService {
     }
 
     private static void processEnergyType(List<Cell> cells, List<Link> links, double deltaTime, EnergyType energyType) {
-        // A cell listed twice shares one budget, as with the former identity map.
+        // Budgets only for cells with a port: stores of all other cells stay as they are (already bounded).
+        // Links use the first list index of a cell, so a cell listed twice still shares one budget.
         var budgets = new Budget[cells.size()];
-        var byCell = new IdentityHashMap<Cell, Budget>(cells.size());
-        for (int i = 0; i < cells.size(); i++) budgets[i] = byCell.computeIfAbsent(cells.get(i), c -> new Budget(c, energyType));
+        List<Budget> touched = new ArrayList<>();
         List<Transfer> transfers = new ArrayList<>();
         for (Link link : links) {
-            Budget own = budgets[link.cell()], other = budgets[link.target()];
+            Budget own = budget(budgets, touched, cells, link.cell(), energyType), other = budget(budgets, touched, cells, link.target(), energyType);
             request(transfers, own, other, DELIVERY_PER_SECOND * link.delivery() * link.deliveryFactor() * deltaTime, true, energyType);
             request(transfers, other, own, ABSORPTION_PER_SECOND * link.absorption() * link.absorptionFactor() * deltaTime, false, energyType);
         }
@@ -117,7 +117,13 @@ public class EnergyTransferCellCalcService {
             t.donor.delta -= amount;
             t.receiver.delta += amount;
         }
-        for (Budget b : byCell.values()) b.cell.setEnergy(energyType, b.energy + b.delta);
+        for (Budget b : touched) b.cell.setEnergy(energyType, b.energy + b.delta);
+    }
+
+    private static Budget budget(Budget[] budgets, List<Budget> touched, List<Cell> cells, int index, EnergyType energyType) {
+        Budget budget = budgets[index];
+        if (budget == null) { budget = budgets[index] = new Budget(cells.get(index), energyType); touched.add(budget); }
+        return budget;
     }
 
     private static double scale(double available, double requested) {
