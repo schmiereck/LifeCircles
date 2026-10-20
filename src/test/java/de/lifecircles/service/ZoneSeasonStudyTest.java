@@ -86,8 +86,8 @@ public class ZoneSeasonStudyTest {
     }
 
     static int zone(Cell cell,double width) {
-        double u=((cell.getPosition().getX()%width)+width)%width/width*ZONES;
-        return Math.min(ZONES-1,(int)u);
+        // Repeating zones (WORLD2) count by form, not by position in the world.
+        return SunSpectrum.zoneIndex(cell.getPosition().getX(),width,SunSpectrum.zoneWidth(width,SimulationConfig.getInstance().getSunZoneWidth()));
     }
     public static String header() {
         StringBuilder h=new StringBuilder("t,season,living,paused,remains,activeEnzyme,meanActivity,throttled,meanAge,lifted,maxLift,attractive,pausedAttractive,largestCluster,clusterRemains,clusterLift,bonds,largestBonded,bondedLift,bondedSpan,bondedRise,riseCells,anchors,anchoredCells,rootedBodies,rootedRise,rootedSpan");
