@@ -339,4 +339,10 @@ public class CalculationService implements Runnable {
     public long getStepCount() {
         return this.stepCount.get();
     }
+
+    /** Continues the count of a loaded world (steps stored beside its cells file). */
+    public void setStepCount(long steps) {
+        if (steps < 0) throw new IllegalArgumentException("Step count must be >= 0");
+        this.stepCount.set(steps);
+    }
 }

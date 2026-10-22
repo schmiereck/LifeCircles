@@ -13,8 +13,8 @@ class SimulationSettingsFileTest {
     @TempDir Path dir;
     Path stash;
 
-    @BeforeEach void save() throws Exception { stash = dir.resolve("stash.cells"); SimulationSettingsFile.save(stash.toString(), config); }
-    @AfterEach void restore() throws Exception { assertEquals(List.of(), SimulationSettingsFile.load(stash.toString(), config)); }
+    @BeforeEach void save() throws Exception { stash = dir.resolve("stash.cells"); SimulationSettingsFile.save(stash.toString(), config, 0); }
+    @AfterEach void restore() throws Exception { assertEquals(List.of(), SimulationSettingsFile.load(stash.toString(), config).problems()); }
 
     @Test void settingsRoundTripBesideTheCellsFile() throws Exception {
         String cells = dir.resolve("run.cells").toString();
@@ -23,7 +23,7 @@ class SimulationSettingsFileTest {
         config.setCellAdhesion(false); config.setTrainingAdhesion(true); config.setAdhesionBonds(true); config.setAdhesionBirthBonds(true);
         config.setRemainsForceHalfLife(Double.POSITIVE_INFINITY); config.setAdhesionRejection(.7);
         config.setGroundAdhesion(true); config.setGroundAnchors(true); config.setGroundAnchorsGroundOnly(true); config.setGroundStickiness(-12.25);
-        SimulationSettingsFile.save(cells, config);
+        SimulationSettingsFile.save(cells, config, 12_345_678_901L);
         assertTrue(Files.exists(Path.of(cells + ".settings")));
 
         config.setSunRayRate(10); config.setSunEnergyType(EnergyType.PRIMARY); config.setSunSpectralZones(false);
@@ -32,7 +32,9 @@ class SimulationSettingsFileTest {
         config.setRemainsForceHalfLife(300); config.setAdhesionRejection(.5);
         config.setGroundAdhesion(false); config.setGroundAnchors(false); config.setGroundAnchorsGroundOnly(false); config.setGroundStickiness(0);
 
-        assertEquals(List.of(), SimulationSettingsFile.load(cells, config));
+        SimulationSettingsFile.Loaded loaded = SimulationSettingsFile.load(cells, config);
+        assertEquals(List.of(), loaded.problems());
+        assertEquals(12_345_678_901L, loaded.steps());
         assertEquals(37.5, config.getSunRayRate()); assertEquals(EnergyType.ALL.get(3), config.getSunEnergyType());
         assertTrue(config.isSunSpectralZones()); assertEquals(1600, config.getSunZoneWidth());
         assertEquals(900, config.getSeasonDuration()); assertEquals(.3, config.getWinterIntensity());
@@ -45,7 +47,9 @@ class SimulationSettingsFileTest {
 
     @Test void oldCellsFilesWithoutSettingsKeepTheCurrentConfig() throws Exception {
         config.setSunZoneWidth(800);
-        assertEquals(List.of(), SimulationSettingsFile.load(dir.resolve("old.cells").toString(), config));
+        SimulationSettingsFile.Loaded loaded = SimulationSettingsFile.load(dir.resolve("old.cells").toString(), config);
+        assertEquals(List.of(), loaded.problems());
+        assertEquals(-1, loaded.steps());
         assertEquals(800, config.getSunZoneWidth());
     }
 
@@ -59,11 +63,14 @@ class SimulationSettingsFileTest {
                 adhesionRejection=2
                 sunZoneWidth=1200
                 cellAdhesion=yes
+                steps=-5
                 """);
-        List<String> problems = SimulationSettingsFile.load(cells, config);
+        SimulationSettingsFile.Loaded loaded = SimulationSettingsFile.load(cells, config);
+        List<String> problems = loaded.problems();
+        assertEquals(-1, loaded.steps());
         assertEquals(.4, config.getAdhesionRejection());
         assertEquals(1200, config.getSunZoneWidth());
-        assertEquals(3, problems.size(), problems.toString());
+        assertEquals(4, problems.size(), problems.toString());
         assertTrue(problems.get(2).contains("WORLD2"), problems.toString());
     }
 
@@ -71,5 +78,6 @@ class SimulationSettingsFileTest {
         Properties properties = new Properties();
         try (var reader = Files.newBufferedReader(Path.of(stash + ".settings"))) { properties.load(reader); }
         for (String key : SimulationSettingsFile.keys()) assertNotNull(properties.getProperty(key), key);
+        assertEquals("0", properties.getProperty("steps"));
     }
 }

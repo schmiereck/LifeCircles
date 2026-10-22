@@ -117,7 +117,7 @@ public class MainController extends BorderPane {
                 try {
                     // Verwende die neue FileService-Methode mit Fortschrittsanzeige
                     fileService.saveCellsToFileWithProgress(file.getAbsolutePath(), Environment.getInstance().getCopyOfCellList());
-                    SimulationSettingsFile.save(file.getAbsolutePath(), simulationConfig);
+                    SimulationSettingsFile.save(file.getAbsolutePath(), simulationConfig, calculationService.getStepCount());
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -142,7 +142,7 @@ public class MainController extends BorderPane {
                         Environment.getInstance().getCopyOfCellList(),
                         Environment.getInstance().getWidth()
                     );
-                    SimulationSettingsFile.save(file.getAbsolutePath(), simulationConfig);
+                    SimulationSettingsFile.save(file.getAbsolutePath(), simulationConfig, calculationService.getStepCount());
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -163,9 +163,10 @@ public class MainController extends BorderPane {
                 try {
                     // Publish the loaded population between complete simulation steps.
                     calculationService.loadCellsFromFile(file.getAbsolutePath(), false);
-                    // Environment settings saved beside the cells (if any); merging keeps the current settings.
-                    SimulationSettingsFile.load(file.getAbsolutePath(), simulationConfig)
-                            .forEach(problem -> System.out.println("Settings: " + problem));
+                    // Environment settings and step count saved beside the cells (if any); merging keeps the current ones.
+                    SimulationSettingsFile.Loaded settings = SimulationSettingsFile.load(file.getAbsolutePath(), simulationConfig);
+                    settings.problems().forEach(problem -> System.out.println("Settings: " + problem));
+                    if (settings.steps() >= 0) calculationService.setStepCount(settings.steps());
                     environmentPanel.syncFromConfig();
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
@@ -252,7 +253,7 @@ public class MainController extends BorderPane {
                     double targetFps = 1.0 / this.simulationConfig.getRunTimeStep(); // Zielwert in FPS
                     javafx.application.Platform.runLater(() -> {
                         calcFpsLabel.setText(String.format("Calc FPS: %.1f / %.1f", calcFps, targetFps));
-                        stepCountLabel.setText(String.format("Steps: %d", steps));
+                        stepCountLabel.setText(String.format(java.util.Locale.GERMANY, "Steps: %,d", steps));
                         renderFpsLabel.setText(String.format("Render FPS: %.1f", renderFps));
                         trainingLabel.setText(trainingStatus);
                     });

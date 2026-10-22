@@ -10,6 +10,9 @@
   unverändert; ohne Settings-Datei bleibt alles wie bisher. Szenario und Weltgröße werden nur
   vermerkt: Laden behält die aktuelle Welt und meldet auf der Konsole, wenn die Zellen aus einer
   anderen stammen (z. B. WORLD2-Zellen in NONE). Ungültige Werte werden gemeldet und übergangen.
+- Die Schrittzahl wird mitgespeichert; „Load“ setzt den Zähler der Statusleiste auf den
+  gespeicherten Stand, damit die gesamte Rechenzeit einer Welt sichtbar bleibt. Anzeige mit
+  Tausenderpunkten („Steps: 1.234.567“).
   `SimulationSettingsFile`, `SimulationSettingsFileTest` (4), `MainControllerLayoutTest`.
 
 ## WORLD2 und wiederholte Spektralzonen (20.10.2026)

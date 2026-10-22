@@ -18,6 +18,7 @@ import java.util.function.Function;
  * Environment settings from the GUI panel, stored beside a cells file as {@code <file>.cells.settings}
  * (readable properties). The cells file format stays unchanged, so old files load as before; missing keys keep
  * the current value. Scenario and world size are recorded for information only: loading cells keeps the world.
+ * The simulation step count is stored too, so a loaded world shows how long it has been computed in total.
  */
 public final class SimulationSettingsFile {
     public static final String SUFFIX = ".settings";
@@ -50,13 +51,17 @@ public final class SimulationSettingsFile {
             new Setting("groundAnchorsGroundOnly", c -> str(c.isGroundAnchorsGroundOnly()), a -> a.config.setGroundAnchorsGroundOnly(a.flag())),
             new Setting("groundStickiness", c -> str(c.getGroundStickiness()), a -> a.config.setGroundStickiness(a.number())));
 
+    /** What a load found: problems (unreadable values, other world) and the stored step count, -1 if none. */
+    public record Loaded(List<String> problems, long steps) {}
+
     private SimulationSettingsFile() {}
 
     public static Path pathFor(String cellsFile) { return Path.of(cellsFile + SUFFIX); }
 
-    public static void save(String cellsFile, SimulationConfig config) throws IOException {
+    public static void save(String cellsFile, SimulationConfig config, long steps) throws IOException {
         Properties properties = new Properties();
         properties.setProperty("version", String.valueOf(VERSION));
+        properties.setProperty("steps", String.valueOf(steps));
         properties.setProperty("info.trainMode", config.getTrainMode().name());
         properties.setProperty("info.width", str(config.getWidth()));
         properties.setProperty("info.height", str(config.getHeight()));
@@ -67,13 +72,13 @@ public final class SimulationSettingsFile {
     }
 
     /**
-     * Applies the stored settings to the config. Returns the problems (unreadable values, other world); an empty
-     * list also when no settings file exists, which then leaves the config unchanged.
+     * Applies the stored settings to the config. Without a settings file nothing is found and the config is
+     * unchanged (no problems, steps -1).
      */
-    public static List<String> load(String cellsFile, SimulationConfig config) throws IOException {
+    public static Loaded load(String cellsFile, SimulationConfig config) throws IOException {
         List<String> problems = new ArrayList<>();
         Path path = pathFor(cellsFile);
-        if (!Files.exists(path)) return problems;
+        if (!Files.exists(path)) return new Loaded(problems, -1);
         Properties properties = new Properties();
         try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             properties.load(reader);
@@ -92,7 +97,18 @@ public final class SimulationSettingsFile {
             problems.add("cells were saved in " + mode + " (width " + width + "), current world is "
                     + config.getTrainMode() + " (width " + str(config.getWidth()) + ")");
         }
-        return problems;
+        long steps = -1;
+        String stored = properties.getProperty("steps");
+        if (stored != null) {
+            try {
+                steps = Long.parseLong(stored.trim());
+                if (steps < 0) throw new NumberFormatException("negative");
+            } catch (NumberFormatException e) {
+                steps = -1;
+                problems.add("steps=" + stored + " ignored: " + e.getMessage());
+            }
+        }
+        return new Loaded(problems, steps);
     }
 
     private static String str(double value) { return String.valueOf(value); }
