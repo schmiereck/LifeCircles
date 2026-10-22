@@ -64,6 +64,12 @@ class MainControllerLayoutTest {
                 double savedZoneWidth=config.getSunZoneWidth();
                 zoneWidth.setValue(1630);assertEquals(1600,config.getSunZoneWidth());zoneWidth.setValue(0);assertEquals(0,config.getSunZoneWidth());
                 config.setSunZoneWidth(800);panel.syncFromConfig();assertEquals(800,zoneWidth.getValue());
+                // Loaded settings outside the slider grid survive the panel sync exactly.
+                double savedHalfLife=config.getRemainsForceHalfLife(),savedRejection=config.getAdhesionRejection();
+                config.setSunZoneWidth(5000);config.setRemainsForceHalfLife(450.5);config.setAdhesionRejection(.333);panel.syncFromConfig();
+                assertEquals(5000,config.getSunZoneWidth());assertEquals(450.5,config.getRemainsForceHalfLife());assertEquals(.333,config.getAdhesionRejection());
+                assertEquals(.333*100,((Slider)controller.lookup("#adhesion-rejection")).getValue(),1e-9);
+                config.setRemainsForceHalfLife(savedHalfLife);config.setAdhesionRejection(savedRejection);
                 config.setSunZoneWidth(savedZoneWidth);panel.syncFromConfig();
                 CheckBox training=(CheckBox)controller.lookup("#training-adhesion");
                 assertFalse(training.isSelected());

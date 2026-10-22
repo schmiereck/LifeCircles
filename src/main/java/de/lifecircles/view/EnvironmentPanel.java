@@ -170,14 +170,23 @@ public class EnvironmentPanel extends VBox {
         });
         refreshAdhesion.run();
         syncFromConfig = () -> {
-            rate.setMax(Math.max(rate.getMax(), config.getSunRayRate())); rate.setValue(config.getSunRayRate());
+            // Slider listeners write back (rounded, clamped); keep the exact config values and restore them afterwards.
+            double sunRate = config.getSunRayRate(), width = config.getSunZoneWidth(), season = config.getSeasonDuration(),
+                    winterShare = config.getWinterIntensity(), halfLife = config.getRemainsForceHalfLife(),
+                    rejectionShare = config.getAdhesionRejection(), sticky = config.getGroundStickiness();
+            rate.setMax(Math.max(rate.getMax(), sunRate)); rate.setValue(sunRate);
             sourceType.setValue(config.getSunEnergyType()); zones.setSelected(config.isSunSpectralZones());
-            zoneWidth.setValue(config.getSunZoneWidth()); refreshZoneWidth.run();
-            seasonLength.setValue(config.getSeasonDuration() / 60); winter.setValue(config.getWinterIntensity() * 100);
+            zoneWidth.setValue(width); seasonLength.setValue(season / 60); winter.setValue(winterShare * 100);
             adhesion.setSelected(config.isCellAdhesion()); trainingAdhesion.setSelected(config.isTrainingAdhesion());
             bonds.setSelected(config.isAdhesionBonds()); birthBonds.setSelected(config.isAdhesionBirthBonds());
             groundHold.setSelected(config.isGroundAdhesion()); anchors.setSelected(config.isGroundAnchors());
             groundOnly.setSelected(config.isGroundAnchorsGroundOnly());
+            remainsHalfLife.setValue(Double.isInfinite(halfLife) ? 61 : Math.min(60, halfLife / 60));
+            rejection.setValue(rejectionShare * 100); stickiness.setValue(-sticky / maxAttraction * 100);
+            config.setSunRayRate(sunRate); config.setSunZoneWidth(width); config.setSeasonDuration(season);
+            config.setWinterIntensity(winterShare); config.setRemainsForceHalfLife(halfLife);
+            config.setAdhesionRejection(rejectionShare); config.setGroundStickiness(sticky);
+            refresh.run(); refreshZoneWidth.run(); refreshSeason.run(); refreshAdhesion.run(); refreshStickiness.run();
         };
         VBox content = new VBox(8, title, rate, value, hint, new Label("Sun energy form:"), sourceType, zones,
                 new Label("Spectral zone width (px, 0 = one cycle per world):"), zoneWidth, zoneWidthValue,

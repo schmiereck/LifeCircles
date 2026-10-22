@@ -4,6 +4,7 @@ import de.lifecircles.model.Environment;
 import de.lifecircles.service.CalculationService;
 import de.lifecircles.service.FileService;
 import de.lifecircles.service.SimulationConfig;
+import de.lifecircles.service.SimulationSettingsFile;
 import de.lifecircles.service.trainStrategy.TrainMode;
 import javafx.scene.control.*;
 import de.lifecircles.view.ConfigPanel;
@@ -116,6 +117,7 @@ public class MainController extends BorderPane {
                 try {
                     // Verwende die neue FileService-Methode mit Fortschrittsanzeige
                     fileService.saveCellsToFileWithProgress(file.getAbsolutePath(), Environment.getInstance().getCopyOfCellList());
+                    SimulationSettingsFile.save(file.getAbsolutePath(), simulationConfig);
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -140,6 +142,7 @@ public class MainController extends BorderPane {
                         Environment.getInstance().getCopyOfCellList(),
                         Environment.getInstance().getWidth()
                     );
+                    SimulationSettingsFile.save(file.getAbsolutePath(), simulationConfig);
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -160,6 +163,10 @@ public class MainController extends BorderPane {
                 try {
                     // Publish the loaded population between complete simulation steps.
                     calculationService.loadCellsFromFile(file.getAbsolutePath(), false);
+                    // Environment settings saved beside the cells (if any); merging keeps the current settings.
+                    SimulationSettingsFile.load(file.getAbsolutePath(), simulationConfig)
+                            .forEach(problem -> System.out.println("Settings: " + problem));
+                    environmentPanel.syncFromConfig();
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();

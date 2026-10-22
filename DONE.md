@@ -1,5 +1,17 @@
 # Abgeschlossene Schritte
 
+## Umwelt-Einstellungen neben der Zelldatei (22.10.2026)
+
+- „Save“ und „Save Best“ schreiben zusätzlich `<datei>.cells.settings` (lesbare Properties):
+  Sonnenrate und -form, Spektralzonen und Zonenbreite, Jahreszeiten, Haftung, Trainingshaftung,
+  Bindungen, Geburtsbindung, Halbwertszeit der Überrestkräfte, Abweisung, Bodenfeld, Anker,
+  „nur Boden“ und Geländehaftung. „Load“ übernimmt sie und aktualisiert das Umweltpanel;
+  „Load & Merge“ lässt die aktuellen Einstellungen stehen. Format der `.cells`-Datei
+  unverändert; ohne Settings-Datei bleibt alles wie bisher. Szenario und Weltgröße werden nur
+  vermerkt: Laden behält die aktuelle Welt und meldet auf der Konsole, wenn die Zellen aus einer
+  anderen stammen (z. B. WORLD2-Zellen in NONE). Ungültige Werte werden gemeldet und übergangen.
+  `SimulationSettingsFile`, `SimulationSettingsFileTest` (4), `MainControllerLayoutTest`.
+
 ## WORLD2 und wiederholte Spektralzonen (20.10.2026)
 
 - `sunZoneWidth` (GUI-Regler), `SunSpectrum` mit Zonenbreite, `World2TrainStrategy`,

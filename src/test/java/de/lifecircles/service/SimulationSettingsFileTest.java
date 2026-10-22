@@ -1,0 +1,75 @@
+package de.lifecircles.service;
+
+import de.lifecircles.model.EnergyType;
+import java.nio.file.*;
+import java.util.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.*;
+
+/** GUI environment settings travel beside a cells file and come back exactly. */
+class SimulationSettingsFileTest {
+    final SimulationConfig config = SimulationConfig.getInstance();
+    @TempDir Path dir;
+    Path stash;
+
+    @BeforeEach void save() throws Exception { stash = dir.resolve("stash.cells"); SimulationSettingsFile.save(stash.toString(), config); }
+    @AfterEach void restore() throws Exception { assertEquals(List.of(), SimulationSettingsFile.load(stash.toString(), config)); }
+
+    @Test void settingsRoundTripBesideTheCellsFile() throws Exception {
+        String cells = dir.resolve("run.cells").toString();
+        config.setSunRayRate(37.5); config.setSunEnergyType(EnergyType.ALL.get(3)); config.setSunSpectralZones(true);
+        config.setSunZoneWidth(1600); config.setSeasonDuration(900); config.setWinterIntensity(.3);
+        config.setCellAdhesion(false); config.setTrainingAdhesion(true); config.setAdhesionBonds(true); config.setAdhesionBirthBonds(true);
+        config.setRemainsForceHalfLife(Double.POSITIVE_INFINITY); config.setAdhesionRejection(.7);
+        config.setGroundAdhesion(true); config.setGroundAnchors(true); config.setGroundAnchorsGroundOnly(true); config.setGroundStickiness(-12.25);
+        SimulationSettingsFile.save(cells, config);
+        assertTrue(Files.exists(Path.of(cells + ".settings")));
+
+        config.setSunRayRate(10); config.setSunEnergyType(EnergyType.PRIMARY); config.setSunSpectralZones(false);
+        config.setSunZoneWidth(0); config.setSeasonDuration(0); config.setWinterIntensity(.25);
+        config.setCellAdhesion(true); config.setTrainingAdhesion(false); config.setAdhesionBonds(false); config.setAdhesionBirthBonds(false);
+        config.setRemainsForceHalfLife(300); config.setAdhesionRejection(.5);
+        config.setGroundAdhesion(false); config.setGroundAnchors(false); config.setGroundAnchorsGroundOnly(false); config.setGroundStickiness(0);
+
+        assertEquals(List.of(), SimulationSettingsFile.load(cells, config));
+        assertEquals(37.5, config.getSunRayRate()); assertEquals(EnergyType.ALL.get(3), config.getSunEnergyType());
+        assertTrue(config.isSunSpectralZones()); assertEquals(1600, config.getSunZoneWidth());
+        assertEquals(900, config.getSeasonDuration()); assertEquals(.3, config.getWinterIntensity());
+        assertFalse(config.isCellAdhesion()); assertTrue(config.isTrainingAdhesion());
+        assertTrue(config.isAdhesionBonds()); assertTrue(config.isAdhesionBirthBonds());
+        assertEquals(Double.POSITIVE_INFINITY, config.getRemainsForceHalfLife()); assertEquals(.7, config.getAdhesionRejection());
+        assertTrue(config.isGroundAdhesion()); assertTrue(config.isGroundAnchors()); assertTrue(config.isGroundAnchorsGroundOnly());
+        assertEquals(-12.25, config.getGroundStickiness());
+    }
+
+    @Test void oldCellsFilesWithoutSettingsKeepTheCurrentConfig() throws Exception {
+        config.setSunZoneWidth(800);
+        assertEquals(List.of(), SimulationSettingsFile.load(dir.resolve("old.cells").toString(), config));
+        assertEquals(800, config.getSunZoneWidth());
+    }
+
+    @Test void badValuesAndAnotherWorldAreReportedNotApplied() throws Exception {
+        String cells = dir.resolve("edited.cells").toString();
+        config.setAdhesionRejection(.4);
+        Files.writeString(Path.of(cells + ".settings"), """
+                version=1
+                info.trainMode=WORLD2
+                info.width=25600.0
+                adhesionRejection=2
+                sunZoneWidth=1200
+                cellAdhesion=yes
+                """);
+        List<String> problems = SimulationSettingsFile.load(cells, config);
+        assertEquals(.4, config.getAdhesionRejection());
+        assertEquals(1200, config.getSunZoneWidth());
+        assertEquals(3, problems.size(), problems.toString());
+        assertTrue(problems.get(2).contains("WORLD2"), problems.toString());
+    }
+
+    @Test void everyStoredKeyIsWritten() throws Exception {
+        Properties properties = new Properties();
+        try (var reader = Files.newBufferedReader(Path.of(stash + ".settings"))) { properties.load(reader); }
+        for (String key : SimulationSettingsFile.keys()) assertNotNull(properties.getProperty(key), key);
+    }
+}
