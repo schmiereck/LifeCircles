@@ -1,5 +1,17 @@
 # Abgeschlossene Schritte
 
+## Java-25-LTS-Laufzeit verifiziert (23.10.2026)
+
+- Die vorhandene Maven-Konfiguration setzt `maven.compiler.source` und `target` bereits
+  auf 25; keine Code- oder Abhängigkeitsänderung war nötig.
+- Verifiziert mit Temurin 25.0.3 und Maven 3.10.0: alle 97 Produktions- und 120
+  Testquellen frisch kompiliert; `Main.class` hat Classfile-Version 69. Die gezielten
+  Tests `BrainEnergyLabTest` und `PeriodicWorldTest` bestanden (50/50).
+- Alte Java-21-Buildausgaben wurden in den beiden Klassenverzeichnissen gezielt erneuert;
+  Studienprotokolle und sonstige `target`-Daten blieben erhalten. Keine vollständige
+  Testsuite wegen der darin enthaltenen Langzeitstudien. JavaFX-GUI-Start nicht geprüft.
+- Ausführungsdetails: `.github/modernize/java-upgrade/20261014105451/progress.md`.
+
 ## Umwelt-Einstellungen neben der Zelldatei (22.10.2026)
 
 - „Save“ und „Save Best“ schreiben zusätzlich `<datei>.cells.settings` (lesbare Properties):

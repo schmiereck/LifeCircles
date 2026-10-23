@@ -1,6 +1,12 @@
 # Aktueller Projektstand
 
-Aktualisiert: 17.10.2026. Branch `master`.
+Aktualisiert: 23.10.2026. Branch `master`.
+
+- Java-Laufzeit und Compilerziel sind auf Java 25 LTS. Verifiziert mit Temurin 25.0.3:
+  97 Produktions- und 120 Testquellen frisch kompiliert, `Main.class` hat Classfile-Version
+  69. `BrainEnergyLabTest` und `PeriodicWorldTest`: 50 Tests bestanden. Der vollständige
+  Satz mit langen Studien wurde nicht gestartet. Details:
+  `.github/modernize/java-upgrade/20261014105451/progress.md`.
 
 - Zellhaftung Stufe 1/2 in der Default-NONE-Welt (GUI-Schalter, Standard an): Kräfte
   bleiben bei Gehirnpause, Überreste lassen mit 300 s Halbwertszeit los (∞ = Holz),
