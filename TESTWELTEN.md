@@ -53,6 +53,10 @@ Halten, Störungen ausgleichen, Größensteuerung und Aufbau. Die 16 neuen
 Strategie-/Bewertungsprüfungen gehören zur Routineauswahl. Kontrolllauf und echte
 Zufallsgenerationen sind optional: [HIGH_POSITION3.md](HIGH_POSITION3.md).
 
+RACE (Rennbahn) wählt kleine klonale Verbände nach Eigenfortschritt nach rechts aus; Teilung nach
+vorn zählt nicht. `RaceGaitTest` zeigt, dass nur Anker Vortrieb geben, `RaceTrainStrategyTest`
+prüft Bahnen, Obergrenze, Bewertung und Auswahl: [RENNBAHN.md](RENNBAHN.md).
+
 ## Physikwelten
 
 Die Netzkorrekturen stehen in [NETZPRUEFUNG.md](NETZPRUEFUNG.md). Ihre

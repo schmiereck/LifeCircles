@@ -1,5 +1,14 @@
 # Abgeschlossene Schritte
 
+## Rennbahn-Training RACE (24.10.2026, experimentell)
+
+- `TrainMode.RACE`: 16 Bahnen, je ein Gründer, klonale Teilung bis 6 Zellen, Energie gesichert.
+  Bewertung „Eigenfortschritt“ (mittlerer Schritt der schon vorhandenen Zellen) ist immun gegen
+  Teilung nach vorn und Schieben durch Masse; Geburt in der Rennbahn impulsneutral.
+- Befund: Vortrieb nur über Anker (Kräfte zwischen Zellen heben sich auf, Boden reibungsfrei); ein
+  von Hand geregelter Zwei-Zellen-Gang schafft 15 px in 30 s. Zufallsgründer finden in 30 Generationen
+  keinen Fortschritt (Startproblem). `RENNBAHN.md`, `RaceGaitTest`, `RaceTrainStrategyTest`.
+
 ## Schwerkraft- und Reibungsregler (24.10.2026)
 
 - Umweltpanel „Mechanics“: Schwerkraft in % des Standards (0–300 %, Standard 9,81 · 3), Reibung der

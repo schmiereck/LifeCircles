@@ -1,6 +1,10 @@
 # Aktueller Projektstand
 
-Aktualisiert: 23.10.2026. Branch `master`.
+Aktualisiert: 24.10.2026. Branch `master`.
+
+- Rennbahn-Training RACE (experimentell): kleine klonale Verbände (≤ 6 Zellen) werden nach eigenem
+  Fortschritt nach rechts ausgewählt; Teilung nach vorn zählt nicht. Vortrieb ist nur über Bodenanker
+  möglich und langsam; Zufallsgründer finden in 30 Generationen keinen Fortschritt. `RENNBAHN.md`.
 
 - Java-Laufzeit und Compilerziel sind auf Java 25 LTS. Verifiziert mit Temurin 25.0.3:
   97 Produktions- und 120 Testquellen frisch kompiliert, `Main.class` hat Classfile-Version

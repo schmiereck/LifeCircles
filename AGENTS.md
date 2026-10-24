@@ -75,7 +75,8 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
   Überresten mit Halbwertszeit ab (∞ = Holz). Anziehung wirkt voll nur bei ähnlicher
   Aktorfarbe **und** Körperfarbe, sonst teils als begrenzte, überwindbare Abweisung.
   WORLD2 (`WELT2.md`) ist offen wie NONE und schaltet beim Anlegen Zonen, Haftung, Bindungen und Bodenhalt ein.
-  Trainingswelten (alle TrainModes außer NONE/EVOLUTIONARY/WORLD2) nutzen Haftung mit Tonus, Erkennung,
+  RACE (`RENNBAHN.md`) folgt ebenfalls dem Hauptschalter Haftung (Vortrieb nur über Anker).
+  Trainingswelten (alle übrigen TrainModes außer NONE/EVOLUTIONARY/WORLD2/RACE) nutzen Haftung mit Tonus, Erkennung,
   Bindungen und Bodenhalt nur mit dem Schalter `trainingAdhesion` (Standard aus, Policy `TRAINING`);
   die Alt-Policy `SimulationStepPolicy.NONE` bleibt farbblind und ohne Tonus.
   Bindungen (Stufe 3) und Geburtsbindung (Stufe 4) sind experimentell und nur per Schalter aktiv.

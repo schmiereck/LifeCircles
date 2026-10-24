@@ -13,6 +13,7 @@ public enum TrainMode {
     HIGH_POSITION2,
     HIGH_POSITION3,
     WORLD2,
+    RACE,
 
     TEST_A,
     TEST_B,
@@ -28,6 +29,7 @@ public enum TrainMode {
             case HIGH_POSITION2 -> "Älteres Höhentraining mit getrennten Trainingsbereichen (HIGH_POSITION2).";
             case HIGH_POSITION3 -> "Physiktraining: Halten, Störungen, Größensteuerung, Aufbau. Keine Sonne; Energie gesichert, Gehirne ausdrücklich kostenlos (auch bei anderem Gehirnregler).";
             case WORLD2 -> "Offene Evolution in einer viermal so breiten Welt (25 600 px): NONE-Nischen viermal, je um eine Zone versetzt; Spektralzonen 1600 px, sich wiederholend. Schaltet Zonen, Haftung, Bindungen, Geburtsbindung, Bodenhalt und Anker ein.";
+            case RACE -> "Rennbahn: 16 Bahnen, je ein Gründer, der sich klonal auf höchstens 6 Zellen teilt. Selektiert wird, wie weit sich der Verband selbst nach rechts bewegt; Teilung nach vorn und Schieben durch Masse zählen nicht. Keine Sonne, Energie gesichert, Gehirne kostenlos. Schaltet Haftung, Bindungen, Bodenhalt und Anker (nur Boden) ein.";
             case TEST_A -> "Fest verdrahteter mechanischer Testaufbau A (Schneemann).";
             case TEST_B -> "Fest verdrahteter Testaufbau B.";
             case TEST_C -> "Fest verdrahteter Testaufbau C.";

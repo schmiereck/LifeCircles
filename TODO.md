@@ -53,6 +53,9 @@
 - [x] Überreste als normale, nicht denkende Zellen; normale Absorption bis leer.
 - [x] Projektgedächtnis und thematische Dokumente auf Abschlussstand bringen.
 
+- [x] Rennbahn-Training RACE mit dichter Bewertung (keine Teilung/Masse, impulsneutrale Geburt).
+- [ ] RACE-Startproblem: Lehrplan, vorgegebene Fußfarbe oder optionale Bodenreibung (Entscheidung Nutzer).
+
 ## Anschließend
 
 - [x] Erste Verbrauchs-/Überlebensanforderungen: 000 Erhalt, 001 Gehirn.

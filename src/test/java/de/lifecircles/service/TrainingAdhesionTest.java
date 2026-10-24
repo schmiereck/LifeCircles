@@ -18,7 +18,8 @@ class TrainingAdhesionTest {
 
     @Test void everyTrainingModeFollowsTheOptInWhileOpenWorldsFollowCellAdhesion() {
         for (TrainMode mode : TrainMode.values()) {
-            boolean open = mode == TrainMode.NONE || mode == TrainMode.EVOLUTIONARY || mode == TrainMode.WORLD2;
+            // The race needs grip on the floor to move at all and follows the main switch like the open worlds.
+            boolean open = mode == TrainMode.NONE || mode == TrainMode.EVOLUTIONARY || mode == TrainMode.WORLD2 || mode == TrainMode.RACE;
             SimulationStepPolicy policy = CalculationService.strategyFor(mode).stepPolicy();
             assertEquals(open, policy.useCellAdhesion(), mode + " default");
             config.setTrainingAdhesion(true);
