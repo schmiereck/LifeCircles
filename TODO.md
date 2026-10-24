@@ -55,8 +55,9 @@
 
 - [x] Rennbahn-Training RACE mit dichter Bewertung (keine Teilung/Masse, impulsneutrale Geburt).
 - [x] Optionale Geländereibung (Nutzerentscheidung): `BODENREIBUNG.md`, RACE mit Wachstumsphase.
-- [ ] RACE-Startproblem besteht auch mit Reibung (100 Generationen ohne Gang): Lehrplan, vorgegebene
-  Fußfarbe, Auswahl ohne festgefahrene Elite oder mehr Bahnen (Entscheidung Nutzer).
+- [x] RACE-Auswahl als Inselmodell (Nutzerentscheidung: echte Evolution, kein Lehrplan): 32 Bahnen in
+  4 Inseln, Turnier, Elite mit Neubewertung durch Zufallsstart, Migration, Katastrophe bei Stillstand.
+- [ ] RACE-Langlauf mit Inseln auswerten (`RENNBAHN.md`).
 
 ## Anschließend
 

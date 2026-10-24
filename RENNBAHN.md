@@ -39,9 +39,10 @@ Der Reibungsgang und seine Parameter stehen in `BODENREIBUNG.md`.
 
 - `TrainMode.RACE`, `RaceTrainStrategy`.
 - **Welt:**
-  - 16 Bahnen à 1600 px nebeneinander (25 600 × 800 px), Boden, an jedem Bahnanfang eine Wand
-    über die volle Höhe.
-  - Der Gründer startet 400 px hinter seiner Bahnwand, damit ein Haufen nicht von der Wand abstoßen kann.
+  - 32 Bahnen à 1600 px nebeneinander (51 200 × 800 px; bis 24.10.2026 abends 16 Bahnen), Boden, an jedem
+    Bahnanfang eine Wand über die volle Höhe.
+  - Der Gründer startet 400 px (± 40 px zufällig) hinter seiner Bahnwand, damit ein Haufen nicht von der Wand
+    abstoßen kann, und mit zufälliger Drehung.
 - **Schalter beim Anlegen:** Geländereibung, Haftung, Bindungen, Geburtsbindung, Bodenfeld, Anker,
   „Anker nur am Boden“ (die Wände halten nicht). Die Policy folgt dem Hauptschalter Haftung wie die offenen
   Welten (nicht `trainingAdhesion`), denn ohne Haftung drückt kein Fuß an und es gibt keinen Vortrieb.
@@ -70,11 +71,24 @@ Der Reibungsgang und seine Parameter stehen in `BODENREIBUNG.md`.
   - Der Wert ist der Mittelwert dieses Fortschritts über die letzten 10 s der 60-s-Episode (alle 0,5 s),
     belohnt also anhaltende Bewegung, keinen kurzen Ausschlag.
   - Verlässt eine Zelle ihre Bahn, bekommt der Körper 0.
-- **Auswahl:**
-  - Bester Körper unverändert in Bahn 0.
-  - Die übrigen 15 Bahnen erhalten mutierte Gründer, zufällig aus den besten drei.
+- **Auswahl: Inselmodell mit Katastrophen** (Nutzervorgabe 24.10.2026: echte Evolution mit den
+  Standardwerkzeugen gegen lokale Optima, kein Lehrplan):
+  - **Inseln:** 4 Inseln zu je 8 Bahnen. Jede wählt für sich aus, nur Migranten wandern.
+  - **Elite mit Neubewertung:** Der Beste jeder Insel startet unverändert in ihrer ersten Bahn. Wegen der
+    zufälligen Startdrehung und -lage wird er dabei neu bewertet: Er bleibt nur, wenn er sich wieder bewegt.
+    Vorher wurde die Elite deterministisch wiederholt, ein einzelner Ruck (0,85 px) hielt die Auswahl 99
+    Generationen lang fest.
+  - **Turnier:** Die übrigen Bahnen erhalten mutierte Gründer, jeweils der Beste aus 3 zufällig gezogenen
+    Körpern der eigenen Insel (statt immer aus den besten drei: weniger Gleichschritt).
+  - **Migration:** Alle 10 Generationen tritt der Beste jeder Insel unverändert in der letzten Bahn der
+    nächsten Insel an (Ring) und muss sich dort gegen die Einheimischen durchsetzen.
+  - **Katastrophe:** Hat eine Insel ihren Rekord 30 Generationen lang nicht um mehr als 10 % + 0,1 px
+    verbessert (der Rand trennt Fortschritt vom Rauschen des Zufallsstarts), wird sie vollständig mit neuen
+    Zufallsgenomen gefüllt und ihr Rekord gelöscht. Höchstens eine Insel je Generation, die am längsten
+    stillstehende; ihre besten Gene leben über frühere Migranten auf den Nachbarinseln weiter.
   - Alle starten frisch als einzelne Zelle.
-  - Konsolenzeile `RACE generation=… score=… progress=… cells=… median=…`, Status in der GUI.
+  - Konsolenzeile `RACE generation=… score=… progress=… cells=… median=… islands … catastrophes=…` (Bestwert
+    je Insel) und `RACE catastrophe: island …`; Status in der GUI mit Zahl der Katastrophen.
 - **Import:** Ein Genom je Bahn aus den geladenen Zellen, danach Neustart der Episoden.
 
 ## Warum Schieben durch Masse nicht zählt
@@ -92,7 +106,11 @@ Der Reibungsgang und seine Parameter stehen in `BODENREIBUNG.md`.
 Weitere Prüfungen:
 - Bahnen und Wände, Schalter.
 - Ein Neuling weit vorn zählt nicht, danach zählt er wie alle; Verlassen der Bahn ergibt 0.
-- Ein von Hand gleichmäßig bewegter Körper wird Elite in Bahn 0 (unverändert, frische Gründer).
+- Ein von Hand gleichmäßig bewegter Körper wird Elite in der ersten Bahn seiner Insel (unverändert,
+  frische Gründer).
+- Inseln: Elite je Insel, Turniere nur innerhalb der Insel, Migration im Ring; eine Insel ohne Rekord über
+  den Rauschrand hinaus wird nach 30 Generationen neu gewürfelt, immer nur eine je Generation;
+  Gründer starten mit verschiedener Drehung.
 
 ## Erste Studien (24.10.2026, Seed 4711, Zufallsgründer)
 
@@ -131,11 +149,13 @@ Reibung 0,5, Rollwiderstand 0,5, Anker weiter an, Wachstum/Ruhe/Lauf wie oben, 1
 - **Startproblem:** Zufällige Gehirne müssen graue, anziehende Fußaktoren, Lösen durch Abstoßen und
   einen passenden Takt gleichzeitig finden. Anfangs gibt es kaum Anker und praktisch keinen Fortschritt,
   die Auswahl ist dann fast zufällig. Mit Reibung bleibt das so (Studie oben).
-- **Auswahl:** Die Elite wird unverändert wiederholt und ergibt deterministisch denselben Wert. Ein einzelner
-  Glückstreffer kann die Auswahl so über viele Generationen festhalten.
+- **Auswahl:** Bis `ab64ff7` wurde die Elite unverändert wiederholt und ergab deterministisch denselben Wert;
+  ein einzelner Glückstreffer hielt die Auswahl fest. Seitdem Inselmodell mit Neubewertung und Katastrophen
+  (oben).
 - **Hebel:**
   - Umgesetzt (Nutzerentscheidung 24.10.2026): Geländereibung als reine Physik, `BODENREIBUNG.md`.
-  - Nicht umgesetzt: Lehrplan wie HIGH_POSITION3, etwa erst „Anker setzen und lösen“ belohnen.
+  - Umgesetzt (Nutzerentscheidung 24.10.2026): Inseln, Turnier, Zufallsstart, Migration, Katastrophe.
+  - Verworfen (Nutzer: nur echte Evolution, kein Training): Lehrplan, etwa erst „Anker setzen und lösen“ belohnen.
   - Nicht umgesetzt: Aktorfarbe für Fußaktoren vorgeben.
 - Die Anker sind weich und kurz; schnelle Läufer sind mit der jetzigen Physik nicht zu erwarten.
   Entscheidend ist das Vorzeichen der Bewegung über viele Generationen.

@@ -5,7 +5,9 @@ Aktualisiert: 24.10.2026. Branch `master`.
 - Rennbahn-Training RACE (experimentell): kleine klonale Verbände (≤ 6 Zellen) werden nach eigenem
   Fortschritt nach rechts ausgewählt; Teilung nach vorn zählt nicht, Teilung nur in einer Wachstumsphase
   (Fortschritt zählt erst danach). Vortrieb über Anker oder die neue Geländereibung; Zufallsgründer finden
-  auch mit Reibung in 100 Generationen keinen Gang (Bestwert ein einzelner Ruck von 0,85 px). `RENNBAHN.md`.
+  auch mit Reibung in 100 Generationen keinen Gang (Bestwert ein einzelner Ruck von 0,85 px). Seit `ab64ff7`
+  Inselmodell: 32 Bahnen in 4 Inseln, Turnier, Zufallsstart (Elite wird neu bewertet), Migration, Katastrophe
+  nach 30 Generationen Stillstand. `RENNBAHN.md`.
 - Geländereibung (experimentell, Schalter, Standard aus; RACE schaltet sie ein): Coulomb-Reibung und
   Rollwiderstand an Blockern, begrenzt durch das Andrücken. Ein von Hand geregelter Zwei-Zellen-Gang läuft
   damit ohne Anker 21 px in 30 s (mit Ankern 11 px). `BODENREIBUNG.md`.
