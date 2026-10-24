@@ -50,11 +50,15 @@ class RaceTrainStrategyTest {
         return cell;
     }
 
-    RaceTrainStrategy strategy() { return new RaceTrainStrategy(new Random(98)); }
+    RaceTrainStrategy strategy() {
+        var strategy = new RaceTrainStrategy(new Random(98));
+        strategy.randomStart = false;
+        return strategy;
+    }
 
     Environment setup(RaceTrainStrategy strategy, Cell genome) {
         Environment world = strategy.initializeEnvironment();
-        strategy.startEpisode(world, Collections.nCopies(RaceTrainStrategy.LANES, genome), false);
+        strategy.startEpisode(world, Collections.nCopies(RaceTrainStrategy.LANES, new RaceTrainStrategy.Seed(genome, false)));
         return world;
     }
 
@@ -175,6 +179,84 @@ class RaceTrainStrategyTest {
         assertEquals(77, world.getCellList().getFirst().getGeneration(), "elite founder, not mutated");
         assertEquals(RaceTrainStrategy.LANES, world.getCellList().size(), "fresh founders");
         assertEquals(0, strategy.bodies().getFirst().progress);
+    }
+
+    /** Ranked bodies per island: island i scores base[i], its lanes a little less each. */
+    static List<List<RaceTrainStrategy.Body>> ranks(double... base) {
+        List<List<RaceTrainStrategy.Body>> islands = new ArrayList<>();
+        for (int i = 0; i < RaceTrainStrategy.ISLANDS; i++) {
+            List<RaceTrainStrategy.Body> island = new ArrayList<>();
+            for (int l = 0; l < RaceTrainStrategy.ISLAND_LANES; l++) {
+                var body = new RaceTrainStrategy.Body(i * RaceTrainStrategy.ISLAND_LANES + l, genome(false));
+                body.windowSum = base[i] - l * .01; body.windowSamples = 1;
+                island.add(body);
+            }
+            islands.add(island);
+        }
+        return islands;
+    }
+
+    static boolean from(List<RaceTrainStrategy.Body> island, Cell genome) {
+        return island.stream().anyMatch(b -> b.genome == genome);
+    }
+
+    @Test void islandsSelectSeparatelyAndTheirBestMigrates() {
+        var strategy = strategy();
+        var islands = ranks(1, 2, 3, 4);
+        List<RaceTrainStrategy.Seed> seeds = strategy.nextSeeds(islands);
+        assertEquals(RaceTrainStrategy.LANES, seeds.size());
+        for (int i = 0; i < RaceTrainStrategy.ISLANDS; i++)
+            for (int l = 0; l < RaceTrainStrategy.ISLAND_LANES; l++) {
+                var seed = seeds.get(i * RaceTrainStrategy.ISLAND_LANES + l);
+                if (l == 0) assertSame(islands.get(i).getFirst().genome, seed.genome(), "elite of its own island");
+                assertEquals(l > 0, seed.mutate());
+                assertTrue(from(islands.get(i), seed.genome()), "tournament within the island");
+            }
+        strategy.generation = RaceTrainStrategy.MIGRATION_INTERVAL;
+        seeds = strategy.nextSeeds(islands);
+        for (int i = 0; i < RaceTrainStrategy.ISLANDS; i++) {
+            var migrant = seeds.get(i * RaceTrainStrategy.ISLAND_LANES + RaceTrainStrategy.ISLAND_LANES - 1);
+            assertSame(islands.get((i + RaceTrainStrategy.ISLANDS - 1) % RaceTrainStrategy.ISLANDS).getFirst().genome, migrant.genome(),
+                    "the best of the previous island competes here");
+            assertFalse(migrant.mutate());
+        }
+    }
+
+    @Test void aStagnantIslandStartsOverFromRandomGenomesOneAtATime() {
+        var strategy = strategy();
+        var islands = ranks(1, 2, 3, 4);
+        strategy.nextSeeds(islands); // sets the records
+        // Islands 0-2 repeat their score (or gain within the noise margin), island 3 keeps improving by 20 %.
+        for (int g = 1; g < RaceTrainStrategy.STAGNATION_GENERATIONS; g++)
+            strategy.nextSeeds(ranks(1, 2, 1.1 * 3, 4 * Math.pow(1.2, g)));
+        assertEquals(0, strategy.getCatastrophes());
+        assertEquals(RaceTrainStrategy.STAGNATION_GENERATIONS - 1, strategy.island(2).stagnant, "within the margin is no record");
+        assertEquals(0, strategy.island(3).stagnant, "a new record beyond the margin resets the count");
+        List<RaceTrainStrategy.Seed> seeds = strategy.nextSeeds(islands);
+        assertEquals(1, strategy.getCatastrophes());
+        for (int l = 0; l < RaceTrainStrategy.ISLAND_LANES; l++) {
+            var seed = seeds.get(l);
+            assertFalse(islands.stream().anyMatch(island -> from(island, seed.genome())), "fresh random genome");
+        }
+        assertTrue(from(islands.get(1), seeds.get(RaceTrainStrategy.ISLAND_LANES).genome()), "only one island per generation");
+        assertEquals(0, strategy.island(0).record);
+        strategy.nextSeeds(islands);
+        assertEquals(2, strategy.getCatastrophes(), "next generation the next stagnant island");
+        assertEquals(1, strategy.island(0).record, "the wiped island starts a new record");
+    }
+
+    @Test void foundersStartWithARandomTurnAndOffset() {
+        var strategy = strategy();
+        strategy.randomStart = true;
+        Environment world = setup(strategy, genome(false));
+        Set<Double> turns = new HashSet<>();
+        for (RaceTrainStrategy.Body body : strategy.bodies()) {
+            Cell founder = body.cells.getFirst();
+            turns.add(founder.getRotation());
+            double x = founder.getPosition().getX() - body.lane * RaceTrainStrategy.LANE_WIDTH - RaceTrainStrategy.START;
+            assertTrue(Math.abs(x) <= RaceTrainStrategy.START_JITTER, "offset " + x);
+        }
+        assertEquals(RaceTrainStrategy.LANES, turns.size(), "the elite is re-evaluated from another start, not replayed");
     }
 
     /**
