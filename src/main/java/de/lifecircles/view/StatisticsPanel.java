@@ -77,6 +77,8 @@ public class StatisticsPanel extends HBox {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
+                // Nothing to show while the main window is minimized.
+                if (getScene() != null && getScene().getWindow() instanceof javafx.stage.Stage stage && stage.isIconified()) return;
                 // Ratenbegrenzung: Nur alle X Frames und mindestens alle Y Millisekunden aktualisieren
                 frameCounter++;
                 

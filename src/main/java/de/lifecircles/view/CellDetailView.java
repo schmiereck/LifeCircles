@@ -157,6 +157,8 @@ public class CellDetailView extends Stage {
 
             @Override
             public void handle(long now) {
+                // Minimized: no reads under the simulation lock and no drawing.
+                if (isIconified()) return;
                 if (currentCell != null) {
                     // Zellinformationen aktualisieren (ca. 10 mal pro Sekunde)
                     if (now - lastUpdate > 100_000_000) {

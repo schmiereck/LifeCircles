@@ -1,5 +1,11 @@
 # Abgeschlossene Schritte
 
+## Rechen- und Render-Thread entkoppelt (24.10.2026)
+
+- Snapshot nach dem Schritt im Rechen-Thread (auf Anforderung, `volatile` veröffentlicht), faires
+  `ReentrantLock`, Schlafen nur bei Vorsprung (das alte `sleep(0, 500_000)` kostete 1,25 ms pro Schritt),
+  minimiert kein Zeichnen. Etwa +12 % Schritte/s bei 30 FPS (`RenderHandoffTest`).
+
 ## Wechselwirkungen ohne periodische Rechnung pro Aktorpaar (24.10.2026)
 
 - Paarversatz aus Mittelpunktsversatz und relativen Aktorpositionen, Reichweiten und Drehung einmal pro

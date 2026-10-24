@@ -79,6 +79,8 @@ Aktualisiert: 23.10.2026. Branch `master`.
   Gehirnfinanzierung mit gestempeltem Zensus für Netze ohne Module: 1,4 → 1,0 ms/Schritt.
   Regel: Getter-Arrays von Netz/Layer/Neuronen nicht an Ort und Stelle beschreiben; dadurch prüfen
   kompilierte Gehirne nur Referenzen und Stempel (BRAINS 2,5 ms/Schritt). WORLD2 gesamt ~10 ms/Schritt.
+- Render-Thread wartet nicht mehr auf die Rechnung: Snapshots erzeugt der Rechen-Thread auf Anforderung,
+  faire Simulationssperre, keine Pause nach jedem Schritt, minimiert wird nicht gezeichnet (`PERFORMANCE.md`).
 - Bindungsupdate in zwei Phasen (eigene Aktoren parallel, Paare seriell): gelöste Aktoren bilden erst
   im nächsten Schritt neu, verankerte Aktoren nehmen keinen Partner. INTEGRATION ~1,4 ms/Schritt.
 - Kompilierte Vorwärtsrechnung für Netze aus skalaren Neuronen (`NETZKOMPILIERUNG.md`):

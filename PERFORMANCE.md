@@ -429,6 +429,38 @@ A/B unter gleicher Rechnerlast (`InteractionBenchmarkTest`, 1090 Zellen): 1,98 �
 Der WORLD2-Lauf danach war allgemein belastet (auch unveränderte Phasen 25–40 % langsamer) und ist
 für diesen Schritt nicht aussagekräftig.
 
+### Rechen- und Render-Thread (24. Oktober 2026)
+
+Befund vorher:
+- Der Render-Thread (JavaFX, 30 FPS) baute den Snapshot in `getLatestState()` selbst, **unter der
+  Simulationssperre**: Er wartete jedes Mal auf das Ende des laufenden Schritts (UI-Thread bis zu einem
+  Schritt blockiert) und hielt die Rechnung so lange an, wie der Snapshot dauerte
+  (`SnapshotBenchmarkTest`, 1090 Zellen: 0,13 ms Übersicht, 0,59 ms mit Aktoren).
+- Nach **jedem** Schritt schlief der Rechen-Thread `Thread.sleep(0, 500_000)`; unter Windows sind das
+  gemessen 1,25 ms, auch wenn die Simulation hinter ihrem Soll lag (etwa 11 % bei 10-ms-Schritten).
+  Die Pause war zugleich die einzige Gelegenheit für andere Threads, die unfaire Sperre zu bekommen.
+- Beim Minimieren liefen Snapshot, Zeichnen und Statistikgrafik weiter (JavaFX-Pulse laufen weiter).
+
+Jetzt:
+- Während die Simulation läuft, erzeugt der **Rechen-Thread** den Snapshot nach einem Schritt, aber nur auf
+  Anforderung des Renderers (höchstens so oft wie gezeichnet wird), und veröffentlicht ihn `volatile`.
+  `getLatestState()` liefert sofort den letzten veröffentlichten Snapshot. Pausiert: wie bisher.
+- `simulationLock` ist ein **faires** `ReentrantLock`: Wartende (Auswahl per Klick, Detaildialog,
+  Statuszeile, Laden) kommen beim nächsten Freigeben dran.
+- Geschlafen wird nur noch bei Vorsprung gegenüber dem Soll (`Thread.sleep(1)` ab 1,3 ms Vorsprung,
+  darunter `onSpinWait`); pausiert 1 ms.
+- **Minimiert**: kein Snapshot, kein Zeichnen, keine Statistikgrafik; der Detaildialog liest und zeichnet
+  nicht, wenn er selbst minimiert ist.
+
+Messung (`RenderHandoffTest#throughput`, gespeicherte WORLD2-Population, volle Geschwindigkeit, Leser mit
+30 FPS, je 20 s; Läufe streuen mit Populationsgröße und Rechnerlast): vorher 94 / 101 Schritte/s,
+nachher 112 / 99 / 117 Schritte/s (im Mittel etwa +12 %); Snapshot-Lesungen 25,7 → 29,5 pro Sekunde.
+`RenderHandoffTest` prüft: Lesen wartet nie auf einen Schritt (< 2 ms), neue Snapshots kommen an,
+Leser über die Sperre werden nicht ausgehungert.
+
+Offen: Der Zelldetaildialog zeichnet das Gehirn einmal pro Sekunde unter der Sperre (bremst nur, solange
+er offen ist).
+
 Größte verbleibende Blöcke (unbelastet): Gehirne (~2,5), Wechselwirkungen (~1,6), Energietransfer (~1,5),
 Integration (~1,4 ms/Schritt). Weiterer Ansatz für die Wechselwirkungen: jedes Aktorpaar nur einmal
 rechnen und beiden Zellen gutschreiben (braucht Akkumulation über Zellgrenzen).

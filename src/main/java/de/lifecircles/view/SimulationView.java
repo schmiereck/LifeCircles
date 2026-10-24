@@ -163,10 +163,17 @@ public class SimulationView extends Pane {
      * Startet den Rendering-Loop für die kontinuierliche Darstellung der Simulation
      * mit einer Begrenzung auf 30 FPS
      */
+    /** The main window is iconified (pulses keep running, so the timers must skip their work themselves). */
+    private boolean isMinimized() {
+        return getScene() != null && getScene().getWindow() instanceof javafx.stage.Stage stage && stage.isIconified();
+    }
+
     private void startRenderLoop() {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                // Minimized: no snapshot and no drawing; the calculation runs on undisturbed.
+                if (isMinimized()) { frameCount = 0; lastFpsTime = now; fps = 0; return; }
                 // Prüfen, ob genügend Zeit seit dem letzten Frame vergangen ist
                 if (now - lastFrameTime >= FRAME_TIME_NANOS) {
                     // Aktualisiere die Ansicht mit den neuesten Daten

@@ -17,8 +17,15 @@ public class CalculationService implements Runnable {
     private Environment environment;
     private final AtomicBoolean running;
     private final AtomicBoolean paused;
-    private SimulationStateDto latestState;
-    private final Object simulationLock = new Object();
+    private volatile SimulationStateDto latestState;
+    /** While running, the render thread asks for a snapshot; the calculation thread captures it after a step. */
+    private volatile boolean snapshotRequested;
+    private volatile boolean snapshotActorsRequested = true;
+    /**
+     * Fair, so threads waiting between steps (selection, detail view, loading, status) get the lock at the next
+     * release although the calculation thread steps again at once.
+     */
+    private final java.util.concurrent.locks.ReentrantLock simulationLock = new java.util.concurrent.locks.ReentrantLock(true);
     private long stateVersion;
     private long snapshotVersion = -1;
     private boolean snapshotIncludesActors = true;
@@ -42,7 +49,7 @@ public class CalculationService implements Runnable {
     /** Replace world, strategy, spatial index and snapshot together; leave the new world paused. */
     public void newSimulation(TrainMode mode) {
         Objects.requireNonNull(mode);
-        synchronized (simulationLock) {
+        simulationLock.lock(); try {
             paused.set(true);
             this.trainStrategy = strategyFor(mode);
             this.environment = this.trainStrategy.initializeEnvironment();
@@ -53,7 +60,7 @@ public class CalculationService implements Runnable {
             resetCounters();
             this.initializeSimulation();
             StatisticsManagerService.getInstance().reset(environment.getCellList());
-        }
+        } finally { simulationLock.unlock(); }
     }
 
     public static TrainStrategy strategyFor(TrainMode mode) {
@@ -73,7 +80,7 @@ public class CalculationService implements Runnable {
     }
 
     public void resetSimulation() {
-        synchronized (simulationLock) {
+        simulationLock.lock(); try {
             paused.set(true);
             stateReadable=false;
             environment.resetCells();
@@ -85,7 +92,7 @@ public class CalculationService implements Runnable {
             stateReadable=true;
             updateState();
             StatisticsManagerService.getInstance().reset(environment.getCellList());
-        }
+        } finally { simulationLock.unlock(); }
     }
 
     private void resetCounters() {
@@ -103,7 +110,7 @@ public class CalculationService implements Runnable {
     }
 
     void importCells(List<Cell> loaded, boolean merge) {
-        synchronized (simulationLock) {
+        simulationLock.lock(); try {
             List<Cell> previous = new ArrayList<>(environment.getCellList());
             try {
                 for(Cell cell:loaded)cell.migrateEnergyUsage();
@@ -117,17 +124,17 @@ public class CalculationService implements Runnable {
             stateVersion++;
             // Loading must be visible even before Start or while paused, in either LOD mode.
             updateState(snapshotIncludesActors);
-        }
+        } finally { simulationLock.unlock(); }
     }
 
     public void initializeSimulation() {
-        synchronized (simulationLock) {
+        simulationLock.lock(); try {
             stateReadable = false;
             this.trainStrategy.initialize(this.environment);
             stateVersion++;
             stateReadable = true;
             this.updateState();
-        }
+        } finally { simulationLock.unlock(); }
     }
 
     // Deterministic headless worlds use the same update/snapshot path as the application.
@@ -153,7 +160,7 @@ public class CalculationService implements Runnable {
                 final double targetRunTimeStep = this.config.getRunTimeStep();
 
                 if (deltaTime >= targetRunTimeStep) {
-                    synchronized (simulationLock) {
+                    simulationLock.lock(); try {
                         // A scenario change or Pause may have arrived after the outer check.
                         if (!running.get() || paused.get()) continue;
                         this.update(calcTimeStep);
@@ -166,13 +173,23 @@ public class CalculationService implements Runnable {
                             this.lastFpsTime = nowFps;
                         }
                         lastUpdateTime = currentTime;
-                    }
+                        // The render thread never waits for a step: it reads the last published snapshot.
+                        if (snapshotRequested) {
+                            snapshotRequested = false;
+                            updateState(snapshotActorsRequested);
+                        }
+                    } finally { simulationLock.unlock(); }
+                    // Behind the target pace: step again at once (the fair lock still lets waiting threads in).
+                    continue;
                 }
             }
 
-            // Reduziere Thread.sleep auf 0, um Verzögerungen zu minimieren
+            // Ahead of the target pace or paused. Thread.sleep(0, 500_000) sleeps about 1.25 ms on Windows,
+            // so short waits spin politely instead.
             try {
-                Thread.sleep(0, 500_000); // 0.5 ms
+                long ahead = (long) (config.getRunTimeStep() * 1e9) - (System.nanoTime() - lastUpdateTime);
+                if (paused.get() || ahead > 1_300_000L) Thread.sleep(1);
+                else Thread.onSpinWait();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;
@@ -181,7 +198,7 @@ public class CalculationService implements Runnable {
     }
 
     void update(final double deltaTime) {
-        synchronized (simulationLock) {
+        simulationLock.lock(); try {
             stateReadable = false;
             this.trainStrategy.beforeStep(this.environment, deltaTime);
             final List<Cell> cellList = this.environment.getCellList();
@@ -201,12 +218,12 @@ public class CalculationService implements Runnable {
             this.stepCount.incrementAndGet();
             stateVersion++;
             stateReadable = true;
-        }
+        } finally { simulationLock.unlock(); }
     }
 
-    public String getTrainingStatus() { synchronized (simulationLock) { return trainStrategy.getStatus(); } }
+    public String getTrainingStatus() { simulationLock.lock(); try { return trainStrategy.getStatus(); } finally { simulationLock.unlock(); } }
 
-    /** Caller holds simulationLock across the complete capture, not just publication. */
+    /** Caller holds simulationLock across the complete capture; the volatile field publishes it. */
     private void updateState() {
         updateState(true);
     }
@@ -266,7 +283,7 @@ public class CalculationService implements Runnable {
      * @return Die gefundene Zelle oder null, wenn keine Zelle an der Position ist
      */
     public Cell findCellAt(double worldX, double worldY) {
-        synchronized (simulationLock) {
+        simulationLock.lock(); try {
             if (!stateReadable) return null;
             for (Cell cell : environment.getCellList()) {
                 double distance = new Vector2D(worldX, worldY).getShortestDirectionWithWrapAround(
@@ -276,27 +293,37 @@ public class CalculationService implements Runnable {
                 }
             }
             return null;
-        }
+        } finally { simulationLock.unlock(); }
     }
 
     public SimulationStateDto getLatestState() {
         return getLatestState(true);
     }
 
-    /** Overview snapshots omit actor payload; full snapshots remain the default API. */
+    /**
+     * Overview snapshots omit actor payload; full snapshots remain the default API. While the simulation runs, the
+     * snapshot is captured by the calculation thread after its next step and this returns the last published one
+     * at once, so rendering neither waits for nor holds up a step.
+     */
     public SimulationStateDto getLatestState(boolean includeActors) {
-        synchronized (this.simulationLock) {
+        SimulationStateDto published = latestState;
+        if (running.get() && !paused.get() && published != null) {
+            snapshotActorsRequested = includeActors;
+            snapshotRequested = true;
+            return published;
+        }
+        simulationLock.lock(); try {
             if (stateReadable && (snapshotVersion != stateVersion || snapshotIncludesActors != includeActors))
                 this.updateState(includeActors);
             return this.latestState;
-        }
+        } finally { simulationLock.unlock(); }
     }
 
     /** Reads live detail/network data between complete simulation steps. Do not mutate it. */
     public void readSimulationState(Runnable reader) {
-        synchronized (simulationLock) {
+        simulationLock.lock(); try {
             if (stateReadable) reader.run();
-        }
+        } finally { simulationLock.unlock(); }
     }
 
     public synchronized void start() {
@@ -308,7 +335,7 @@ public class CalculationService implements Runnable {
     }
 
     public void pause() {
-        synchronized (simulationLock) { this.paused.set(true); }
+        simulationLock.lock(); try { this.paused.set(true); } finally { simulationLock.unlock(); }
     }
 
     public void resume() {
