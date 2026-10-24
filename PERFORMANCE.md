@@ -350,5 +350,28 @@ Der Rest der Integration ist vor allem die serielle Schleife von `updateBonds` �
 Weiterer Ansatz (nicht umgesetzt): reine Berechnungen (Aktorpositionen, nächster Untergrund,
 Abstände) parallel vorab, Entscheidungen weiter seriell.
 
-Größte verbleibende Blöcke: Gehirne (~4,0), Integration (~2,2), Wechselwirkungen (~1,8),
-Energietransfer (~1,4), Gehirnfinanzierung (~1,4 ms/Schritt).
+### Gehirnfinanzierung (24. Oktober 2026)
+
+Die Finanzierungsprüfung lief für jedes Gehirn in jedem Schritt zweimal durch das ganze Netz:
+Arbeitsschranke (`getMaximumProcessedSynapses`, drei Viertel der Phase) und gespeicherte Gene
+(`getStoredSynapseCount`). Für Netze ohne Module gibt es jetzt einen **Zensus** in `NeuralNet`:
+
+- Typen sind unveränderlich, der Typ eines Neurons ist `final`, und Eingangsarrays ändern ihre Länge
+  nur über die gestempelten Neuron-Methoden. Der Zensus gilt daher, solange Layer-, Neuronen-,
+  Ausgangsarrays und Typliste dieselben Referenzen enthalten und (nur für die Arbeitsschranke)
+  die Gen-Stempel gleich sind. Die Prüfung lädt pro Neuron ein Feld statt Neuron, Typ und Array.
+- Gespeicherte Gene sind dann die Länge des aktuellen Synapsenarrays. Netze mit Modulen
+  behalten den vollständigen Durchlauf.
+
+Prüfung: `BrainCensusTest` vergleicht nach jeder Art von Änderung (Synapse hinzu/weg, Array
+ersetzt, Neuronen im Layer-Array getauscht/ersetzt, Mehrport-Neuron, ersetzter Ausgang, Modul im
+Layer, Modul nur als Typ) und über 120 mutierte Generationen mit dem bisherigen Durchlauf;
+ohne Stempelprüfung schlägt er an.
+
+Isoliert (`BrainPopulationBenchmarkTest#census`, 1003 Gehirne, ein Thread): 8,9 → 2,6 ms pro Runde
+(die Referenz im Test legt Listen an und ist etwas langsamer als der frühere Code).
+WORLD2-Lauf: BRAIN_FUNDING 1,40 → 0,96 ms/Schritt, obwohl die übrigen Phasen in diesem Lauf
+20–30 % langsamer waren (1095 statt 989 Zellen); relativ zur unveränderten Gehirnphase etwa 1,75×.
+
+Größte verbleibende Blöcke: Gehirne (~4–4,8), Integration (~2,2–2,9), Wechselwirkungen (~1,8–2,4),
+Energietransfer (~1,4–1,9 ms/Schritt).

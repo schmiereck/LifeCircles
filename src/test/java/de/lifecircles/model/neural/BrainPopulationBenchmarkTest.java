@@ -54,6 +54,23 @@ class BrainPopulationBenchmarkTest {
         return System.nanoTime()-start;
     }
 
+    /** Funding census of every brain per round: former full walks against the cached census. */
+    @Test void census() throws Exception {
+        List<NeuralNet> nets=new ArrayList<>();
+        for(NeuralNetwork net:load(System.getProperty("brain.bench.cells"),VARIANTS.getFirst()).nets)nets.add(net.getNeuralNet());
+        long[] time=new long[2];long check=0;
+        for(int r=0;r<ROUNDS;r++)for(int k=0;k<2;k++) {
+            int x=(k+r)%2;long t=System.nanoTime(),sum=0;
+            for(NeuralNet net:nets)sum+=x==0?BrainCensusTest.work(net,new IdentityHashMap<>())+BrainCensusTest.stored(net,Collections.newSetFromMap(new IdentityHashMap<>()))
+                    :net.getMaximumProcessedSynapses()+net.getStoredSynapseCount();
+            if(r>=ROUNDS/3)time[x]+=System.nanoTime()-t;
+            if(x==0)check=sum;else assertEquals(check,sum);
+        }
+        int measured=ROUNDS-ROUNDS/3;
+        System.out.printf(Locale.ROOT,"BRAINBENCH census: full walk %.3f ms/round, cached %.3f ms/round (%d brains, single thread)%n",
+                time[0]/1e6/measured,time[1]/1e6/measured,nets.size());
+    }
+
     @Test void population() throws Exception {
         String file=System.getProperty("brain.bench.cells");
         List<Population> populations=new ArrayList<>();

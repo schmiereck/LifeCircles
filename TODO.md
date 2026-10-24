@@ -63,4 +63,5 @@
 - [ ] Große/dichte Welten weiter profilieren; zusätzlichen Aufwand neuer Sensoren messen.
   Gehirne kompiliert (`NETZKOMPILIERUNG.md`), Wechselwirkungen beschleunigt (`PERFORMANCE.md`).
   Energietransfer parallelisiert, Integration entlastet. WORLD2 ~12–15 ms/Schritt; größte Blöcke
-  Gehirne ~4, INTEGRATION ~2,2 (serielles `updateBonds`), INTERACTIONS ~1,8, TRANSFER/BRAIN_FUNDING ~1,4 ms.
+  Gehirne ~4, INTEGRATION ~2,2 (serielles `updateBonds`), INTERACTIONS ~1,8, TRANSFER ~1,4,
+  BRAIN_FUNDING ~1,0 ms (Zensus).

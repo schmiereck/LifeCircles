@@ -1,5 +1,11 @@
 # Abgeschlossene Schritte
 
+## Gehirnzensus für die Finanzierung (24.10.2026)
+
+- Arbeitsschranke und gespeicherte Gene von Netzen ohne Module werden zwischengespeichert und über
+  Referenzen und Gen-Stempel geprüft statt jedes Mal das ganze Netz zu durchlaufen. Exakt gleich
+  (`BrainCensusTest`); isoliert 8,9 → 2,6 ms pro Runde, WORLD2 BRAIN_FUNDING 1,4 → 1,0 ms/Schritt.
+
 ## Schnellere Integration (24.10.2026)
 
 - Blockerkollision mit achsweisem Vortest vor `hypot`; `updateBonds` mit Zellmarke statt

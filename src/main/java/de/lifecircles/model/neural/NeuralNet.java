@@ -1374,8 +1374,65 @@ public class NeuralNet implements Serializable {
         return this.synapseArray.length;
     }
 
+    /**
+     * Brain census of a network without modules (every type without a network): stored genes are the synapse
+     * array, the work bound is fixed by the neurons' port counts and input array lengths. Types are immutable and
+     * array lengths change only through the stamped neuron methods, so the bound stays valid while layers, neuron
+     * arrays, outputs, type list and gene stamps are unchanged. Checking that loads one field per neuron instead
+     * of walking neuron, type and synapse array for every funding check.
+     */
+    private static final class Census {
+        final Layer[] layers; final NeuronInterface[][] layerNeurons; final NeuronInterface[] outputs;
+        final NeuronTypeInfoData[] types; final Neuron[] neurons; final int[] stamps; final long work;
+        Census(Layer[] layers, NeuronInterface[][] layerNeurons, NeuronInterface[] outputs, NeuronTypeInfoData[] types,
+               Neuron[] neurons, int[] stamps, long work) {
+            this.layers = layers; this.layerNeurons = layerNeurons; this.outputs = outputs; this.types = types;
+            this.neurons = neurons; this.stamps = stamps; this.work = work;
+        }
+    }
+    private transient Census census;
+
+    /** The census if this network still has the recorded structure and no modules, otherwise null. */
+    private Census validCensus() {
+        Census c = census;
+        if (c == null || !Arrays.equals(c.layers, hiddenLayerArr) || !Arrays.equals(c.outputs, outputNeuronArr)
+                || c.types.length != neuronTypeInfoDataList.size()) return null;
+        for (int l = 0; l < c.layers.length; l++) if (!Arrays.equals(c.layerNeurons[l], c.layers[l].getNeuronsArr())) return null;
+        for (int i = 0; i < c.types.length; i++) if (c.types[i] != neuronTypeInfoDataList.get(i)) return null;
+        return c;
+    }
+
+    /** Records the census of a network without modules; null (and no census) if it has any. */
+    private Census takeCensus() {
+        census = null;
+        // Networks with modules keep the full walk; find out before allocating anything.
+        for (NeuronTypeInfoData type : neuronTypeInfoDataList) if (type.getNeuralNet() != null) return null;
+        for (Layer layer : hiddenLayerArr) for (NeuronInterface neuron : layer.getNeuronsArr()) if (!scalar(neuron)) return null;
+        for (NeuronInterface neuron : outputNeuronArr) if (!scalar(neuron)) return null;
+        Layer[] layers = hiddenLayerArr.clone();
+        NeuronInterface[][] layerNeurons = new NeuronInterface[layers.length][];
+        int count = outputNeuronArr.length;
+        for (int l = 0; l < layers.length; l++) { layerNeurons[l] = layers[l].getNeuronsArr().clone(); count += layerNeurons[l].length; }
+        NeuronInterface[] outputs = outputNeuronArr.clone();
+        Neuron[] neurons = new Neuron[count]; int[] stamps = new int[count];
+        long work = 0; int n = 0;
+        // Same order and saturating sum as maximumWork.
+        for (int l = 0; l <= layers.length; l++) for (NeuronInterface neuron : l < layers.length ? layerNeurons[l] : outputs) {
+            Neuron scalar = (Neuron) neuron;
+            neurons[n] = scalar; stamps[n++] = scalar.getGeneStamp();
+            work = addWork(work, neuronWork(neuron, null));
+        }
+        return census = new Census(layers, layerNeurons, outputs, neuronTypeInfoDataList.toArray(new NeuronTypeInfoData[0]), neurons, stamps, work);
+    }
+
+    private static boolean scalar(NeuronInterface neuron) {
+        return neuron instanceof Neuron && neuron.getNeuronTypeInfoData().getNeuralNet() == null;
+    }
+
     /** Unique stored genes, including shared module definitions and unused type candidates. */
     public int getStoredSynapseCount() {
+        // Without modules only this network's own synapses are stored.
+        if (validCensus() != null || takeCensus() != null) return synapseArray.length;
         if (storageVisited == null) storageVisited = Collections.newSetFromMap(new IdentityHashMap<>());
         storageVisited.clear();
         return countStoredSynapses(storageVisited);
@@ -1384,6 +1441,13 @@ public class NeuralNet implements Serializable {
     private transient IdentityHashMap<NeuralNet,Long> maximumWorkMemo;
     /** All possible active layers, counting each module invocation, including shared definitions. */
     public long getMaximumProcessedSynapses() {
+        Census c = validCensus();
+        if (c != null) {
+            boolean same = true;
+            for (int i = 0; i < c.neurons.length && same; i++) same = c.neurons[i].getGeneStamp() == c.stamps[i];
+            if (same) return c.work;
+        }
+        if ((c = takeCensus()) != null) return c.work;
         if(maximumWorkMemo==null)maximumWorkMemo=new IdentityHashMap<>();
         maximumWorkMemo.clear();
         return maximumWork(maximumWorkMemo);
