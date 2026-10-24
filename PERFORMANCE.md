@@ -458,8 +458,8 @@ nachher 112 / 99 / 117 Schritte/s (im Mittel etwa +12 %); Snapshot-Lesungen 25,7
 `RenderHandoffTest` prüft: Lesen wartet nie auf einen Schritt (< 2 ms), neue Snapshots kommen an,
 Leser über die Sperre werden nicht ausgehungert.
 
-Offen: Der Zelldetaildialog zeichnet das Gehirn einmal pro Sekunde unter der Sperre (bremst nur, solange
-er offen ist).
+Zelldetaildialog: Das Gehirnbild wird unter der Sperre nur noch kopiert (Schichten, Aktivierungen,
+Synapsen als Spalte/Zeile mit Gewicht) und danach gezeichnet; vorher lief das ganze Zeichnen unter der Sperre.
 
 Größte verbleibende Blöcke (unbelastet): Gehirne (~2,5), Wechselwirkungen (~1,6), Energietransfer (~1,5),
 Integration (~1,4 ms/Schritt). Weiterer Ansatz für die Wechselwirkungen: jedes Aktorpaar nur einmal

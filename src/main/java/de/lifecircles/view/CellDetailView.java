@@ -21,7 +21,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -360,307 +362,129 @@ public class CellDetailView extends Stage {
      * Visualisiert das neuronale Netzwerk der Zelle
      */
     private void renderBrain() {
-        calculationService.readSimulationState(this::renderBrainFromState);
+        // Copy the values under the simulation lock, draw afterwards: drawing ~1000 synapses no longer holds up a step.
+        BrainPicture[] picture = new BrainPicture[1];
+        calculationService.readSimulationState(() -> picture[0] = captureBrain(currentCell));
+        if (picture[0] != null) drawBrain(picture[0]);
     }
 
-    private void renderBrainFromState() {
-        if (currentCell == null) return;
+    /**
+     * What the brain view shows, copied between steps. Columns are input, hidden layers, output; synapse ends are
+     * (column, row) of neurons; message is set instead for cells without a neural brain.
+     */
+    record BrainPicture(String message, int[] layers, double[][] activation, boolean[][] module, boolean[] activeLayer,
+                                int[] fromColumn, int[] fromRow, int[] toColumn, int[] toRow, double[] weights) {}
 
+    static BrainPicture captureBrain(Cell currentCell) {
+        if (currentCell == null) return null;
+        if (!(currentCell.getBrain() instanceof CellBrain brain))
+            return new BrainPicture(currentCell.isRemains() ? "Überrest – keine neuronale Berechnung" : "Feste Steuerung",
+                    null, null, null, null, null, null, null, null, null);
+        final NeuralNetwork network = brain.getNeuralNetwork();
+        if (network == null) return null;
+        final NeuralNet neuralNet = network.getNeuralNet();
+        int[] layers = network.getLayerSizes();
+        if (layers == null) return null;
+        final int outputTypePos = 0; // Default-Output-Type.
+        int columns = layers.length;
+        double[][] activation = new double[columns][];
+        boolean[][] module = new boolean[columns][];
+        boolean[] activeLayer = new boolean[columns];
+        Map<NeuronInterface, int[]> place = new IdentityHashMap<>();
+        for (int column = 0; column < columns; column++) {
+            final NeuronInterface[] neurons;
+            if (column == 0) neurons = neuralNet.getInputNeuronArr();
+            else if (column == columns - 1) neurons = neuralNet.getOutputNeuronArr();
+            else neurons = neuralNet.getHiddenLayerArr()[column - 1].getNeuronList().toArray(new NeuronInterface[0]);
+            activeLayer[column] = column == 0 || column == columns - 1 || neuralNet.getHiddenLayerArr()[column - 1].isActiveLayer();
+            activation[column] = new double[layers[column]];
+            module[column] = new boolean[layers[column]];
+            for (int row = 0; row < layers[column] && row < neurons.length; row++) {
+                NeuronInterface neuron = neurons[row];
+                place.put(neuron, new int[]{column, row});
+                // Aktivierungswert auf den Bereich [0,1] begrenzen
+                activation[column][row] = Math.max(0, Math.min(1, network.readNeuronValue(neuron, outputTypePos)));
+                module[column][row] = neuron instanceof NeuronNetwork;
+            }
+        }
+        List<Synapse> synapseList = network.getSynapseList();
+        int n = synapseList.size();
+        int[] fromColumn = new int[n], fromRow = new int[n], toColumn = new int[n], toRow = new int[n];
+        double[] weights = new double[n];
+        int count = 0;
+        for (Synapse synapse : synapseList) {
+            int[] from = place.get(synapse.getSourceNeuron()), to = place.get(synapse.getTargetNeuron());
+            if (from == null || to == null) continue;
+            fromColumn[count] = from[0]; fromRow[count] = from[1]; toColumn[count] = to[0]; toRow[count] = to[1];
+            weights[count++] = synapse.getWeight();
+        }
+        return new BrainPicture(null, layers, activation, module, activeLayer, Arrays.copyOf(fromColumn, count),
+                Arrays.copyOf(fromRow, count), Arrays.copyOf(toColumn, count), Arrays.copyOf(toRow, count), Arrays.copyOf(weights, count));
+    }
+
+    private void drawBrain(BrainPicture picture) {
         GraphicsContext gc = brainCanvas.getGraphicsContext2D();
         // Aktuelle Canvas-Größe verwenden
         double width = brainCanvas.getWidth();
         double height = brainCanvas.getHeight();
-
         if (width <= 0 || height <= 0) return; // Verhindere Zeichnen bei ungültiger Größe
-
         gc.clearRect(0, 0, width, height);
-
-        CellBrainInterface brainInterface = currentCell.getBrain();
-        if (!(brainInterface instanceof CellBrain)) {
+        if (picture.message() != null) {
             gc.setFill(Color.LIGHTGRAY);
-            gc.fillText(currentCell.isRemains() ? "Überrest – keine neuronale Berechnung" : "Feste Steuerung", 20, 30);
+            gc.fillText(picture.message(), 20, 30);
             return;
         }
-
-        final CellBrain brain = (CellBrain) brainInterface;
-        final NeuralNetwork network = brain.getNeuralNetwork();
-        final NeuralNet neuralNet = network.getNeuralNet();
-
-        if (network == null) return;
-
-        // Netzwerkarchitektur holen
-        int[] layers = network.getLayerSizes();
-
-        if (layers == null) return;
+        int[] layers = picture.layers();
         gc.save(); // Only save a drawing state for the neural branch, which restores it below.
         gc.translate(panOffsetX, panOffsetY);
         gc.scale(zoomFactor, zoomFactor);
 
-        // Zeichenparameter berechnen
-        // Knotengröße dynamisch berechnen
         int maxLayerSize = 0;
-        for (int size : layers) {
-            maxLayerSize = Math.max(maxLayerSize, size);
-        }
-
+        for (int size : layers) maxLayerSize = Math.max(maxLayerSize, size);
         // Verbesserte Neuronengröße - fester Mindestradius
         double screenSizeFactor = Math.min(width, height) / 400.0;
-
-        // Konstanter Mindestradius, weniger Abhängigkeit von der Netzwerkgröße
         double nodeRadius = 1.0 * screenSizeFactor;
-
-        // Horizontalen Abstand anpassen
         double horizontalSpacing = width / (layers.length + 1);
-
         // Vertikale Abstände dynamisch anpassen
         double minVerticalSpacing = nodeRadius * 3; // Mindestabstand zwischen Knoten
         double maxVerticalSpacing = height / (maxLayerSize + 1);
-
-        // Hintergrund
-        //gc.setFill(Color.rgb(30, 30, 30));
-        //gc.fillRect(0, 0, width, height);
-
-        // Synapse-Liste vom Netzwerk holen
-        List<Synapse> synapseList = network.getSynapseList();
-
-        // Positions-Map für Neuronen erstellen: Speichert die X,Y-Position für jedes Neuron
-        Map<NeuronInterface, double[]> neuronPositions = new HashMap<>();
-
-        // Input-Neuronen-Positionen
-        int layerIdx = 0;
-        int layerSize = layers[layerIdx];
-        double layerX = horizontalSpacing * (layerIdx + 1);
-        double vSpacing = Math.max(minVerticalSpacing,
-                Math.min(maxVerticalSpacing, height / (layerSize + 1)));
-        double layerYOffset = (height - layerSize * vSpacing) / 2;
-
-        for (int layerPos = 0; layerPos < layerSize; layerPos++) {
-            double nodeY = layerYOffset + vSpacing * (layerPos + 0.5);
-            if (layerPos < neuralNet.getInputNeuronArr().length) {
-                neuronPositions.put(neuralNet.getInputNeuronArr()[layerPos], new double[] {layerX, nodeY});
-            }
+        double[] x = new double[layers.length], top = new double[layers.length], spacing = new double[layers.length];
+        for (int column = 0; column < layers.length; column++) {
+            x[column] = horizontalSpacing * (column + 1);
+            spacing[column] = Math.max(minVerticalSpacing, Math.min(maxVerticalSpacing, height / (layers[column] + 1)));
+            top[column] = (height - layers[column] * spacing[column]) / 2;
         }
 
-        // Hidden-Layer-Neuronen-Positionen
-        for (int li = 0; li < neuralNet.getHiddenLayerArr().length; li++) {
-            layerIdx = li + 1;
-            layerSize = layers[layerIdx];
-            layerX = horizontalSpacing * (layerIdx + 1);
-            vSpacing = Math.max(minVerticalSpacing,
-                    Math.min(maxVerticalSpacing, height / (layerSize + 1)));
-            layerYOffset = (height - layerSize * vSpacing) / 2;
-
-            Layer currentHiddenLayer = neuralNet.getHiddenLayerArr()[li];
-            boolean layerIsActive = currentHiddenLayer.isActiveLayer();
-            List<NeuronInterface> neurons = currentHiddenLayer.getNeuronList();
-
-            final int outputTypePos = 0; // Default-Output-Type für Input-Neuronen.
-            for (int i = 0; i < layerSize; i++) {
-                double nodeY = layerYOffset + vSpacing * (i + 0.5);
-                NeuronInterface neuron = null;
-                if (i < neurons.size()) {
-                    neuron = neurons.get(i);
-                    neuronPositions.put(neuron, new double[] {layerX, nodeY});
-                }
-                // Aktivierungswert direkt vom Hidden-Neuron holen
-                double activation = 0;
-                if (neuron != null) {
-                    activation = network.readNeuronValue(neuron, outputTypePos);
-                    activation = Math.max(0, Math.min(1, activation));
-                }
-
-                // Farbe basierend auf Aktivierung (blau bis rot)
-                Color nodeColor = Color.rgb(
-                        (int) (255 * activation),
-                        0,
-                        (int) (255 * (1 - activation))
-                );
-
-                final Color strokeColor;
-                if (!layerIsActive) {
-                    nodeColor = nodeColor.desaturate();
-                    strokeColor = Color.GRAY;
-                } else {
-                    strokeColor = Color.GREEN;
-                }
-
-                gc.setFill(nodeColor);
-                gc.fillOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
-                gc.setStroke(strokeColor);
-                gc.setLineWidth(0.3);
-                gc.strokeOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
-
-                if (neuron instanceof NeuronNetwork) {
-                    gc.setStroke(Color.YELLOW);
-                    gc.setLineWidth(0.5);
-                    gc.strokeRect(layerX - nodeRadius - 2, nodeY - nodeRadius - 2, nodeRadius * 2 + 4, nodeRadius * 2 + 4);
-                }
-            }
-        }
-
-        // Output-Neuronen-Positionen
-        layerIdx = layers.length - 1;
-        layerSize = layers[layerIdx];
-        layerX = horizontalSpacing * (layerIdx + 1);
-        vSpacing = Math.max(minVerticalSpacing,
-                Math.min(maxVerticalSpacing, height / (layerSize + 1)));
-        layerYOffset = (height - layerSize * vSpacing) / 2;
-
-        for (int i = 0; i < layerSize; i++) {
-            double nodeY = layerYOffset + vSpacing * (i + 0.5);
-            if (i < neuralNet.getOutputNeuronArr().length) {
-                neuronPositions.put(neuralNet.getOutputNeuronArr()[i], new double[] {layerX, nodeY});
-            }
+        // Hidden layers first with their activity outline (green active, grey switched off).
+        for (int column = 1; column < layers.length - 1; column++) for (int row = 0; row < layers[column]; row++) {
+            double nodeY = top[column] + spacing[column] * (row + 0.5);
+            Color nodeColor = activationColor(picture.activation()[column][row]);
+            if (!picture.activeLayer()[column]) nodeColor = nodeColor.desaturate();
+            gc.setFill(nodeColor);
+            gc.fillOval(x[column] - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
+            gc.setStroke(picture.activeLayer()[column] ? Color.GREEN : Color.GRAY);
+            gc.setLineWidth(0.3);
+            gc.strokeOval(x[column] - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
+            if (picture.module()[column][row]) moduleMark(gc, x[column], nodeY, nodeRadius);
         }
 
         // Verbindungen zeichnen und entsprechend ihres Gewichts einfärben
         gc.setLineWidth(0.02D * screenSizeFactor);
-
-        for (Synapse synapse : synapseList) {
-            NeuronInterface source = synapse.getSourceNeuron();
-            NeuronInterface target = synapse.getTargetNeuron();
-
-            // Positionen der Neuronen abrufen
-            double[] sourcePos = neuronPositions.get(source);
-            double[] targetPos = neuronPositions.get(target);
-
-            if (sourcePos != null && targetPos != null) {
-                // Gewicht der Synapse holen und auf Farbe abbilden
-                double weight = synapse.getWeight();
-                Color synapseColor = this.weightToColor(weight);
-
-                // Synapse mit entsprechender Farbe zeichnen
-                gc.setStroke(synapseColor);
-                gc.strokeLine(sourcePos[0], sourcePos[1], targetPos[0], targetPos[1]);
-            }
+        for (int i = 0; i < picture.weights().length; i++) {
+            int from = picture.fromColumn()[i], to = picture.toColumn()[i];
+            gc.setStroke(this.weightToColor(picture.weights()[i]));
+            gc.strokeLine(x[from], top[from] + spacing[from] * (picture.fromRow()[i] + 0.5),
+                    x[to], top[to] + spacing[to] * (picture.toRow()[i] + 0.5));
         }
 
-        // Input-Neuronen zeichnen
-        layerIdx = 0;
-        layerSize = layers[layerIdx];
-        layerX = horizontalSpacing * (layerIdx + 1);
-        vSpacing = Math.max(minVerticalSpacing,
-                Math.min(maxVerticalSpacing, height / (layerSize + 1)));
-        layerYOffset = (height - layerSize * vSpacing) / 2;
-
-        final int outputTypePos = 0; // Default-Output-Type für Input-Neuronen.
-        for (int layerPos = 0; layerPos < layerSize; layerPos++) {
-            double nodeY = layerYOffset + vSpacing * (layerPos + 0.5);
-
-            // Aktivierungswert direkt vom Input-Neuron holen
-            double activation = 0;
-            NeuronInterface neuron = null;
-            if (layerPos < neuralNet.getInputNeuronArr().length) {
-                neuron = neuralNet.getInputNeuronArr()[layerPos];
-                activation = network.readNeuronValue(neuron, outputTypePos);
-                // Aktivierungswert auf den Bereich [0,1] begrenzen
-                activation = Math.max(0, Math.min(1, activation));
-            }
-
-            // Farbe basierend auf Aktivierung (blau bis rot)
-            Color nodeColor = Color.rgb(
-                    (int) (255 * activation),
-                    0,
-                    (int) (255 * (1 - activation))
-            );
-
-            // Neuron zeichnen
-            gc.setFill(nodeColor);
-            gc.fillOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
+        // All neurons on top of the synapses.
+        for (int column = 0; column < layers.length; column++) for (int row = 0; row < layers[column]; row++) {
+            double nodeY = top[column] + spacing[column] * (row + 0.5);
+            gc.setFill(activationColor(picture.activation()[column][row]));
+            gc.fillOval(x[column] - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
             gc.setStroke(Color.BLACK);
-            gc.strokeOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
-
-            if (neuron instanceof NeuronNetwork) {
-                gc.setStroke(Color.YELLOW);
-                gc.setLineWidth(0.5);
-                gc.strokeRect(layerX - nodeRadius - 2, nodeY - nodeRadius - 2, nodeRadius * 2 + 4, nodeRadius * 2 + 4);
-            }
-        }
-
-        // Hidden-Layer-Neuronen zeichnen
-        for (int li = 0; li < neuralNet.getHiddenLayerArr().length; li++) {
-            layerIdx = li + 1; // +1 weil Input-Layer bereits gezeichnet wurde
-            layerSize = layers[layerIdx];
-            layerX = horizontalSpacing * (layerIdx + 1);
-            vSpacing = Math.max(minVerticalSpacing,
-                    Math.min(maxVerticalSpacing, height / (layerSize + 1)));
-            layerYOffset = (height - layerSize * vSpacing) / 2;
-
-            List<NeuronInterface> neurons = neuralNet.getHiddenLayerArr()[li].getNeuronList();
-
-            for (int i = 0; i < layerSize; i++) {
-                double nodeY = layerYOffset + vSpacing * (i + 0.5);
-
-                // Aktivierungswert direkt vom Hidden-Neuron holen
-                double activation = 0;
-                NeuronInterface neuron = null;
-                if (i < neurons.size()) {
-                    neuron = neurons.get(i);
-                    activation = network.readNeuronValue(neuron, outputTypePos);
-                    // Aktivierungswert auf den Bereich [0,1] begrenzen
-                    activation = Math.max(0, Math.min(1, activation));
-                }
-
-                // Farbe basierend auf Aktivierung (blau bis rot)
-                Color nodeColor = Color.rgb(
-                        (int) (255 * activation),
-                        0,
-                        (int) (255 * (1 - activation))
-                );
-
-                // Neuron zeichnen
-                gc.setFill(nodeColor);
-                gc.fillOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
-                gc.setStroke(Color.BLACK);
-                gc.strokeOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
-
-                if (neuron instanceof NeuronNetwork) {
-                    gc.setStroke(Color.YELLOW);
-                    gc.setLineWidth(0.5);
-                    gc.strokeRect(layerX - nodeRadius - 2, nodeY - nodeRadius - 2, nodeRadius * 2 + 4, nodeRadius * 2 + 4);
-                }
-            }
-        }
-
-        // Output-Neuronen zeichnen
-        layerIdx = layers.length - 1;
-        layerSize = layers[layerIdx];
-        layerX = horizontalSpacing * (layerIdx + 1);
-        vSpacing = Math.max(minVerticalSpacing,
-                Math.min(maxVerticalSpacing, height / (layerSize + 1)));
-        layerYOffset = (height - layerSize * vSpacing) / 2;
-
-        for (int i = 0; i < layerSize; i++) {
-            double nodeY = layerYOffset + vSpacing * (i + 0.5);
-
-            // Aktivierungswert direkt vom Output-Neuron holen
-            double activation = 0;
-            NeuronInterface neuron = null;
-            if (i < neuralNet.getOutputNeuronArr().length) {
-                neuron = neuralNet.getOutputNeuronArr()[i];
-                activation = network.readNeuronValue(neuron, outputTypePos);
-                // Aktivierungswert auf den Bereich [0,1] begrenzen
-                activation = Math.max(0, Math.min(1, activation));
-            }
-
-            // Farbe basierend auf Aktivierung (blau bis rot)
-            Color nodeColor = Color.rgb(
-                    (int) (255 * activation),
-                    0,
-                    (int) (255 * (1 - activation))
-            );
-
-            // Neuron zeichnen
-            gc.setFill(nodeColor);
-            gc.fillOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
-            gc.setStroke(Color.BLACK);
-            gc.strokeOval(layerX - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
-
-            if (neuron instanceof NeuronNetwork) {
-                gc.setStroke(Color.YELLOW);
-                gc.setLineWidth(0.5);
-                gc.strokeRect(layerX - nodeRadius - 2, nodeY - nodeRadius - 2, nodeRadius * 2 + 4, nodeRadius * 2 + 4);
-            }
+            gc.strokeOval(x[column] - nodeRadius, nodeY - nodeRadius, nodeRadius * 2, nodeRadius * 2);
+            if (picture.module()[column][row]) moduleMark(gc, x[column], nodeY, nodeRadius);
         }
 
         // Beschriftungen der Schichten mit dynamischer Schriftgröße
@@ -668,14 +492,20 @@ public class CellDetailView extends Stage {
         gc.setFont(new javafx.scene.text.Font(fontSize));
         gc.setFill(Color.WHITE);
         gc.fillText("Input", horizontalSpacing - 20, height - 10);
-
-        if (layers.length > 2) {
-            gc.fillText("Hidden", width / 2 - 20, height - 10);
-        }
-
+        if (layers.length > 2) gc.fillText("Hidden", width / 2 - 20, height - 10);
         gc.fillText("Output", width - horizontalSpacing - 20, height - 10);
-
         gc.restore(); // Transformation zurücksetzen
+    }
+
+    /** Blue (0) to red (1). */
+    private static Color activationColor(double activation) {
+        return Color.rgb((int) (255 * activation), 0, (int) (255 * (1 - activation)));
+    }
+
+    private static void moduleMark(GraphicsContext gc, double x, double y, double nodeRadius) {
+        gc.setStroke(Color.YELLOW);
+        gc.setLineWidth(0.5);
+        gc.strokeRect(x - nodeRadius - 2, y - nodeRadius - 2, nodeRadius * 2 + 4, nodeRadius * 2 + 4);
     }
 
     /**
