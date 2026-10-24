@@ -7,6 +7,8 @@
   (`InteractionEquivalenceTest`); isoliert 6,5 → 1,7 ms pro Aufruf, WORLD2-Phase 9,1 → 1,7 ms/Schritt.
 - Laden: Lade-Logik in `MainController.loadCells`, GUI-Test mit echter Settings-Datei;
   die Konsole meldet, ob Settings übernommen wurden oder keine Datei da war.
+- „Load & Merge“ hat die Option „with settings“ (Standard aus, wird gemerkt): übernimmt dann
+  auch die gespeicherten Umwelt-Einstellungen, den Schrittzähler aber nie.
 
 ## Kompilierte Vorwärtsrechnung (24.10.2026)
 

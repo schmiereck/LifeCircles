@@ -138,6 +138,13 @@ class MainControllerLayoutTest {
             assertEquals(16.5,sun.getValue(),1e-9);
             for(String id:new String[]{"#cell-adhesion","#adhesion-bonds","#adhesion-birth-bonds","#ground-adhesion","#ground-anchors","#training-adhesion"})
                 assertTrue(((CheckBox)controller.lookup(id)).isSelected(),id);
+            // Load & Merge keeps the environment unless asked to take the settings; never the step count.
+            config.setSunRayRate(60);config.setCellAdhesion(false);environmentPanel(controller).syncFromConfig();
+            controller.mergeCells(cells,false);
+            assertEquals(60,config.getSunRayRate());assertFalse(((CheckBox)controller.lookup("#cell-adhesion")).isSelected());
+            controller.mergeCells(cells,true);
+            assertEquals(16.5,config.getSunRayRate());assertTrue(((CheckBox)controller.lookup("#cell-adhesion")).isSelected());
+            assertNotNull(controller.lookup("#merge-loads-settings"));
         } finally {
             SimulationSettingsFile.load(stash,config);
             environmentPanel(controller).syncFromConfig();

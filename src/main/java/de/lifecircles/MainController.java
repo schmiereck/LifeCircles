@@ -26,6 +26,7 @@ import java.util.prefs.Preferences;
  */
 public class MainController extends BorderPane {
     private static final String LAST_FILE_PATH_KEY = "lastFilePath";
+    private static final String MERGE_SETTINGS_KEY = "mergeLoadsSettings";
     private final Preferences preferences = Preferences.userNodeForPackage(MainController.class);
     private final CalculationService calculationService;
     private final SimulationView simulationView;
@@ -72,6 +73,12 @@ public class MainController extends BorderPane {
         Button saveBestButton = new Button("Save best as");
         Button loadButton = new Button("Load");
         Button loadMergeButton = new Button("Load & Merge");
+        // Merging keeps the current environment by default; on request it takes the saved settings too.
+        CheckBox mergeSettings = new CheckBox("with settings");
+        mergeSettings.setId("merge-loads-settings");
+        mergeSettings.setTooltip(new Tooltip("Load & Merge also applies the environment settings saved beside the file (step count stays)"));
+        mergeSettings.setSelected(preferences.getBoolean(MERGE_SETTINGS_KEY, false));
+        mergeSettings.selectedProperty().addListener((obs, old, next) -> preferences.putBoolean(MERGE_SETTINGS_KEY, next));
 
         newButton.setOnAction(e -> createScenarioDialog().showAndWait().ifPresent(mode -> {
             calculationService.newSimulation(mode);
@@ -180,8 +187,7 @@ public class MainController extends BorderPane {
             File file = fileChooser.showOpenDialog(getScene().getWindow());
             if (file != null) {
                 try {
-                    // Merge through the simulation service so paused snapshots are refreshed too.
-                    calculationService.loadCellsFromFile(file.getAbsolutePath(), true);
+                    mergeCells(file.getAbsolutePath(), mergeSettings.isSelected());
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -203,7 +209,7 @@ public class MainController extends BorderPane {
 
         return new ToolBar(
             newButton, startButton, pauseButton, resetButton,
-            saveButton, saveBestButton, loadButton, loadMergeButton,
+            saveButton, saveBestButton, loadButton, loadMergeButton, mergeSettings,
             new Label(" | "),
             speedLabel, speedLayout //speedSlider
         );
@@ -273,14 +279,25 @@ public class MainController extends BorderPane {
     void loadCells(String path) throws java.io.IOException, ClassNotFoundException {
         // Publish the loaded population between complete simulation steps.
         calculationService.loadCellsFromFile(path, false);
-        // Merging keeps the current settings; a plain load takes the saved ones.
+        SimulationSettingsFile.Loaded settings = applySettings(path);
+        if (settings.steps() >= 0) calculationService.setStepCount(settings.steps());
+    }
+
+    /** Adds the population; with settings also applies the saved environment, but keeps this run's step count. */
+    void mergeCells(String path, boolean withSettings) throws java.io.IOException, ClassNotFoundException {
+        // Merge through the simulation service so paused snapshots are refreshed too.
+        calculationService.loadCellsFromFile(path, true);
+        if (withSettings) applySettings(path);
+    }
+
+    private SimulationSettingsFile.Loaded applySettings(String path) throws java.io.IOException {
         SimulationSettingsFile.Loaded settings = SimulationSettingsFile.load(path, simulationConfig);
         if (!java.nio.file.Files.exists(SimulationSettingsFile.pathFor(path)))
             System.out.println("Settings: no " + SimulationSettingsFile.pathFor(path).getFileName() + ", current environment settings kept");
         else System.out.println("Settings: applied " + SimulationSettingsFile.pathFor(path).getFileName());
         settings.problems().forEach(problem -> System.out.println("Settings: " + problem));
-        if (settings.steps() >= 0) calculationService.setStepCount(settings.steps());
         environmentPanel.syncFromConfig();
+        return settings;
     }
 
     public void shutdown() {
