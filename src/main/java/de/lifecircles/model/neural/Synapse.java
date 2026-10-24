@@ -49,6 +49,7 @@ public class Synapse implements Serializable {
 
     public void setWeight(double weight) {
         this.weight = weight;
+        if (targetNeuron instanceof Neuron neuron) neuron.geneChanged();
     }
 
     public int getSourceOutputTypePos() {

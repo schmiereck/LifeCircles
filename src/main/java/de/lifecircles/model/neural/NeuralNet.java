@@ -36,9 +36,20 @@ public class NeuralNet implements Serializable {
     private transient boolean usingExecutionPlan;
     private transient boolean optimizingModules;
     private transient boolean executionPlanUnneeded;
+    private transient CompiledForward compiledForward;
+    /** Tests compare against the object path; outputs are identical either way. */
+    private transient boolean compiledExecutionDisabled;
 
     /** Disabling preserves output semantics; reset before changing topology after optimized execution. */
     public void setExecutionOptimizationEnabled(boolean enabled) { executionOptimizationEnabled = enabled; }
+    public void setCompiledExecutionEnabled(boolean enabled) { compiledExecutionDisabled = !enabled; compiledForward = null; }
+
+    /** Flat forward pass of this network, rebuilt after any change; null for the object path (modules, training). */
+    private CompiledForward compiledForward(final NeuronValueFunction neuronValueFunction) {
+        if (compiledExecutionDisabled || !(neuronValueFunction instanceof ValuesNeuronValueFunction)) return null;
+        if (compiledForward == null || !compiledForward.matches(this)) compiledForward = new CompiledForward(this);
+        return compiledForward.eligible ? compiledForward : null;
+    }
     public boolean isExecutionOptimizationEnabled() { return executionOptimizationEnabled; }
     boolean isOptimizingModules() { return optimizingModules; }
 
@@ -293,7 +304,10 @@ public class NeuralNet implements Serializable {
             executionPlan = null;
         }
         optimizingModules = optimize && executionOptimizationEnabled && !recordTraining;
-        usingExecutionPlan = optimizingModules && !executionPlanUnneeded;
+        // Recording for training needs the object path (forward order and sources).
+        final CompiledForward compiled = recordTraining ? null : compiledForward(neuronValueFunction);
+        // A compiled pass is cheaper than validating a plan to skip unobservable neurons (BrainPopulationBenchmarkTest).
+        usingExecutionPlan = optimizingModules && !executionPlanUnneeded && compiled == null;
         if (usingExecutionPlan && executionPlan == null) {
             executionPlan = new NetworkExecutionPlan(this);
             if (!executionPlan.matches(this)) throw new IllegalStateException("Topology changed during plan preparation");
@@ -312,6 +326,8 @@ public class NeuralNet implements Serializable {
         } else { forwardOrder = null; forwardSources = null; }
         this.proccessedSynapses = 0L;
         final double[] outputArr = collectOutputs ? new double[this.outputNeuronArr.length] : null;
+        final double[] values = compiled == null ? null : ((ValuesNeuronValueFunction) neuronValueFunction).values(compiled.maxId);
+        final double[] inputSums = compiled == null ? null : ((ValuesNeuronValueFunction) neuronValueFunction).inputSums(compiled.maxId);
 
         // process hidden layers
         for (int layerIndex = 0; layerIndex < this.hiddenLayerArr.length; layerIndex++) {
@@ -320,7 +336,8 @@ public class NeuralNet implements Serializable {
             if (layer.isActiveLayer() || this.disableLayerDeactivation) {
                 for (int j = 0; j < neuronArr.length; j++) {
                     if (!usingExecutionPlan || executionPlan.executes(layerIndex, j))
-                        this.proccessedSynapses += this.activate(neuronValueFunction, neuronArr[j]);
+                        this.proccessedSynapses += compiled != null ? compiled.activate(layerIndex, j, values, inputSums)
+                                : this.activate(neuronValueFunction, neuronArr[j]);
                 }
                 if (usingExecutionPlan) {
                     this.proccessedSynapses += executionPlan.skippedWork[layerIndex];
@@ -336,14 +353,16 @@ public class NeuralNet implements Serializable {
                     }
                 } else if (neuronArr.length > 0) {
                     // Dynamic layers still evaluate their scheduling neuron.
-                    this.proccessedSynapses += this.activate(neuronValueFunction, layer.getNeuronsArr()[0]);
+                    this.proccessedSynapses += compiled != null ? compiled.activate(layerIndex, 0, values, inputSums)
+                            : this.activate(neuronValueFunction, layer.getNeuronsArr()[0]);
                 }
             }
         }
 
         // process output layer
-        for (final NeuronInterface neuron : this.outputNeuronArr) {
-            this.proccessedSynapses += this.activate(neuronValueFunction, neuron);
+        for (int k = 0; k < this.outputNeuronArr.length; k++) {
+            this.proccessedSynapses += compiled != null ? compiled.activate(this.hiddenLayerArr.length, k, values, inputSums)
+                    : this.activate(neuronValueFunction, this.outputNeuronArr[k]);
         }
 
         // Collect outputs
@@ -1110,6 +1129,15 @@ public class NeuralNet implements Serializable {
             throw new IllegalArgumentException("Input size mismatch");
         }
         final int outputTypePos = 0; // Default-Output-Type für Input-Neuronen.
+        // Same writes by cached ids, without visiting every input neuron object.
+        if (compiledForward != null && compiledForward.eligible && !compiledExecutionDisabled
+                && neuronValueFunction instanceof ValuesNeuronValueFunction valuesFunction
+                && compiledForward.inputsMatch(this.inputNeuronArr)) {
+            final double[] values = valuesFunction.values(compiledForward.maxId);
+            final int[] ids = compiledForward.inputIds;
+            for (int inputPos = 0; inputPos < inputArr.length; inputPos++) values[ids[inputPos]] = inputArr[inputPos];
+            return;
+        }
         for (int inputPos = 0; inputPos < inputArr.length; inputPos++) {
             neuronValueFunction.writeValue(this, this.inputNeuronArr[inputPos], outputTypePos, inputArr[inputPos]);
         }

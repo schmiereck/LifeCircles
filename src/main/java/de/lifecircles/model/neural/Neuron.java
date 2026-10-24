@@ -25,6 +25,8 @@ public class Neuron implements NeuronInterface {
     //private transient double delta; // Delta für Backpropagation
 
     private final NeuronTypeInfoData neuronTypeInfoData;
+    /** Raised by every gene or wiring change through a method; compiled forward passes compare it (CompiledForward). */
+    private transient int geneStamp;
 
     public Neuron(final int id, final NeuronTypeInfoData neuronTypeInfoData) {
         this(id, neuronTypeInfoData, NeuralNetwork.getRandom().nextDouble() * 2.0D - 1.0D);
@@ -51,6 +53,7 @@ public class Neuron implements NeuronInterface {
         System.arraycopy(this.inputSynapseArr, 0, newInputSynapses, 0, this.inputSynapseArr.length);
         newInputSynapses[this.inputSynapseArr.length] = synapse;
         this.inputSynapseArr = newInputSynapses;
+        this.geneStamp++;
     }
 
     @Override
@@ -71,6 +74,7 @@ public class Neuron implements NeuronInterface {
 
     public void setBias(final int inputTypePos, final double bias) {
         this.bias = bias;
+        this.geneStamp++;
     }
 
     /**
@@ -111,6 +115,7 @@ public class Neuron implements NeuronInterface {
             System.arraycopy(this.inputSynapseArr, 0, newInputSynapses, 0, foundInputSynapsePos);
             System.arraycopy(this.inputSynapseArr, foundInputSynapsePos + 1, newInputSynapses, foundInputSynapsePos, this.inputSynapseArr.length - foundInputSynapsePos - 1);
             this.inputSynapseArr = newInputSynapses;
+            this.geneStamp++;
         }
     }
 
@@ -121,6 +126,7 @@ public class Neuron implements NeuronInterface {
 
     public void setActivationFunction(ActivationFunction activationFunction) {
         this.activationFunction = activationFunction;
+        this.geneStamp++;
     }
 
     /**
@@ -149,7 +155,13 @@ public class Neuron implements NeuronInterface {
     @Override
     public void setInputSynapseArr(final int inputTypePos, Synapse[] inputSynapses) {
         this.inputSynapseArr = inputSynapses;
+        this.geneStamp++;
     }
+
+    int getGeneStamp() { return geneStamp; }
+
+    /** A weight of one of this neuron's input synapses changed. */
+    void geneChanged() { geneStamp++; }
 
     @Override
     public int getId() {

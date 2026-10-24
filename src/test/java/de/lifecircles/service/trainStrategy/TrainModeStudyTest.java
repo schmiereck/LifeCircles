@@ -17,6 +17,7 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
  * Variants: off (as before), adhesion (tonus, hold, recognition), full (adhesion plus bonds, birth bonds,
  * ground field and anchors). -Dtrainmode.study.generation=SECONDS lengthens HIGH_POSITION2 generations (default 50). Writes target/trainmode-study/NAME.csv (ZoneSeasonStudyTest columns every 30 s
  * plus the mode's own fitness, at 29, 59, ... s), NAME-generations.csv and bond snapshots at 599, 1199, ... s.
+ * -Dlife.profile=true prints the mean time per step of each simulation phase at the end.
  */
 @EnabledIfSystemProperty(named="trainmode.study.seconds", matches="\\d+")
 class TrainModeStudyTest {
@@ -81,6 +82,8 @@ class TrainModeStudyTest {
                 }
             }
         } finally { generations.close(); }
+        // With -Dlife.profile=true: mean wall time per step and phase.
+        world.getProfiler().snapshot().forEach((phase,t)->{ if(t.calls()>0)System.out.printf(Locale.ROOT,"PHASE %s %.3f ms/step%n",phase,t.nanos()/1e6/steps[0]); });
         FileService.getInstance().saveCellsToFile(dir.resolve(name+".cells").toString(),new ArrayList<>(world.getCellList().stream().filter(c->!c.isRemains()).toList()));
     }
 }

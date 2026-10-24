@@ -61,3 +61,5 @@
 - [ ] Prüfen, ob Austauschbefehle getrennt nach Energieform evolvierbar werden sollen.
 - [ ] Neue Ökologietests: Produzenten, Räuber/Aasfresser und kooperierende Zellverbände.
 - [ ] Große/dichte Welten weiter profilieren; zusätzlichen Aufwand neuer Sensoren messen.
+  Gehirne kompiliert (`NETZKOMPILIERUNG.md`); größter Block jetzt INTERACTIONS (WORLD2 ~9 ms/Schritt,
+  u. a. HashMap-Nachbarsuche in `SpatialGrid`), danach TRANSFER.

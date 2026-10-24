@@ -71,6 +71,9 @@ Aktualisiert: 23.10.2026. Branch `master`.
   ist noch nicht nachgemessen. Siehe `PERFORMANCE_REGRESSION_2026_10_17.md`.
 
 - Physik-, Vererbungs-, Netzsteuerungs-, Training- und Snapshotkorrekturen sind aktiv.
+- Kompilierte Vorwärtsrechnung für Netze aus skalaren Neuronen (`NETZKOMPILIERUNG.md`):
+  bitgleiche Ausgaben, Gedächtnis und Arbeit; WORLD2-Gehirnphase 9,6 → 4,5 ms/Schritt.
+  Modulnetze nutzen weiter den Ausführungsplan. Backpropagation existiert nur für Tests.
 - DNA-erhaltender Ausführungsplan aktiv; bisherige Energieabrechnung bleibt erhalten.
   Siehe `NETZAUSFUEHRUNG.md`: frühere Messung vor der Achtenergie-Erweiterung mit
   42,1 Mio. bitgenau gleichen Ausgaben und isoliert ca. 1,20× schnellerer Ausführung.

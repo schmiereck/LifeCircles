@@ -1,5 +1,7 @@
 # DNA-erhaltender Ausführungsplan und einstellbare Gehirnkosten
 
+Nachfolger für Netze ohne Module: [kompilierte Vorwärtsrechnung](NETZKOMPILIERUNG.md).
+
 Aktueller Modellzusatz: [acht Energieformen mit erweiterter Sensorik](MEHRERE_ENERGIEN.md)
 und [Überreste im NONE-Modus](UEBERRESTE.md). Die unten archivierten Zeitmessungen
 stammen vor dieser Erweiterung; sie sind keine Messung ihrer zusätzlichen Kosten.

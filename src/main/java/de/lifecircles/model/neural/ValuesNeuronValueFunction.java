@@ -203,6 +203,19 @@ public class ValuesNeuronValueFunction implements NeuronValueFunction {
         return channels[index];
     }
 
+    /** Port-0 values with room for maxId, for compiled forward passes; valid until an id beyond maxId is used. */
+    double[] values(final int maxId) {
+        ensureChannels(0);
+        if (maxId >= 0) checkValueArrSize(maxId);
+        return valuesArr;
+    }
+
+    /** Port-0 input sums matching {@link #values(int)}. */
+    double[] inputSums(final int maxId) {
+        if (maxId >= 0) checkValueArrSize(maxId);
+        return inputSumArr;
+    }
+
     private void checkValueArrSize(final int id) {
         if (id < 0) throw new IllegalArgumentException("Negative neuron ID");
         if (inputSumArr == null || deltaArr == null) initTransientArrays(valuesArr.length);

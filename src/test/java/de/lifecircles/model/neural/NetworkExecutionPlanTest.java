@@ -21,6 +21,8 @@ class NetworkExecutionPlanTest {
         return net;
     }
     private double[] run(NeuralNetwork net,double[] inputs) {
+        // The plan is only used by nets without a compiled forward pass (CompiledForwardTest covers that one).
+        net.getNeuralNet().setCompiledExecutionEnabled(false);
         net.setInputs(inputs);return net.getNeuralNet().process(net.getNeuronValueFunction(),false);
     }
     @Test void outputsSchedulingAndOriginalWorkBillMatchWithLatentCycleStillInDna() {

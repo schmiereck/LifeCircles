@@ -1,5 +1,16 @@
 # Abgeschlossene Schritte
 
+## Kompilierte Vorwärtsrechnung (24.10.2026)
+
+- `CompiledForward`: flache Arrays statt Objektgraph, gleiche Rechenreihenfolge; bitgleich
+  in Ausgaben, Eingangssummen, Layer-Takt und Synapsenarbeit. Gen-Stempel plus
+  Inhaltsvergleich erkennen Änderungen. Kompilierte Netze verzichten auf den
+  Ausführungsplan, der in der Populationsmessung netto langsamer war.
+- Belege: Populationsbenchmark 64–73 → 30,5 ms/Runde (1 Thread, 1117 Gehirne);
+  WORLD2 (Seed 4711, 300 s) Gehirnphase 9,56 → 4,49 ms/Schritt, Summe 29,0 → 24,4.
+  `CompiledForwardTest` neu, `ExecutionPlanWorldTest` vergleicht nun gegen den reinen
+  Objektpfad. Details: `NETZKOMPILIERUNG.md`.
+
 ## Java-25-LTS-Laufzeit verifiziert (23.10.2026)
 
 - Die vorhandene Maven-Konfiguration setzt `maven.compiler.source` und `target` bereits

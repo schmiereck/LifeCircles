@@ -23,7 +23,8 @@ class ExecutionPlanWorldTest {
             connect(net,new Synapse(hidden.getNeuron(3),0,hidden.getNeuron(2),0,.5));
             Environment original=new Environment(300,300,new Random(17)),planned=new Environment(300,300,new Random(17));
             for(int i=0;i<8;i++)for(Environment world:new Environment[]{original,planned}) {
-                var brain=new NeuralNetwork(net);brain.getNeuralNet().setExecutionOptimizationEnabled(world==planned);
+                // Reference: object path without plan; planned: plan and compiled forward pass (where eligible).
+                var brain=new NeuralNetwork(net);brain.getNeuralNet().setExecutionOptimizationEnabled(world==planned);brain.getNeuralNet().setCompiledExecutionEnabled(world==planned);
                 Cell cell=new Cell(new Vector2D(80+(i%4)*22,80+(i/4)*22),10,new CellBrain(brain));
                 cell.setType(new CellType(0,1,0));cell.setEnergy(.8);cell.setEnergy(EnergyType.SECONDARY,.2);cell.setCellState(i);world.addCell(cell);
             }
