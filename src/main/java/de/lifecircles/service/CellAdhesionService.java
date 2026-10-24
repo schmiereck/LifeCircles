@@ -6,10 +6,8 @@ import de.lifecircles.model.Environment;
 import de.lifecircles.model.SensorActor;
 import de.lifecircles.model.Vector2D;
 
-import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 /** Force tonus after thinking: commands are approached gradually, paused brains hold, remains fade. */
 public final class CellAdhesionService {
@@ -21,6 +19,9 @@ public final class CellAdhesionService {
     public static final double LOCK_MIN_AFFINITY = .8;
     /** Fading bonds of remains dissolve below this strength. */
     static final double MIN_BOND_STRENGTH = 1e-3;
+
+    /** A fresh stamp per updateBonds call marks the cells of its list (instead of an identity set). */
+    private static final AtomicLong LIST_MARKS = new AtomicLong();
 
     private CellAdhesionService() {}
 
@@ -56,8 +57,8 @@ public final class CellAdhesionService {
         final SensorActorForceCellCalcService.Affinity affinity = config.isAdhesionRecognition()
                 ? SensorActorForceCellCalcService.Affinity.fromConfig() : null;
         final double fade = remainsFade(config, dt);
-        final Set<Cell> present = Collections.newSetFromMap(new IdentityHashMap<>());
-        present.addAll(cells);
+        final long present = LIST_MARKS.incrementAndGet();
+        for (Cell cell : cells) cell.setListMark(present);
         final TerrainIndex terrain = anchors ? new TerrainIndex(environment.getBlockerList(), environment.getWidth(), maxReach(cells)) : null;
         for (Cell cell : cells) {
             for (SensorActor actor : cell.getSensorActors()) {
@@ -65,7 +66,7 @@ public final class CellAdhesionService {
                     // Stage B (BODENHALT.md): same release rules as a bond; the anchor must still lie on terrain.
                     if (cell.isRemains()) actor.fadeBond(fade);
                     actor.setBondTimer(pushes(cell, actor) ? actor.getBondTimer() + dt : 0);
-                    if (!onTerrain(actor.getAnchor(), environment)
+                    if (!onTerrain(actor.getAnchor(), environment, terrain)
                             || actor.calcPosition().getShortestDirectionWithWrapAround(actor.getAnchor(), environment.getWidth(), environment.getHeight()).length() > reach(cell, cell)
                             || actor.getBondTimer() >= LOCK_SECONDS - 1e-9
                             || -actor.getBondStrength() < MIN_BOND_STRENGTH) actor.releaseBond();
@@ -75,7 +76,7 @@ public final class CellAdhesionService {
                 if (partner != null) {
                     Cell other = partner.getParentCell();
                     // Removed cells, unsaved partners and broken back links end the bond.
-                    if (other == null || !present.contains(other) || partner.getBondPartner() != actor) {
+                    if (other == null || other.getListMark() != present || partner.getBondPartner() != actor) {
                         actor.releaseBond();
                         continue;
                     }
@@ -113,7 +114,7 @@ public final class CellAdhesionService {
                 if (!(actor.getSensedActor() instanceof SensorActor candidate) || candidate.getBondPartner() != null
                         || candidate.getSensedActor() != actor) { actor.setBondTimer(0); continue; }
                 Cell other = candidate.getParentCell();
-                if (other == null || other == cell || other.isRemains() || !present.contains(other)) { actor.setBondTimer(0); continue; }
+                if (other == null || other == cell || other.isRemains() || other.getListMark() != present) { actor.setBondTimer(0); continue; }
                 if (cell.getSensingId() > other.getSensingId()) continue; // the lower id carries the timer
                 boolean close = actor.getForceStrength() < 0 && candidate.getForceStrength() < 0
                         && (affinity == null || affinity.between(actor, candidate) >= LOCK_MIN_AFFINITY)
@@ -147,8 +148,11 @@ public final class CellAdhesionService {
     }
 
     /** Anchors loaded into another world, or whose blocker is gone, no longer lie on terrain. */
-    static boolean onTerrain(Vector2D point, Environment environment) {
-        for (Blocker blocker : environment.getBlockerList())
+    static boolean onTerrain(Vector2D point, Environment environment) { return onTerrain(point, environment, null); }
+
+    /** With the step's terrain index only blockers near x are candidates (all within 1e-6 of x are among them). */
+    private static boolean onTerrain(Vector2D point, Environment environment, TerrainIndex terrain) {
+        for (Blocker blocker : terrain == null ? environment.getBlockerList() : terrain.near(point.getX()))
             if (blocker.offsetToSurface(point, environment.getWidth(), environment.getHeight()).lengthSquared() <= 1e-12) return true;
         return false;
     }

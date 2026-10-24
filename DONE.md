@@ -1,5 +1,12 @@
 # Abgeschlossene Schritte
 
+## Schnellere Integration (24.10.2026)
+
+- Blockerkollision mit achsweisem Vortest vor `hypot`; `updateBonds` mit Zellmarke statt
+  `IdentityHashMap` und indexierter Anker-Untergrundprüfung. Bitgleich zu `IntegrationReference`
+  (`IntegrationEquivalenceTest`, Gegenprobe mit zu knappem Vortest schlägt an). WORLD2:
+  INTEGRATION 2,2 ms/Schritt bei 989 Zellen (vorher 3,1–3,6 bei 1152–1246).
+
 ## Paralleler Energietransfer (24.10.2026)
 
 - Energieformen parallel berechnet, seriell in Formreihenfolge geschrieben; Ports pro Zelle

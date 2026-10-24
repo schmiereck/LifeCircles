@@ -44,6 +44,8 @@ public class BlockerCellCalcService {
         for (Blocker blocker : blockers) {
             if (blocker == null) continue;
             Vector2D position = cell.getPosition();
+            // Clearly apart on one axis (beyond radius plus rounding margin): the projection keeps the position.
+            if (world != null && apart(blocker, position, cell.getRadiusSize(), world.getWidth(), world.getHeight())) continue;
             Vector2D corrected = world == null ? blocker.getCellCenterOutside(position, cell.getRadiusSize())
                     : blocker.getCellCenterOutside(position, cell.getRadiusSize(), world.getWidth(), world.getHeight());
             Vector2D correction = corrected.subtract(position);
@@ -54,5 +56,13 @@ public class BlockerCellCalcService {
             double inwardSpeed = velocity.getX() * normal.getX() + velocity.getY() * normal.getY();
             if (inwardSpeed < 0) cell.setVelocity(velocity.subtract(normal.multiply(inwardSpeed)));
         }
+    }
+
+    /** Same local offset as Blocker.getCellCenterOutside; the gap on one axis bounds its distance from below. */
+    private static boolean apart(Blocker blocker, Vector2D position, double radius, double worldWidth, double worldHeight) {
+        Vector2D local = blocker.getPosition().getShortestDirectionWithWrapAround(position, worldWidth, worldHeight);
+        double reach = radius + 1e-6;
+        return blocker.getWidth() < worldWidth && Math.abs(local.getX()) - blocker.getWidth() / 2 > reach
+                || blocker.getHeight() < worldHeight && Math.abs(local.getY()) - blocker.getHeight() / 2 > reach;
     }
 }

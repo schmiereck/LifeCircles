@@ -333,5 +333,22 @@ mvn test '-Dtest=EnergyTransferLinkRegressionTest,EnergyTransferTest,MultiEnergy
 mvn test '-Dtest=TransferBenchmarkTest' '-Dtransfer.bench.cells=target/trainmode-study/prof-world2.cells'
 ```
 
-Größte verbleibende Blöcke: Gehirne (~4,5), Integration (~3,3), Wechselwirkungen (~1,9),
-Gehirnfinanzierung (~1,7 ms/Schritt).
+### Integration (24. Oktober 2026)
+
+Bitgleich zu den Referenzkopien in `IntegrationReference` (`IntegrationEquivalenceTest`):
+
+- **Blockerkollision**: vor der Projektion ein Vortest mit derselben lokalen Verschiebung; liegt
+  die Zelle auf einer Achse mehr als Radius + 1e-6 außerhalb, bleibt die Position ohnehin
+  unverändert, `StrictMath.hypot` entfällt. Die Blocker bleiben in Listenreihenfolge, weil jede
+  Korrektur die folgenden beeinflusst. JFR-Samples dieser Stelle: 2350 → 173.
+- **`updateBonds`** (bewusst seriell): Mitgliedschaft per Marke an der Zelle statt `IdentityHashMap`,
+  Anker-Untergrundprüfung über den `TerrainIndex`.
+
+WORLD2-Lauf: INTEGRATION 3,1–3,6 → 2,2 ms/Schritt, aber mit kleinerer Endpopulation
+(989 statt 1152–1246 Zellen); pro Zelle etwa 20 % weniger. Summe aller Phasen 12,2 ms.
+Der Rest der Integration ist vor allem die serielle Schleife von `updateBonds` über alle Aktoren.
+Weiterer Ansatz (nicht umgesetzt): reine Berechnungen (Aktorpositionen, nächster Untergrund,
+Abstände) parallel vorab, Entscheidungen weiter seriell.
+
+Größte verbleibende Blöcke: Gehirne (~4,0), Integration (~2,2), Wechselwirkungen (~1,8),
+Energietransfer (~1,4), Gehirnfinanzierung (~1,4 ms/Schritt).

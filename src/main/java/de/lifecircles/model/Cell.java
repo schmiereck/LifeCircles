@@ -20,6 +20,10 @@ public class Cell implements SensableCell, Serializable {
 
     /** Stable runtime identity used only to resolve exact sensing ties. */
     public long getSensingId() { return sensingId; }
+    /** Membership stamp of one pass over a cell list (CellAdhesionService.updateBonds); not saved. */
+    private transient long listMark;
+    public long getListMark() { return listMark; }
+    public void setListMark(long mark) { listMark = mark; }
 
     private Vector2D position;
     private Vector2D velocity;

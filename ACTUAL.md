@@ -74,7 +74,8 @@ Aktualisiert: 23.10.2026. Branch `master`.
 - Sensor-/Aktor-Wechselwirkungen bitgleich beschleunigt (Blocker per x-Index, Nachbarzellen
   pro Aktor ausgeschlossen): WORLD2 9,1 → 1,7 ms/Schritt, alle Phasen 29,0 → 15,4 ms
   gegenüber 8450ca4 (`PERFORMANCE.md`, Abschnitt 24. Oktober). Energietransfer bitgleich
-  parallelisiert (Formen und Ports): 3,6 → 1,6 ms/Schritt.
+  parallelisiert (Formen und Ports): 3,6 → 1,6 ms/Schritt. Integration bitgleich entlastet
+  (Kollisions-Vortest, Bindungsupdate ohne Identity-Set): pro Zelle etwa 20 % schneller.
 - Kompilierte Vorwärtsrechnung für Netze aus skalaren Neuronen (`NETZKOMPILIERUNG.md`):
   bitgleiche Ausgaben, Gedächtnis und Arbeit; WORLD2-Gehirnphase 9,6 → 4,5 ms/Schritt.
   Modulnetze nutzen weiter den Ausführungsplan. Backpropagation existiert nur für Tests.

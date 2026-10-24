@@ -62,5 +62,5 @@
 - [ ] Neue Ökologietests: Produzenten, Räuber/Aasfresser und kooperierende Zellverbände.
 - [ ] Große/dichte Welten weiter profilieren; zusätzlichen Aufwand neuer Sensoren messen.
   Gehirne kompiliert (`NETZKOMPILIERUNG.md`), Wechselwirkungen beschleunigt (`PERFORMANCE.md`).
-  Energietransfer parallelisiert. WORLD2 ~15 ms/Schritt; größte Blöcke Gehirne ~4,5,
-  INTEGRATION ~3,3, INTERACTIONS ~1,9, BRAIN_FUNDING ~1,7 ms.
+  Energietransfer parallelisiert, Integration entlastet. WORLD2 ~12–15 ms/Schritt; größte Blöcke
+  Gehirne ~4, INTEGRATION ~2,2 (serielles `updateBonds`), INTERACTIONS ~1,8, TRANSFER/BRAIN_FUNDING ~1,4 ms.
