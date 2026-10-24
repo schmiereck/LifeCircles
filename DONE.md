@@ -1,5 +1,14 @@
 # Abgeschlossene Schritte
 
+## Schwerkraft- und Reibungsregler (24.10.2026)
+
+- Umweltpanel „Mechanics“: Schwerkraft in % des Standards (0–300 %, Standard 9,81 · 3), Reibung der
+  Bewegung (Viskosität 0–4) und Drehreibung (0–4), beide Standard 0,8. Live wirksam, in der
+  `.cells.settings`-Datei gespeichert (`gravity`, `viscosity`, `rotationalFriction`); alte Dateien
+  behalten die aktuellen Werte. `MechanicsSettingsTest` prüft die Wirkung, GUI- und Settings-Tests
+  den Weg über Regler und Datei.
+- Zelldialog: Gehirnbild unter der Sperre nur kopiert, gezeichnet danach.
+
 ## Rechen- und Render-Thread entkoppelt (24.10.2026)
 
 - Snapshot nach dem Schritt im Rechen-Thread (auf Anforderung, `volatile` veröffentlicht), faires

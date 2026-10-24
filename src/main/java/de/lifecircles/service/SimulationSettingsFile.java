@@ -49,7 +49,10 @@ public final class SimulationSettingsFile {
             new Setting("groundAdhesion", c -> str(c.isGroundAdhesion()), a -> a.config.setGroundAdhesion(a.flag())),
             new Setting("groundAnchors", c -> str(c.isGroundAnchors()), a -> a.config.setGroundAnchors(a.flag())),
             new Setting("groundAnchorsGroundOnly", c -> str(c.isGroundAnchorsGroundOnly()), a -> a.config.setGroundAnchorsGroundOnly(a.flag())),
-            new Setting("groundStickiness", c -> str(c.getGroundStickiness()), a -> a.config.setGroundStickiness(a.number())));
+            new Setting("groundStickiness", c -> str(c.getGroundStickiness()), a -> a.config.setGroundStickiness(a.number())),
+            new Setting("gravity", c -> str(c.getGravity()), a -> a.config.setGravity(a.number())),
+            new Setting("viscosity", c -> str(c.getViscosity()), a -> a.config.setViscosity(a.number())),
+            new Setting("rotationalFriction", c -> str(c.getRotationalFriction()), a -> a.config.setRotationalFriction(a.number())));
 
     /** What a load found: problems (unreadable values, other world) and the stored step count, -1 if none. */
     public record Loaded(List<String> problems, long steps) {}

@@ -12,8 +12,11 @@ public class SimulationConfig {
     //-------------------------------------------------------------------------
     // Environment:
 
+    /** Standard gravity (downward, positive y); the GUI sets {@link #getGravity()} relative to it. */
     public static final double GRAVITY = 9.81D * 3.0D;
     public static final Vector2D GRAVITY_VECTOR = new Vector2D(0, GRAVITY);
+    /** Live gravity used by the simulation (GUI slider, settings file). */
+    private double gravity = GRAVITY;
 
     // Environment-Cell:
 
@@ -430,8 +433,20 @@ public class SimulationConfig {
         return this.viscosity;
     }
 
+    /** Movement damping ("friction"); finite and nonnegative. */
     public void setViscosity(final double viscosity) {
+        if (!Double.isFinite(viscosity) || viscosity < 0) throw new IllegalArgumentException("Viscosity must be finite and nonnegative");
         this.viscosity = viscosity;
+    }
+
+    public double getGravity() {
+        return this.gravity;
+    }
+
+    /** Downward acceleration force per cell, finite and nonnegative (standard {@link #GRAVITY}). */
+    public void setGravity(final double gravity) {
+        if (!Double.isFinite(gravity) || gravity < 0) throw new IllegalArgumentException("Gravity must be finite and nonnegative");
+        this.gravity = gravity;
     }
 
     public double getCellRepulsionStrength() {

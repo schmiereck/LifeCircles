@@ -163,6 +163,8 @@ public class Environment {
         profiler.finish(SimulationProfiler.Phase.CONVERSION, phaseStart);
         phaseStart = profiler.start();
 
+        // One gravity value for the whole step, including live GUI changes.
+        final Vector2D gravity = new Vector2D(0, this.config.getGravity());
         for (final Cell cell : this.cellList) {
         //this.cells.parallelStream().forEach(cell -> {
             // Apply viscosity
@@ -172,7 +174,7 @@ public class Environment {
 
             // Apply gravity
             //cell.applyForce(SimulationConfig.GRAVITY_VECTOR.multiply(cell.getRadiusSize()), cell.getPosition(), deltaTime);
-            cell.applyForce(SimulationConfig.GRAVITY_VECTOR, cell.getPosition());
+            cell.applyForce(gravity, cell.getPosition());
 
 
         }

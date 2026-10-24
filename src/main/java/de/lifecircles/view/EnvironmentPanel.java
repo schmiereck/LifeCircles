@@ -95,6 +95,38 @@ public class EnvironmentPanel extends VBox {
             refreshSeason.run();
         });
         refreshSeason.run();
+        // Mechanics: gravity relative to the standard value, movement and rotation friction (damping rates).
+        Label mechanicsValue = new Label();
+        Slider gravity = new Slider(0, 300, config.getGravity() / SimulationConfig.GRAVITY * 100);
+        gravity.setId("gravity");
+        Slider friction = new Slider(0, 4, config.getViscosity());
+        friction.setId("friction");
+        Slider rotationFriction = new Slider(0, 4, config.getRotationalFriction());
+        rotationFriction.setId("rotation-friction");
+        for (Slider slider : new Slider[]{gravity, friction, rotationFriction}) {
+            slider.setShowTickLabels(true);
+            slider.setShowTickMarks(true);
+            slider.setPrefWidth(270);
+        }
+        gravity.setMajorTickUnit(100);
+        friction.setMajorTickUnit(1);
+        rotationFriction.setMajorTickUnit(1);
+        Runnable refreshMechanics = () -> mechanicsValue.setText(String.format(
+                "Gravity %.0f %% (%.1f) · friction %.2f · rotation friction %.2f",
+                config.getGravity() / SimulationConfig.GRAVITY * 100, config.getGravity(), config.getViscosity(), config.getRotationalFriction()));
+        gravity.valueProperty().addListener((obs, old, next) -> {
+            config.setGravity(next.doubleValue() / 100 * SimulationConfig.GRAVITY);
+            refreshMechanics.run();
+        });
+        friction.valueProperty().addListener((obs, old, next) -> {
+            config.setViscosity(next.doubleValue());
+            refreshMechanics.run();
+        });
+        rotationFriction.valueProperty().addListener((obs, old, next) -> {
+            config.setRotationalFriction(next.doubleValue());
+            refreshMechanics.run();
+        });
+        refreshMechanics.run();
         // Durable adhesion (ZELLVERBINDUNGEN.md); open NONE worlds, training worlds only with the opt-in.
         CheckBox adhesion = new CheckBox("Cell adhesion: forces held during brain pause,\nattraction only between matching actor colour and body type");
         adhesion.setId("cell-adhesion");
@@ -173,7 +205,8 @@ public class EnvironmentPanel extends VBox {
             // Slider listeners write back (rounded, clamped); keep the exact config values and restore them afterwards.
             double sunRate = config.getSunRayRate(), width = config.getSunZoneWidth(), season = config.getSeasonDuration(),
                     winterShare = config.getWinterIntensity(), halfLife = config.getRemainsForceHalfLife(),
-                    rejectionShare = config.getAdhesionRejection(), sticky = config.getGroundStickiness();
+                    rejectionShare = config.getAdhesionRejection(), sticky = config.getGroundStickiness(),
+                    gravityValue = config.getGravity(), frictionValue = config.getViscosity(), rotationValue = config.getRotationalFriction();
             rate.setMax(Math.max(rate.getMax(), sunRate)); rate.setValue(sunRate);
             sourceType.setValue(config.getSunEnergyType()); zones.setSelected(config.isSunSpectralZones());
             zoneWidth.setValue(width); seasonLength.setValue(season / 60); winter.setValue(winterShare * 100);
@@ -183,15 +216,19 @@ public class EnvironmentPanel extends VBox {
             groundOnly.setSelected(config.isGroundAnchorsGroundOnly());
             remainsHalfLife.setValue(Double.isInfinite(halfLife) ? 61 : Math.min(60, halfLife / 60));
             rejection.setValue(rejectionShare * 100); stickiness.setValue(-sticky / maxAttraction * 100);
+            gravity.setValue(gravityValue / SimulationConfig.GRAVITY * 100); friction.setValue(frictionValue); rotationFriction.setValue(rotationValue);
             config.setSunRayRate(sunRate); config.setSunZoneWidth(width); config.setSeasonDuration(season);
             config.setWinterIntensity(winterShare); config.setRemainsForceHalfLife(halfLife);
             config.setAdhesionRejection(rejectionShare); config.setGroundStickiness(sticky);
-            refresh.run(); refreshZoneWidth.run(); refreshSeason.run(); refreshAdhesion.run(); refreshStickiness.run();
+            config.setGravity(gravityValue); config.setViscosity(frictionValue); config.setRotationalFriction(rotationValue);
+            refresh.run(); refreshZoneWidth.run(); refreshSeason.run(); refreshAdhesion.run(); refreshStickiness.run(); refreshMechanics.run();
         };
         VBox content = new VBox(8, title, rate, value, hint, new Label("Sun energy form:"), sourceType, zones,
                 new Label("Spectral zone width (px, 0 = one cycle per world):"), zoneWidth, zoneWidthValue,
                 new Label("Year length (simulation minutes):"), seasonLength,
                 new Label("Winter light (% of summer):"), winter, seasonValue,
+                new Label("Gravity (% of standard):"), gravity, new Label("Friction (movement damping):"), friction,
+                new Label("Rotation friction:"), rotationFriction, mechanicsValue,
                 adhesion, trainingAdhesion, bonds, birthBonds, new Label("Remains force half-life (minutes, right end = forever):"), remainsHalfLife,
                 new Label("Rejection of foreign attraction (%):"), rejection, adhesionValue,
                 groundHold, anchors, groundOnly, new Label("Terrain stickiness (% of max attraction):"), stickiness, stickinessValue);

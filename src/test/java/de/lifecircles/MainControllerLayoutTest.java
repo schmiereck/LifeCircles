@@ -92,6 +92,18 @@ class MainControllerLayoutTest {
                 halfLife.setValue(10);assertEquals(600,config.getRemainsForceHalfLife());
                 halfLife.setValue(61);assertEquals(Double.POSITIVE_INFINITY,config.getRemainsForceHalfLife());
                 halfLife.setValue(5);assertEquals(300,config.getRemainsForceHalfLife());
+                // Mechanics sliders: gravity in % of standard, friction and rotation friction as damping rates.
+                double savedGravity=config.getGravity(),savedViscosity=config.getViscosity(),savedRotation=config.getRotationalFriction();
+                Slider gravity=(Slider)controller.lookup("#gravity");
+                assertEquals(savedGravity/SimulationConfig.GRAVITY*100,gravity.getValue(),1e-9);
+                gravity.setValue(50);assertEquals(SimulationConfig.GRAVITY/2,config.getGravity(),1e-9);
+                gravity.setValue(0);assertEquals(0,config.getGravity());
+                ((Slider)controller.lookup("#friction")).setValue(2.5);assertEquals(2.5,config.getViscosity());
+                ((Slider)controller.lookup("#rotation-friction")).setValue(.1);assertEquals(.1,config.getRotationalFriction(),1e-12);
+                config.setGravity(12.3456);config.setViscosity(.777);environmentPanel(controller).syncFromConfig();
+                assertEquals(12.3456,config.getGravity());assertEquals(.777,config.getViscosity());
+                assertEquals(12.3456/SimulationConfig.GRAVITY*100,gravity.getValue(),1e-9);
+                config.setGravity(savedGravity);config.setViscosity(savedViscosity);config.setRotationalFriction(savedRotation);environmentPanel(controller).syncFromConfig();
                 Slider rejection=(Slider)controller.lookup("#adhesion-rejection");
                 rejection.setValue(100);assertEquals(1,config.getAdhesionRejection());rejection.setValue(50);assertEquals(.5,config.getAdhesionRejection());
                 Slider brainSlider=(Slider)controller.lookup("#brain-energy-slider");
