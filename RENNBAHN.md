@@ -144,6 +144,30 @@ Reibung 0,5, Rollwiderstand 0,5, Anker weiter an, Wachstum/Ruhe/Lauf wie oben, 1
   Startproblem liegt also nicht mehr in der Physik, sondern in der Steuerung: graue, anziehende Fußaktoren
   im Wechsel mit Loslassen und Schieben in einem Takt.
 
+## Studie mit Inselmodell (24./25.10.2026, Seed 4711, Zufallsgründer, Modellstand `ab64ff7`)
+
+Geplant waren 1000 Generationen. Der Lauf wurde nach 587 Generationen abgebrochen, weil der Rechner wenig
+Speicher hatte (Claude Code beendet dann Hintergrundprozesse); der Abbruch lag nicht an der Simulation.
+
+- 58 Katastrophen in 587 Generationen, also etwa alle 10 Generationen eine. Jede Insel wurde im Schnitt
+  alle 40 Generationen neu gewürfelt.
+- Bestwert je Generation: 46 von 587 über 0,1 px, 10 über 0,5 px, 7 über 1 px. Spitzen: 5,27 px (G33),
+  4,07 px (G362), 5,47 px (G418), dazu 2,28, 2,23, 1,31, 1,20 px.
+- **Keine Spitze hat sich wiederholt.** In der folgenden Generation startet derselbe Körper unverändert,
+  nur mit anderer Startdrehung und -lage, und kommt auf 0,00–0,02 px (G34 nach 5,27 px, G363 nach 4,07 px,
+  G419 nach 5,47 px). Auch die mutierten Nachkommen bauen nicht darauf auf.
+- Median durchgehend 0,000 px. In 278 von 587 Generationen setzte in der ganzen Welt keine Zelle einen Anker.
+- **Befund:**
+  - Die Neubewertung tut, wofür sie gedacht war: Ein Glückstreffer hält die Auswahl nicht mehr fest.
+  - Die Spitzen sind aber Glückstreffer einer bestimmten Startlage, keine Gänge.
+  - Die Katastrophen kommen so regelmäßig, weil der Rekord einer Insel meist von einem solchen Treffer
+    stammt, den keine spätere Generation übertrifft. Bei einem Median von 0 wird die Auswahl damit im
+    Wesentlichen zu einer Zufallssuche mit regelmäßigem Neustart.
+- **Mögliche nächste Schritte (nicht umgesetzt):**
+  - Jedes Genom aus mehreren Startlagen bewerten und Mittel oder Minimum werten, wie es bei verrauschter
+    Fitness üblich ist. Das kostet entsprechend mehr Rechenzeit je Generation.
+  - Den Rekord für die Katastrophe aus diesen wiederholten Bewertungen nehmen statt aus einer Spitze.
+
 ## Grenzen und offene Hebel
 
 - **Startproblem:** Zufällige Gehirne müssen graue, anziehende Fußaktoren, Lösen durch Abstoßen und

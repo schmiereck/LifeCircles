@@ -1,5 +1,12 @@
 # Abgeschlossene Schritte
 
+## RACE-Inselmodell (24./25.10.2026, experimentell)
+
+- 32 Bahnen in 4 Inseln, Elite je Insel mit Neubewertung (Zufallsdrehung, ± 40 px), Turnier aus 3,
+  Ringmigration alle 10 Generationen, Katastrophe nach 30 Generationen ohne Rekord (> 10 % + 0,1 px).
+  `RaceTrainStrategyTest` prüft Inseln, Migration, Katastrophe und Zufallsstart.
+- Studie, 587 Generationen: kein Gang. Spitzen bis 5,5 px hingen an der Startlage, Median 0, 58 Katastrophen.
+
 ## Geländereibung und RACE-Wachstumsphase (24.10.2026, experimentell)
 
 - Schalter `blockerFriction` mit Reibung (0,5) und Rollwiderstand der Kontaktfläche (0,5): Haften, Gleiten

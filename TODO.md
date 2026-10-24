@@ -57,7 +57,8 @@
 - [x] Optionale Geländereibung (Nutzerentscheidung): `BODENREIBUNG.md`, RACE mit Wachstumsphase.
 - [x] RACE-Auswahl als Inselmodell (Nutzerentscheidung: echte Evolution, kein Lehrplan): 32 Bahnen in
   4 Inseln, Turnier, Elite mit Neubewertung durch Zufallsstart, Migration, Katastrophe bei Stillstand.
-- [ ] RACE-Langlauf mit Inseln auswerten (`RENNBAHN.md`).
+- [x] RACE-Langlauf mit Inseln (587 Generationen): Spitzen nur aus Startglück, kein Gang (`RENNBAHN.md`).
+- [ ] RACE: Bewertung aus mehreren Startlagen je Genom (verrauschte Fitness), Rekord daraus (Entscheidung Nutzer).
 
 ## Anschließend
 
