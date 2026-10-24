@@ -50,47 +50,63 @@ public class EnergyTransferCellCalcService {
         if (deltaTime == 0 || cells.isEmpty()) return;
         // Ports and their distance factors do not depend on the energy form: compute them once per step.
         List<Link> links = links(cells, environment);
-        processEnergyType(cells, links, deltaTime, EnergyType.PRIMARY);
         // Existing single-energy populations do not pay for a second transfer pass.
         int present = 0;
         for (Cell cell : cells) present |= cell.getEnergyPresenceMask() & ~1;
-        for (EnergyType type : EnergyType.ALL) if ((present & (1 << type.getCode())) != 0)
-            processEnergyType(cells, links, deltaTime, type);
+        List<EnergyType> types = new ArrayList<>(List.of(EnergyType.PRIMARY));
+        for (EnergyType type : EnergyType.ALL) if ((present & (1 << type.getCode())) != 0) types.add(type);
+        // Each form reads and changes only its own stores, so the forms are computed in parallel; writing stays
+        // sequential in form order (a cell's store array for further forms is created on first write).
+        List<Budget[]> results = types.size() == 1 ? List.<Budget[]>of(processEnergyType(cells, links, deltaTime, types.getFirst()))
+                : types.parallelStream().map(type -> processEnergyType(cells, links, deltaTime, type)).toList();
+        for (int t = 0; t < types.size(); t++)
+            for (Budget b : results.get(t)) b.cell.setEnergy(types.get(t), b.energy + b.delta);
     }
 
     /** One active port from a living cell to an actor of another listed cell, by list index. */
     private record Link(int cell, int target, double delivery, double absorption, double deliveryFactor, double absorptionFactor) {}
 
+    private static final Link[] NO_LINKS = {};
+
     private static List<Link> links(List<Cell> cells, Environment environment) {
         var index = new IdentityHashMap<Cell, Integer>(cells.size());
         for (int i = 0; i < cells.size(); i++) index.putIfAbsent(cells.get(i), i);
+        // Cells independently in parallel (the index is only read), joined in list order.
+        Link[][] perCell = new Link[cells.size()][];
+        java.util.stream.IntStream.range(0, cells.size()).parallel().forEach(i -> perCell[i] = links(cells, environment, index, i));
         List<Link> links = new ArrayList<>();
-        for (int i = 0; i < cells.size(); i++) {
-            Cell cell = cells.get(i);
-            if (cell.isRemains()) continue;
-            for (SensorActor sensor : cell.getSensorActors()) {
-                if (!(sensor.getSensedCell() instanceof Cell target) || target == cell
-                        || !(sensor.getSensedActor() instanceof SensorActor actor) || actor.getParentCell() != target) continue;
-                Integer other = index.get(target);
-                if (other == null) continue;
-                double delivery = sensor.getEnergyDelivery(), absorption = sensor.getEnergyAbsorption();
-                if (!(delivery > 0) && !(absorption > 0)) continue;
-                // Missing geometry must not act as a zero-distance connection.
-                if (sensor.getCachedPosition() == null || actor.getCachedPosition() == null) continue;
-                double distance = sensor.getCachedPosition().getShortestDirectionWithWrapAround(
-                        actor.getCachedPosition(), environment.getWidth(), environment.getHeight()).length();
-                double radius = SensorActorForceCellCalcService.calcSensorRadius(target.getRadiusSize(), target.getSensorActors().size());
-                double normDistance = radius > 0 ? Math.min(distance / radius, 1) : 0;
-                double strength = cell.getRadiusSize() / SimulationConfig.getInstance().getCellMaxRadiusSize();
-                double deliveryFactor = 1 - (1 - SimulationConfig.CELL_ENERGY_DELIVERY_FACTOR_FAR) * normDistance * strength;
-                double absorptionFactor = 1 - (1 - SimulationConfig.CELL_ENERGY_ABSORPTION_FACTOR_FAR) * normDistance * strength;
-                links.add(new Link(index.get(cell), other, delivery, absorption, deliveryFactor, absorptionFactor));
-            }
-        }
+        for (Link[] own : perCell) for (Link link : own) links.add(link);
         return links;
     }
 
-    private static void processEnergyType(List<Cell> cells, List<Link> links, double deltaTime, EnergyType energyType) {
+    private static Link[] links(List<Cell> cells, Environment environment, IdentityHashMap<Cell, Integer> index, int i) {
+        Cell cell = cells.get(i);
+        if (cell.isRemains()) return NO_LINKS;
+        List<Link> links = null;
+        for (SensorActor sensor : cell.getSensorActors()) {
+            if (!(sensor.getSensedCell() instanceof Cell target) || target == cell
+                    || !(sensor.getSensedActor() instanceof SensorActor actor) || actor.getParentCell() != target) continue;
+            Integer other = index.get(target);
+            if (other == null) continue;
+            double delivery = sensor.getEnergyDelivery(), absorption = sensor.getEnergyAbsorption();
+            if (!(delivery > 0) && !(absorption > 0)) continue;
+            // Missing geometry must not act as a zero-distance connection.
+            if (sensor.getCachedPosition() == null || actor.getCachedPosition() == null) continue;
+            double distance = sensor.getCachedPosition().getShortestDirectionWithWrapAround(
+                    actor.getCachedPosition(), environment.getWidth(), environment.getHeight()).length();
+            double radius = SensorActorForceCellCalcService.calcSensorRadius(target.getRadiusSize(), target.getSensorActors().size());
+            double normDistance = radius > 0 ? Math.min(distance / radius, 1) : 0;
+            double strength = cell.getRadiusSize() / SimulationConfig.getInstance().getCellMaxRadiusSize();
+            double deliveryFactor = 1 - (1 - SimulationConfig.CELL_ENERGY_DELIVERY_FACTOR_FAR) * normDistance * strength;
+            double absorptionFactor = 1 - (1 - SimulationConfig.CELL_ENERGY_ABSORPTION_FACTOR_FAR) * normDistance * strength;
+            if (links == null) links = new ArrayList<>(4);
+            links.add(new Link(index.get(cell), other, delivery, absorption, deliveryFactor, absorptionFactor));
+        }
+        return links == null ? NO_LINKS : links.toArray(NO_LINKS);
+    }
+
+    /** New stores of one form, not yet written: the touched budgets with their deltas. */
+    private static Budget[] processEnergyType(List<Cell> cells, List<Link> links, double deltaTime, EnergyType energyType) {
         // Budgets only for cells with a port: stores of all other cells stay as they are (already bounded).
         // Links use the first list index of a cell, so a cell listed twice still shares one budget.
         var budgets = new Budget[cells.size()];
@@ -117,7 +133,7 @@ public class EnergyTransferCellCalcService {
             t.donor.delta -= amount;
             t.receiver.delta += amount;
         }
-        for (Budget b : touched) b.cell.setEnergy(energyType, b.energy + b.delta);
+        return touched.toArray(new Budget[0]);
     }
 
     private static Budget budget(Budget[] budgets, List<Budget> touched, List<Cell> cells, int index, EnergyType energyType) {

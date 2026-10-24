@@ -1,5 +1,11 @@
 # Abgeschlossene Schritte
 
+## Paralleler Energietransfer (24.10.2026)
+
+- Energieformen parallel berechnet, seriell in Formreihenfolge geschrieben; Ports pro Zelle
+  parallel gesammelt. Bitgleich (`EnergyTransferLinkRegressionTest`); isoliert 8,8 → 1,95 ms pro
+  Aufruf, WORLD2-Phase 3,6 → 1,6 ms/Schritt. Benchmark: `TransferBenchmarkTest` (opt-in).
+
 ## Schnellere Sensor-/Aktor-Wechselwirkungen (24.10.2026)
 
 - Berührte Blocker über `TerrainIndex`, Nachbarzellen pro Aktor per Dreiecksungleichung

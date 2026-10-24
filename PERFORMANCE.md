@@ -315,4 +315,23 @@ mvn test '-Dtest=InteractionEquivalenceTest,ForceSignTest,CellAdhesionTest,CellB
 mvn test '-Dtest=InteractionBenchmarkTest' '-Dinteraction.bench.cells=target/trainmode-study/prof-world2.cells'
 ```
 
-Größte verbleibende Blöcke: Gehirne (4,2), Energietransfer (3,6), Integration (3,1).
+### Energietransfer (24. Oktober 2026)
+
+Bitgleich zum bisherigen Algorithmus (`EnergyTransferLinkRegressionTest`, Referenzkopie):
+
+- Die bis zu acht Energieformen werden **parallel berechnet**: Jede Form liest und ändert nur
+  ihre eigenen Vorräte. Geschrieben wird weiter seriell in Formreihenfolge, weil das Array
+  für weitere Formen beim ersten Schreiben angelegt wird.
+- Aktive Ports werden **pro Zelle parallel** gesammelt und in Listenreihenfolge zusammengefügt.
+
+Isoliert (`TransferBenchmarkTest`, 1158 Zellen, alle Formen vorhanden): 8,8–10 → 1,95 ms pro Aufruf.
+WORLD2-Lauf wie oben: TRANSFER 3,56 → 1,59 ms/Schritt, obwohl am Ende 1246 statt 1152 Zellen
+lebten (die übrigen Phasen stiegen dadurch um etwa 15 %; Summe aller Phasen 15,7 ms).
+
+```powershell
+mvn test '-Dtest=EnergyTransferLinkRegressionTest,EnergyTransferTest,MultiEnergyTransferTest'
+mvn test '-Dtest=TransferBenchmarkTest' '-Dtransfer.bench.cells=target/trainmode-study/prof-world2.cells'
+```
+
+Größte verbleibende Blöcke: Gehirne (~4,5), Integration (~3,3), Wechselwirkungen (~1,9),
+Gehirnfinanzierung (~1,7 ms/Schritt).
