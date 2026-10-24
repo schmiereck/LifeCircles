@@ -1,6 +1,7 @@
 package de.lifecircles;
 
 import de.lifecircles.service.SimulationConfig;
+import de.lifecircles.service.SimulationSettingsFile;
 import de.lifecircles.view.EnvironmentPanel;
 import de.lifecircles.service.BrainEnergyCosts;
 import de.lifecircles.model.EnergyType;
@@ -105,10 +106,41 @@ class MainControllerLayoutTest {
                 assertEquals(Math.log10(lifespan),lifespanSlider.getValue());
                 lifespanSlider.setValue(2);assertEquals(100,config.getCellDeathAge());
                 lifespanSlider.setValue(3);assertEquals(1000,config.getCellDeathAge());
+                loadAppliesSavedSettingsToThePanel(controller,config);
                 result.complete(null);
             } catch(Throwable failure) {result.completeExceptionally(failure);}
             finally {config.setSunRayRate(sun);config.setSunEnergyType(sunEnergyType);config.setBrainEnergyMultiplier(brainMultiplier);config.setCellDeathAge(lifespan); if(controller!=null) controller.shutdown();}
         });
         try {result.get(45,TimeUnit.SECONDS);} finally {Platform.exit();}
+    }
+
+    private static EnvironmentPanel environmentPanel(MainController controller) {
+        return (EnvironmentPanel)controller.lookupAll(".titled-pane").stream()
+                .filter(n->n instanceof TitledPane t && t.getText().equals("Environment")).findFirst().orElseThrow().getParent();
+    }
+
+    /** The Load button path: saved sun rate and adhesion switches reach config and controls. */
+    private static void loadAppliesSavedSettingsToThePanel(MainController controller,SimulationConfig config) throws Exception {
+        java.nio.file.Path dir=java.nio.file.Files.createTempDirectory("load-settings");
+        String cells=dir.resolve("saved.cells").toString(),stash=dir.resolve("stash.cells").toString();
+        SimulationSettingsFile.save(stash,config,0);
+        try {
+            de.lifecircles.service.FileService.getInstance().saveCellsToFile(cells,java.util.List.of());
+            config.setSunRayRate(16.5);config.setCellAdhesion(true);config.setAdhesionBonds(true);config.setAdhesionBirthBonds(true);
+            config.setGroundAdhesion(true);config.setGroundAnchors(true);config.setTrainingAdhesion(true);
+            SimulationSettingsFile.save(cells,config,199_080);
+            config.setSunRayRate(60);config.setCellAdhesion(false);config.setAdhesionBonds(false);config.setAdhesionBirthBonds(false);
+            config.setGroundAdhesion(false);config.setGroundAnchors(false);config.setTrainingAdhesion(false);
+            environmentPanel(controller).syncFromConfig();
+            controller.loadCells(cells);
+            assertEquals(16.5,config.getSunRayRate());assertTrue(config.isCellAdhesion());assertTrue(config.isAdhesionBonds());
+            Slider sun=(Slider)environmentPanel(controller).lookup(".slider");
+            assertEquals(16.5,sun.getValue(),1e-9);
+            for(String id:new String[]{"#cell-adhesion","#adhesion-bonds","#adhesion-birth-bonds","#ground-adhesion","#ground-anchors","#training-adhesion"})
+                assertTrue(((CheckBox)controller.lookup(id)).isSelected(),id);
+        } finally {
+            SimulationSettingsFile.load(stash,config);
+            environmentPanel(controller).syncFromConfig();
+        }
     }
 }

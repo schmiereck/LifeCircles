@@ -161,13 +161,7 @@ public class MainController extends BorderPane {
             File file = fileChooser.showOpenDialog(getScene().getWindow());
             if (file != null) {
                 try {
-                    // Publish the loaded population between complete simulation steps.
-                    calculationService.loadCellsFromFile(file.getAbsolutePath(), false);
-                    // Environment settings and step count saved beside the cells (if any); merging keeps the current ones.
-                    SimulationSettingsFile.Loaded settings = SimulationSettingsFile.load(file.getAbsolutePath(), simulationConfig);
-                    settings.problems().forEach(problem -> System.out.println("Settings: " + problem));
-                    if (settings.steps() >= 0) calculationService.setStepCount(settings.steps());
-                    environmentPanel.syncFromConfig();
+                    loadCells(file.getAbsolutePath());
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -273,6 +267,20 @@ public class MainController extends BorderPane {
         trainingLabel.setStyle("-fx-text-fill: white;");
         
         return statusBar;
+    }
+
+    /** Replaces the population and applies environment settings and step count saved beside it (if any). */
+    void loadCells(String path) throws java.io.IOException, ClassNotFoundException {
+        // Publish the loaded population between complete simulation steps.
+        calculationService.loadCellsFromFile(path, false);
+        // Merging keeps the current settings; a plain load takes the saved ones.
+        SimulationSettingsFile.Loaded settings = SimulationSettingsFile.load(path, simulationConfig);
+        if (!java.nio.file.Files.exists(SimulationSettingsFile.pathFor(path)))
+            System.out.println("Settings: no " + SimulationSettingsFile.pathFor(path).getFileName() + ", current environment settings kept");
+        else System.out.println("Settings: applied " + SimulationSettingsFile.pathFor(path).getFileName());
+        settings.problems().forEach(problem -> System.out.println("Settings: " + problem));
+        if (settings.steps() >= 0) calculationService.setStepCount(settings.steps());
+        environmentPanel.syncFromConfig();
     }
 
     public void shutdown() {
