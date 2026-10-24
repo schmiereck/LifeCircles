@@ -54,8 +54,10 @@ Strategie-/Bewertungsprüfungen gehören zur Routineauswahl. Kontrolllauf und ec
 Zufallsgenerationen sind optional: [HIGH_POSITION3.md](HIGH_POSITION3.md).
 
 RACE (Rennbahn) wählt kleine klonale Verbände nach Eigenfortschritt nach rechts aus; Teilung nach
-vorn zählt nicht. `RaceGaitTest` zeigt, dass nur Anker Vortrieb geben, `RaceTrainStrategyTest`
-prüft Bahnen, Obergrenze, Bewertung und Auswahl: [RENNBAHN.md](RENNBAHN.md).
+vorn zählt nicht. `RaceGaitTest` zeigt, dass nur Halt am Gelände (Anker, Reibung) Vortrieb gibt,
+`RaceTrainStrategyTest` prüft Bahnen, Obergrenze, Wachstumsphase, Bewertung und Auswahl:
+[RENNBAHN.md](RENNBAHN.md). `BlockerFrictionTest` prüft Haften, Gleiten und Rollen der
+Geländereibung: [BODENREIBUNG.md](BODENREIBUNG.md).
 
 ## Physikwelten
 

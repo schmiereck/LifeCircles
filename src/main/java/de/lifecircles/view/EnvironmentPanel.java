@@ -127,6 +127,38 @@ public class EnvironmentPanel extends VBox {
             refreshMechanics.run();
         });
         refreshMechanics.run();
+        // Blocker friction (BODENREIBUNG.md), experimental: grip on terrain without anchors.
+        CheckBox blockerFriction = new CheckBox("Experimental: friction where cells press on terrain (rolling, walking)");
+        blockerFriction.setId("blocker-friction");
+        blockerFriction.setSelected(config.isBlockerFriction());
+        Label blockerFrictionValue = new Label();
+        Slider blockerFrictionCoefficient = new Slider(0, 3, config.getBlockerFrictionCoefficient());
+        blockerFrictionCoefficient.setId("blocker-friction-coefficient");
+        blockerFrictionCoefficient.setShowTickLabels(true);
+        blockerFrictionCoefficient.setShowTickMarks(true);
+        blockerFrictionCoefficient.setMajorTickUnit(1);
+        blockerFrictionCoefficient.setPrefWidth(270);
+        Slider blockerRolling = new Slider(0, 1, config.getBlockerRollingResistance());
+        blockerRolling.setId("blocker-rolling-resistance");
+        blockerRolling.setShowTickLabels(true);
+        blockerRolling.setShowTickMarks(true);
+        blockerRolling.setMajorTickUnit(.25);
+        blockerRolling.setPrefWidth(270);
+        Runnable refreshBlockerFriction = () -> blockerFrictionValue.setText(String.format("Terrain friction %.2f · rolling resistance %.2f%s",
+                config.getBlockerFrictionCoefficient(), config.getBlockerRollingResistance(), config.isBlockerFriction() ? "" : " (off)"));
+        blockerFriction.selectedProperty().addListener((obs, old, next) -> {
+            config.setBlockerFriction(next);
+            refreshBlockerFriction.run();
+        });
+        blockerFrictionCoefficient.valueProperty().addListener((obs, old, next) -> {
+            config.setBlockerFrictionCoefficient(next.doubleValue());
+            refreshBlockerFriction.run();
+        });
+        blockerRolling.valueProperty().addListener((obs, old, next) -> {
+            config.setBlockerRollingResistance(next.doubleValue());
+            refreshBlockerFriction.run();
+        });
+        refreshBlockerFriction.run();
         // Durable adhesion (ZELLVERBINDUNGEN.md); open NONE worlds, training worlds only with the opt-in.
         CheckBox adhesion = new CheckBox("Cell adhesion: forces held during brain pause,\nattraction only between matching actor colour and body type");
         adhesion.setId("cell-adhesion");
@@ -206,14 +238,16 @@ public class EnvironmentPanel extends VBox {
             double sunRate = config.getSunRayRate(), width = config.getSunZoneWidth(), season = config.getSeasonDuration(),
                     winterShare = config.getWinterIntensity(), halfLife = config.getRemainsForceHalfLife(),
                     rejectionShare = config.getAdhesionRejection(), sticky = config.getGroundStickiness(),
-                    gravityValue = config.getGravity(), frictionValue = config.getViscosity(), rotationValue = config.getRotationalFriction();
+                    gravityValue = config.getGravity(), frictionValue = config.getViscosity(), rotationValue = config.getRotationalFriction(),
+                    terrainFriction = config.getBlockerFrictionCoefficient(), terrainRolling = config.getBlockerRollingResistance();
             rate.setMax(Math.max(rate.getMax(), sunRate)); rate.setValue(sunRate);
             sourceType.setValue(config.getSunEnergyType()); zones.setSelected(config.isSunSpectralZones());
             zoneWidth.setValue(width); seasonLength.setValue(season / 60); winter.setValue(winterShare * 100);
             adhesion.setSelected(config.isCellAdhesion()); trainingAdhesion.setSelected(config.isTrainingAdhesion());
             bonds.setSelected(config.isAdhesionBonds()); birthBonds.setSelected(config.isAdhesionBirthBonds());
             groundHold.setSelected(config.isGroundAdhesion()); anchors.setSelected(config.isGroundAnchors());
-            groundOnly.setSelected(config.isGroundAnchorsGroundOnly());
+            groundOnly.setSelected(config.isGroundAnchorsGroundOnly()); blockerFriction.setSelected(config.isBlockerFriction());
+            blockerFrictionCoefficient.setValue(terrainFriction); blockerRolling.setValue(terrainRolling);
             remainsHalfLife.setValue(Double.isInfinite(halfLife) ? 61 : Math.min(60, halfLife / 60));
             rejection.setValue(rejectionShare * 100); stickiness.setValue(-sticky / maxAttraction * 100);
             gravity.setValue(gravityValue / SimulationConfig.GRAVITY * 100); friction.setValue(frictionValue); rotationFriction.setValue(rotationValue);
@@ -221,7 +255,8 @@ public class EnvironmentPanel extends VBox {
             config.setWinterIntensity(winterShare); config.setRemainsForceHalfLife(halfLife);
             config.setAdhesionRejection(rejectionShare); config.setGroundStickiness(sticky);
             config.setGravity(gravityValue); config.setViscosity(frictionValue); config.setRotationalFriction(rotationValue);
-            refresh.run(); refreshZoneWidth.run(); refreshSeason.run(); refreshAdhesion.run(); refreshStickiness.run(); refreshMechanics.run();
+            config.setBlockerFrictionCoefficient(terrainFriction); config.setBlockerRollingResistance(terrainRolling);
+            refresh.run(); refreshZoneWidth.run(); refreshSeason.run(); refreshAdhesion.run(); refreshStickiness.run(); refreshMechanics.run(); refreshBlockerFriction.run();
         };
         VBox content = new VBox(8, title, rate, value, hint, new Label("Sun energy form:"), sourceType, zones,
                 new Label("Spectral zone width (px, 0 = one cycle per world):"), zoneWidth, zoneWidthValue,
@@ -229,6 +264,8 @@ public class EnvironmentPanel extends VBox {
                 new Label("Winter light (% of summer):"), winter, seasonValue,
                 new Label("Gravity (% of standard):"), gravity, new Label("Friction (movement damping):"), friction,
                 new Label("Rotation friction:"), rotationFriction, mechanicsValue,
+                blockerFriction, new Label("Terrain friction coefficient:"), blockerFrictionCoefficient,
+                new Label("Rolling resistance (contact patch / radius):"), blockerRolling, blockerFrictionValue,
                 adhesion, trainingAdhesion, bonds, birthBonds, new Label("Remains force half-life (minutes, right end = forever):"), remainsHalfLife,
                 new Label("Rejection of foreign attraction (%):"), rejection, adhesionValue,
                 groundHold, anchors, groundOnly, new Label("Terrain stickiness (% of max attraction):"), stickiness, stickinessValue);

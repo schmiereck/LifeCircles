@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RaceTrainStrategyTest {
     final SimulationConfig config = SimulationConfig.getInstance();
     double width, height, scale, rate, strength, age;
-    boolean adhesion, ground, anchors, groundOnly, bonds, birthBonds;
+    boolean adhesion, ground, anchors, groundOnly, bonds, birthBonds, friction;
     Random previous;
 
     @BeforeEach void save() {
@@ -20,6 +20,7 @@ class RaceTrainStrategyTest {
         rate = config.getMutationRate(); strength = config.getMutationStrength(); age = config.getReproductionAgeThreshold();
         adhesion = config.isCellAdhesion(); ground = config.isGroundAdhesion(); anchors = config.isGroundAnchors();
         groundOnly = config.isGroundAnchorsGroundOnly(); bonds = config.isAdhesionBonds(); birthBonds = config.isAdhesionBirthBonds();
+        friction = config.isBlockerFriction();
         config.setMutationRate(0); config.setMutationStrength(0); config.setReproductionAgeThreshold(0);
         previous = NeuralNetwork.getRandom(); NeuralNetwork.setRandom(new Random(573));
     }
@@ -28,6 +29,7 @@ class RaceTrainStrategyTest {
         config.setMutationRate(rate); config.setMutationStrength(strength); config.setReproductionAgeThreshold(age);
         config.setCellAdhesion(adhesion); config.setGroundAdhesion(ground); config.setGroundAnchors(anchors);
         config.setGroundAnchorsGroundOnly(groundOnly); config.setAdhesionBonds(bonds); config.setAdhesionBirthBonds(birthBonds);
+        config.setBlockerFriction(friction);
         NeuralNetwork.setRandom(previous);
     }
 
@@ -79,7 +81,8 @@ class RaceTrainStrategyTest {
             Cell founder = world.getCellList().get(lane);
             assertEquals(lane, (int) (founder.getPosition().getX() / RaceTrainStrategy.LANE_WIDTH));
         }
-        assertTrue(config.isCellAdhesion() && config.isGroundAdhesion() && config.isGroundAnchors() && config.isGroundAnchorsGroundOnly());
+        assertTrue(config.isCellAdhesion() && config.isGroundAdhesion() && config.isGroundAnchors() && config.isGroundAnchorsGroundOnly()
+                && config.isBlockerFriction());
         assertTrue(strategy.stepPolicy().useCellAdhesion());
         assertFalse(strategy.stepPolicy().useSunlight());
     }
@@ -95,7 +98,31 @@ class RaceTrainStrategyTest {
         double front = first.cells.stream().mapToDouble(c -> c.getPosition().getX()).max().orElseThrow();
         System.out.printf(Locale.ROOT, "births ahead: front +%.1f px, progress %.3f px%n", front - startFront, first.progress);
         assertTrue(front - startFront > 60, "children placed ahead move the front");
-        assertEquals(0, first.progress, .01, "but the body did not move itself");
+        assertEquals(0, first.progress, 0, "growth phase: nothing counts");
+        Cell any = first.cells.getFirst();
+        run(strategy, world, RaceTrainStrategy.GROWTH_SECONDS - 20 + .1);
+        assertFalse(strategy.allowReproduction(any), "no births after the growth phase");
+        run(strategy, world, RaceTrainStrategy.RUN_START_SECONDS - RaceTrainStrategy.GROWTH_SECONDS);
+        double before = first.progress;
+        run(strategy, world, 10);
+        System.out.printf(Locale.ROOT, "afterwards 10 s: progress %.3f px%n", first.progress - before);
+        assertEquals(0, first.progress - before, .05, "once the births have settled the body does not move itself");
+    }
+
+    @Test void birthsPushOffWithFrictionWhichIsWhyTheGrowthPhaseDoesNotCount() {
+        var strategy = strategy();
+        Environment world = setup(strategy, genome(true));
+        double dt = 1.0 / 60;
+        var grid = new SpatialGridPartitioningStrategy(world.getWidth(), world.getHeight(), 100);
+        for (int i = 0; i < Math.round(20 / dt); i++) {
+            strategy.beforeStep(world, dt);
+            grid.build(world.getCellList());
+            world.update(dt, grid, strategy.stepPolicy());
+            strategy.track(world, true);
+        }
+        double pushed = strategy.bodies().getFirst().progress;
+        System.out.printf(Locale.ROOT, "births counted with friction: %.3f px%n", pushed);
+        assertTrue(pushed > .5, "growth pressure moves the body: " + pushed);
     }
 
     @Test void progressCountsMovedCellsButNotNewcomers() {
@@ -104,23 +131,26 @@ class RaceTrainStrategyTest {
         RaceTrainStrategy.Body body = strategy.bodies().get(3);
         Cell founder = body.cells.getFirst();
         founder.setPosition(founder.getPosition().add(new Vector2D(10, 0)));
-        strategy.track(world);
+        strategy.track(world, true);
         assertEquals(10, body.progress, 1e-9);
         Cell child = new Cell(founder.getPosition().add(new Vector2D(200, 0)), 10, founder.getBrain());
         founder.setVelocity(new Vector2D(30, 0));
         strategy.onBirth(founder, child);
         assertEquals(15, founder.getVelocity().getX(), 1e-12, "momentum shared, not doubled");
         assertEquals(15, child.getVelocity().getX(), 1e-12);
-        strategy.track(world);
+        strategy.track(world, true);
         assertEquals(10, body.progress, 1e-9, "a newcomer far ahead adds nothing");
         assertEquals(child.getPosition().getX(), body.lastX.get(child), "but it counts from its birth position on");
         founder.setPosition(founder.getPosition().add(new Vector2D(4, 0)));
         child.setPosition(child.getPosition().add(new Vector2D(-2, 0)));
-        strategy.track(world);
+        strategy.track(world, true);
         assertEquals(11, body.progress, 1e-9, "then it counts like every member: mean of +4 and -2");
+        founder.setPosition(founder.getPosition().add(new Vector2D(6, 0)));
+        strategy.track(world, false);
+        assertEquals(11, body.progress, 1e-9, "growth phase: positions follow, nothing counts");
         // Leaving the lane disqualifies the body.
         founder.setPosition(new Vector2D(4 * RaceTrainStrategy.LANE_WIDTH + 100, founder.getPosition().getY()));
-        strategy.track(world);
+        strategy.track(world, true);
         assertTrue(body.invalid);
         assertEquals(0, body.score());
     }
@@ -140,7 +170,8 @@ class RaceTrainStrategyTest {
         strategy.selectAndMutate(world, dt);
         assertEquals(2, strategy.getGeneration());
         RaceTrainStrategy.Evaluation evaluation = strategy.getLastEvaluation();
-        assertTrue(evaluation.score() > 500 && evaluation.score() < 600, "mean over the last ten seconds: " + evaluation.score());
+        // Counted from 35 s at 10 px/s: 150 px at 50 s, 250 px at 60 s.
+        assertTrue(evaluation.score() > 150 && evaluation.score() < 250, "mean over the last ten seconds: " + evaluation.score());
         assertEquals(77, world.getCellList().getFirst().getGeneration(), "elite founder, not mutated");
         assertEquals(RaceTrainStrategy.LANES, world.getCellList().size(), "fresh founders");
         assertEquals(0, strategy.bodies().getFirst().progress);
@@ -159,11 +190,14 @@ class RaceTrainStrategyTest {
         int generations = Integer.getInteger("race.study.generations");
         for (int g = 0; g < generations; g++) {
             long anchorsSeen = 0;
+            StringBuilder elite = new StringBuilder();
             for (int s = 0; s < 120; s++) {
                 run(strategy, world, .5);
                 anchorsSeen += world.getCellList().stream().flatMap(c -> c.getSensorActors().stream()).filter(a -> a.getAnchor() != null).count();
+                // Lane 0 replays last generation's best unchanged: its progress over the run phase.
+                if (s >= 69 && s % 10 == 9) elite.append(String.format(Locale.ROOT, " %.0fs:%.2f", (s + 1) * .5, strategy.bodies().getFirst().progress));
             }
-            System.out.printf(Locale.ROOT, "RACE study anchors/sample %.1f cells %d%n", anchorsSeen / 120.0, world.getCellList().size());
+            System.out.printf(Locale.ROOT, "RACE study anchors/sample %.1f cells %d elite%s%n", anchorsSeen / 120.0, world.getCellList().size(), elite);
         }
     }
 }

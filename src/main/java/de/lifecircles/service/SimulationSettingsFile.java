@@ -50,6 +50,9 @@ public final class SimulationSettingsFile {
             new Setting("groundAnchors", c -> str(c.isGroundAnchors()), a -> a.config.setGroundAnchors(a.flag())),
             new Setting("groundAnchorsGroundOnly", c -> str(c.isGroundAnchorsGroundOnly()), a -> a.config.setGroundAnchorsGroundOnly(a.flag())),
             new Setting("groundStickiness", c -> str(c.getGroundStickiness()), a -> a.config.setGroundStickiness(a.number())),
+            new Setting("blockerFriction", c -> str(c.isBlockerFriction()), a -> a.config.setBlockerFriction(a.flag())),
+            new Setting("blockerFrictionCoefficient", c -> str(c.getBlockerFrictionCoefficient()), a -> a.config.setBlockerFrictionCoefficient(a.number())),
+            new Setting("blockerRollingResistance", c -> str(c.getBlockerRollingResistance()), a -> a.config.setBlockerRollingResistance(a.number())),
             new Setting("gravity", c -> str(c.getGravity()), a -> a.config.setGravity(a.number())),
             new Setting("viscosity", c -> str(c.getViscosity()), a -> a.config.setViscosity(a.number())),
             new Setting("rotationalFriction", c -> str(c.getRotationalFriction()), a -> a.config.setRotationalFriction(a.number())));

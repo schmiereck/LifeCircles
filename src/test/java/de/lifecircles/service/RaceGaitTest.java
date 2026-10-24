@@ -15,24 +15,38 @@ class RaceGaitTest {
     static final double DT = 1.0 / 60;
     static final CellType GREY = new CellType(.5, .5, .5);
     final SimulationConfig config = SimulationConfig.getInstance();
-    boolean adhesion, recognition, ground, anchors, bonds, birthBonds;
+    boolean adhesion, recognition, ground, anchors, bonds, birthBonds, friction;
+    double coefficient, rolling;
 
     @BeforeEach void save() {
         adhesion = config.isCellAdhesion(); recognition = config.isAdhesionRecognition(); ground = config.isGroundAdhesion();
         anchors = config.isGroundAnchors(); bonds = config.isAdhesionBonds(); birthBonds = config.isAdhesionBirthBonds();
+        friction = config.isBlockerFriction(); coefficient = config.getBlockerFrictionCoefficient();
+        rolling = config.getBlockerRollingResistance();
     }
     @AfterEach void restore() {
         config.setCellAdhesion(adhesion); config.setAdhesionRecognition(recognition); config.setGroundAdhesion(ground);
         config.setGroundAnchors(anchors); config.setAdhesionBonds(bonds); config.setAdhesionBirthBonds(birthBonds);
+        config.setBlockerFriction(friction); config.setBlockerFrictionCoefficient(coefficient);
+        config.setBlockerRollingResistance(rolling);
     }
 
-    /** Rear and front cell take turns: one grips with its foot, the other lets go and is pushed or pulled. */
+    /**
+     * Rear and front cell take turns: one grips with its foot, the other lets go and is pushed or pulled. Anchors lock
+     * only after 0.5 s, so the front may still grip while it is pushed. Friction grips as the foot presses on, so the
+     * friction gait lets the moving cell go and keeps a hold beat between push and pull while the grip builds up
+     * (tonus): push the front (rear grips), both grip, pull the rear in (front grips), both grip.
+     */
     static final class Inchworm implements SimulationStepPolicy {
         final Cell rear, front;
         final double period;
+        final boolean frictionGait;
         static final double STROKE = 4, GAIN = 80, DAMPING = 80;
         double time;
-        Inchworm(Cell rear, Cell front, double period) { this.rear = rear; this.front = front; this.period = period; }
+        final Map<Cell, Double> lastGap = new IdentityHashMap<>();
+        Inchworm(Cell rear, Cell front, double period, boolean frictionGait) {
+            this.rear = rear; this.front = front; this.period = period; this.frictionGait = frictionGait;
+        }
         @Override public boolean useSunlight() { return false; }
         @Override public boolean useEnergyConversion() { return false; }
         @Override public boolean useCellAdhesion() { return true; }
@@ -45,6 +59,7 @@ class RaceGaitTest {
             int beat = (int) (time % period / (period / 4));
             boolean grips = cell == rear ? beat <= 2 : beat >= 1;
             boolean open = beat == 1 || beat == 2;
+            if (frictionGait) { grips = cell == rear ? beat != 2 : beat != 0; open = beat <= 1; }
             Cell partner = cell == rear ? front : rear;
             double attract = -SimulationConfig.getInstance().getCellActorMaxAttractiveForceStrength();
             double repel = SimulationConfig.getInstance().getCellActorMaxRepulsiveForceStrength();
@@ -53,8 +68,9 @@ class RaceGaitTest {
             // a few px while pushing apart, closed while pulling in.
             double gap = toPartner.length() - cell.getRadiusSize() - partner.getRadiusSize();
             toPartner = toPartner.normalize();
-            Vector2D relative = partner.getVelocity().subtract(cell.getVelocity());
-            double opening = relative.getX() * toPartner.getX() + relative.getY() * toPartner.getY();
+            // Opening speed from the gap actually moved (velocities still carry pushes that friction will cancel).
+            Double last = lastGap.put(cell, gap);
+            double opening = last == null ? 0 : (gap - last) / DT;
             double toward = Math.max(attract, Math.min(repel, GAIN * ((open ? STROKE : 0) - gap) - DAMPING * opening));
             for (SensorActor actor : cell.getSensorActors()) {
                 Vector2D offset = actor.calcPosition().subtract(cell.getPosition()).normalize();
@@ -68,29 +84,27 @@ class RaceGaitTest {
     }
 
     /** Horizontal movement of the pair's centre over the given time. */
-    double crawl(boolean withAnchors, double seconds) {
+    double crawl(boolean withAnchors, double seconds) { return crawl(withAnchors, 0, seconds); }
+
+    double crawl(boolean withAnchors, double friction, double seconds) { return crawl(withAnchors, friction, false, 4, seconds); }
+
+    double crawl(boolean withAnchors, double friction, boolean frictionGait, double period, double seconds) {
         config.setCellAdhesion(true); config.setAdhesionRecognition(true);
+        config.setBlockerFriction(friction > 0); if (friction > 0) config.setBlockerFrictionCoefficient(friction);
+        config.setBlockerRollingResistance(.5);
         config.setGroundAdhesion(true); config.setGroundAnchors(withAnchors);
         config.setAdhesionBonds(false); config.setAdhesionBirthBonds(false);
         Environment world = new Environment(2000, 400);
         world.addGroundBlocker();
         double floor = 400 - Environment.GroundBlockerHeight;
         Cell rear = cell(world, 500, floor), front = cell(world, 541, floor);
-        Inchworm gait = new Inchworm(rear, front, 4);
+        Inchworm gait = new Inchworm(rear, front, period, frictionGait);
         var grid = new SpatialGridPartitioningStrategy(2000, 400, 100);
         double start = (rear.getPosition().getX() + front.getPosition().getX()) / 2;
         for (int step = 0; step < Math.round(seconds / DT); step++) {
             grid.build(world.getCellList());
             world.update(DT, grid, gait);
             gait.time += DT;
-            if (step == 40) {
-                for (Cell c : world.getCellList()) { c.updateForce(DT); }
-                Vector2D v0 = front.getVelocity();
-                SensorActorForceCellCalcService.processInteractions(world.getCellList(), grid, world, null, null);
-                front.updateForce(DT);
-                System.out.println("push dv " + front.getVelocity().subtract(v0) + " range " + SensorActorForceCellCalcService.calcSensorRadius(20, 12)
-                    + " a0 " + rear.getSensorActors().get(0).calcPosition() + " a6 " + front.getSensorActors().get(6).calcPosition());
-            }
         }
         return (rear.getPosition().getX() + front.getPosition().getX()) / 2 - start;
     }
@@ -109,5 +123,16 @@ class RaceGaitTest {
         assertEquals(0, sliding, 1, "forces between cells cancel, flat ground has no friction");
         // Slow: anchors are soft springs within the short actor fields (about 9 px), each beat gains a few px.
         assertTrue(gripping > 8, "anchors turn the gait into progress: " + gripping);
+    }
+
+    /** BODENREIBUNG.md: with terrain friction the pressing foot holds without any anchor. */
+    @Test void frictionLetsTheBodyWalkWithoutAnchors() {
+        for (double mu : new double[]{.25, .5, 1})
+            System.out.printf(Locale.ROOT, "friction %.2f, 30 s: friction gait %.1f px, anchor gait %.1f px%n",
+                    mu, crawl(false, mu, true, 2, 30), crawl(false, mu, false, 4, 30));
+        // Default coefficients 0.5/0.5: the pressing foot holds (about 4 g), the released cell slides at about 1 g push.
+        double walking = crawl(false, .5, true, 2, 30);
+        assertTrue(walking > 15, "pressing the gripping foot on holds it: " + walking);
+        assertEquals(0, crawl(false, 0, true, 2, 30), 1, "the same gait without friction stays");
     }
 }

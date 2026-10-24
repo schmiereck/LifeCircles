@@ -24,6 +24,7 @@ class SimulationSettingsFileTest {
         config.setRemainsForceHalfLife(Double.POSITIVE_INFINITY); config.setAdhesionRejection(.7);
         config.setGroundAdhesion(true); config.setGroundAnchors(true); config.setGroundAnchorsGroundOnly(true); config.setGroundStickiness(-12.25);
         config.setGravity(44.145); config.setViscosity(1.75); config.setRotationalFriction(0.3);
+        config.setBlockerFriction(true); config.setBlockerFrictionCoefficient(1.25); config.setBlockerRollingResistance(.375);
         SimulationSettingsFile.save(cells, config, 12_345_678_901L);
         assertTrue(Files.exists(Path.of(cells + ".settings")));
 
@@ -33,6 +34,7 @@ class SimulationSettingsFileTest {
         config.setRemainsForceHalfLife(300); config.setAdhesionRejection(.5);
         config.setGroundAdhesion(false); config.setGroundAnchors(false); config.setGroundAnchorsGroundOnly(false); config.setGroundStickiness(0);
         config.setGravity(SimulationConfig.GRAVITY); config.setViscosity(.8); config.setRotationalFriction(.8);
+        config.setBlockerFriction(false); config.setBlockerFrictionCoefficient(.5); config.setBlockerRollingResistance(.5);
 
         SimulationSettingsFile.Loaded loaded = SimulationSettingsFile.load(cells, config);
         assertEquals(List.of(), loaded.problems());
@@ -46,6 +48,8 @@ class SimulationSettingsFileTest {
         assertTrue(config.isGroundAdhesion()); assertTrue(config.isGroundAnchors()); assertTrue(config.isGroundAnchorsGroundOnly());
         assertEquals(-12.25, config.getGroundStickiness());
         assertEquals(44.145, config.getGravity()); assertEquals(1.75, config.getViscosity()); assertEquals(0.3, config.getRotationalFriction());
+        assertTrue(config.isBlockerFriction()); assertEquals(1.25, config.getBlockerFrictionCoefficient());
+        assertEquals(.375, config.getBlockerRollingResistance());
     }
 
     @Test void oldCellsFilesWithoutSettingsKeepTheCurrentConfig() throws Exception {

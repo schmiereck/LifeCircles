@@ -75,7 +75,8 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
   Überresten mit Halbwertszeit ab (∞ = Holz). Anziehung wirkt voll nur bei ähnlicher
   Aktorfarbe **und** Körperfarbe, sonst teils als begrenzte, überwindbare Abweisung.
   WORLD2 (`WELT2.md`) ist offen wie NONE und schaltet beim Anlegen Zonen, Haftung, Bindungen und Bodenhalt ein.
-  RACE (`RENNBAHN.md`) folgt ebenfalls dem Hauptschalter Haftung (Vortrieb nur über Anker).
+  RACE (`RENNBAHN.md`) folgt ebenfalls dem Hauptschalter Haftung und schaltet Geländereibung ein
+  (Vortrieb über Reibung und Anker; Teilung nur in der Wachstumsphase, Fortschritt zählt danach).
   Trainingswelten (alle übrigen TrainModes außer NONE/EVOLUTIONARY/WORLD2/RACE) nutzen Haftung mit Tonus, Erkennung,
   Bindungen und Bodenhalt nur mit dem Schalter `trainingAdhesion` (Standard aus, Policy `TRAINING`);
   die Alt-Policy `SimulationStepPolicy.NONE` bleibt farbblind und ohne Tonus.
@@ -83,3 +84,6 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
 - Bodenhalt (`BODENHALT.md`, experimentell, Schalter aus): Gelände zieht nur anziehende Aktoren
   an (Affinität zu Grau, keine Abweisung, kein Abstoßen); Anker sind Bindungen an einen festen
   Geländepunkt mit denselben Lösungsregeln.
+- Geländereibung (`BODENREIBUNG.md`, experimentell, Schalter `blockerFriction` aus): Coulomb-Reibung und
+  Rollwiderstand am Kontaktpunkt, begrenzt durch den Normalimpuls der Kollision, wirkt innerhalb des
+  Schritts (Position/Drehwinkel korrigiert, kein Kriechen).

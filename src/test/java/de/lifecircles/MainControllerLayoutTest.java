@@ -85,6 +85,14 @@ class MainControllerLayoutTest {
                 groundHold.setSelected(true);assertTrue(config.isGroundAdhesion());groundHold.setSelected(false);assertFalse(config.isGroundAdhesion());
                 anchors.setSelected(true);assertTrue(config.isGroundAnchors());anchors.setSelected(false);assertFalse(config.isGroundAnchors());
                 groundOnly.setSelected(true);assertTrue(config.isGroundAnchorsGroundOnly());groundOnly.setSelected(false);assertFalse(config.isGroundAnchorsGroundOnly());
+                CheckBox blockerFriction=(CheckBox)controller.lookup("#blocker-friction");
+                assertFalse(blockerFriction.isSelected());assertEquals(0,config.getActiveBlockerFriction());
+                blockerFriction.setSelected(true);assertEquals(.5,config.getActiveBlockerFriction());
+                Slider frictionCoefficient=(Slider)controller.lookup("#blocker-friction-coefficient");
+                frictionCoefficient.setValue(2);assertEquals(2,config.getActiveBlockerFriction());
+                Slider rolling=(Slider)controller.lookup("#blocker-rolling-resistance");
+                rolling.setValue(.25);assertEquals(.25,config.getActiveBlockerRollingResistance());rolling.setValue(.5);
+                frictionCoefficient.setValue(.5);blockerFriction.setSelected(false);assertEquals(0,config.getActiveBlockerRollingResistance());assertEquals(0,config.getActiveBlockerFriction());
                 Slider stickiness=(Slider)controller.lookup("#ground-stickiness");
                 stickiness.setValue(50);assertEquals(-.5*config.getCellActorMaxAttractiveForceStrength(),config.getGroundStickiness(),1e-9);
                 stickiness.setValue(0);assertEquals(0,config.getGroundStickiness(),1e-12);

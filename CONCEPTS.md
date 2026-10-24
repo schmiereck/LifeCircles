@@ -31,6 +31,9 @@
 - Energieformen der Umwelt dürfen ortsabhängig sein (Spektralzonen). Druck zur
   Spezialisierung soll möglichst aus der Umgebung kommen, nicht aus Zellsonderregeln.
 - Physik muss Wachstum, Kontakte, Rotation und periodische Ränder sauber begrenzen.
+- Halt am Gelände darf reine Physik sein (Nutzervorgabe 24.10.2026): optionale Reibung an Blockern
+  (Coulomb plus Rollwiderstand der Kontaktfläche), begrenzt durch das tatsächliche Andrücken. Anker
+  bleiben als zusätzlicher Mechanismus. Siehe `BODENREIBUNG.md`.
 - DNA-erhaltende Ausführung spart CPU; genetische Reserven bleiben erhalten.
 - Default-Gründer beginnen mit 48 versteckten Neuronen (24 gemeinsam + 3 × 8
   Zustandsneuronen). 316 Sensor-/134 Ausgangsneuronen zählen zusätzlich. Das ist

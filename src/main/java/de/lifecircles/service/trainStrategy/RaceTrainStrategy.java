@@ -7,14 +7,16 @@ import java.util.*;
 
 /**
  * Race lanes (RENNBAHN.md): each lane grows one small body from a single founder by clonal division and scores how far
- * the body moves itself to the right. Forces between cells cancel and the flat ground has no friction, so only grip on
- * the terrain (anchors) moves a body. Progress counts only the motion of cells already present in the previous step:
- * placing children ahead or pushing by numbers does not count, and the body stays capped at a few cells.
+ * the body moves itself to the right. Forces between cells cancel, so only grip on the terrain (friction where cells
+ * press on, anchors) moves a body. Progress counts only the motion of cells already present in the previous step:
+ * placing children ahead or pushing by numbers does not count, and the body stays capped at a few cells. Each episode
+ * starts with a growth phase; progress counts only after it, when the push of the last births has died away (with
+ * friction a newborn's overlap would push the body ahead).
  */
 public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
     static final int LANES = 16, CELL_LIMIT = 6;
     static final double LANE_WIDTH = 1600, START = 400, HEIGHT = 800, EPISODE_SECONDS = 60, WINDOW_SECONDS = 10,
-            SAMPLE_SECONDS = .5, ENERGY = .75;
+            SAMPLE_SECONDS = .5, ENERGY = .75, GROWTH_SECONDS = 30, RUN_START_SECONDS = 35;
     private final SimulationConfig config = SimulationConfig.getInstance();
     private final Random random;
     private final List<Body> bodies = new ArrayList<>();
@@ -58,7 +60,9 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
     public Environment initializeEnvironment() {
         config.setWidth(LANES * LANE_WIDTH); config.setHeight(HEIGHT);
         config.setScaleSimulation(LANES * LANE_WIDTH / 1000);
-        // Grip on the floor is the only propulsion; lane walls do not hold.
+        // Grip on the floor is the only propulsion: friction where cells press on (BODENREIBUNG.md) and anchors;
+        // lane walls do not anchor.
+        config.setBlockerFriction(true);
         config.setCellAdhesion(true);
         config.setGroundAdhesion(true);
         config.setGroundAnchors(true);
@@ -126,7 +130,7 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
 
     @Override public boolean allowReproduction(Cell cell) {
         Body body = owners.get(cell);
-        return body != null && body.cells.size() < CELL_LIMIT;
+        return body != null && body.cells.size() < CELL_LIMIT && elapsed < GROWTH_SECONDS;
     }
     // One genome per body: division copies it unchanged, selection acts on the founder's genome.
     @Override public Cell reproduce(Environment world, Cell parent) { return ReproductionManagerService.reproduceClonally(config, world, parent); }
@@ -148,7 +152,7 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
     @Override
     public void selectAndMutate(Environment world, double dt) {
         elapsed += dt;
-        track(world);
+        track(world, elapsed + 1e-9 >= RUN_START_SECONDS);
         if (elapsed + 1e-9 >= (sampleNumber + 1) * SAMPLE_SECONDS) {
             sampleNumber++;
             if (elapsed + 1e-9 > EPISODE_SECONDS - WINDOW_SECONDS)
@@ -170,10 +174,11 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
     }
 
     /**
-     * Adds the mean horizontal step of the cells present before and after this step. With equal cell masses, forces
-     * between members cancel in this mean; what remains is grip on the terrain (and lane walls, which are far away).
+     * Adds the mean horizontal step of the cells present before and after this step (when counting, i.e. after the
+     * growth phase). With equal cell masses, forces between members cancel in this mean; what remains is grip on the
+     * terrain (and lane walls, which are far away).
      */
-    void track(Environment world) {
+    void track(Environment world, boolean count) {
         double width = world.getWidth();
         for (Body body : bodies) {
             double sum = 0;
@@ -184,15 +189,16 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
                 if (last != null) { sum += Math.IEEEremainder(x - last, width); moved++; }
                 if ((int) (x / LANE_WIDTH) != body.lane) body.invalid = true;
             }
-            if (moved > 0) body.progress += sum / moved;
+            if (count && moved > 0) body.progress += sum / moved;
         }
     }
 
     private void updateStatus() {
         double best = 0;
         for (Body body : bodies) if (!body.invalid) best = Math.max(best, body.progress);
-        status = String.format(Locale.ROOT, "RACE · G%d · %.0f/%.0f s · vorn %.1f px · letzte Bestwertung %s",
-                generation, elapsed, EPISODE_SECONDS, best,
+        status = String.format(Locale.ROOT, "RACE · G%d · %.0f/%.0f s · %s · vorn %.1f px · letzte Bestwertung %s",
+                generation, elapsed, EPISODE_SECONDS,
+                elapsed < GROWTH_SECONDS ? "Wachstum" : elapsed < RUN_START_SECONDS ? "Ruhe" : "Lauf", best,
                 lastEvaluation == null ? "—" : String.format(Locale.ROOT, "%.1f px", lastEvaluation.score()));
     }
 }

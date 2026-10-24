@@ -219,6 +219,9 @@ public class Cell implements SensableCell, Serializable {
         return this.sensorActors;
     }
 
+    /** Velocity change per unit force and 60 Hz step; equal for all cells (one linear mass). */
+    public static final double FORCE_TO_VELOCITY = 0.08D;
+
     /**
      * Applies a force to the cell at a specific point.
      * This will affect linear.
@@ -228,7 +231,7 @@ public class Cell implements SensableCell, Serializable {
     public void applyForce(Vector2D force) {
         // Linear acceleration
         //this.velocity = this.velocity.add(force.multiply(1.0D / this.radiusSize)); // Larger cells are affected less
-        this.velocityForce = this.velocityForce.add(force.multiply(0.08D)); // Larger cells are affected less
+        this.velocityForce = this.velocityForce.add(force.multiply(FORCE_TO_VELOCITY)); // Larger cells are affected less
         //this.velocity = this.velocity.add(force); // Larger cells are affected less
     }
 
@@ -242,7 +245,7 @@ public class Cell implements SensableCell, Serializable {
     public void applyForce(Vector2D force, Vector2D applicationPoint) {
         // Linear acceleration
         //this.velocity = this.velocity.add(force.multiply(1.0D / this.radiusSize)); // Larger cells are affected less
-        this.velocityForce = this.velocityForce.add(force.multiply(0.08D)); // Larger cells are affected less
+        this.velocityForce = this.velocityForce.add(force.multiply(FORCE_TO_VELOCITY)); // Larger cells are affected less
         //this.velocity = this.velocity.add(force); // Larger cells are affected less
 
         // Calculate torque and angular acceleration

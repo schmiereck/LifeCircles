@@ -165,6 +165,8 @@ public class Environment {
 
         // One gravity value for the whole step, including live GUI changes.
         final Vector2D gravity = new Vector2D(0, this.config.getGravity());
+        final double blockerFriction = this.config.getActiveBlockerFriction();
+        final double blockerRolling = this.config.getActiveBlockerRollingResistance();
         for (final Cell cell : this.cellList) {
         //this.cells.parallelStream().forEach(cell -> {
             // Apply viscosity
@@ -212,7 +214,7 @@ public class Environment {
             // Brain storage/work were already charged exactly once above.
             CellCalcService.advanceCell(cell, deltaTime, de.lifecircles.service.BrainEnergyCosts.FREE);
             this.wrapPosition(cell);
-            BlockerCellCalcService.handleBlockerCollisions(cell, this.blockerList, this);
+            BlockerCellCalcService.handleBlockerCollisions(cell, this.blockerList, this, blockerFriction, blockerRolling, deltaTime);
             this.wrapPosition(cell);
             for (SensorActor actor : cell.getSensorActors()) actor.updateCachedPosition();
         });

@@ -449,6 +449,28 @@ public class SimulationConfig {
         this.gravity = gravity;
     }
 
+    // Blocker friction (BODENREIBUNG.md), experimental, off by default: Coulomb friction where cells press on terrain.
+    private volatile boolean blockerFriction = false;
+    /** Friction coefficient: the sliding contact can lose at most this share of the impulse pressing it on. */
+    private volatile double blockerFrictionCoefficient = .5;
+    public boolean isBlockerFriction() { return blockerFriction; }
+    public void setBlockerFriction(boolean friction) { blockerFriction = friction; }
+    public double getBlockerFrictionCoefficient() { return blockerFrictionCoefficient; }
+    public void setBlockerFrictionCoefficient(double coefficient) {
+        if (!Double.isFinite(coefficient) || coefficient < 0) throw new IllegalArgumentException("Friction coefficient must be finite and >= 0");
+        blockerFrictionCoefficient = coefficient;
+    }
+    /** Rolling resistance: half-width of the flattened contact patch relative to the radius (torque bound). */
+    private volatile double blockerRollingResistance = .5;
+    public double getBlockerRollingResistance() { return blockerRollingResistance; }
+    public void setBlockerRollingResistance(double resistance) {
+        if (!Double.isFinite(resistance) || resistance < 0) throw new IllegalArgumentException("Rolling resistance must be finite and >= 0");
+        blockerRollingResistance = resistance;
+    }
+    /** Coefficients the step uses: 0 while the switch is off. */
+    public double getActiveBlockerFriction() { return blockerFriction ? blockerFrictionCoefficient : 0; }
+    public double getActiveBlockerRollingResistance() { return blockerFriction ? blockerRollingResistance : 0; }
+
     public double getCellRepulsionStrength() {
         return cellRepulsionStrength;
     }
