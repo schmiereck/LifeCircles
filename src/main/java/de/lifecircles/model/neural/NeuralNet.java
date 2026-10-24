@@ -366,7 +366,8 @@ public class NeuralNet implements Serializable {
         }
 
         // Collect outputs
-        for (int outputNeuronPos = 0; collectOutputs && outputNeuronPos < this.outputNeuronArr.length; outputNeuronPos++) {
+        if (collectOutputs && compiled != null) for (int k = 0; k < outputArr.length; k++) outputArr[k] = compiled.output(k, values);
+        else for (int outputNeuronPos = 0; collectOutputs && outputNeuronPos < this.outputNeuronArr.length; outputNeuronPos++) {
             final int outputTypePos = 0; // Default-Output-Type for output neurons.
             outputArr[outputNeuronPos] = neuronValueFunction.readValue(this, this.outputNeuronArr[outputNeuronPos], outputTypePos);
         }
@@ -1384,8 +1385,12 @@ public class NeuralNet implements Serializable {
     private static final class Census {
         final Layer[] layers; final NeuronInterface[][] layerNeurons; final NeuronInterface[] outputs;
         final NeuronTypeInfoData[] types; final Neuron[] neurons; final int[] stamps; final long work;
-        Census(Layer[] layers, NeuronInterface[][] layerNeurons, NeuronInterface[] outputs, NeuronTypeInfoData[] types,
+        /** The live arrays, compared by reference. */
+        final Layer[] layerArray; final NeuronInterface[] outputArray; final NeuronInterface[][] layerNeuronArrays;
+        Census(Layer[] layerArray, NeuronInterface[] outputArray, NeuronInterface[][] layerNeuronArrays, Layer[] layers,
+               NeuronInterface[][] layerNeurons, NeuronInterface[] outputs, NeuronTypeInfoData[] types,
                Neuron[] neurons, int[] stamps, long work) {
+            this.layerArray = layerArray; this.outputArray = outputArray; this.layerNeuronArrays = layerNeuronArrays;
             this.layers = layers; this.layerNeurons = layerNeurons; this.outputs = outputs; this.types = types;
             this.neurons = neurons; this.stamps = stamps; this.work = work;
         }
@@ -1395,9 +1400,14 @@ public class NeuralNet implements Serializable {
     /** The census if this network still has the recorded structure and no modules, otherwise null. */
     private Census validCensus() {
         Census c = census;
-        if (c == null || !Arrays.equals(c.layers, hiddenLayerArr) || !Arrays.equals(c.outputs, outputNeuronArr)
+        // Getter arrays are not written in place (NETZKOMPILIERUNG.md): references suffice unless verifying.
+        if (c == null || c.layerArray != hiddenLayerArr || c.outputArray != outputNeuronArr
                 || c.types.length != neuronTypeInfoDataList.size()) return null;
-        for (int l = 0; l < c.layers.length; l++) if (!Arrays.equals(c.layerNeurons[l], c.layers[l].getNeuronsArr())) return null;
+        for (int l = 0; l < c.layers.length; l++) if (c.layers[l].getNeuronsArr() != c.layerNeuronArrays[l]) return null;
+        if (CompiledForward.isVerifyContents()) {
+            if (!Arrays.equals(c.layers, hiddenLayerArr) || !Arrays.equals(c.outputs, outputNeuronArr)) return null;
+            for (int l = 0; l < c.layers.length; l++) if (!Arrays.equals(c.layerNeurons[l], c.layerNeuronArrays[l])) return null;
+        }
         for (int i = 0; i < c.types.length; i++) if (c.types[i] != neuronTypeInfoDataList.get(i)) return null;
         return c;
     }
@@ -1410,9 +1420,11 @@ public class NeuralNet implements Serializable {
         for (Layer layer : hiddenLayerArr) for (NeuronInterface neuron : layer.getNeuronsArr()) if (!scalar(neuron)) return null;
         for (NeuronInterface neuron : outputNeuronArr) if (!scalar(neuron)) return null;
         Layer[] layers = hiddenLayerArr.clone();
-        NeuronInterface[][] layerNeurons = new NeuronInterface[layers.length][];
+        NeuronInterface[][] layerNeurons = new NeuronInterface[layers.length][], layerNeuronArrays = new NeuronInterface[layers.length][];
         int count = outputNeuronArr.length;
-        for (int l = 0; l < layers.length; l++) { layerNeurons[l] = layers[l].getNeuronsArr().clone(); count += layerNeurons[l].length; }
+        for (int l = 0; l < layers.length; l++) {
+            layerNeuronArrays[l] = layers[l].getNeuronsArr(); layerNeurons[l] = layerNeuronArrays[l].clone(); count += layerNeurons[l].length;
+        }
         NeuronInterface[] outputs = outputNeuronArr.clone();
         Neuron[] neurons = new Neuron[count]; int[] stamps = new int[count];
         long work = 0; int n = 0;
@@ -1422,7 +1434,7 @@ public class NeuralNet implements Serializable {
             neurons[n] = scalar; stamps[n++] = scalar.getGeneStamp();
             work = addWork(work, neuronWork(neuron, null));
         }
-        return census = new Census(layers, layerNeurons, outputs, neuronTypeInfoDataList.toArray(new NeuronTypeInfoData[0]), neurons, stamps, work);
+        return census = new Census(hiddenLayerArr, outputNeuronArr, layerNeuronArrays, layers, layerNeurons, outputs, neuronTypeInfoDataList.toArray(new NeuronTypeInfoData[0]), neurons, stamps, work);
     }
 
     private static boolean scalar(NeuronInterface neuron) {

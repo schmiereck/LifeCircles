@@ -37,9 +37,16 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
 - Java 25 / JavaFX. Maven: `C:/Users/thomas/.maven/maven-3.10.0/bin/mvn.cmd`.
 - Periodische Geometrie überall beachten; positive Y-Richtung zeigt nach unten.
 - Snapshots nur aus konsistentem Simulationszustand erzeugen.
-- DNA und Ausführung trennen. Optimierungen dürfen Ausgaben, Gedächtnis, Layer-Takt
-  oder Energiegebühren nicht still verändern. Topologieänderungen nach übersprungener
-  Ausführung erfordern eine frische Kopie oder einen expliziten Gedächtnisreset.
+- DNA und Ausführung trennen. Optimierungen dürfen das Modell nicht still verändern
+  (Gedächtnis, Layer-Takt, Energiegebühren, Bilanzen). Bitgleiche Ergebnisse sind nicht nötig
+  (Nutzervorgabe 24.10.2026): geänderte Rechenwege und Reihenfolgen sind erlaubt, solange der
+  Ablauf sinnvoll bleibt und die Evolution keine Lücke bekommt, in die sie sich hineinoptimiert.
+  Topologieänderungen nach übersprungener Ausführung erfordern eine frische Kopie oder einen
+  expliziten Gedächtnisreset.
+- Arrays, die Netz, Layer und Neuronen über Getter herausgeben (Neuronen, Layer, Synapsen), nicht
+  an Ort und Stelle beschreiben, sondern über die Methoden ersetzen; sonst bemerken kompilierte
+  Gehirne und der Finanzierungszensus die Änderung nicht (`NETZKOMPILIERUNG.md`). Tests prüfen
+  Verstöße mit `-Dlife.verifyCompiled=true` bzw. `CompiledForward.setVerifyContents(true)`.
 - Ressourcen separat bilanzieren: keine kostenlose Energie bei Teilung, Tod oder
   Umwandlung. Änderungen an DNA-Ein-/Ausgängen und Dateiformaten explizit migrieren.
 - Energie-Sensoren umfassen eigene **und benachbarte** Vorräte; neue Formen dort mitführen.

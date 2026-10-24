@@ -17,10 +17,18 @@ die abgerechnete Synapsenarbeit bleiben bitgenau gleich.
   Objektpfad mit Ausführungsplan.
 - Trainingsaufzeichnung (Backprop, nur Tests) nutzt immer den Objektpfad.
 - Gültigkeit: Gewichts-, Bias-, Aktivierungs- und Verdrahtungsänderungen über
-  Methoden erhöhen einen Gen-Stempel des Neurons; direkt in die öffentlich
-  herausgegebenen Arrays geschriebene Änderungen findet ein Inhaltsvergleich
-  mit Kopien. Dann wird neu kompiliert. Es wird nichts übersprungen, daher braucht
-  eine Umverdrahtung keinen Gedächtnisreset.
+  Methoden erhöhen einen Gen-Stempel des Neurons; ersetzte Arrays (Eingänge, Ausgänge,
+  Layer, Layer-Neuronen, Synapsen) werden per Referenz erkannt. Dann wird neu kompiliert.
+  Es wird nichts übersprungen, daher braucht eine Umverdrahtung keinen Gedächtnisreset.
+- **Regel (seit 24.10.2026):** Arrays, die Netz, Layer und Neuronen über Getter herausgeben,
+  werden nicht an Ort und Stelle beschrieben, sondern über die Methoden ersetzt. Der
+  Produktivcode hält das ein (geprüft: alle Schreibzugriffe gehen in frisch angelegte Arrays).
+  Vorher verglich die Prüfung in jedem Schritt die komplette Verdrahtung mit Kopien; das war
+  etwa 60 % des kompilierten Durchlaufs. `-Dlife.verifyCompiled=true` bzw.
+  `CompiledForward.setVerifyContents(true)` schaltet diesen Inhaltsvergleich wieder ein; die
+  Tests, die absichtlich direkt schreiben, laufen damit. Gilt ebenso für den
+  Finanzierungszensus (`NeuralNet.getMaximumProcessedSynapses`/`getStoredSynapseCount`).
+- Ausgänge liest der kompilierte Pfad direkt aus dem Wertearray (gleiche Werte).
 - Kompilierte Netze verzichten auf den Ausführungsplan: Seine Prüfung kostete mehr,
   als das Überspringen unerreichbarer Neuronen sparte.
 
@@ -56,6 +64,15 @@ am Ende lebten 1014 (vorher) bzw. 1163 (nachher) Zellen. Die Gehirnphase ist tro
 größerer Population um den Faktor 2,1 schneller. Eine frühere Messung
 (45,5 ms/Schritt) lief parallel zu einer GUI-Simulation und ist nicht vergleichbar.
 Größter verbleibender Block: Zell-Wechselwirkungen (INTERACTIONS).
+
+**Ohne Inhaltsvergleich** (24.10.2026, gleicher Benchmark, Population `prof-world2-funding.cells`
+mit 1099 Gehirnen, 200 gemessene Runden):
+
+| Variante | ms/Runde |
+| --- | ---: |
+| Objektpfad | 40 |
+| kompiliert mit Inhaltsvergleich (`-Dlife.verifyCompiled=true`) | 15,6 |
+| kompiliert, Referenz- und Stempelprüfung | 8,0 |
 
 ## Wiederholen
 

@@ -8,18 +8,26 @@ import java.util.Arrays;
  * {@link Neuron#activate}, so values, input sums and work bills are bit-identical.
  * <p>
  * Valid while nothing changed. Changes through methods (weights, biases, activation, synapse arrays) raise the
- * neuron's gene stamp; arrays written in place (public getters return the live arrays) are found by comparing their
- * contents with copies. Networks with module neurons, multi-port or foreign wiring are not compiled
- * ({@link #eligible} false) and keep the object path.
+ * neuron's gene stamp; replaced arrays are found by reference. Rule (NETZKOMPILIERUNG.md): arrays returned by getters
+ * of networks, layers and neurons (neurons, layers, synapses) must not be written in place; use the methods, which
+ * replace the arrays. With {@code -Dlife.verifyCompiled=true} (or {@link #setVerifyContents}) the contents are compared
+ * as well, so tests still catch a violation.
+ * Networks with module neurons, multi-port or foreign wiring are not compiled ({@link #eligible} false) and keep
+ * the object path.
  */
 final class CompiledForward {
+    /** Also compare wiring contents against copies (detects forbidden in-place writes); costs most of the pass. */
+    private static volatile boolean verifyContents = Boolean.getBoolean("life.verifyCompiled");
+    static void setVerifyContents(boolean verify) { verifyContents = verify; }
+    static boolean isVerifyContents() { return verifyContents; }
+
     private final Neuron[] inputs, outputs;
     private final Layer[] layers;
     private final NeuronInterface[][] layerNeurons;
     /** Scalar hidden and output neurons in execution order (layers, then outputs), with their stamps and wiring. */
     private final Neuron[] neurons;
     private final int[] stamps;
-    private final Synapse[][] wiring;
+    private final Synapse[][] wiring, wiringArrays;
     /** Position of a layer neuron, or of output k at layers.length, in {@link #neurons}. */
     private final int[][] index;
     final boolean eligible;
@@ -30,19 +38,30 @@ final class CompiledForward {
     private final ActivationFunction[] functions;
     final int maxId;
 
+    /** The live arrays at compile time, compared by reference. */
+    private final Neuron[] inputArray, outputArray;
+    private final Layer[] layerArray;
+    private final NeuronInterface[][] layerNeuronArrays;
+
     CompiledForward(NeuralNet net) {
+        inputArray = net.getInputNeuronArr();
+        outputArray = net.getOutputNeuronArr();
+        layerArray = net.getHiddenLayerArr();
         inputs = net.getInputNeuronArr().clone();
         outputs = net.getOutputNeuronArr().clone();
         layers = net.getHiddenLayerArr().clone();
         layerNeurons = new NeuronInterface[layers.length][];
+        layerNeuronArrays = new NeuronInterface[layers.length][];
         int count = outputs.length;
         for (int l = 0; l < layers.length; l++) {
-            layerNeurons[l] = layers[l].getNeuronsArr().clone();
+            layerNeuronArrays[l] = layers[l].getNeuronsArr();
+            layerNeurons[l] = layerNeuronArrays[l].clone();
             count += layerNeurons[l].length;
         }
         neurons = new Neuron[count];
         stamps = new int[count];
         wiring = new Synapse[count][];
+        wiringArrays = new Synapse[count][];
         index = new int[layers.length + 1][];
         boolean ok = true;
         int n = 0;
@@ -54,7 +73,8 @@ final class CompiledForward {
                 if (row[j] instanceof Neuron neuron) {
                     neurons[n] = neuron;
                     stamps[n] = neuron.getGeneStamp();
-                    wiring[n] = neuron.getInputSynapseArr(0).clone();
+                    wiringArrays[n] = neuron.getInputSynapseArr(0);
+                    wiring[n] = wiringArrays[n].clone();
                     ok &= compilable(neuron, wiring[n]);
                 } else ok = false;
                 n++;
@@ -96,19 +116,26 @@ final class CompiledForward {
     }
 
     /** Input neurons unchanged (their ids are final). */
-    boolean inputsMatch(Neuron[] current) { return Arrays.equals(inputs, current); }
+    boolean inputsMatch(Neuron[] current) { return current == inputArray && (!verifyContents || Arrays.equals(inputs, current)); }
 
     /** True while the network still has exactly the compiled neurons, wiring and genes. No allocation. */
     boolean matches(NeuralNet net) {
-        if (!Arrays.equals(inputs, net.getInputNeuronArr()) || !Arrays.equals(outputs, net.getOutputNeuronArr())
-                || !Arrays.equals(layers, net.getHiddenLayerArr())) return false;
-        for (int l = 0; l < layers.length; l++) if (!Arrays.equals(layerNeurons[l], layers[l].getNeuronsArr())) return false;
+        final boolean verify = verifyContents;
+        if (net.getInputNeuronArr() != inputArray || net.getOutputNeuronArr() != outputArray || net.getHiddenLayerArr() != layerArray) return false;
+        for (int l = 0; l < layers.length; l++) if (layers[l].getNeuronsArr() != layerNeuronArrays[l]) return false;
+        if (verify && (!Arrays.equals(inputs, inputArray) || !Arrays.equals(outputs, outputArray) || !Arrays.equals(layers, layerArray))) return false;
+        if (verify) for (int l = 0; l < layers.length; l++) if (!Arrays.equals(layerNeurons[l], layerNeuronArrays[l])) return false;
         for (int i = 0; i < neurons.length; i++) {
             Neuron neuron = neurons[i];
-            if (neuron != null && (neuron.getGeneStamp() != stamps[i] || !Arrays.equals(wiring[i], neuron.getInputSynapseArr(0)))) return false;
+            if (neuron == null) continue;
+            Synapse[] current = neuron.getInputSynapseArr(0);
+            if (neuron.getGeneStamp() != stamps[i] || current != wiringArrays[i] || verify && !Arrays.equals(wiring[i], current)) return false;
         }
         return true;
     }
+
+    /** Value of output k, read by id like the value function does. */
+    double output(int k, double[] values) { return values[ids[index[layers.length][k]]]; }
 
     /** Neuron j of hidden layer l (l = layer count: output j), exactly as {@link Neuron#activate}. Returns its work. */
     long activate(int l, int j, double[] values, double[] inputSums) {

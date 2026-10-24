@@ -1,5 +1,14 @@
 # Abgeschlossene Schritte
 
+## Gehirne nur mit Referenz- und Stempelprüfung (24.10.2026)
+
+- Neue Regel in `AGENTS.md`: Getter-Arrays nicht an Ort und Stelle beschreiben (Produktivcode geprüft).
+  Inhaltsvergleich nur noch mit `-Dlife.verifyCompiled=true`; die Tests mit absichtlichem
+  Direktschreiben nutzen ihn. Ausgänge direkt aus dem Wertearray. Isoliert 15,6 → 8,0 ms pro Runde,
+  WORLD2 BRAINS 2,5 ms/Schritt, alle Phasen 10,1 ms (heute früh 29,0).
+- Nutzervorgabe: Bitgleichheit ist für Optimierungen nicht nötig, solange der Ablauf sinnvoll bleibt
+  und die Evolution keine Lücke bekommt (`AGENTS.md`).
+
 ## Gehirnzensus für die Finanzierung (24.10.2026)
 
 - Arbeitsschranke und gespeicherte Gene von Netzen ohne Module werden zwischengespeichert und über

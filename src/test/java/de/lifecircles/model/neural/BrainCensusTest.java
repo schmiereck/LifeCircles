@@ -8,8 +8,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class BrainCensusTest {
     private final NeuronValueFunctionFactory factory = new ValuesNeuronValueFunctionFactory();
     private Random previous;
-    @BeforeEach void seed() { previous = NeuralNetwork.getRandom(); NeuralNetwork.setRandom(new Random(4242)); }
-    @AfterEach void restore() { NeuralNetwork.setRandom(previous); }
+    private boolean verify;
+    // Full content check: the in-place writes below are forbidden in production code (NETZKOMPILIERUNG.md).
+    @BeforeEach void seed() { previous = NeuralNetwork.getRandom(); NeuralNetwork.setRandom(new Random(4242)); verify = CompiledForward.isVerifyContents(); CompiledForward.setVerifyContents(true); }
+    @AfterEach void restore() { NeuralNetwork.setRandom(previous); CompiledForward.setVerifyContents(verify); }
 
     /** Former walks (before 24.10.2026). */
     static long work(NeuralNet net, Map<NeuralNet, Long> memo) {

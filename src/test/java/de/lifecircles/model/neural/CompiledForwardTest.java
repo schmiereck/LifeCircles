@@ -8,8 +8,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class CompiledForwardTest {
     private final NeuronValueFunctionFactory factory=new ValuesNeuronValueFunctionFactory();
     private Random previous;
-    @BeforeEach void seed(){previous=NeuralNetwork.getRandom();NeuralNetwork.setRandom(new Random(818));}
-    @AfterEach void restore(){NeuralNetwork.setRandom(previous);}
+    private boolean verify;
+    // Full content check, so the deliberate in-place writes below are caught (forbidden in production code).
+    @BeforeEach void seed(){previous=NeuralNetwork.getRandom();NeuralNetwork.setRandom(new Random(818));verify=CompiledForward.isVerifyContents();CompiledForward.setVerifyContents(true);}
+    @AfterEach void restore(){NeuralNetwork.setRandom(previous);CompiledForward.setVerifyContents(verify);}
 
     /** One fixed and two dynamic layers, sparse, with recurrent edges in a layer and back to an earlier layer. */
     private NeuralNetwork network() {
@@ -109,5 +111,28 @@ class CompiledForwardTest {
             var arr=net.getHiddenLayerArr()[1].getNeuronsArr();var e=arr[1];arr[1]=arr[2];arr[2]=e;
         }
         for(int t=0;t<200;t++)sameStep(ref,compiled,new double[]{t%3,1,-.5,.25},"tick "+t);
+    }
+
+    @Test void withoutVerificationMethodChangesAreSeenButInPlaceWritesAreNot() {
+        CompiledForward.setVerifyContents(false);
+        var compiled=network();var ref=reference(new NeuralNetwork(compiled));
+        sameStep(ref,compiled,new double[]{1,1,1,1},"before");
+        // Through the neuron methods (the rule): replaced arrays and new edges are recompiled.
+        for(var net:List.of(ref,compiled)) {
+            var target=scalar(net,7);var arr=target.getInputSynapseArr(0).clone();
+            if(arr.length>1){var e=arr[0];arr[0]=arr[arr.length-1];arr[arr.length-1]=e;}
+            target.setInputSynapseArr(0,arr);
+            NetworkSimplificationTest.connect(net,new Synapse(net.getInputNeuronArr()[2],0,scalar(net,11),0,.4));
+            scalar(net,3).setBias(0,.123);net.getSynapseList().get(2).setWeight(-.77);
+        }
+        for(int t=0;t<50;t++)sameStep(ref,compiled,new double[]{t%3,1,-.5,.25},"tick "+t);
+        // Writing into the live array bypasses the stamps: the documented rule, not detected without verification.
+        var live=scalar(compiled,7).getInputSynapseArr(0);
+        assertTrue(live.length>1);
+        var cf=new CompiledForward(compiled.getNeuralNet());
+        var e=live[0];live[0]=live[live.length-1];live[live.length-1]=e;
+        assertTrue(cf.matches(compiled.getNeuralNet()));
+        CompiledForward.setVerifyContents(true);
+        assertFalse(cf.matches(compiled.getNeuralNet()));
     }
 }

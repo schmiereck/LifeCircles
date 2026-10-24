@@ -373,5 +373,26 @@ Isoliert (`BrainPopulationBenchmarkTest#census`, 1003 Gehirne, ein Thread): 8,9 
 WORLD2-Lauf: BRAIN_FUNDING 1,40 → 0,96 ms/Schritt, obwohl die übrigen Phasen in diesem Lauf
 20–30 % langsamer waren (1095 statt 989 Zellen); relativ zur unveränderten Gehirnphase etwa 1,75×.
 
-Größte verbleibende Blöcke: Gehirne (~4–4,8), Integration (~2,2–2,9), Wechselwirkungen (~1,8–2,4),
-Energietransfer (~1,4–1,9 ms/Schritt).
+### Gehirne ohne Inhaltsvergleich (24. Oktober 2026)
+
+Neue Regel (`AGENTS.md`, `NETZKOMPILIERUNG.md`): Arrays aus Gettern von Netz, Layer und Neuronen
+werden nicht an Ort und Stelle beschrieben. Kompilierte Gehirne und der Finanzierungszensus prüfen
+deshalb nur noch Referenzen und Gen-Stempel; der frühere Inhaltsvergleich (etwa 60 % des
+kompilierten Durchlaufs) ist per `-Dlife.verifyCompiled=true` für Tests weiter verfügbar.
+Ausgänge werden direkt aus dem Wertearray gelesen. Ergebnisse bleiben hier gleich.
+
+Isoliert (1099 Gehirne, ein Thread): kompiliert 15,6 → 8,0 ms pro Runde (Objektpfad 40),
+Zensus 2,0 → 1,6. WORLD2-Lauf (1109 Zellen am Ende): BRAINS 2,48, BRAIN_FUNDING 0,81 ms/Schritt;
+Summe aller Phasen 10,1 ms (Ausgangsstand heute früh: 29,0).
+
+| Phase, ms/Schritt | 8450ca4 | jetzt |
+| --- | ---: | ---: |
+| BRAINS | 9,56 | 2,48 |
+| INTEGRATION | 3,62 | 2,10 |
+| INTERACTIONS | 8,95 | 1,81 |
+| TRANSFER | 3,93 | 1,45 |
+| BRAIN_FUNDING | 1,49 | 0,81 |
+| Summe aller Phasen | 29,0 | 10,1 |
+
+Größte verbleibende Blöcke: Gehirne (~2,5), Integration (~2,1), Wechselwirkungen (~1,8),
+Energietransfer (~1,5 ms/Schritt).
