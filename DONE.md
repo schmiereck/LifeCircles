@@ -1,5 +1,11 @@
 # Abgeschlossene Schritte
 
+## Bindungsupdate in zwei Phasen (24.10.2026)
+
+- Eigene Aktoren parallel, Paarfälle seriell in Listenreihenfolge; reihenfolgeunabhängig und
+  deterministisch. Verankerte Aktoren nehmen keinen Partner mehr. `IntegrationEquivalenceTest`
+  prüft Konsistenz, Determinismus und Nähe zur seriellen Referenz. WORLD2 INTEGRATION 2,1 → 1,4 ms/Schritt.
+
 ## Gehirne nur mit Referenz- und Stempelprüfung (24.10.2026)
 
 - Neue Regel in `AGENTS.md`: Getter-Arrays nicht an Ort und Stelle beschreiben (Produktivcode geprüft).

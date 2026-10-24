@@ -394,5 +394,25 @@ Summe aller Phasen 10,1 ms (Ausgangsstand heute früh: 29,0).
 | BRAIN_FUNDING | 1,49 | 0,81 |
 | Summe aller Phasen | 29,0 | 10,1 |
 
-Größte verbleibende Blöcke: Gehirne (~2,5), Integration (~2,1), Wechselwirkungen (~1,8),
-Energietransfer (~1,5 ms/Schritt).
+### Bindungen in zwei Phasen (24. Oktober 2026)
+
+`CellAdhesionService.updateBonds` lief seriell über alle Aktoren. Jetzt:
+
+1. **parallel pro Zelle** alles, was nur den eigenen Aktor ändert (Anker pflegen, Anker bilden,
+   Timer zurücksetzen ohne gegenseitigen Partner); in dieser Phase wird kein Bindungsglied geschrieben;
+2. **seriell in Listenreihenfolge** nur die Paarfälle (bestehende Bindungen, gebrochene Glieder,
+   Bindungsbildung) mit der bisherigen Logik. Doppelt gelistete Zellen: Phase 1 seriell.
+
+Bewusste Verhaltensänderungen (nicht mehr bitgleich, Nutzervorgabe vom 24.10.):
+- Ein im Schritt gelöster Aktor beginnt Anker- oder Bindungsbildung erst im nächsten Schritt.
+  Vorher hing das von der Listenposition ab (nur Zellen nach der lösenden Zelle durften sofort).
+- Ein verankerter Aktor nimmt keinen Bindungspartner an (vorher möglich: Anker und Bindung zugleich).
+
+Prüfung (`IntegrationEquivalenceTest`): Bindungen beidseitig, nie Anker plus Partner, Partner nur aus
+der Liste, gleiche Stärken; zwei Läufe bitgleich (unabhängig von Threads); gegenüber der seriellen
+Referenz 244 / 244 Bindungs- und 17 276 / 17 282 Anker-Schritte.
+WORLD2-Lauf: INTEGRATION 2,10 → 1,42 ms/Schritt (1087 statt 1109 Zellen), am Ende 467 Bindungen
+und 26 Anker (frühere Läufe 419–470 / 30–31). Summe aller Phasen 9,6 ms.
+
+Größte verbleibende Blöcke: Gehirne (~2,5), Wechselwirkungen (~1,9), Energietransfer (~1,5),
+Integration (~1,4 ms/Schritt).

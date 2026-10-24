@@ -3,7 +3,7 @@ package de.lifecircles.service;
 import de.lifecircles.model.*;
 import java.util.*;
 
-/** Former bond and anchor update and blocker collision (before 24.10.2026), kept as bit-exact references. */
+/** Former sequential bond and anchor update (with the later anchored-candidate rule) and blocker collision, as references. */
 final class IntegrationReference {
     static void updateBonds(final List<Cell> cells, final Environment environment, final double dt) {
         final SimulationConfig config = SimulationConfig.getInstance();
@@ -67,8 +67,9 @@ final class IntegrationReference {
                     }
                 }
                 if (!form) { actor.setBondTimer(0); continue; }
+                // Rule added with the two-phase update (24.10.2026): an anchored candidate takes no partner.
                 if (!(actor.getSensedActor() instanceof SensorActor candidate) || candidate.getBondPartner() != null
-                        || candidate.getSensedActor() != actor) { actor.setBondTimer(0); continue; }
+                        || candidate.getAnchor() != null || candidate.getSensedActor() != actor) { actor.setBondTimer(0); continue; }
                 Cell other = candidate.getParentCell();
                 if (other == null || other == cell || other.isRemains() || !present.contains(other)) { actor.setBondTimer(0); continue; }
                 if (cell.getSensingId() > other.getSensingId()) continue; // the lower id carries the timer

@@ -53,8 +53,10 @@ Studie: `-Dzone.study.bonds=true`, `-Dzone.study.birthbonds=true`.
   Gehirnbefehle und der Farb-Affinität die Bindungsstärke × `bondFieldFactor` (3). Alle
   anderen Paare bleiben unverändert. Mit Faktor 1 war eine Bindung eine zu weiche Feder:
   Eine Säule verlor bei einem Seitenstoß 3 von 6 Bindungen. Mit 2–3 hielten alle.
-- **Einrasten** (`CellAdhesionService.updateBonds`): Der Durchgang läuft sequentiell
-  nach der Bewegung, die Reihenfolge ist fest. Bedingungen:
+- **Einrasten** (`CellAdhesionService.updateBonds`): Der Durchgang läuft nach der Bewegung,
+  seit 24.10.2026 in zwei Phasen: eigene Aktoren parallel (Anker, Timer), Paare seriell in
+  fester Listenreihenfolge. Ein im Schritt gelöster Aktor rastet erst im nächsten Schritt neu
+  ein; ein verankerter Aktor nimmt keinen Partner (`PERFORMANCE.md`). Bedingungen:
   - zwei lebende Zellen, deren Aktoren sich gegenseitig als nächsten Aktor wahrnehmen;
   - beide Aktoren anziehend;
   - Affinität ≥ 0,8 (bei aktiver Erkennung);

@@ -8,8 +8,8 @@ import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Blocker collisions with the cheap per-axis pretest, and bond/anchor updates with list marks and indexed terrain
- * checks, give the former results bit for bit (IntegrationReference).
+ * Blocker collisions with the cheap per-axis pretest give the former results bit for bit; the two-phase bond and
+ * anchor update stays consistent, deterministic and close to the former sequential one (IntegrationReference).
  */
 class IntegrationEquivalenceTest {
     final SimulationConfig config = SimulationConfig.getInstance();
@@ -44,52 +44,79 @@ class IntegrationEquivalenceTest {
         }
     }
 
-    @Test void bondsAndAnchorsFormHoldAndReleaseExactlyAsBefore() {
+    /** One step of motion and sensing, identical for every world with the same jiggle. */
+    void step(Environment world, long jiggle) {
+        Random random = new Random(jiggle);
+        for (Cell cell : world.getCellList()) {
+            cell.setPosition(cell.getPosition().add(new Vector2D(random.nextDouble() * 1.2 - .6, random.nextDouble() * 1.2 - .6)));
+            for (SensorActor actor : cell.getSensorActors()) actor.updateCachedPosition();
+        }
+        var grid = new SpatialGridPartitioningStrategy(world.getWidth(), world.getHeight(), (config.getCellMaxRadiusSize() + config.getCellActorMaxFieldRadius()) * 2);
+        grid.build(world.getCellList());
+        SensorActorForceCellCalcService.processInteractions(world.getCellList(), grid, world, SensorActorForceCellCalcService.Affinity.fromConfig(), null);
+    }
+
+    /** Links are mutual, nobody holds terrain and a partner at once, partners are listed cells. */
+    static void consistent(List<Cell> cells, String where) {
+        Set<Cell> listed = Collections.newSetFromMap(new IdentityHashMap<>()); listed.addAll(cells);
+        for (Cell cell : cells) for (SensorActor actor : cell.getSensorActors()) {
+            SensorActor partner = actor.getBondPartner();
+            if (actor.getAnchor() != null) assertNull(partner, where + ": anchored actor with a partner");
+            if (partner == null) continue;
+            assertSame(actor, partner.getBondPartner(), where + ": one-sided bond");
+            assertTrue(listed.contains(partner.getParentCell()), where + ": partner outside the list");
+            assertEquals(actor.getBondStrength(), partner.getBondStrength(), where + ": strengths differ");
+        }
+    }
+
+    static int[] count(List<Cell> cells) {
+        int bonds = 0, anchors = 0;
+        for (Cell cell : cells) for (SensorActor actor : cell.getSensorActors()) {
+            if (actor.getBondPartner() != null) bonds++;
+            if (actor.getAnchor() != null) anchors++;
+        }
+        return new int[]{bonds / 2, anchors};
+    }
+
+    /**
+     * Two phases (own actors in parallel, pairs in list order): deterministic, consistent, and close to the former
+     * sequential update. It differs on purpose where that one depended on list order (an actor released by an
+     * earlier cell could start anchoring or forming in the same step) and where an anchored actor took a partner.
+     */
+    @Test void bondsAndAnchorsStayConsistentDeterministicAndCloseToTheFormerUpdate() {
         config.setAdhesionBonds(true); config.setGroundAdhesion(true); config.setGroundAnchors(true);
-        int formed = 0, anchored = 0;
+        long[] former = new long[2], current = new long[2];
         for (long seed = 1; seed <= 4; seed++) for (boolean groundOnly : new boolean[]{false, true}) {
             config.setGroundAnchorsGroundOnly(groundOnly);
             double w = seed % 2 == 0 ? 400 : 1200, h = 300;
-            Environment ref = InteractionEquivalenceTest.world(seed, w, h, 90), now = InteractionEquivalenceTest.world(seed, w, h, 90);
-            // Removed cells: partners outside the list must be released the same way.
-            ref.getCellList().remove(5); now.getCellList().remove(5);
+            Environment ref = InteractionEquivalenceTest.world(seed, w, h, 90), now = InteractionEquivalenceTest.world(seed, w, h, 90),
+                    again = InteractionEquivalenceTest.world(seed, w, h, 90);
+            // Removed cells: partners outside the list are released.
+            for (Environment world : List.of(ref, now, again)) world.getCellList().remove(5);
             Random moves = new Random(seed);
-            var affinity = SensorActorForceCellCalcService.Affinity.fromConfig();
             for (int step = 0; step < 90; step++) {
                 long jiggle = moves.nextLong();
-                for (Environment world : List.of(ref, now)) {
-                    Random random = new Random(jiggle);
-                    for (Cell cell : world.getCellList()) {
-                        cell.setPosition(cell.getPosition().add(new Vector2D(random.nextDouble() * 1.2 - .6, random.nextDouble() * 1.2 - .6)));
-                        for (SensorActor actor : cell.getSensorActors()) actor.updateCachedPosition();
-                    }
-                    var grid = new SpatialGridPartitioningStrategy(w, h, (config.getCellMaxRadiusSize() + config.getCellActorMaxFieldRadius()) * 2);
-                    grid.build(world.getCellList());
-                    SensorActorForceCellCalcService.processInteractions(world.getCellList(), grid, world, affinity, null);
-                }
+                for (Environment world : List.of(ref, now, again)) step(world, jiggle);
                 IntegrationReference.updateBonds(ref.getCellList(), ref, 1.0 / 30);
                 CellAdhesionService.updateBonds(now.getCellList(), now, 1.0 / 30);
-                List<Cell> a = ref.getCellList(), b = now.getCellList();
-                for (int i = 0; i < a.size(); i++) for (int k = 0; k < 12; k++) {
-                    SensorActor x = a.get(i).getSensorActors().get(k), y = b.get(i).getSensorActors().get(k);
-                    String where = "seed " + seed + " step " + step + " cell " + i + " actor " + k;
-                    assertEquals(Double.doubleToRawLongBits(x.getBondTimer()), Double.doubleToRawLongBits(y.getBondTimer()), where + " timer");
-                    assertEquals(Double.doubleToRawLongBits(x.getBondStrength()), Double.doubleToRawLongBits(y.getBondStrength()), where + " strength");
-                    assertEquals(x.getAnchor() == null, y.getAnchor() == null, where + " anchor");
-                    if (x.getAnchor() != null) {
-                        assertEquals(x.getAnchor().getX(), y.getAnchor().getX(), 0, where); assertEquals(x.getAnchor().getY(), y.getAnchor().getY(), 0, where);
-                        if (step == 89) anchored++;
-                    }
-                    assertEquals(x.getBondPartner() == null, y.getBondPartner() == null, where + " partner");
-                    if (x.getBondPartner() != null) {
-                        int pi = a.indexOf(x.getBondPartner().getParentCell()), pk = x.getBondPartner().getParentCell().getSensorActors().indexOf(x.getBondPartner());
-                        int qi = b.indexOf(y.getBondPartner().getParentCell()), qk = y.getBondPartner().getParentCell().getSensorActors().indexOf(y.getBondPartner());
-                        assertEquals(pi, qi, where); assertEquals(pk, qk, where);
-                        if (step == 89) formed++;
-                    }
+                CellAdhesionService.updateBonds(again.getCellList(), again, 1.0 / 30);
+                String where = "seed " + seed + " step " + step;
+                consistent(now.getCellList(), where);
+                List<Cell> b = now.getCellList(), c = again.getCellList();
+                for (int i = 0; i < b.size(); i++) for (int k = 0; k < 12; k++) {
+                    SensorActor x = b.get(i).getSensorActors().get(k), y = c.get(i).getSensorActors().get(k);
+                    assertEquals(Double.doubleToRawLongBits(x.getBondTimer()), Double.doubleToRawLongBits(y.getBondTimer()), where + " cell " + i + " actor " + k);
+                    assertEquals(x.getAnchor() == null, y.getAnchor() == null, where);
+                    assertEquals(x.getBondPartner() == null, y.getBondPartner() == null, where);
                 }
+                int[] r = count(ref.getCellList()), n = count(now.getCellList());
+                former[0] += r[0]; former[1] += r[1]; current[0] += n[0]; current[1] += n[1];
             }
         }
-        assertTrue(formed > 0 && anchored > 0, "bonds " + formed + ", anchors " + anchored);
+        String summary = "bond-steps " + current[0] + " (former " + former[0] + "), anchor-steps " + current[1] + " (former " + former[1] + ")";
+        System.out.println("BONDS " + summary);
+        assertTrue(current[0] > 0 && current[1] > 0, summary);
+        assertEquals(former[0], current[0], former[0] * .15, summary);
+        assertEquals(former[1], current[1], former[1] * .15, summary);
     }
 }

@@ -36,6 +36,8 @@ Abweichungen der Umsetzung.
   - Lösen: wie geplant. Zusätzlich wird ein Anker gelöst, dessen Punkt auf keinem Blocker
     mehr liegt, etwa nach dem Laden in eine andere Welt.
   - Anker werden gespeichert.
+  - Ein verankerter Aktor nimmt keinen Bindungspartner (seit 24.10.2026; vorher konnte ein
+    Aktor im selben Schritt Anker und Bindung erhalten).
 - **Momentaufnahme:** Anker als gelbe Linie mit oranger Raute.
 - **Neue Studienspalten:**
   - `anchors`, `anchoredCells`;
