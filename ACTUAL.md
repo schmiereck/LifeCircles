@@ -71,6 +71,9 @@ Aktualisiert: 23.10.2026. Branch `master`.
   ist noch nicht nachgemessen. Siehe `PERFORMANCE_REGRESSION_2026_10_17.md`.
 
 - Physik-, Vererbungs-, Netzsteuerungs-, Training- und Snapshotkorrekturen sind aktiv.
+- Sensor-/Aktor-Wechselwirkungen bitgleich beschleunigt (Blocker per x-Index, Nachbarzellen
+  pro Aktor ausgeschlossen): WORLD2 9,1 → 1,7 ms/Schritt, alle Phasen 29,0 → 15,4 ms
+  gegenüber 8450ca4 (`PERFORMANCE.md`, Abschnitt 24. Oktober).
 - Kompilierte Vorwärtsrechnung für Netze aus skalaren Neuronen (`NETZKOMPILIERUNG.md`):
   bitgleiche Ausgaben, Gedächtnis und Arbeit; WORLD2-Gehirnphase 9,6 → 4,5 ms/Schritt.
   Modulnetze nutzen weiter den Ausführungsplan. Backpropagation existiert nur für Tests.

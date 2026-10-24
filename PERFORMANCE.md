@@ -274,3 +274,45 @@ Die separate [Netzmessung](NETZPERFORMANCE.md) dokumentiert Aufbau, Vorwaertsrec
 Mutation und Kostenzaehlung nach den Logikkorrekturen. Der Hauptgewinn ist weniger
 temporaerer Speicher; fuer die laufende Vorwaertsrechnung ist noch kein belastbarer
 CPU-Gewinn nachgewiesen.
+
+
+## WORLD2: Gehirne und Sensor-/Aktor-Wechselwirkungen (24. Oktober 2026)
+
+WORLD2-Studie (`TrainModeStudyTest`, Seed 4711, 300 s Simulationszeit, `-Dlife.profile=true`,
+unbelasteter Rechner). „Vorher“ ist Stand 8450ca4 in einem eigenen Worktree. Die Läufe
+sind trotz Seed nicht deterministisch (parallele Ausführung); am Ende lebten 1014 / 1163 / 1152 Zellen.
+
+| Phase, ms/Schritt | vorher | kompilierte Gehirne | + Wechselwirkungen |
+| --- | ---: | ---: | ---: |
+| INTERACTIONS | 8,95 | 9,12 | 1,72 |
+| BRAINS | 9,56 | 4,49 | 4,18 |
+| TRANSFER | 3,93 | 4,34 | 3,56 |
+| INTEGRATION | 3,62 | 3,25 | 3,08 |
+| BRAIN_FUNDING | 1,49 | 1,72 | 1,55 |
+| Summe aller Phasen | 29,0 | 24,4 | 15,4 |
+
+Gehirne: siehe [NETZKOMPILIERUNG.md](NETZKOMPILIERUNG.md). Wechselwirkungen, alle bitgleich
+zum bisherigen Algorithmus (Kräfte, Drehmomente, erkannte Ziele):
+
+- **Berührte Blocker** werden über den x-Index (`TerrainIndex`) statt über alle Blocker
+  gesucht; es gewinnt weiter die kleinste `sensingId`, die Reihenfolge ist egal.
+  Vorher etwa ein Drittel der Phase (221 Blocker in WORLD2, für jeden Aktor).
+- **Nachbarzellen pro Aktor ausgeschlossen**: Aktoren sitzen auf dem Zellrand. Liegt ein
+  Aktor weiter als Radius plus größere Reichweite (+1e-6 px) vom anderen Mittelpunkt
+  entfernt, erreicht ihn keiner der dortigen Aktoren (Dreiecksungleichung, auch periodisch).
+- **Affinität (`Math.pow`) nur in Reichweite**: außerhalb beider Reichweiten ist die Kraft 0.
+
+Isoliert (`InteractionBenchmarkTest`, gespeicherte Population mit 1177 Zellen, parallel):
+6,5 → 1,6–1,8 ms pro Aufruf. Verworfen: eine Abkürzung der periodischen Richtung in
+`Vector2D` ohne Division (bitgleich, aber ohne Gewinn, im Blockerpfad langsamer).
+
+Prüfung: `InteractionEquivalenceTest` vergleicht mit der Referenzkopie
+`SensorActorForceReference` in kleinen und großen periodischen Welten mit Bindungen,
+Ankern, Bodenfeld und Erkennung; eine absichtlich zu knappe Schranke fällt dort auf.
+
+```powershell
+mvn test '-Dtest=InteractionEquivalenceTest,ForceSignTest,CellAdhesionTest,CellBondTest,GroundHoldTest,MechanicsRegressionTest,PeriodicWorldTest,PhysicsRegressionTest,SensorTargetSelectionTest'
+mvn test '-Dtest=InteractionBenchmarkTest' '-Dinteraction.bench.cells=target/trainmode-study/prof-world2.cells'
+```
+
+Größte verbleibende Blöcke: Gehirne (4,2), Energietransfer (3,6), Integration (3,1).

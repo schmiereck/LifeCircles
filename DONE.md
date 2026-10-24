@@ -1,5 +1,13 @@
 # Abgeschlossene Schritte
 
+## Schnellere Sensor-/Aktor-Wechselwirkungen (24.10.2026)
+
+- Berührte Blocker über `TerrainIndex`, Nachbarzellen pro Aktor per Dreiecksungleichung
+  ausgeschlossen, Affinität nur in Reichweite. Bitgleich zur Referenzkopie
+  (`InteractionEquivalenceTest`); isoliert 6,5 → 1,7 ms pro Aufruf, WORLD2-Phase 9,1 → 1,7 ms/Schritt.
+- Laden: Lade-Logik in `MainController.loadCells`, GUI-Test mit echter Settings-Datei;
+  die Konsole meldet, ob Settings übernommen wurden oder keine Datei da war.
+
 ## Kompilierte Vorwärtsrechnung (24.10.2026)
 
 - `CompiledForward`: flache Arrays statt Objektgraph, gleiche Rechenreihenfolge; bitgleich

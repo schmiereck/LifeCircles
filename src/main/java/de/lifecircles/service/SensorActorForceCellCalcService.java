@@ -67,8 +67,9 @@ public class SensorActorForceCellCalcService {
         final double bondFactor = SimulationConfig.getInstance().getBondFieldFactor();
         final double maxRadiusSquared = Math.pow(SimulationConfig.getInstance().getCellMaxRadiusSize(), 2);
         double maxRange = 0;
-        if (ground != null) for (Cell cell : cells) maxRange = Math.max(maxRange, calcSensorRadius(cell.getRadiusSize(), cell.getSensorActors().size()));
-        final TerrainIndex terrain = ground == null ? null : new TerrainIndex(environment.getBlockerList(), width, maxRange);
+        for (Cell cell : cells) maxRange = Math.max(maxRange, calcSensorRadius(cell.getRadiusSize(), cell.getSensorActors().size()));
+        // Blockers by x: candidates for touching (exact test below) and, with ground hold, for surface fields.
+        final TerrainIndex terrain = new TerrainIndex(environment.getBlockerList(), width, maxRange);
         cells.parallelStream().forEach(cell -> {
             for (SensorActor actor : cell.getSensorActors()) {
                 actor.updateCachedPosition();
@@ -95,7 +96,8 @@ public class SensorActorForceCellCalcService {
             for (SensorActor actor : cell.getSensorActors()) {
                 double nearest = Double.POSITIVE_INFINITY;
                 Blocker touchingBlocker = null;
-                for (Blocker blocker : environment.getBlockerList()) {
+                // The lowest sensing id wins, so the candidate order does not matter.
+                for (Blocker blocker : terrain.near(actor.getCachedPosition().getX())) {
                     if (blocker.containsPoint(actor.getCachedPosition(), width, height)
                             && (touchingBlocker == null || blocker.getSensingId() < touchingBlocker.getSensingId())) {
                         touchingBlocker = blocker;
@@ -131,6 +133,11 @@ public class SensorActorForceCellCalcService {
                     final Cell other = candidate.cell();
                     final double otherRange = candidate.range();
                     final double scale = candidate.scale();
+                    // Actors sit on the rim: farther than rim plus the larger range from the other centre, none of
+                    // its actors is sensed or exerts a field (triangle inequality; margin against rounding).
+                    final double reach = other.getRadiusSize() + Math.max(ownRange, otherRange) + 1e-6;
+                    if (actor.getCachedPosition().getShortestDirectionWithWrapAround(other.getPosition(), width, height)
+                            .lengthSquared() > reach * reach) continue;
                     for (SensorActor otherActor : other.getSensorActors()) {
                         final Vector2D towardOtherActor = actor.getCachedPosition().getShortestDirectionWithWrapAround(
                                 otherActor.getCachedPosition(), width, height);
@@ -142,6 +149,8 @@ public class SensorActorForceCellCalcService {
                             actor.setSensedActor(otherActor);
                         }
                         if (distance <= 1e-12) continue;
+                        // Out of both ranges both terms are zero; skip the affinity there.
+                        if (distance >= otherRange && distance >= ownRange) continue;
                         // Received field plus the reaction to our emitted field.
                         double strength = 0;
                         double received = otherActor.getForceStrength(), emitted = actor.getForceStrength();
