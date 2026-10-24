@@ -54,7 +54,9 @@
 - [x] Projektgedächtnis und thematische Dokumente auf Abschlussstand bringen.
 
 - [x] Rennbahn-Training RACE mit dichter Bewertung (keine Teilung/Masse, impulsneutrale Geburt).
-- [ ] RACE-Startproblem: Lehrplan, vorgegebene Fußfarbe oder optionale Bodenreibung (Entscheidung Nutzer).
+- [x] Optionale Geländereibung (Nutzerentscheidung): `BODENREIBUNG.md`, RACE mit Wachstumsphase.
+- [ ] RACE-Startproblem besteht auch mit Reibung (100 Generationen ohne Gang): Lehrplan, vorgegebene
+  Fußfarbe, Auswahl ohne festgefahrene Elite oder mehr Bahnen (Entscheidung Nutzer).
 
 ## Anschließend
 

@@ -112,11 +112,27 @@ Weitere Prüfungen:
   - Anker nur in 4 Generationen (1,5–3,5 je Stichprobe).
   - Die Auswahl ist damit rein zufällig: **Startproblem bestätigt.**
 
+## Studie mit Geländereibung (24.10.2026, Seed 4711, Zufallsgründer, Modellstand `f0ac137`)
+
+Reibung 0,5, Rollwiderstand 0,5, Anker weiter an, Wachstum/Ruhe/Lauf wie oben, 100 Generationen.
+
+- Generation 2 findet einen Körper mit 0,85 px. Er bleibt bis Generation 100 unverändert Elite in Bahn 0;
+  keiner der etwa 1500 Mutanten übertrifft ihn.
+- Sein Verlauf im Lauf: 35 s 0,00 · 40 s 0,01 · 45 s 0,02 · 50 s 0,86 · 55 s 0,85 px. Das ist ein einzelner
+  Ruck zwischen 45 und 50 s, kein Gang.
+- Median 0,000–0,020 px, kein einziger Anker in 100 Generationen.
+- **Befund:** Die Reibung macht Vortrieb physikalisch leicht möglich (Reibungsgang 21 px in 30 s, doppelt
+  so viel wie mit Ankern). Aus Zufallsgehirnen entsteht er in 100 Generationen trotzdem nicht. Das
+  Startproblem liegt also nicht mehr in der Physik, sondern in der Steuerung: graue, anziehende Fußaktoren
+  im Wechsel mit Loslassen und Schieben in einem Takt.
+
 ## Grenzen und offene Hebel
 
 - **Startproblem:** Zufällige Gehirne müssen graue, anziehende Fußaktoren, Lösen durch Abstoßen und
   einen passenden Takt gleichzeitig finden. Anfangs gibt es kaum Anker und praktisch keinen Fortschritt,
-  die Auswahl ist dann fast zufällig.
+  die Auswahl ist dann fast zufällig. Mit Reibung bleibt das so (Studie oben).
+- **Auswahl:** Die Elite wird unverändert wiederholt und ergibt deterministisch denselben Wert. Ein einzelner
+  Glückstreffer kann die Auswahl so über viele Generationen festhalten.
 - **Hebel:**
   - Umgesetzt (Nutzerentscheidung 24.10.2026): Geländereibung als reine Physik, `BODENREIBUNG.md`.
   - Nicht umgesetzt: Lehrplan wie HIGH_POSITION3, etwa erst „Anker setzen und lösen“ belohnen.

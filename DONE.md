@@ -1,5 +1,15 @@
 # Abgeschlossene Schritte
 
+## Geländereibung und RACE-Wachstumsphase (24.10.2026, experimentell)
+
+- Schalter `blockerFriction` mit Reibung (0,5) und Rollwiderstand der Kontaktfläche (0,5): Haften, Gleiten
+  und Rollen am Kontaktpunkt, gemeinsam gelöst, innerhalb des Schritts (kein Kriechen). GUI, Settings-Datei.
+  `BODENREIBUNG.md`, `BlockerFrictionTest`.
+- Reibungsgang (`RaceGaitTest`): 21 px in 30 s ohne Anker. Abstandsregler misst die Öffnung jetzt aus der
+  Abstandsänderung; vergessener Diagnoseblock im Gangtest entfernt (Anker 15 → 10,8 px).
+- RACE: Geburtsschub über Reibung (1,95 px) entdeckt; Teilung nur 0–30 s, Fortschritt ab 35 s.
+- Studie 100 Generationen: kein Gang, kein Anker; Bestwert ein Ruck von 0,85 px, ab Generation 2 unverändert.
+
 ## Rennbahn-Training RACE (24.10.2026, experimentell)
 
 - `TrainMode.RACE`: 16 Bahnen, je ein Gründer, klonale Teilung bis 6 Zellen, Energie gesichert.

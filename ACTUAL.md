@@ -3,8 +3,12 @@
 Aktualisiert: 24.10.2026. Branch `master`.
 
 - Rennbahn-Training RACE (experimentell): kleine klonale Verbände (≤ 6 Zellen) werden nach eigenem
-  Fortschritt nach rechts ausgewählt; Teilung nach vorn zählt nicht. Vortrieb ist nur über Bodenanker
-  möglich und langsam; Zufallsgründer finden in 30 Generationen keinen Fortschritt. `RENNBAHN.md`.
+  Fortschritt nach rechts ausgewählt; Teilung nach vorn zählt nicht, Teilung nur in einer Wachstumsphase
+  (Fortschritt zählt erst danach). Vortrieb über Anker oder die neue Geländereibung; Zufallsgründer finden
+  auch mit Reibung in 100 Generationen keinen Gang (Bestwert ein einzelner Ruck von 0,85 px). `RENNBAHN.md`.
+- Geländereibung (experimentell, Schalter, Standard aus; RACE schaltet sie ein): Coulomb-Reibung und
+  Rollwiderstand an Blockern, begrenzt durch das Andrücken. Ein von Hand geregelter Zwei-Zellen-Gang läuft
+  damit ohne Anker 21 px in 30 s (mit Ankern 11 px). `BODENREIBUNG.md`.
 
 - Java-Laufzeit und Compilerziel sind auf Java 25 LTS. Verifiziert mit Temurin 25.0.3:
   97 Produktions- und 120 Testquellen frisch kompiliert, `Main.class` hat Classfile-Version

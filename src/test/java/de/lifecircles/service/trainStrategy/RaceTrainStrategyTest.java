@@ -195,7 +195,8 @@ class RaceTrainStrategyTest {
                 run(strategy, world, .5);
                 anchorsSeen += world.getCellList().stream().flatMap(c -> c.getSensorActors().stream()).filter(a -> a.getAnchor() != null).count();
                 // Lane 0 replays last generation's best unchanged: its progress over the run phase.
-                if (s >= 69 && s % 10 == 9) elite.append(String.format(Locale.ROOT, " %.0fs:%.2f", (s + 1) * .5, strategy.bodies().getFirst().progress));
+                // The last sample (60 s) already belongs to the next episode.
+                if (s >= 69 && s % 10 == 9 && s < 119 || s == 118) elite.append(String.format(Locale.ROOT, " %.0fs:%.2f", (s + 1) * .5, strategy.bodies().getFirst().progress));
             }
             System.out.printf(Locale.ROOT, "RACE study anchors/sample %.1f cells %d elite%s%n", anchorsSeen / 120.0, world.getCellList().size(), elite);
         }
