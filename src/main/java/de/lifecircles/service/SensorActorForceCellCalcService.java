@@ -7,7 +7,8 @@ import java.util.ArrayList;
 
 /** Sensor fields use negative strength for attraction and positive strength for repulsion. */
 public class SensorActorForceCellCalcService {
-    private record Candidate(Cell cell, double range, double scale, double typeAffinity) {}
+    /** A neighbour cell in reach: its first actor slot (-1 if not listed), centre offset from the own centre. */
+    private record Candidate(Cell cell, int first, double range, double scale, double typeAffinity, double dx, double dy) {}
 
     /**
      * Key-lock adhesion: attraction acts in full only between similar actor colours on cells of
@@ -66,34 +67,60 @@ public class SensorActorForceCellCalcService {
         final double softening = SimulationConfig.getInstance().getActorFieldSofteningFraction();
         final double bondFactor = SimulationConfig.getInstance().getBondFieldFactor();
         final double maxRadiusSquared = Math.pow(SimulationConfig.getInstance().getCellMaxRadiusSize(), 2);
+        // Field range per listed cell, once (calcSensorRadius takes a sine).
+        final double[] range = new double[cells.size()];
         double maxRange = 0;
-        for (Cell cell : cells) maxRange = Math.max(maxRange, calcSensorRadius(cell.getRadiusSize(), cell.getSensorActors().size()));
+        for (int i = 0; i < range.length; i++) {
+            Cell cell = cells.get(i);
+            maxRange = Math.max(maxRange, range[i] = calcSensorRadius(cell.getRadiusSize(), cell.getSensorActors().size()));
+        }
         // Blockers by x: candidates for touching (exact test below) and, with ground hold, for surface fields.
         final TerrainIndex terrain = new TerrainIndex(environment.getBlockerList(), width, maxRange);
-        cells.parallelStream().forEach(cell -> {
+        // Actor positions relative to their own centre, in flat arrays: a pair offset is then the centres' periodic
+        // offset (once per cell pair) plus the difference of two small vectors, without a periodic wrap per pair.
+        final int[] first = new int[cells.size() + 1];
+        for (int i = 0; i < cells.size(); i++) {
+            cells.get(i).setListIndex(i);
+            first[i + 1] = first[i] + cells.get(i).getSensorActors().size();
+        }
+        final double[] relX = new double[first[cells.size()]], relY = new double[first[cells.size()]];
+        java.util.stream.IntStream.range(0, cells.size()).parallel().forEach(i -> {
+            Cell cell = cells.get(i);
+            Vector2D centre = cell.getPosition();
+            final double cos = Math.cos(cell.getRotation()), sin = Math.sin(cell.getRotation());
+            int a = first[i];
             for (SensorActor actor : cell.getSensorActors()) {
-                actor.updateCachedPosition();
+                actor.updateCachedPosition(cos, sin);
                 actor.setSensedCell(null);
                 actor.setSensedActor(null);
+                relX[a] = actor.getCachedPosition().getX() - centre.getX();
+                relY[a++] = actor.getCachedPosition().getY() - centre.getY();
             }
         });
 
         // Workers write only their own cell. Reverse traversal computes the
         // equal and opposite reaction at the other cell's own actor.
-        cells.parallelStream().forEach(cell -> {
-            final double ownRange = calcSensorRadius(cell.getRadiusSize(), cell.getSensorActors().size());
+        java.util.stream.IntStream.range(0, cells.size()).parallel().forEach(index -> {
+            final Cell cell = cells.get(index);
+            final double ownRange = range[index];
             final List<Candidate> candidates = new ArrayList<>();
             // Broad phase once per directed cell pair, preserving neighbor and force summation order.
             for (Cell other : partitioner.getNeighbors(cell)) {
                 if (other == cell) continue;
-                double otherRange = calcSensorRadius(other.getRadiusSize(), other.getSensorActors().size());
+                final int slot = other.getListIndex();
+                final boolean listed = slot >= 0 && slot < cells.size() && cells.get(slot) == other;
+                double otherRange = listed ? range[slot] : calcSensorRadius(other.getRadiusSize(), other.getSensorActors().size());
                 double cutoff = cell.getRadiusSize() + other.getRadiusSize() + Math.max(ownRange, otherRange);
-                if (cell.getPosition().getShortestDirectionWithWrapAround(other.getPosition(), width, height)
-                        .lengthSquared() <= cutoff * cutoff)
-                    candidates.add(new Candidate(other, otherRange, cell.getRadiusSize() * other.getRadiusSize() / maxRadiusSquared,
-                            affinity == null ? 1 : affinity.of(cell.getType(), other.getType())));
+                Vector2D offset = cell.getPosition().getShortestDirectionWithWrapAround(other.getPosition(), width, height);
+                if (offset.lengthSquared() <= cutoff * cutoff) {
+                    candidates.add(new Candidate(other, listed ? first[slot] : -1,
+                            otherRange, cell.getRadiusSize() * other.getRadiusSize() / maxRadiusSquared,
+                            affinity == null ? 1 : affinity.of(cell.getType(), other.getType()), offset.getX(), offset.getY()));
+                }
             }
+            int own = first[cell.getListIndex()];
             for (SensorActor actor : cell.getSensorActors()) {
+                final double ownX = relX[own], ownY = relY[own++];
                 double nearest = Double.POSITIVE_INFINITY;
                 Blocker touchingBlocker = null;
                 // The lowest sensing id wins, so the candidate order does not matter.
@@ -135,13 +162,22 @@ public class SensorActorForceCellCalcService {
                     final double scale = candidate.scale();
                     // Actors sit on the rim: farther than rim plus the larger range from the other centre, none of
                     // its actors is sensed or exerts a field (triangle inequality; margin against rounding).
-                    final double reach = other.getRadiusSize() + Math.max(ownRange, otherRange) + 1e-6;
-                    if (actor.getCachedPosition().getShortestDirectionWithWrapAround(other.getPosition(), width, height)
-                            .lengthSquared() > reach * reach) continue;
-                    for (SensorActor otherActor : other.getSensorActors()) {
-                        final Vector2D towardOtherActor = actor.getCachedPosition().getShortestDirectionWithWrapAround(
-                                otherActor.getCachedPosition(), width, height);
-                        final double distance = towardOtherActor.length();
+                    final double pairRange = Math.max(ownRange, otherRange);
+                    final double reach = other.getRadiusSize() + pairRange + 1e-6;
+                    final double toCentreX = candidate.dx() - ownX, toCentreY = candidate.dy() - ownY;
+                    if (toCentreX * toCentreX + toCentreY * toCentreY > reach * reach) continue;
+                    final List<SensorActor> otherActors = other.getSensorActors();
+                    for (int m = 0; m < otherActors.size(); m++) {
+                        final SensorActor otherActor = otherActors.get(m);
+                        final double otherX, otherY;
+                        if (candidate.first() >= 0) { otherX = relX[candidate.first() + m]; otherY = relY[candidate.first() + m]; }
+                        else { otherX = otherActor.getCachedPosition().getX() - other.getPosition().getX(); otherY = otherActor.getCachedPosition().getY() - other.getPosition().getY(); }
+                        // Points TO the other actor; the reverse pair gets exactly the negated vector.
+                        final double dx = candidate.dx() + (otherX - ownX), dy = candidate.dy() + (otherY - ownY);
+                        final double squared = dx * dx + dy * dy;
+                        // Beyond both ranges: neither sensed nor any field.
+                        if (squared > pairRange * pairRange) continue;
+                        final double distance = Math.sqrt(squared);
                         if (touchingBlocker == null && distance <= otherRange
                                 && isBetterTarget(distance, nearest, other, otherActor, actor)) {
                             nearest = distance;
@@ -171,7 +207,7 @@ public class SensorActorForceCellCalcService {
                             // makes negative strength attract and positive strength repel.
                             // A finite linear core removes the direction jump at contact.
                             // Each emitter uses its own range, preserving pair symmetry.
-                            cell.applyForce(towardOtherActor.multiply(-strength * scale), actor.getCachedPosition());
+                            cell.applyForce(new Vector2D(dx * (-strength * scale), dy * (-strength * scale)), actor.getCachedPosition());
                         }
                     }
                 }

@@ -1,5 +1,10 @@
 # Abgeschlossene Schritte
 
+## Wechselwirkungen ohne periodische Rechnung pro Aktorpaar (24.10.2026)
+
+- Paarversatz aus Mittelpunktsversatz und relativen Aktorpositionen, Reichweiten und Drehung einmal pro
+  Zelle. Nicht mehr bitgleich (Rundung), Kraft = Gegenkraft geprüft. A/B 1,98 → 1,55 ms pro Aufruf.
+
 ## Bindungsupdate in zwei Phasen (24.10.2026)
 
 - Eigene Aktoren parallel, Paarfälle seriell in Listenreihenfolge; reihenfolgeunabhängig und

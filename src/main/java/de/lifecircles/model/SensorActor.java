@@ -165,6 +165,15 @@ public class SensorActor implements SensableActor, Serializable {
         this.cachedPosition = this.calcPosition();
     }
 
+    /** As {@link #updateCachedPosition()}, with the cell rotation's cosine and sine computed once for all actors. */
+    public void updateCachedPosition(double cosR, double sinR) {
+        double halfSize = parentCell.getRadiusSize();
+        Vector2D cellPos = parentCell.getPosition();
+        double x0 = cosAngleOnCell * halfSize;
+        double y0 = sinAngleOnCell * halfSize;
+        this.cachedPosition = new Vector2D(x0 * cosR - y0 * sinR + cellPos.getX(), x0 * sinR + y0 * cosR + cellPos.getY());
+    }
+
     /**
      * Returns the cached position computed for this simulation step.
      */

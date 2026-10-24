@@ -24,6 +24,10 @@ public class Cell implements SensableCell, Serializable {
     private transient long listMark;
     public long getListMark() { return listMark; }
     public void setListMark(long mark) { listMark = mark; }
+    /** Position in the cell list of the current interaction pass (SensorActorForceCellCalcService); not saved. */
+    private transient int listIndex = -1;
+    public int getListIndex() { return listIndex; }
+    public void setListIndex(int index) { listIndex = index; }
 
     private Vector2D position;
     private Vector2D velocity;

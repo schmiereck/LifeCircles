@@ -63,5 +63,5 @@
 - [ ] Große/dichte Welten weiter profilieren; zusätzlichen Aufwand neuer Sensoren messen.
   Gehirne kompiliert (`NETZKOMPILIERUNG.md`), Wechselwirkungen beschleunigt (`PERFORMANCE.md`).
   Energietransfer parallelisiert, Integration entlastet. WORLD2 ~12–15 ms/Schritt; größte Blöcke
-  WORLD2 ~9,6 ms/Schritt: Gehirne ~2,5, INTERACTIONS ~1,9, TRANSFER ~1,5, INTEGRATION ~1,4,
-  BRAIN_FUNDING ~0,8 ms.
+  WORLD2 ~9,3 ms/Schritt (unbelastet): Gehirne ~2,5, INTERACTIONS ~1,6, TRANSFER ~1,5, INTEGRATION ~1,4,
+  BRAIN_FUNDING ~0,8 ms. Nächster Ansatz Wechselwirkungen: Paare einmal rechnen, beiden gutschreiben.

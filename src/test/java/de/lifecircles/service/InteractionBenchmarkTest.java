@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Opt-in: sensor/actor interactions of a saved WORLD2 population in the WORLD2 terrain, as in one step with
- * adhesion, recognition and ground fields. Compares the former algorithm with the current one: same forces and
- * sensed targets bit for bit, then time per call (parallel, as in the simulation). Example:
+ * adhesion, recognition and ground fields. Compares the former algorithm with the current one: same forces up to
+ * rounding and the same sensed targets, then time per call (parallel, as in the simulation). Example:
  * mvn test -Dtest=InteractionBenchmarkTest -Dinteraction.bench.cells=target/trainmode-study/prof-world2.cells
  */
 @EnabledIfSystemProperty(named="interaction.bench.cells",matches=".+")
@@ -34,13 +34,12 @@ class InteractionBenchmarkTest {
         // Equality from the same state: forces become velocities through updateForce.
         double[][] before=state(list);
         SensorActorForceReference.processInteractions(list,grid,world,affinity,ground);
-        List<Object> expected=observe(list);
+        Observation expected=observe(list);
         restore(list,before);
         SensorActorForceCellCalcService.processInteractions(list,grid,world,affinity,ground);
-        List<Object> actual=observe(list);
+        Observation actual=observe(list);
         restore(list,before);
-        assertEquals(expected.size(),actual.size());
-        for(int i=0;i<expected.size();i++)assertEquals(expected.get(i),actual.get(i),"observation "+i);
+        System.out.printf(Locale.ROOT,"INTERBENCH %s%n",close(expected,actual,"population"));
 
         long[] time=new long[2];
         for(int r=0;r<ROUNDS;r++)for(int k=0;k<2;k++) {
@@ -62,15 +61,33 @@ class InteractionBenchmarkTest {
     static void restore(List<Cell> cells,double[][] s) {
         for(int i=0;i<s.length;i++){Cell c=cells.get(i);c.updateForce(0);c.setVelocity(new Vector2D(s[i][0],s[i][1]));c.setAngularVelocity(s[i][2]);}
     }
-    /** Velocities after applying the accumulated forces, and every actor's sensed cell and actor. */
-    static List<Object> observe(List<Cell> cells) {
-        List<Object> out=new ArrayList<>();
+    /** Velocities after applying the accumulated forces, and every actor's sensed actor (or blocker). */
+    record Observation(double[] velocities, Object[] sensed) {}
+    static Observation observe(List<Cell> cells) {
+        List<Double> v=new ArrayList<>();List<Object> sensed=new ArrayList<>();
         for(Cell c:cells) {
             c.updateForce(1.0/60);
-            out.add(Double.doubleToLongBits(c.getVelocity().getX()));out.add(Double.doubleToLongBits(c.getVelocity().getY()));
-            out.add(Double.doubleToLongBits(c.getAngularVelocity()));
-            for(SensorActor a:c.getSensorActors()){out.add(System.identityHashCode(a.getSensedCell()));out.add(System.identityHashCode(a.getSensedActor()));}
+            v.add(c.getVelocity().getX());v.add(c.getVelocity().getY());v.add(c.getAngularVelocity());
+            for(SensorActor a:c.getSensorActors())sensed.add(a.getSensedActor());
         }
-        return out;
+        return new Observation(v.stream().mapToDouble(Double::doubleValue).toArray(),sensed.toArray());
+    }
+
+    /**
+     * Same physics up to rounding: velocities within 1e-9 relative (of the largest velocity), sensed targets equal
+     * except for rare near-ties (at most 0.1 % of actors). Returns a summary.
+     */
+    static String close(Observation expected,Observation actual,String where) {
+        assertEquals(expected.velocities.length,actual.velocities.length,where);
+        double scale=1e-12,worst=0;
+        for(double x:expected.velocities)scale=Math.max(scale,Math.abs(x));
+        for(int i=0;i<expected.velocities.length;i++)worst=Math.max(worst,Math.abs(expected.velocities[i]-actual.velocities[i])/scale);
+        int differing=0;
+        for(int i=0;i<expected.sensed.length;i++)if(expected.sensed[i]!=actual.sensed[i])differing++;
+        String summary=String.format(Locale.ROOT,"%s: worst velocity deviation %.2e (relative), sensed differs for %d of %d actors",
+                where,worst,differing,expected.sensed.length);
+        assertTrue(worst<=1e-9,summary);
+        assertTrue(differing<=expected.sensed.length/1000,summary);
+        return summary;
     }
 }

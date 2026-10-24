@@ -414,5 +414,21 @@ Referenz 244 / 244 Bindungs- und 17 276 / 17 282 Anker-Schritte.
 WORLD2-Lauf: INTEGRATION 2,10 → 1,42 ms/Schritt (1087 statt 1109 Zellen), am Ende 467 Bindungen
 und 26 Anker (frühere Läufe 419–470 / 30–31). Summe aller Phasen 9,6 ms.
 
-Größte verbleibende Blöcke: Gehirne (~2,5), Wechselwirkungen (~1,9), Energietransfer (~1,5),
-Integration (~1,4 ms/Schritt).
+### Wechselwirkungen, zweite Runde (24. Oktober 2026, nicht mehr bitgleich)
+
+- Paarversatz = periodischer Versatz der Zellmittelpunkte (einmal pro Zellpaar) + (relative
+  Aktorposition des anderen − eigene), aus flachen Arrays; keine periodische Rechnung mit Divisionen
+  pro Aktorpaar, Wurzel nur für Paare in Reichweite. Die Gegenseite erhält exakt den negierten Vektor.
+- Feldreichweite (`calcSensorRadius`, ein Sinus) einmal pro Zelle statt pro Nachbar; Kosinus/Sinus der
+  Zelldrehung einmal pro Zelle für alle zwölf Aktorpositionen.
+
+Prüfung: `InteractionEquivalenceTest` gegen die frühere Fassung mit Toleranz (Geschwindigkeiten 1e-9
+relativ, erkannte Ziele gleich bis auf seltene Gleichstände ≤ 0,1 %); neuer Test, dass Kraft und
+Gegenkraft auch über die Naht bis auf die Summationsreihenfolge (1e-12) gleich sind.
+A/B unter gleicher Rechnerlast (`InteractionBenchmarkTest`, 1090 Zellen): 1,98 → 1,55 ms pro Aufruf.
+Der WORLD2-Lauf danach war allgemein belastet (auch unveränderte Phasen 25–40 % langsamer) und ist
+für diesen Schritt nicht aussagekräftig.
+
+Größte verbleibende Blöcke (unbelastet): Gehirne (~2,5), Wechselwirkungen (~1,6), Energietransfer (~1,5),
+Integration (~1,4 ms/Schritt). Weiterer Ansatz für die Wechselwirkungen: jedes Aktorpaar nur einmal
+rechnen und beiden Zellen gutschreiben (braucht Akkumulation über Zellgrenzen).

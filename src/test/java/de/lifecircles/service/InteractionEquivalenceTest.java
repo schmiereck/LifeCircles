@@ -9,7 +9,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * The optimized sensor/actor interactions (blockers by x, per-actor culling of out-of-range neighbours, affinity
- * only in range) give the former algorithm's forces and sensed targets bit for bit.
+ * only in range, pair offsets from centre offsets plus relative actor positions) give the former algorithm's forces
+ * up to rounding and its sensed targets.
  */
 class InteractionEquivalenceTest {
     static final CellType[] TYPES = {new CellType(1, 0, 0), new CellType(0, 1, 0), new CellType(.5, .5, .5),
@@ -60,16 +61,15 @@ class InteractionEquivalenceTest {
         grid.build(cells);
         double[][] before = InteractionBenchmarkTest.state(cells);
         SensorActorForceReference.processInteractions(cells, grid, world, affinity, ground);
-        List<Object> expected = InteractionBenchmarkTest.observe(cells);
+        var expected = InteractionBenchmarkTest.observe(cells);
         InteractionBenchmarkTest.restore(cells, before);
         SensorActorForceCellCalcService.processInteractions(cells, grid, world, affinity, ground);
-        List<Object> actual = InteractionBenchmarkTest.observe(cells);
+        var actual = InteractionBenchmarkTest.observe(cells);
         InteractionBenchmarkTest.restore(cells, before);
-        assertEquals(expected.size(), actual.size(), where);
-        for (int i = 0; i < expected.size(); i++) assertEquals(expected.get(i), actual.get(i), where + " observation " + i);
+        InteractionBenchmarkTest.close(expected, actual, where);
     }
 
-    @Test void identicalForAllSwitchesSeamsBondsAndAnchors() {
+    @Test void sameForAllSwitchesSeamsBondsAndAnchors() {
         var affinity = new SensorActorForceCellCalcService.Affinity(2, .5);
         var grounds = new SensorActorForceCellCalcService.Ground[]{null, new SensorActorForceCellCalcService.Ground(0, 2),
                 new SensorActorForceCellCalcService.Ground(-30, 0)};
@@ -80,6 +80,34 @@ class InteractionEquivalenceTest {
                 same(world, null, ground, "seed " + seed + " " + size[0] + " colour-blind ground " + ground);
                 same(world, affinity, ground, "seed " + seed + " " + size[0] + " recognition ground " + ground);
             }
+        }
+    }
+
+    /** Each side computes the pair from exactly negated offsets: action and reaction cancel up to summation order, also at seams. */
+    @Test void actionEqualsReactionAcrossTheSeam() {
+        Random random = new Random(5);
+        var affinity = new SensorActorForceCellCalcService.Affinity(2, .5);
+        for (int trial = 0; trial < 300; trial++) {
+            double w = 500, h = 400, x = random.nextBoolean() ? 3 : 250;
+            Environment world = new Environment(w, h);
+            Cell a = new Cell(new Vector2D(x, 200), 6 + random.nextDouble() * 14, new PhysicsRegressionTest.ConstantBrain());
+            Cell b = new Cell(new Vector2D(x - 8 - random.nextDouble() * 25, 200 + random.nextDouble() * 20 - 10), 6 + random.nextDouble() * 14,
+                    new PhysicsRegressionTest.ConstantBrain());
+            for (Cell c : List.of(a, b)) {
+                c.setType(TYPES[random.nextInt(TYPES.length)]); c.setRotation(random.nextDouble() * 7);
+                for (SensorActor actor : c.getSensorActors()) {
+                    actor.setType(TYPES[random.nextInt(TYPES.length)]); actor.setForceStrength(random.nextDouble() * 200 - 130); actor.settleForce(1);
+                }
+                world.addCell(c);
+            }
+            var grid = new SpatialGridPartitioningStrategy(w, h, 80);
+            grid.build(world.getCellList());
+            SensorActorForceCellCalcService.processInteractions(world.getCellList(), grid, world, trial % 2 == 0 ? affinity : null, null);
+            a.updateForce(1.0 / 60); b.updateForce(1.0 / 60);
+            // Each cell sums its pair forces in its own actor order, so only rounding may differ.
+            double tolerance = 1e-12 * (1 + Math.hypot(a.getVelocity().getX(), a.getVelocity().getY()));
+            assertEquals(-a.getVelocity().getX(), b.getVelocity().getX(), tolerance, "trial " + trial);
+            assertEquals(-a.getVelocity().getY(), b.getVelocity().getY(), tolerance, "trial " + trial);
         }
     }
 }
