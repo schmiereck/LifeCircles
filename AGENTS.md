@@ -52,8 +52,10 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
 - Energie-Sensoren umfassen eigene **und benachbarte** Vorräte; neue Formen dort mitführen.
 - Sensorpositionen nicht still verschieben: Erweiterungen liegen im angehängten
   `EnergyInputLayout`, Ausgänge im angehängten `OutputLayout`. Aktuell zwölf Aktoren:
-  316 Eingänge / 134 Ausgänge (133 = Enzymdrossel); vorhandene Netze mit 213 oder 304
-  Eingängen bzw. 133 Ausgängen werden ohne neue Synapsen migriert.
+  328 Eingänge / 134 Ausgänge (133 = Enzymdrossel; Eingänge 316–327 = sechs vererbte Taktgeber als
+  Sinus/Kosinus des Zellalters, `TAKTGEBER.md`); vorhandene Netze mit 213, 304 oder 316
+  Eingängen bzw. 133 Ausgängen werden ohne neue Synapsen migriert. Neue Zellgene (wie `clockPeriods`)
+  bei Teilung, Trainingsgründern und HIGH_POSITION3 mitkopieren und alte Speicherstände in `readObject` füllen.
 - Überreste sind normale `Cell`-Objekte mit festem Verhalten und Restreserven. Kein
   zusätzliches Materie-/Körpermaterialmodell. Sie verschwinden, wenn alle Vorräte leer sind.
 - Acht Energieformen entsprechend RGB-Bits 000 bis 111. Nur Komponenten 0 und 1;

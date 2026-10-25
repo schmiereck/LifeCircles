@@ -97,6 +97,7 @@ public class HighPosition3TrainStrategy implements TrainStrategy, SimulationStep
                 cell.setGeneration(genome.getGeneration());
                 cell.setMutationRateFactor(genome.getMutationRateFactor()); cell.setMutationStrengthFactor(genome.getMutationStrengthFactor());
                 cell.setEnergyConversionProgram(genome.getEnergyConversionProgram());
+                cell.setClockPeriods(genome.getClockPeriods());
                 cell.setEnergy(ENERGY); cells.add(cell);
             }
             var body=new StructureEpisodeFitness.Body(slot,genome,cells); bodies.add(body);

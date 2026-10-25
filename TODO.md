@@ -59,8 +59,8 @@
   4 Inseln, Turnier, Elite mit Neubewertung durch Zufallsstart, Migration, Katastrophe bei Stillstand.
 - [x] RACE-Langlauf mit Inseln (587 Generationen): Spitzen nur aus Startglück, kein Gang (`RENNBAHN.md`).
 - [x] RACE: Bewertung aus 3 Startlagen je Genom, Mittelwert, Rekord daraus (Nutzerentscheidung 25.10.2026).
-- [ ] RACE: Zufallsgehirne schwingen nicht (Gewichte ± 0,001, Vorwärtsnetz, kein Takteingang). Angeborener
-  Takteingang? (Entscheidung Nutzer, `RENNBAHN.md`).
+- [x] Taktgeber: sechs vererbte Perioden als Eingänge (Nutzerentscheidung 25.10.2026, `TAKTGEBER.md`).
+- [ ] RACE-Langlauf mit Taktgebern und 3 Startlagen: Schwingen Körper (`oscillating`), entsteht ein Gang?
 
 ## Anschließend
 

@@ -127,7 +127,7 @@ public class CellBrainService {
         }
 
         // Appended channels preserve all original indices and avoid averaging different forms.
-        if (totalInputs >= EnergyInputLayout.inputCount(actorCount)) {
+        if (totalInputs >= EnergyInputLayout.remainsInputCount(actorCount)) {
             for (EnergyType energyType : EnergyType.ALL) if (energyType != EnergyType.PRIMARY) {
                 inputs[EnergyInputLayout.ownEnergy(actorCount, energyType)] = cell.getEnergy(energyType);
                 for (int actor = 0; actor < actorCount; actor++) {
@@ -138,6 +138,14 @@ public class CellBrainService {
             for (int actor = 0; actor < actorCount; actor++) {
                 SensableCell neighbor = myActorList.get(actor).getSensedCell();
                 inputs[EnergyInputLayout.neighborRemains(actorCount, actor)] = neighbor != null && neighbor.isRemains() ? 1 : 0;
+            }
+        }
+        // Inherited clocks on the cell's own age: sine and cosine let the net shift the phase per output.
+        if (totalInputs >= EnergyInputLayout.inputCount(actorCount)) {
+            for (int clock = 0; clock < EnergyInputLayout.CLOCKS; clock++) {
+                double angle = 2 * Math.PI * cell.getAge() / cell.getClockPeriod(clock);
+                inputs[EnergyInputLayout.clockSine(actorCount, clock)] = Math.sin(angle);
+                inputs[EnergyInputLayout.clockCosine(actorCount, clock)] = Math.cos(angle);
             }
         }
 

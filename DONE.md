@@ -1,5 +1,12 @@
 # Abgeschlossene Schritte
 
+## Taktgeber (25.10.2026)
+
+- Sechs vererbte Taktgeber, Sinus/Kosinus des Zellalters, angehängt (328 Eingänge), Migration von
+  213/304/316 Eingängen ohne Synapsen, Vererbung bei Teilung/Gründern/HIGH_POSITION3, alte Speicherstände
+  mit Oktaven. `TAKTGEBER.md`, `ClockInputTest`, angepasst `EightEnergySensorTest`, `CompactFounderBrainTest`,
+  `EnzymeThrottleTest`.
+
 ## RACE-Inselmodell (24./25.10.2026, experimentell)
 
 - 32 Bahnen in 4 Inseln, Elite je Insel mit Neubewertung (Zufallsdrehung, ± 40 px), Turnier aus 3,

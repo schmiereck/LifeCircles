@@ -16,7 +16,7 @@ class CompactFounderBrainTest {
     @Test void defaultHasFortyEightHiddenNeuronsWithAllEnergyAndActuatorChannels() {
         Cell cell=CellFactory.createCell(new Vector2D(100,100),10);
         CellBrain brain=(CellBrain)cell.getBrain();
-        assertEquals(316,brain.getInputCount());assertEquals(134,brain.getNeuralNetwork().getNeuralNet().getOutputNeuronArr().length);
+        assertEquals(328,brain.getInputCount());assertEquals(134,brain.getNeuralNetwork().getNeuralNet().getOutputNeuronArr().length);
         assertEquals(48,hidden(brain));
         Layer[] layers=brain.getNeuralNetwork().getHiddenLayerArr();
         assertEquals(4,layers.length);
@@ -25,7 +25,7 @@ class CompactFounderBrainTest {
             cell.setCellState(state);
             for(int bit=0;bit<3;bit++)assertEquals((state&(1<<bit))!=0,layers[bit].isActiveLayer());
             // The common layer's own controller may change its gate while processing.
-            brain.setInputs(new double[316]);for(double value:brain.process())assertTrue(Double.isFinite(value));
+            brain.setInputs(new double[328]);for(double value:brain.process())assertTrue(Double.isFinite(value));
         }
     }
     @Test void compactBrainStillRespondsToSensorsAndHasLowerStorageFees() {
@@ -35,8 +35,8 @@ class CompactFounderBrainTest {
         assertTrue(compact.getSynapseCount()<historical.getSynapseCount());
         assertTrue(BrainEnergyCosts.DEFAULT.cost(compact.getSynapseCount(),0,1)
                 <BrainEnergyCosts.DEFAULT.cost(historical.getSynapseCount(),0,1));
-        compact.setInputs(new double[316]);double[] zero=compact.process().clone();
-        compact.getNeuralNetwork().rnnClearPreviousState();double[] inputs=new double[316];Arrays.fill(inputs,1);
+        compact.setInputs(new double[328]);double[] zero=compact.process().clone();
+        compact.getNeuralNetwork().rnnClearPreviousState();double[] inputs=new double[328];Arrays.fill(inputs,1);
         compact.setInputs(inputs);double[] one=compact.process();
         assertTrue(java.util.stream.IntStream.range(0,133).anyMatch(i->Math.abs(zero[i]-one[i])>1e-8));
         System.out.printf(Locale.ROOT,"Founder comparison: hidden %d -> %d, synapses %d -> %d%n",

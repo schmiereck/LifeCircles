@@ -63,6 +63,11 @@ public class Cell implements SensableCell, Serializable {
     private int cellState; // Zustand der Zelle, beeinflusst zusätzliche Hidden-Layer
     private double mutationRateFactor; // Faktor für die Mutationsrate
     private double mutationStrengthFactor; // Faktor für die Mutationsstärke
+    /** Inherited clock periods in seconds (TAKTGEBER.md); absent in older saves. */
+    private double[] clockPeriods = DEFAULT_CLOCK_PERIODS.clone();
+    /** Octaves for new and migrated cells; mutation moves each period by a factor. */
+    public static final double[] DEFAULT_CLOCK_PERIODS = {.5, 1, 2, 4, 8, 16};
+    public static final double MIN_CLOCK_PERIOD = .1, MAX_CLOCK_PERIOD = 120;
     private transient final Random random = new Random();
     //private int tempThinkHackCounter = SimulationConfig.CELL_TEMP_THINK_HACK_COUNTER_MAX;
 
@@ -564,6 +569,28 @@ public class Cell implements SensableCell, Serializable {
         this.mutationStrengthFactor = Math.max(0.1D, Math.min(2.0D, mutationStrengthFactor)); // Begrenzung auf sinnvolle Werte
     }
 
+    public double getClockPeriod(int clock) { return clockPeriods[clock]; }
+
+    public double[] getClockPeriods() { return clockPeriods.clone(); }
+
+    public void setClockPeriods(double[] periods) {
+        if (periods.length != DEFAULT_CLOCK_PERIODS.length) throw new IllegalArgumentException("Expected " + DEFAULT_CLOCK_PERIODS.length + " clock periods");
+        double[] clamped = new double[periods.length];
+        for (int i = 0; i < periods.length; i++) {
+            if (!Double.isFinite(periods[i])) throw new IllegalArgumentException("Clock period must be finite");
+            clamped[i] = Math.max(MIN_CLOCK_PERIOD, Math.min(MAX_CLOCK_PERIOD, periods[i]));
+        }
+        clockPeriods = clamped;
+    }
+
+    /** Each clock mutates with the given rate by a factor exp(±strength), so short and long periods move alike. */
+    public void mutateClockPeriods(double mutationRate, double mutationStrength, Random random) {
+        double[] periods = clockPeriods.clone();
+        for (int i = 0; i < periods.length; i++)
+            if (random.nextDouble() < mutationRate) periods[i] *= Math.exp((random.nextDouble() * 2.0D - 1.0D) * mutationStrength);
+        setClockPeriods(periods);
+    }
+
     public void mutateMutationFactors(double mutationRate, double mutationStrength) {
         mutateMutationFactors(mutationRate, mutationStrength, new Random());
     }
@@ -590,6 +617,8 @@ public class Cell implements SensableCell, Serializable {
         // Older cells had one state-independent enzyme. Preserve its behavior in all states.
         if(energyConversionProgram==null) energyConversionProgram=energyConversion==null?EnergyConversionProgram.NONE:
                 EnergyConversionProgram.uniform(energyConversion);
+        if (clockPeriods == null) clockPeriods = DEFAULT_CLOCK_PERIODS.clone();
+        else if (clockPeriods.length != DEFAULT_CLOCK_PERIODS.length) throw new InvalidObjectException("Invalid number of clocks");
         if (additionalEnergies != null && additionalEnergies.length != EnergyType.ALL.size() - 2)
             throw new InvalidObjectException("Invalid number of energy stores");
         // A loaded object is a new instance, including repeated loads of one saved cell.

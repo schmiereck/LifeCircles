@@ -192,8 +192,9 @@ Befund aus dem Code (`NeuralNet`, `CellBrain`):
 - Ein Takt kann also nur entstehen, wenn die Mutation eine Rückkopplung mit großen Gewichten aufbaut oder
   wenn ein Regelkreis über die Sensoren läuft (Bewegung → Sensor → Aktor), und beides erst aus großen
   Gewichten. Das erklärt, warum sich nichts zyklisch ändert.
-- Möglicher Hebel (Modelländerung, nicht umgesetzt, Entscheidung Nutzer): ein angeborener Takteingang, etwa
-  Sinus und Kosinus mit evolvierbarer oder fester Periode, angehängt im `EnergyInputLayout`.
+- Umgesetzt (Nutzerentscheidung 25.10.2026): sechs vererbte Taktgeber als Sinus/Kosinus des Zellalters,
+  `TAKTGEBER.md`. Zufallsgehirne spüren sie wegen der kleinen Anfangsgewichte (± 0,001) noch kaum; in den
+  ersten 4 Generationen schwang kein Körper.
 
 ## Grenzen und offene Hebel
 

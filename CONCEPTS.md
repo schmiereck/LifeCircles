@@ -34,9 +34,11 @@
 - Halt am Gelände darf reine Physik sein (Nutzervorgabe 24.10.2026): optionale Reibung an Blockern
   (Coulomb plus Rollwiderstand der Kontaktfläche), begrenzt durch das tatsächliche Andrücken. Anker
   bleiben als zusätzlicher Mechanismus. Siehe `BODENREIBUNG.md`.
+- Zellen haben sechs vererbte Taktgeber (Nutzerentscheidung 25.10.2026): Perioden als Gen, Sinus/Kosinus
+  des eigenen Alters als Eingänge, Mutation um einen Faktor. Kein weltweiter gemeinsamer Takt. `TAKTGEBER.md`.
 - DNA-erhaltende Ausführung spart CPU; genetische Reserven bleiben erhalten.
 - Default-Gründer beginnen mit 48 versteckten Neuronen (24 gemeinsam + 3 × 8
-  Zustandsneuronen). 316 Sensor-/134 Ausgangsneuronen zählen zusätzlich. Das ist
+  Zustandsneuronen). 328 Sensor-/134 Ausgangsneuronen zählen zusätzlich. Das ist
   eine Anfangsgröße, keine Wachstumsgrenze; geladene/evolvierte DNA bleibt erhalten.
 - Experimente müssen Nutzen variabler Steuerung, Erwerb/Erhalt, Kosten und CPU-Zeit
   unterscheiden. Exakte Optimierung und neue Evolutionsregeln getrennt bewerten.

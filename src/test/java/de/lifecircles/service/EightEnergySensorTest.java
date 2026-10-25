@@ -29,7 +29,7 @@ class EightEnergySensorTest {
             for(EnergyType type:EnergyType.ALL)neighbor.setEnergy(type,(port+1)*.01+.08*type.getCode());
         }
         double[] inputs=CellBrainService.generateInputs(observer,world);
-        assertEquals(316,inputs.length);
+        assertEquals(328,inputs.length);
         for(EnergyType type:EnergyType.ALL) {
             assertEquals(observer.getEnergy(type),inputs[EnergyInputLayout.ownEnergy(12,type)]);
             for(int port=0;port<12;port++)assertEquals((port+1)*.01+.08*type.getCode(),inputs[EnergyInputLayout.neighborEnergy(12,port,type)],1e-14);
@@ -57,8 +57,12 @@ class EightEnergySensorTest {
         }
         for(int actor=0;actor<12;actor++)assertTrue(indices.add(EnergyInputLayout.neighborRemains(12,actor)));
         assertEquals(316,indices.size());assertEquals(315,Collections.max(indices));
+        for(int clock=0;clock<EnergyInputLayout.CLOCKS;clock++) {
+            assertTrue(indices.add(EnergyInputLayout.clockSine(12,clock)));assertTrue(indices.add(EnergyInputLayout.clockCosine(12,clock)));
+        }
+        assertEquals(328,indices.size());assertEquals(327,Collections.max(indices));
     }
-    @ParameterizedTest @ValueSource(ints={213,304})
+    @ParameterizedTest @ValueSource(ints={213,304,316})
     void migrationAppendsDisconnectedInputsWithoutChangingOutputsWorkOrEvolutionRandomStream(int oldCount) throws Exception {
         var previous=NeuralNetwork.getRandom();
         try {
@@ -74,10 +78,10 @@ class EightEnergySensorTest {
             Random migrationRandom=new Random(992);NeuralNetwork.setRandom(migrationRandom);
             CellBrain target=new CellBrain(migrated);target.ensureEnergyInputs(12);
             assertEquals(new Random(992).nextLong(),migrationRandom.nextLong());
-            assertEquals(316,target.getInputCount());assertEquals(stored,migrated.getSynapseCount());
+            assertEquals(328,target.getInputCount());assertEquals(stored,migrated.getSynapseCount());
             Random inputs=new Random(17);
             for(int step=0;step<1200;step++) {
-                double[] oldInput=new double[oldCount],newInput=new double[316];
+                double[] oldInput=new double[oldCount],newInput=new double[328];
                 for(int i=0;i<newInput.length;i++)newInput[i]=inputs.nextDouble();
                 System.arraycopy(newInput,0,oldInput,0,oldCount);
                 assertArrayEquals(reference.calcProcess(oldInput),migrated.calcProcess(newInput));

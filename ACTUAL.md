@@ -1,6 +1,10 @@
 # Aktueller Projektstand
 
-Aktualisiert: 24.10.2026. Branch `master`.
+Aktualisiert: 25.10.2026. Branch `master`.
+
+- Taktgeber (25.10.2026, alle Welten): sechs vererbte Perioden (Oktaven 0,5–16 s als Start), Sinus/Kosinus des
+  Zellalters als Eingänge 316–327, jetzt 328 Eingänge; alte Netze ohne neue Synapsen migriert. `TAKTGEBER.md`.
+- RACE bewertet jedes Genom aus 3 Startlagen (Mittelwert); die Studie zählt schwingende und pulsierende Körper.
 
 - Rennbahn-Training RACE (experimentell): kleine klonale Verbände (≤ 6 Zellen) werden nach eigenem
   Fortschritt nach rechts ausgewählt; Teilung nach vorn zählt nicht, Teilung nur in einer Wachstumsphase

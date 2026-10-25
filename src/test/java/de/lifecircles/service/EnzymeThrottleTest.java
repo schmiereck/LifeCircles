@@ -36,7 +36,8 @@ class EnzymeThrottleTest {
         for(int round=0;round<5;round++) {
             double[] in=new double[316];for(int i=0;i<in.length;i++)in[i]=inputs.nextDouble();
             old.setInputs(in);double[] expected=old.process();
-            migrated.setInputs(in);double[] actual=migrated.process();
+            // The cell also appends the disconnected clock inputs.
+            migrated.setInputs(Arrays.copyOf(in,328));double[] actual=migrated.process();
             assertArrayEquals(expected,Arrays.copyOf(actual,133));assertEquals(.5,actual[133]);
         }
         CellBrainService.think(cell);assertEquals(1,cell.getEnzymeActivity());

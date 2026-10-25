@@ -88,6 +88,8 @@ public class ReproductionManagerService {
         founder.setMutationStrengthFactor(parent.getMutationStrengthFactor());
         if (mutate) founder.mutateMutationFactors(config.getMutationRate(), config.getMutationStrength());
         founder.setEnergyConversionProgram(parent.getEnergyConversionProgram().mutate(NeuralNetwork.getRandom(),rate,strength));
+        founder.setClockPeriods(parent.getClockPeriods());
+        if (mutate) founder.mutateClockPeriods(rate, strength, NeuralNetwork.getRandom());
         founder.setCellState(state);
         network.rnnClearPreviousState();
         for (SensorActor actor : founder.getSensorActors()) actor.updateCachedPosition();
@@ -138,6 +140,8 @@ public class ReproductionManagerService {
         if (birthRandom == null) child.mutateMutationFactors(divisionRate, config.getMutationStrength());
         else child.mutateMutationFactors(divisionRate, config.getMutationStrength(), birthRandom);
         child.setEnergyConversionProgram(parent.getEnergyConversionProgram().mutate(traitRandom,effectiveMutationRate,effectiveMutationStrength));
+        child.setClockPeriods(parent.getClockPeriods());
+        child.mutateClockPeriods(effectiveMutationRate, effectiveMutationStrength, traitRandom);
         return child;
     }
 
