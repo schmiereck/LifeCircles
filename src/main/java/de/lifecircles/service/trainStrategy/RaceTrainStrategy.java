@@ -14,14 +14,15 @@ import java.util.*;
  * friction a newborn's overlap would push the body ahead).
  *
  * <p>Evolution with standard tools against local optima: the lanes form islands that select separately (elite and
- * tournament), every founder starts with a random turn and offset (the elite is re-evaluated and keeps its place
- * only by moving again, not by a lucky jolt that a deterministic replay would repeat), the best of each island
+ * tournament), every founder starts with a random turn and offset, and each generation runs every genome from
+ * EVALUATIONS such starts and ranks it by the mean (a lucky jolt from one start is no gait; the elite is re-evaluated
+ * and keeps its place only by moving again), the best of each island
  * migrates to the next one now and then, and an island whose record has not improved for a long time is wiped and
  * refilled with fresh random genomes (catastrophe).
  */
 public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
     static final int ISLANDS = 4, ISLAND_LANES = 8, LANES = ISLANDS * ISLAND_LANES, CELL_LIMIT = 6, TOURNAMENT = 3,
-            MIGRATION_INTERVAL = 10, STAGNATION_GENERATIONS = 30;
+            MIGRATION_INTERVAL = 10, STAGNATION_GENERATIONS = 30, EVALUATIONS = 3;
     static final double LANE_WIDTH = 1600, START = 400, HEIGHT = 800, EPISODE_SECONDS = 60, WINDOW_SECONDS = 10,
             SAMPLE_SECONDS = .5, ENERGY = .75, GROWTH_SECONDS = 30, RUN_START_SECONDS = 35, START_JITTER = 40,
             // A new island record must beat the old one by this much (noise from the random start is no progress).
@@ -31,7 +32,9 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
     private final List<Body> bodies = new ArrayList<>();
     private final Map<Cell, Body> owners = new IdentityHashMap<>();
     int generation = 1;
-    private int sampleNumber, catastrophes;
+    private int sampleNumber, catastrophes, evaluation;
+    /** Scores of each lane's genome over the episodes of this generation. */
+    private final double[] scoreSums = new double[LANES];
     private double elapsed;
     private final Island[] islands = new Island[ISLANDS];
     /** Tests switch the random turn and offset off to place founders exactly. */
@@ -47,6 +50,8 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
         final List<Cell> cells = new ArrayList<>();
         final Map<Cell, Double> lastX = new IdentityHashMap<>();
         double progress, windowSum;
+        /** Mean score over the generation's episodes, set before selection. */
+        double fitness;
         int windowSamples;
         boolean invalid;
         Body(int lane, Cell genome) { this.lane = lane; this.genome = genome; }
@@ -128,7 +133,7 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
     }
 
     private void restart(Environment world, List<Cell> genomes) {
-        generation = 1; catastrophes = 0; lastEvaluation = null;
+        generation = 1; catastrophes = 0; evaluation = 0; Arrays.fill(scoreSums, 0); lastEvaluation = null;
         for (int i = 0; i < ISLANDS; i++) islands[i] = new Island();
         startEpisode(world, genomes.stream().map(genome -> new Seed(genome, false)).toList());
     }
@@ -196,23 +201,31 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
             updateStatus();
         }
         if (elapsed + 1e-9 < EPISODE_SECONDS) return;
+        for (Body body : bodies) scoreSums[body.lane] += body.score();
+        if (++evaluation < EVALUATIONS) {
+            // The same founders again (unchanged copies) from new random starts.
+            startEpisode(world, bodies.stream().map(body -> new Seed(body.genome, false)).toList());
+            return;
+        }
+        for (Body body : bodies) body.fitness = scoreSums[body.lane] / EVALUATIONS;
+        evaluation = 0; Arrays.fill(scoreSums, 0);
         List<Body> ranked = new ArrayList<>(bodies);
-        ranked.sort(Comparator.comparingDouble(Body::score).reversed().thenComparingInt(b -> b.lane));
+        ranked.sort(Comparator.comparingDouble((Body b) -> b.fitness).reversed().thenComparingInt(b -> b.lane));
         Body best = ranked.getFirst();
-        lastEvaluation = new Evaluation(generation, best.score(), best.progress, best.cells.size());
+        lastEvaluation = new Evaluation(generation, best.fitness, best.progress, best.cells.size());
         List<List<Body>> islandRanks = new ArrayList<>();
         for (int i = 0; i < ISLANDS; i++) { int index = i; islandRanks.add(ranked.stream().filter(b -> b.island() == index).toList()); }
         StringBuilder line = new StringBuilder();
-        for (List<Body> island : islandRanks) line.append(String.format(Locale.ROOT, " %.3f", island.getFirst().score()));
-        System.out.printf(Locale.ROOT, "RACE generation=%d score=%.3f progress=%.3f cells=%d median=%.3f islands%s catastrophes=%d%n",
-                generation, best.score(), best.progress, best.cells.size(), ranked.get(LANES / 2).score(), line, catastrophes);
+        for (List<Body> island : islandRanks) line.append(String.format(Locale.ROOT, " %.3f", island.getFirst().fitness));
+        System.out.printf(Locale.ROOT, "RACE generation=%d score=%.3f lastProgress=%.3f cells=%d median=%.3f islands%s catastrophes=%d%n",
+                generation, best.fitness, best.progress, best.cells.size(), ranked.get(LANES / 2).fitness, line, catastrophes);
         startEpisode(world, nextSeeds(islandRanks));
         generation++;
         updateStatus();
     }
 
     /**
-     * Next founders island by island: the elite unchanged in the island's first lane, the rest won by tournaments
+     * Next founders island by island, ranked by fitness: the elite unchanged in the island's first lane, the rest won by tournaments
      * and mutated. Every MIGRATION_INTERVAL generations the best of each island replaces the last lane of the next
      * one. The island stagnating longest past STAGNATION_GENERATIONS is wiped and refilled at random (one per
      * generation, so the islands do not all start over together).
@@ -221,7 +234,7 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
         int wiped = -1;
         for (int i = 0; i < ISLANDS; i++) {
             Island island = islands[i];
-            double score = islandRanks.get(i).getFirst().score();
+            double score = islandRanks.get(i).getFirst().fitness;
             if (score > island.record * RECORD_FACTOR + RECORD_MARGIN) { island.record = score; island.stagnant = 0; }
             else if (++island.stagnant >= STAGNATION_GENERATIONS && (wiped < 0 || island.stagnant > islands[wiped].stagnant)) wiped = i;
         }
@@ -249,7 +262,7 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
         Body winner = null;
         for (int k = 0; k < TOURNAMENT; k++) {
             Body candidate = ranks.get(random.nextInt(ranks.size()));
-            if (winner == null || candidate.score() > winner.score()) winner = candidate;
+            if (winner == null || candidate.fitness > winner.fitness) winner = candidate;
         }
         return winner;
     }
@@ -277,8 +290,8 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
     private void updateStatus() {
         double best = 0;
         for (Body body : bodies) if (!body.invalid) best = Math.max(best, body.progress);
-        status = String.format(Locale.ROOT, "RACE · G%d · %.0f/%.0f s · %s · vorn %.1f px · letzte Bestwertung %s · %d Katastrophen",
-                generation, elapsed, EPISODE_SECONDS,
+        status = String.format(Locale.ROOT, "RACE · G%d · Start %d/%d · %.0f/%.0f s · %s · vorn %.1f px · letzte Bestwertung %s · %d Katastrophen",
+                generation, evaluation + 1, EVALUATIONS, elapsed, EPISODE_SECONDS,
                 elapsed < GROWTH_SECONDS ? "Wachstum" : elapsed < RUN_START_SECONDS ? "Ruhe" : "Lauf", best,
                 lastEvaluation == null ? "—" : String.format(Locale.ROOT, "%.1f px", lastEvaluation.score()), catastrophes);
     }

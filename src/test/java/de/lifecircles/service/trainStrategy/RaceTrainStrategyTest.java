@@ -162,16 +162,20 @@ class RaceTrainStrategyTest {
     @Test void theFarthestBodyIsKeptUnchangedInLaneZero() {
         var strategy = strategy();
         Environment world = setup(strategy, genome(false));
-        RaceTrainStrategy.Body winner = strategy.bodies().get(7);
-        winner.genome.setGeneration(77);
-        // Pushed by hand for the whole episode: a steady 1 px per step.
+        strategy.bodies().get(7).genome.setGeneration(77);
+        // Pushed by hand in every episode of the generation: a steady 10 px/s, the same founder from each start.
         double dt = 1.0 / 60;
-        for (int i = 0; i < Math.round(RaceTrainStrategy.EPISODE_SECONDS / dt) - 1; i++) {
-            for (Cell cell : winner.cells) cell.setPosition(cell.getPosition().add(new Vector2D(dt * 10, 0)));
+        long steps = Math.round(RaceTrainStrategy.EPISODE_SECONDS / dt);
+        for (int episode = 0; episode < RaceTrainStrategy.EVALUATIONS; episode++) {
+            RaceTrainStrategy.Body winner = strategy.bodies().get(7);
+            assertEquals(77, winner.genome.getGeneration(), "replayed unchanged");
+            for (int i = 0; i < steps - 1; i++) {
+                for (Cell cell : winner.cells) cell.setPosition(cell.getPosition().add(new Vector2D(dt * 10, 0)));
+                strategy.selectAndMutate(world, dt);
+            }
+            assertEquals(1, strategy.getGeneration());
             strategy.selectAndMutate(world, dt);
         }
-        assertEquals(1, strategy.getGeneration());
-        strategy.selectAndMutate(world, dt);
         assertEquals(2, strategy.getGeneration());
         RaceTrainStrategy.Evaluation evaluation = strategy.getLastEvaluation();
         // Counted from 35 s at 10 px/s: 150 px at 50 s, 250 px at 60 s.
@@ -181,6 +185,26 @@ class RaceTrainStrategyTest {
         assertEquals(0, strategy.bodies().getFirst().progress);
     }
 
+    @Test void aSteadyMoverBeatsAJoltFromOneStart() {
+        var strategy = strategy();
+        Environment world = setup(strategy, genome(false));
+        strategy.bodies().get(3).genome.setGeneration(33);
+        double dt = 1.0 / 60;
+        long steps = Math.round(RaceTrainStrategy.EPISODE_SECONDS / dt);
+        for (int episode = 0; episode < RaceTrainStrategy.EVALUATIONS; episode++) {
+            RaceTrainStrategy.Body steady = strategy.bodies().get(3), lucky = strategy.bodies().get(5);
+            for (int i = 0; i < steps; i++) {
+                for (Cell cell : steady.cells) cell.setPosition(cell.getPosition().add(new Vector2D(dt * 4, 0)));
+                if (episode == 0) for (Cell cell : lucky.cells) cell.setPosition(cell.getPosition().add(new Vector2D(dt * 10, 0)));
+                strategy.selectAndMutate(world, dt);
+            }
+        }
+        assertEquals(2, strategy.getGeneration());
+        // Steady: 4 px/s, about 80 px in every episode. Lucky: about 200 px once, a third of that as the mean.
+        assertEquals(80, strategy.getLastEvaluation().score(), 20);
+        assertEquals(33, world.getCellList().getFirst().getGeneration(), "the steady mover is the elite");
+    }
+
     /** Ranked bodies per island: island i scores base[i], its lanes a little less each. */
     static List<List<RaceTrainStrategy.Body>> ranks(double... base) {
         List<List<RaceTrainStrategy.Body>> islands = new ArrayList<>();
@@ -188,7 +212,7 @@ class RaceTrainStrategyTest {
             List<RaceTrainStrategy.Body> island = new ArrayList<>();
             for (int l = 0; l < RaceTrainStrategy.ISLAND_LANES; l++) {
                 var body = new RaceTrainStrategy.Body(i * RaceTrainStrategy.ISLAND_LANES + l, genome(false));
-                body.windowSum = base[i] - l * .01; body.windowSamples = 1;
+                body.fitness = base[i] - l * .01;
                 island.add(body);
             }
             islands.add(island);
@@ -266,6 +290,18 @@ class RaceTrainStrategyTest {
     @Test @org.junit.jupiter.api.condition.EnabledIfSystemProperty(named = "race.study.generations", matches = "[0-9]+")
     void study() {
         config.setMutationRate(rate); config.setMutationStrength(strength); config.setReproductionAgeThreshold(age);
+        double gravity = config.getGravity();
+        // Optional share of the default gravity, e.g. -Drace.study.gravity=0.1
+        config.setGravity(gravity * Double.parseDouble(System.getProperty("race.study.gravity", "1")));
+        try { study(gravity); } finally { config.setGravity(gravity); }
+    }
+
+    /**
+     * A gait needs actors (or the size) to change back and forth. Per generation the study counts, in the first
+     * start's run phase (35-60 s), the bodies whose founder flips an actor between pulling and pushing at least
+     * four times, and those whose founder's radius varies by more than 2 px.
+     */
+    private void study(double gravity) {
         var strategy = new RaceTrainStrategy(new Random(Long.getLong("race.study.seed", 4711)));
         Environment world = strategy.initializeEnvironment();
         strategy.initialize(world);
@@ -273,14 +309,37 @@ class RaceTrainStrategyTest {
         for (int g = 0; g < generations; g++) {
             long anchorsSeen = 0;
             StringBuilder elite = new StringBuilder();
-            for (int s = 0; s < 120; s++) {
+            int[][] flips = new int[RaceTrainStrategy.LANES][12];
+            double[][] signs = new double[RaceTrainStrategy.LANES][12];
+            double[] minRadius = new double[RaceTrainStrategy.LANES], maxRadius = new double[RaceTrainStrategy.LANES];
+            Arrays.fill(minRadius, Double.MAX_VALUE);
+            int samples = 120 * RaceTrainStrategy.EVALUATIONS;
+            for (int s = 0; s < samples; s++) {
                 run(strategy, world, .5);
                 anchorsSeen += world.getCellList().stream().flatMap(c -> c.getSensorActors().stream()).filter(a -> a.getAnchor() != null).count();
                 // Lane 0 replays last generation's best unchanged: its progress over the run phase.
                 // The last sample (60 s) already belongs to the next episode.
+                if (s >= 69 && s < 119) for (RaceTrainStrategy.Body body : strategy.bodies()) {
+                    Cell founder = body.cells.getFirst();
+                    minRadius[body.lane] = Math.min(minRadius[body.lane], founder.getRadiusSize());
+                    maxRadius[body.lane] = Math.max(maxRadius[body.lane], founder.getRadiusSize());
+                    List<SensorActor> actors = founder.getSensorActors();
+                    for (int a = 0; a < actors.size(); a++) {
+                        double force = actors.get(a).getForceStrength();
+                        if (Math.abs(force) < .05) continue;
+                        if (signs[body.lane][a] != 0 && Math.signum(force) != signs[body.lane][a]) flips[body.lane][a]++;
+                        signs[body.lane][a] = Math.signum(force);
+                    }
+                }
                 if (s >= 69 && s % 10 == 9 && s < 119 || s == 118) elite.append(String.format(Locale.ROOT, " %.0fs:%.2f", (s + 1) * .5, strategy.bodies().getFirst().progress));
             }
-            System.out.printf(Locale.ROOT, "RACE study anchors/sample %.1f cells %d elite%s%n", anchorsSeen / 120.0, world.getCellList().size(), elite);
+            int oscillating = 0, pulsing = 0;
+            for (int lane = 0; lane < RaceTrainStrategy.LANES; lane++) {
+                if (Arrays.stream(flips[lane]).max().orElse(0) >= 4) oscillating++;
+                if (maxRadius[lane] - minRadius[lane] > 2) pulsing++;
+            }
+            System.out.printf(Locale.ROOT, "RACE study anchors/sample %.1f cells %d oscillating %d pulsing %d elite (first start)%s%n",
+                    anchorsSeen / (double) samples, world.getCellList().size(), oscillating, pulsing, elite);
         }
     }
 }
