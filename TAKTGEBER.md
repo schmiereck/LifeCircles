@@ -54,6 +54,7 @@ zeitabhängige Eingang (`RENNBAHN.md`, Abschnitt Taktgeber).
 
 - Neue Synapsen starten mit Gewichten von höchstens ± 0,001. Ein Zufallsgehirn spürt den Takt deshalb noch
   kaum. In den ersten 4 RACE-Generationen schwang kein Körper (`oscillating 0`). Erst die Mutation (± Stärke
-  je Treffer) macht die Gewichte groß genug.
+  je Treffer) macht die Gewichte groß genug. Auch nach 300 RACE-Generationen (3 Startlagen, 10 % Schwerkraft)
+  schwang kein Körper (`RENNBAHN.md`, Studie mit Taktgebern).
 - Nicht bitgleich zu früheren Läufen: Neue Zufallsgehirne haben andere Synapsen, und die Mutation der
   Perioden zieht zusätzliche Zufallszahlen.

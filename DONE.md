@@ -6,6 +6,8 @@
   213/304/316 Eingängen ohne Synapsen, Vererbung bei Teilung/Gründern/HIGH_POSITION3, alte Speicherstände
   mit Oktaven. `TAKTGEBER.md`, `ClockInputTest`, angepasst `EightEnergySensorTest`, `CompactFounderBrainTest`,
   `EnzymeThrottleTest`.
+- RACE-Studie mit Taktgebern, 300 Generationen, 10 % Schwerkraft: `oscillating 0` durchgehend, kein Trend,
+  23 Katastrophen (`RENNBAHN.md`).
 
 ## RACE-Inselmodell (24./25.10.2026, experimentell)
 

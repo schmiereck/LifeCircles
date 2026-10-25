@@ -60,7 +60,8 @@
 - [x] RACE-Langlauf mit Inseln (587 Generationen): Spitzen nur aus Startglück, kein Gang (`RENNBAHN.md`).
 - [x] RACE: Bewertung aus 3 Startlagen je Genom, Mittelwert, Rekord daraus (Nutzerentscheidung 25.10.2026).
 - [x] Taktgeber: sechs vererbte Perioden als Eingänge (Nutzerentscheidung 25.10.2026, `TAKTGEBER.md`).
-- [ ] RACE-Langlauf mit Taktgebern und 3 Startlagen: Schwingen Körper (`oscillating`), entsteht ein Gang?
+- [x] RACE-Langlauf mit Taktgebern und 3 Startlagen (300 Generationen, 10 % Schwerkraft): kein Körper schwingt.
+- [ ] RACE: Taktsynapsen größer starten lassen oder Tonus der Aktoren prüfen (Entscheidung Nutzer, `RENNBAHN.md`).
 
 ## Anschließend
 

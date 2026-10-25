@@ -196,6 +196,29 @@ Befund aus dem Code (`NeuralNet`, `CellBrain`):
   `TAKTGEBER.md`. Zufallsgehirne spüren sie wegen der kleinen Anfangsgewichte (± 0,001) noch kaum; in den
   ersten 4 Generationen schwang kein Körper.
 
+## Studie mit Taktgebern (25.10.2026, Seed 4711, Zufallsgründer, Modellstand `a8c7fa5`, Schwerkraft 10 %)
+
+300 Generationen, jede aus 3 Startlagen (Mittelwert), Schwerkraft auf 10 % des Standards wie in der GUI des
+Nutzers (`-Drace.study.gravity=0.1`). Wegen der anderen Schwerkraft und der Mittelung nicht direkt mit den
+Studien oben vergleichbar.
+
+- **Kein Körper hat geschwungen oder pulsiert:** `oscillating 0` und `pulsing 0` in allen 300 Generationen.
+- Bestwert (Mittel aus 3 Starts): über 1 px in 267, über 2 px in 85, über 3 px in 13 Generationen; Spitze
+  4,56 px (G12), 4,25 px (G132), 4,07 px (G295).
+- **Kein Aufwärtstrend:** Mittel des Bestwerts je 50 Generationen 1,60 · 1,56 · 1,82 · 1,68 · 1,72 · 1,78 px.
+- Spitzen halten sich nicht: Die Elite der Spitzengeneration fällt in der nächsten auf 2,0 bzw. 1,4 px
+  (Regression zur Mitte).
+- Median fast immer 0 (einmal über 0,01 px). Anker im Mittel 4,1 je Messpunkt; in 45 von 300 Generationen keiner.
+- 23 Katastrophen, also seltener als im Inselmodell ohne Mittelung (58 in 587 Generationen).
+- **Befund:** Die gemittelten 1–2 px in 25 s sind gleichmäßiges Abdriften (bei 10 % Schwerkraft rutscht und
+  rollt ein Körper leichter), kein Gang. Die Taktgeber haben in 300 Generationen keinen schwingenden Aktor
+  hervorgebracht.
+- **Vermutete Ursache (nicht geprüft):** Die Taktsynapsen starten mit ± 0,001. Damit ein Aktor die Richtung
+  wechselt, muss ein Taktgewicht durch mehrere Mutationstreffer (± 0,2) größer als die Biaswerte werden, und auf
+  dem Weg dorthin bringt ein schwaches Wackeln keinen Vorteil, die Auswahl hilft also nicht.
+- **Mögliche Hebel (Entscheidung Nutzer):** größere Anfangsgewichte für die Taktsynapsen; prüfen, ob der Tonus
+  der Aktorkraft schnelle Wechsel überhaupt durchlässt; Schwingen als Zwischenziel wäre Training und ist verworfen.
+
 ## Grenzen und offene Hebel
 
 - **Startproblem:** Zufällige Gehirne müssen graue, anziehende Fußaktoren, Lösen durch Abstoßen und
