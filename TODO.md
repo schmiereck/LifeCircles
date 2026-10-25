@@ -63,7 +63,9 @@
 - [x] RACE-Langlauf mit Taktgebern und 3 Startlagen (300 Generationen, 10 % Schwerkraft): kein Körper schwingt.
 - [x] Tonus geprüft (`ActorRhythmTest`): Takte ab 1 s kommen als Vorzeichenwechsel an, Zufallsgehirne leiten sie kaum weiter.
 - [x] Takteingänge neuer Gehirne direkt mit Kraft und Größe verbinden (Nutzerentscheidung 25.10.2026): alle schwingen.
-- [ ] RACE-Langlauf mit direkten Taktsynapsen: entsteht ein Gang? (Start auf Nutzerauftrag)
+- [x] RACE-Langlauf mit direkten Taktsynapsen (300 Generationen): stetiger Fortschritt bis 12–13 px, Median 4,5 px.
+- [ ] RACE: Anstieg flacht ab Generation 200 ab, Laufrichtung hängt teils von der Startdrehung ab. Längerer Lauf,
+  volle Schwerkraft oder 5 Startlagen? (Entscheidung Nutzer)
 
 ## Anschließend
 

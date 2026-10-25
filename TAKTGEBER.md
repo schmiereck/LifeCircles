@@ -86,6 +86,9 @@ zeitabhängige Eingang (`RENNBAHN.md`, Abschnitt Taktgeber).
   Schwerkraft, Seed 4711): `oscillating 32 pulsing 32` in jeder Generation (vorher 0), Bestwert gemittelt
   4,6 · 7,4 · 4,8 px, Median teils von 0 verschieden (−0,37 · −0,20 · 0,47 px).
 
+- **RACE-Langlauf** (300 Generationen, `RENNBAHN.md`): Bestwert steigt von 5,7 auf 12,6 px je 50 Generationen,
+  Median von 0,5 auf 4,5 px; erster stetiger Fortschritt in der Rennbahn.
+
 ## Grenzen
 
 - Ohne direkte Taktsynapsen spürten Zufallsgehirne die Takte kaum (oben); in 300 RACE-Generationen schwang

@@ -220,6 +220,27 @@ Studien oben vergleichbar.
 - **Mögliche Hebel (Entscheidung Nutzer):** größere Anfangsgewichte für die Taktsynapsen; prüfen, ob der Tonus
   der Aktorkraft schnelle Wechsel überhaupt durchlässt; Schwingen als Zwischenziel wäre Training und ist verworfen.
 
+## Studie mit direkten Taktsynapsen (25.10.2026, Seed 4711, Zufallsgründer, Modellstand `580c9a2`, Schwerkraft 10 %)
+
+Gleiche Einstellungen wie die Studie mit Taktgebern oben (300 Generationen, 3 Startlagen, 10 % Schwerkraft); neu
+sind nur die direkten Taktsynapsen neuer Gehirne (`TAKTGEBER.md`).
+
+- **Erstmals ein stetiger Fortschritt.** Mittel des Bestwerts je 50 Generationen (Mittel aus 3 Starts):
+  5,7 · 7,6 · 9,3 · 11,4 · 12,9 · 12,6 px (vorher 1,6–1,8 px ohne Trend). Bestwert über 10 px in 152 von 300
+  Generationen, Spitze 19,9 px (G287); nie über 20 px.
+- **Die ganze Population läuft:** Der Median aller Bahnen steigt von 0,5 auf etwa 4,5 px je Block (vorher 0); in
+  259 von 300 Generationen über 0,5 px, nur einmal unter −0,5 px.
+- Alle 32 Körper schwingen und pulsieren in jeder Generation.
+- **Die Elite wiederholt ihre Leistung meist:** In der ersten Startlage legt sie in den letzten Generationen
+  typischerweise 6–24 px in 25 s gleichmäßig zurück (bis etwa 1 px/s), aus manchen Lagen aber auch rückwärts
+  (bis −10 px). Die Richtung hängt also noch teils von der Startdrehung ab.
+- **Ohne Anker:** Anker je Messpunkt sanken von 1,2 auf 0–0,6; in den späten Generationen meist keiner. Der
+  Vortrieb kommt aus Formänderung (Pulsieren, Aktorwechsel) und Geländereibung, nicht aus Haften am Boden.
+- 18 Katastrophen (vorher 23). Ab etwa Generation 200 flacht der Anstieg ab (12–13 px).
+- **Befund:** Die direkten Taktsynapsen haben die Sperre gelöst. Aus schwingenden Zufallskörpern wählt die
+  Evolution solche mit Netto-Vortrieb aus und verbessert sie über Generationen. Die Geschwindigkeit ist noch
+  gering (etwa 0,5 px/s im Mittel der Bestwerte), und die Laufrichtung ist nicht in allen Startlagen stabil.
+
 ## Grenzen und offene Hebel
 
 - **Startproblem:** Zufällige Gehirne müssen graue, anziehende Fußaktoren, Lösen durch Abstoßen und

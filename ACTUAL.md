@@ -7,7 +7,8 @@ Aktualisiert: 25.10.2026. Branch `master`.
   verbinden die Takte direkt mit Aktorkraft und Größe (± 0,5), Zufallskörper schwingen damit. `TAKTGEBER.md`.
 - RACE bewertet jedes Genom aus 3 Startlagen (Mittelwert); die Studie zählt schwingende und pulsierende Körper.
   Studie mit Taktgebern (300 Generationen, 10 % Schwerkraft): kein schwingender Körper, Bestwert gemittelt
-  1–2 px ohne Trend (Abdriften, kein Gang). `RENNBAHN.md`.
+  1–2 px ohne Trend (Abdriften, kein Gang). Mit direkten Taktsynapsen (300 Generationen): stetiger
+  Fortschritt, Bestwert 5,7 → 12,6 px, Median 0,5 → 4,5 px, Vortrieb ohne Anker. `RENNBAHN.md`.
 
 - Rennbahn-Training RACE (experimentell): kleine klonale Verbände (≤ 6 Zellen) werden nach eigenem
   Fortschritt nach rechts ausgewählt; Teilung nach vorn zählt nicht, Teilung nur in einer Wachstumsphase
