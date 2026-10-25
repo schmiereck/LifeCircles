@@ -6,6 +6,7 @@
   Ringmigration alle 10 Generationen, Katastrophe nach 30 Generationen ohne Rekord (> 10 % + 0,1 px).
   `RaceTrainStrategyTest` prüft Inseln, Migration, Katastrophe und Zufallsstart.
 - Studie, 587 Generationen: kein Gang. Spitzen bis 5,5 px hingen an der Startlage, Median 0, 58 Katastrophen.
+- 25.10.2026: Bewertung aus 3 Startlagen (Mittelwert); Studie zählt schwingende Aktoren und pulsierende Größe.
 
 ## Geländereibung und RACE-Wachstumsphase (24.10.2026, experimentell)
 

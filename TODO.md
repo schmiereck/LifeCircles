@@ -58,7 +58,9 @@
 - [x] RACE-Auswahl als Inselmodell (Nutzerentscheidung: echte Evolution, kein Lehrplan): 32 Bahnen in
   4 Inseln, Turnier, Elite mit Neubewertung durch Zufallsstart, Migration, Katastrophe bei Stillstand.
 - [x] RACE-Langlauf mit Inseln (587 Generationen): Spitzen nur aus Startglück, kein Gang (`RENNBAHN.md`).
-- [ ] RACE: Bewertung aus mehreren Startlagen je Genom (verrauschte Fitness), Rekord daraus (Entscheidung Nutzer).
+- [x] RACE: Bewertung aus 3 Startlagen je Genom, Mittelwert, Rekord daraus (Nutzerentscheidung 25.10.2026).
+- [ ] RACE: Zufallsgehirne schwingen nicht (Gewichte ± 0,001, Vorwärtsnetz, kein Takteingang). Angeborener
+  Takteingang? (Entscheidung Nutzer, `RENNBAHN.md`).
 
 ## Anschließend
 

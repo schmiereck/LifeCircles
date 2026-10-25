@@ -86,9 +86,14 @@ Der Reibungsgang und seine Parameter stehen in `BODENREIBUNG.md`.
     verbessert (der Rand trennt Fortschritt vom Rauschen des Zufallsstarts), wird sie vollständig mit neuen
     Zufallsgenomen gefüllt und ihr Rekord gelöscht. Höchstens eine Insel je Generation, die am längsten
     stillstehende; ihre besten Gene leben über frühere Migranten auf den Nachbarinseln weiter.
+  - **Mehrere Startlagen** (seit 25.10.2026, Nutzerentscheidung): Eine Generation besteht aus 3 Episoden.
+    Dieselben Gründer (unveränderte Kopien) laufen aus 3 zufälligen Startlagen; gewertet wird der Mittelwert.
+    Ein Ruck aus einer einzigen Lage zählt damit nur noch ein Drittel, auch für den Rekord der Katastrophe.
+    Eine Generation dauert dreimal so lange (3 Minuten Simulationszeit).
   - Alle starten frisch als einzelne Zelle.
-  - Konsolenzeile `RACE generation=… score=… progress=… cells=… median=… islands … catastrophes=…` (Bestwert
-    je Insel) und `RACE catastrophe: island …`; Status in der GUI mit Zahl der Katastrophen.
+  - Konsolenzeile `RACE generation=… score=… lastProgress=… cells=… median=… islands … catastrophes=…`
+    (Mittelwerte, Bestwert je Insel) und `RACE catastrophe: island …`; Status in der GUI mit Start 1–3 und Zahl
+    der Katastrophen.
 - **Import:** Ein Genom je Bahn aus den geladenen Zellen, danach Neustart der Episoden.
 
 ## Warum Schieben durch Masse nicht zählt
@@ -108,6 +113,8 @@ Weitere Prüfungen:
 - Ein Neuling weit vorn zählt nicht, danach zählt er wie alle; Verlassen der Bahn ergibt 0.
 - Ein von Hand gleichmäßig bewegter Körper wird Elite in der ersten Bahn seiner Insel (unverändert,
   frische Gründer).
+- Ein Körper, der in allen drei Startlagen gleichmäßig 4 px/s läuft (80 px), schlägt einen, der nur in einer
+  Lage 10 px/s läuft (200 px, im Mittel 67 px).
 - Inseln: Elite je Insel, Turniere nur innerhalb der Insel, Migration im Ring; eine Insel ohne Rekord über
   den Rauschrand hinaus wird nach 30 Generationen neu gewürfelt, immer nur eine je Generation;
   Gründer starten mit verschiedener Drehung.
@@ -167,6 +174,26 @@ Speicher hatte (Claude Code beendet dann Hintergrundprozesse); der Abbruch lag n
   - Jedes Genom aus mehreren Startlagen bewerten und Mittel oder Minimum werten, wie es bei verrauschter
     Fitness üblich ist. Das kostet entsprechend mehr Rechenzeit je Generation.
   - Den Rekord für die Katastrophe aus diesen wiederholten Bewertungen nehmen statt aus einer Spitze.
+
+## Taktgeber: Können die Gehirne überhaupt schwingen? (25.10.2026)
+
+Beobachtung des Nutzers nach etwa 240 Generationen in der GUI: Ein Gang braucht Aktoren oder Größe, die sich
+zyklisch ändern; das war nie zu sehen. Die Studie zählt das jetzt (`oscillating`: Gründer, deren Aktor im Lauf
+mindestens viermal zwischen Ziehen und Drücken wechselt; `pulsing`: Radius schwankt um mehr als 2 px).
+Erste zwei Generationen: 0 von 32 und 0 von 32.
+
+Befund aus dem Code (`NeuralNet`, `CellBrain`):
+- Zufallsgehirne sind beim Anlegen reine Vorwärtsnetze. Rückwärtskanten entstehen erst durch die Mutation
+  `addRandomSynapse` (die Quellschicht darf hinter der Zielschicht liegen).
+- Alle neuen Synapsen haben Gewichte von höchstens ± 0,001. Die Ausgänge eines Zufallsgehirns hängen damit
+  praktisch nur von den Biaswerten ab und sind konstant; die Eingänge wirken kaum.
+- Es gibt keinen Takteingang. Das Alter (`MY_CELL_AGE`, 1 − 60/(60 + Alter)) steigt nur langsam und
+  gleichmäßig an.
+- Ein Takt kann also nur entstehen, wenn die Mutation eine Rückkopplung mit großen Gewichten aufbaut oder
+  wenn ein Regelkreis über die Sensoren läuft (Bewegung → Sensor → Aktor), und beides erst aus großen
+  Gewichten. Das erklärt, warum sich nichts zyklisch ändert.
+- Möglicher Hebel (Modelländerung, nicht umgesetzt, Entscheidung Nutzer): ein angeborener Takteingang, etwa
+  Sinus und Kosinus mit evolvierbarer oder fester Periode, angehängt im `EnergyInputLayout`.
 
 ## Grenzen und offene Hebel
 
