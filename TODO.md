@@ -62,7 +62,8 @@
 - [x] Taktgeber: sechs vererbte Perioden als Eingänge (Nutzerentscheidung 25.10.2026, `TAKTGEBER.md`).
 - [x] RACE-Langlauf mit Taktgebern und 3 Startlagen (300 Generationen, 10 % Schwerkraft): kein Körper schwingt.
 - [x] Tonus geprüft (`ActorRhythmTest`): Takte ab 1 s kommen als Vorzeichenwechsel an, Zufallsgehirne leiten sie kaum weiter.
-- [ ] Takteingänge neuer Gehirne stärker anschließen (Nutzerentscheidung 25.10.2026).
+- [x] Takteingänge neuer Gehirne direkt mit Kraft und Größe verbinden (Nutzerentscheidung 25.10.2026): alle schwingen.
+- [ ] RACE-Langlauf mit direkten Taktsynapsen: entsteht ein Gang? (Start auf Nutzerauftrag)
 
 ## Anschließend
 

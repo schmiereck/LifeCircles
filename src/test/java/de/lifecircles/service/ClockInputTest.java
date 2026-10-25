@@ -3,6 +3,7 @@ package de.lifecircles.service;
 import de.lifecircles.model.*;
 import de.lifecircles.model.neural.*;
 import java.io.*;
+import java.util.Arrays;
 import java.util.Random;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,6 +31,28 @@ class ClockInputTest {
         double angle = 2 * Math.PI * 1.25 / 3;
         assertEquals(Math.sin(angle), inputs[EnergyInputLayout.clockSine(12, 5)], 1e-12);
         assertEquals(Math.cos(angle), inputs[EnergyInputLayout.clockCosine(12, 5)], 1e-12);
+    }
+
+    @Test void newBrainsConnectEveryClockDirectlyToTheActorForcesAndTheSize() {
+        for (Cell cell : new Cell[]{cell(), CellFactory.createCell(new Vector2D(100, 100), 10)}) {
+            NeuralNet net = ((CellBrain) cell.getBrain()).getNeuralNetwork().getNeuralNet();
+            int clocks = 0;
+            for (Synapse synapse : net.getSynapseArr()) {
+                int input = Arrays.asList(net.getInputNeuronArr()).indexOf(synapse.getSourceNeuron());
+                int output = Arrays.asList(net.getOutputNeuronArr()).indexOf(synapse.getTargetNeuron());
+                if (input < EnergyInputLayout.remainsInputCount(12) || output < 0) continue; // hidden layers stay as they were
+                clocks++;
+                assertTrue(output == GlobalOutputFeature.SIZE.ordinal()
+                        || (output - GlobalOutputFeature.values().length) % ActorOutputFeature.values().length == ActorOutputFeature.FORCE.ordinal(), "output " + output);
+                assertTrue(Math.abs(synapse.getWeight()) <= CellBrain.CLOCK_SYNAPSE_WEIGHT);
+            }
+            assertEquals(12 * 13, clocks, "sine and cosine of six clocks to size and twelve forces");
+        }
+        // Other interfaces (old saves are migrated without synapses, lab networks) stay unwired.
+        NeuralNet historical = new CellBrain(new ValuesNeuronValueFunctionFactory(), 316, 133, .5, .01, .025).getNeuralNetwork().getNeuralNet();
+        for (Synapse synapse : historical.getSynapseArr())
+            assertFalse(Arrays.asList(historical.getInputNeuronArr()).contains(synapse.getSourceNeuron())
+                    && Arrays.asList(historical.getOutputNeuronArr()).contains(synapse.getTargetNeuron()), "no direct input-output synapse");
     }
 
     @Test void periodsAreClampedAndMutateByAFactor() {

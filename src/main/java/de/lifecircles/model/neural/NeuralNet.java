@@ -1349,6 +1349,11 @@ public class NeuralNet implements Serializable {
         }
     }
 
+    /** A direct synapse from one input to one output neuron (single ports), e.g. for innate wiring of new brains. */
+    public void connectInputToOutput(final int input, final int output, final double weight) {
+        addSynapse(new Synapse(inputNeuronArr[input], 0, outputNeuronArr[output], 0, weight));
+    }
+
     private void addSynapse(Synapse synapse) {
         Synapse[] newArr = new Synapse[this.synapseArray.length + 1];
         System.arraycopy(this.synapseArray, 0, newArr, 0, this.synapseArray.length);

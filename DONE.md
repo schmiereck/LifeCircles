@@ -8,6 +8,8 @@
   `EnzymeThrottleTest`.
 - `ActorRhythmTest`: Tonus lässt Takte ab 1 s als Vorzeichenwechsel durch (0,5 s nicht, ungleiche Kraftgrenzen);
   Zufallsgehirne bewegen die Kraft durch die Takte im Median nur um 0,002.
+- Direkte Taktsynapsen neuer Gehirne (12 Takteingänge → 12 Aktorkräfte und Größe, ± 0,5): Zufallsgründer
+  schwingen (16 von 16; RACE 32 von 32). `ClockInputTest`, `ActorRhythmTest`.
 - RACE-Studie mit Taktgebern, 300 Generationen, 10 % Schwerkraft: `oscillating 0` durchgehend, kein Trend,
   23 Katastrophen (`RENNBAHN.md`).
 

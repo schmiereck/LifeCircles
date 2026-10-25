@@ -9,6 +9,8 @@ import java.io.Serializable;
 public class CellBrain implements CellBrainInterface, Serializable {
     private static final long serialVersionUID = 1L;
     private final NeuralNetwork network;
+    /** Clock inputs of new brains reach every actor force and the size directly with weights up to this (TAKTGEBER.md). */
+    public static final double CLOCK_SYNAPSE_WEIGHT = .5;
 
     /** Compact founding genotype; interfaces do not determine the hidden network size. */
     public static CellBrain createDefault() {
@@ -21,6 +23,7 @@ public class CellBrain implements CellBrainInterface, Serializable {
         network.setEnableNeuronType(true);
         network.getNeuralNet().addParallelStateLayers(factory, network.getNeuronValueFunction(),
                 SimulationConfig.DEFAULT_BRAIN_STATE_NEURONS, SimulationConfig.DEFAULT_BRAIN_STATE_CONNECTIVITY);
+        wireClocks(network.getNeuralNet());
         return new CellBrain(network);
     }
 
@@ -49,6 +52,26 @@ public class CellBrain implements CellBrainInterface, Serializable {
 
         this.network.getNeuralNet().addParallelStateLayers(neuronValueFunctionFactory,
                 this.network.getNeuronValueFunction(), hiddenSizingInputs / 4, stateHiddenLayerSynapseConnectivity);
+        wireClocks(this.network.getNeuralNet());
+    }
+
+    /**
+     * Random brains pass the clocks on only through several weak layers and hardly swing. New brains with the full
+     * interface therefore connect each clock input (sine and cosine) directly to every actor force and to the size,
+     * with uniform weights in ± CLOCK_SYNAPSE_WEIGHT. These are ordinary synapses: inherited, mutated, paid for.
+     */
+    static void wireClocks(final NeuralNet net) {
+        final int actors = SimulationConfig.CELL_SENSOR_ACTOR_COUNT;
+        if (net.getInputCount() != EnergyInputLayout.inputCount(actors)) return;
+        final java.util.Random random = NeuralNetwork.getRandom();
+        for (int k = 0; k < EnergyInputLayout.CLOCKS; k++) {
+            for (final int input : new int[]{EnergyInputLayout.clockSine(actors, k), EnergyInputLayout.clockCosine(actors, k)}) {
+                net.connectInputToOutput(input, GlobalOutputFeature.SIZE.ordinal(), (random.nextDouble() * 2 - 1) * CLOCK_SYNAPSE_WEIGHT);
+                for (int a = 0; a < actors; a++)
+                    net.connectInputToOutput(input, GlobalOutputFeature.values().length + a * ActorOutputFeature.values().length
+                            + ActorOutputFeature.FORCE.ordinal(), (random.nextDouble() * 2 - 1) * CLOCK_SYNAPSE_WEIGHT);
+            }
+        }
     }
 
     /** Old cell outputs get the appended enzyme throttle, disconnected so full activity is kept. */

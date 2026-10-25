@@ -3,7 +3,8 @@
 Aktualisiert: 25.10.2026. Branch `master`.
 
 - Taktgeber (25.10.2026, alle Welten): sechs vererbte Perioden (Oktaven 0,5–16 s als Start), Sinus/Kosinus des
-  Zellalters als Eingänge 316–327, jetzt 328 Eingänge; alte Netze ohne neue Synapsen migriert. `TAKTGEBER.md`.
+  Zellalters als Eingänge 316–327, jetzt 328 Eingänge; alte Netze ohne neue Synapsen migriert. Neue Gehirne
+  verbinden die Takte direkt mit Aktorkraft und Größe (± 0,5), Zufallskörper schwingen damit. `TAKTGEBER.md`.
 - RACE bewertet jedes Genom aus 3 Startlagen (Mittelwert); die Studie zählt schwingende und pulsierende Körper.
   Studie mit Taktgebern (300 Generationen, 10 % Schwerkraft): kein schwingender Körper, Bestwert gemittelt
   1–2 px ohne Trend (Abdriften, kein Gang). `RENNBAHN.md`.

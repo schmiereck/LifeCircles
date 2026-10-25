@@ -98,11 +98,11 @@ class ActorRhythmTest {
     }
 
     /**
-     * Diagnosis, no model rule: how far the clocks move the force of race founders (random brains as RaceTrainStrategy
-     * builds them) and of lineages drifting by mutation without selection. Other inputs stay at the founder's
-     * first real inputs; only the clocks run through 16 s of age.
+     * How far the clocks move the force of race founders (random brains as RaceTrainStrategy builds them) and of
+     * lineages drifting by mutation without selection. Other inputs stay at the founder's first real inputs; only the
+     * clocks run through 16 s of age. Before the direct clock synapses the median swing was 0.002 and no founder swung.
      */
-    @Test void randomBrainsBarelyFeelTheClocks() {
+    @Test void randomBrainsSwingWithTheClocks() {
         Environment world = new Environment(1000, 1000);
         int founders = 16;
         int[] drift = {0, 30, 100, 300};
@@ -143,6 +143,7 @@ class ActorRhythmTest {
                 }
                 if (swings4) oscillating++;
             }
+            if (generations == 0) assertEquals(founders, oscillating, "every new brain swings");
             Collections.sort(swings);
             System.out.printf(Locale.ROOT, "Mutations %3d: force swing from the clocks median %.4f, 90%% %.4f, max %.4f (range -90..150); oscillating founders %d of %d%n",
                     generations, swings.get(swings.size() / 2), swings.get(swings.size() * 9 / 10), swings.getLast(), oscillating, founders);

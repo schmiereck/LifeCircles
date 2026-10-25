@@ -35,7 +35,8 @@
   (Coulomb plus Rollwiderstand der Kontaktfläche), begrenzt durch das tatsächliche Andrücken. Anker
   bleiben als zusätzlicher Mechanismus. Siehe `BODENREIBUNG.md`.
 - Zellen haben sechs vererbte Taktgeber (Nutzerentscheidung 25.10.2026): Perioden als Gen, Sinus/Kosinus
-  des eigenen Alters als Eingänge, Mutation um einen Faktor. Kein weltweiter gemeinsamer Takt. `TAKTGEBER.md`.
+  des eigenen Alters als Eingänge, Mutation um einen Faktor. Kein weltweiter gemeinsamer Takt. Neue Gehirne
+  sind angeboren direkt von den Takten zu Aktorkraft und Größe verdrahtet (± 0,5). `TAKTGEBER.md`.
 - DNA-erhaltende Ausführung spart CPU; genetische Reserven bleiben erhalten.
 - Default-Gründer beginnen mit 48 versteckten Neuronen (24 gemeinsam + 3 × 8
   Zustandsneuronen). 328 Sensor-/134 Ausgangsneuronen zählen zusätzlich. Das ist

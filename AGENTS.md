@@ -54,7 +54,8 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
   `EnergyInputLayout`, Ausgänge im angehängten `OutputLayout`. Aktuell zwölf Aktoren:
   328 Eingänge / 134 Ausgänge (133 = Enzymdrossel; Eingänge 316–327 = sechs vererbte Taktgeber als
   Sinus/Kosinus des Zellalters, `TAKTGEBER.md`); vorhandene Netze mit 213, 304 oder 316
-  Eingängen bzw. 133 Ausgängen werden ohne neue Synapsen migriert. Neue Zellgene (wie `clockPeriods`)
+  Eingängen bzw. 133 Ausgängen werden ohne neue Synapsen migriert; nur neue Gehirne mit 328 Eingängen erhalten
+  direkte Taktsynapsen zu Kraft und Größe (`CellBrain.wireClocks`). Neue Zellgene (wie `clockPeriods`)
   bei Teilung, Trainingsgründern und HIGH_POSITION3 mitkopieren und alte Speicherstände in `readObject` füllen.
 - Überreste sind normale `Cell`-Objekte mit festem Verhalten und Restreserven. Kein
   zusätzliches Materie-/Körpermaterialmodell. Sie verschwinden, wenn alle Vorräte leer sind.

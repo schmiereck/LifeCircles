@@ -29,6 +29,12 @@ zeitabhängige Eingang (`RENNBAHN.md`, Abschnitt Taktgeber).
 - **Migration:** Netze mit 213, 304 oder 316 Eingängen bekommen die neuen Eingänge ohne Synapsen. Ihre Ausgänge
   bleiben bitgenau gleich (`EightEnergySensorTest`). Neue Zufallsgehirne werden auch mit den Takteingängen
   zufällig verbunden.
+- **Direkte Taktsynapsen** (seit 25.10.2026, Nutzerentscheidung, `CellBrain.wireClocks`): Neue Gehirne mit vollem
+  Eingang (328) verbinden jeden der 12 Takteingänge direkt mit der Kraft aller 12 Aktoren und mit der Größe,
+  Gewichte gleichverteilt in ± 0,5 (`CLOCK_SYNAPSE_WEIGHT`). Das sind 156 gewöhnliche Synapsen: Sie werden vererbt,
+  mutiert und als Speicher bezahlt (Standardgründer 1481 statt 1325 Synapsen). Zufallskörper schwingen damit von
+  Anfang an mit zufälliger Phase und Mischung der Perioden; die Evolution wählt Phase, Periode und Stärke aus und
+  kann die Gewichte auch wieder abschwächen. Migrierte und andere Netze bleiben unverbunden.
 - Im Gehirnstillstand (Pause) läuft das Alter und damit die Uhr weiter. Der Takt selbst kostet keine Energie.
 
 ## Kann das Netz aus einem Takt andere Perioden ableiten?
@@ -75,9 +81,16 @@ zeitabhängige Eingang (`RENNBAHN.md`, Abschnitt Taktgeber).
   dieser Schichten sind klein (Xavier, ± 0,11), Synapsen aus der Mutation `addRandomSynapse` starten mit ± 0,001,
   und nur 2,5 % der möglichen Verbindungen werden angelegt. Über mehrere Stufen bleibt vom Takt fast nichts.
 
+- **Mit direkten Taktsynapsen:** Schwankung der Kraft durch die Takte im Median 162 (Maximum 197), alle 16 Gründer
+  schwingen; nach 30–300 Mutationen ohne Auswahl Median 177–227. Kurzer RACE-Lauf (3 Generationen, 10 %
+  Schwerkraft, Seed 4711): `oscillating 32 pulsing 32` in jeder Generation (vorher 0), Bestwert gemittelt
+  4,6 · 7,4 · 4,8 px, Median teils von 0 verschieden (−0,37 · −0,20 · 0,47 px).
+
 ## Grenzen
 
-- Zufallsgehirne spüren die Takte kaum (oben). In 300 RACE-Generationen schwang kein Körper. Auch nach 300 RACE-Generationen (3 Startlagen, 10 % Schwerkraft)
+- Ohne direkte Taktsynapsen spürten Zufallsgehirne die Takte kaum (oben); in 300 RACE-Generationen schwang
+  kein Körper. Die Studie dazu lief vor dieser Änderung.
+- Der 0,5-s-Takt kommt wegen des Tonus nicht als Vorzeichenwechsel an (oben), wohl aber als Schwankung. Auch nach 300 RACE-Generationen (3 Startlagen, 10 % Schwerkraft)
   schwang kein Körper (`RENNBAHN.md`, Studie mit Taktgebern).
 - Nicht bitgleich zu früheren Läufen: Neue Zufallsgehirne haben andere Synapsen, und die Mutation der
   Perioden zieht zusätzliche Zufallszahlen.
