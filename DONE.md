@@ -6,6 +6,8 @@
   213/304/316 Eingängen ohne Synapsen, Vererbung bei Teilung/Gründern/HIGH_POSITION3, alte Speicherstände
   mit Oktaven. `TAKTGEBER.md`, `ClockInputTest`, angepasst `EightEnergySensorTest`, `CompactFounderBrainTest`,
   `EnzymeThrottleTest`.
+- `ActorRhythmTest`: Tonus lässt Takte ab 1 s als Vorzeichenwechsel durch (0,5 s nicht, ungleiche Kraftgrenzen);
+  Zufallsgehirne bewegen die Kraft durch die Takte im Median nur um 0,002.
 - RACE-Studie mit Taktgebern, 300 Generationen, 10 % Schwerkraft: `oscillating 0` durchgehend, kein Trend,
   23 Katastrophen (`RENNBAHN.md`).
 

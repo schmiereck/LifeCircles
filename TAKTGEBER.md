@@ -50,11 +50,34 @@ zeitabhängige Eingang (`RENNBAHN.md`, Abschnitt Taktgeber).
 - Teilung, mutierter und nicht mutierter Trainingsgründer: Vererbung wie oben.
 - Gespeicherte Zelle ohne das Feld lädt mit den Oktaven.
 
+## Kommt der Takt am Aktor an? (`ActorRhythmTest`, 25.10.2026)
+
+- **Signalweg:** Ein Testgehirn ohne Synapsen setzt die Kraft aller Aktoren auf den Sinus eines Takts, wie es ein
+  großes Gewicht täte. Es läuft durch den vollen Schritt mit Haftung (Finanzierung, Eingänge, Ausgänge, Tonus
+  0,5 s). Der Tonus ist ein Tiefpass erster Ordnung, der Ausschlag entspricht genau 1/√(1 + (2πτ/T)²):
+
+  | Periode | Kraft | Ausschlag | Vorzeichenwechsel (alle 0,5 s gemessen) |
+  |---|---|---|---|
+  | 0,5 s | 0,4 … 38 | 16 % | 0 von 48 (0) |
+  | 1 s | −16 … 57 | 30 % | 24 von 24 (23) |
+  | 2 s | −42 … 87 | 54 % | 12 von 12 (12) |
+  | 4 s | −69 … 120 | 79 % | 6 von 6 (6) |
+  | 8 s | −84 … 140 | 93 % | 3 von 3 (3) |
+
+  Ab 1 s kommt jeder Takt als Wechsel zwischen Ziehen und Drücken an. Der 0,5-s-Takt wechselt nie: Anziehung
+  (max. 90) und Abstoßung (max. 150) sind ungleich, ein voller Sinusbefehl drückt deshalb im Mittel mit 19, und
+  der Tonus lässt nur den kleinen Ausschlag um dieses Mittel durch. Die Messung der RACE-Studie alle 0,5 s
+  erkennt die Takte ab 1 s.
+- **Zufallsgehirne:** Für 16 RACE-Gründer laufen nur die Takte 16 s lang, alle anderen Eingänge bleiben fest.
+  Schwankung der Aktorkraft (Bereich −90 … 150): Median 0,002, Maximum 0,014. Kein Gründer schwingt. Nach 30,
+  100 und 300 Mutationen ohne Auswahl bleibt der Median bei 0, das Maximum bei 0,3 bis 2,5.
+- **Ursache:** Die Takteingänge erreichen die Kraftausgänge nur über mehrere Schichten. Die Anfangsgewichte
+  dieser Schichten sind klein (Xavier, ± 0,11), Synapsen aus der Mutation `addRandomSynapse` starten mit ± 0,001,
+  und nur 2,5 % der möglichen Verbindungen werden angelegt. Über mehrere Stufen bleibt vom Takt fast nichts.
+
 ## Grenzen
 
-- Neue Synapsen starten mit Gewichten von höchstens ± 0,001. Ein Zufallsgehirn spürt den Takt deshalb noch
-  kaum. In den ersten 4 RACE-Generationen schwang kein Körper (`oscillating 0`). Erst die Mutation (± Stärke
-  je Treffer) macht die Gewichte groß genug. Auch nach 300 RACE-Generationen (3 Startlagen, 10 % Schwerkraft)
+- Zufallsgehirne spüren die Takte kaum (oben). In 300 RACE-Generationen schwang kein Körper. Auch nach 300 RACE-Generationen (3 Startlagen, 10 % Schwerkraft)
   schwang kein Körper (`RENNBAHN.md`, Studie mit Taktgebern).
 - Nicht bitgleich zu früheren Läufen: Neue Zufallsgehirne haben andere Synapsen, und die Mutation der
   Perioden zieht zusätzliche Zufallszahlen.

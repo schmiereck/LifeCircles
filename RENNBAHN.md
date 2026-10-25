@@ -213,9 +213,10 @@ Studien oben vergleichbar.
 - **Befund:** Die gemittelten 1–2 px in 25 s sind gleichmäßiges Abdriften (bei 10 % Schwerkraft rutscht und
   rollt ein Körper leichter), kein Gang. Die Taktgeber haben in 300 Generationen keinen schwingenden Aktor
   hervorgebracht.
-- **Vermutete Ursache (nicht geprüft):** Die Taktsynapsen starten mit ± 0,001. Damit ein Aktor die Richtung
-  wechselt, muss ein Taktgewicht durch mehrere Mutationstreffer (± 0,2) größer als die Biaswerte werden, und auf
-  dem Weg dorthin bringt ein schwaches Wackeln keinen Vorteil, die Auswahl hilft also nicht.
+- **Ursache (geprüft mit `ActorRhythmTest`, `TAKTGEBER.md`):** Der Signalweg samt Tonus lässt Takte ab 1 s als
+  Vorzeichenwechsel durch. Aber die Zufallsgehirne reichen den Takt über mehrere Schichten mit kleinen Gewichten
+  kaum weiter: Die Aktorkraft schwankt durch die Takte im Median um 0,002 von 240. Auch 300 Mutationen ohne
+  Auswahl ändern daran nichts, und ein schwaches Wackeln bringt der Auswahl keinen Vorteil.
 - **Mögliche Hebel (Entscheidung Nutzer):** größere Anfangsgewichte für die Taktsynapsen; prüfen, ob der Tonus
   der Aktorkraft schnelle Wechsel überhaupt durchlässt; Schwingen als Zwischenziel wäre Training und ist verworfen.
 

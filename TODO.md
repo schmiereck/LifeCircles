@@ -61,7 +61,8 @@
 - [x] RACE: Bewertung aus 3 Startlagen je Genom, Mittelwert, Rekord daraus (Nutzerentscheidung 25.10.2026).
 - [x] Taktgeber: sechs vererbte Perioden als Eingänge (Nutzerentscheidung 25.10.2026, `TAKTGEBER.md`).
 - [x] RACE-Langlauf mit Taktgebern und 3 Startlagen (300 Generationen, 10 % Schwerkraft): kein Körper schwingt.
-- [ ] RACE: Taktsynapsen größer starten lassen oder Tonus der Aktoren prüfen (Entscheidung Nutzer, `RENNBAHN.md`).
+- [x] Tonus geprüft (`ActorRhythmTest`): Takte ab 1 s kommen als Vorzeichenwechsel an, Zufallsgehirne leiten sie kaum weiter.
+- [ ] Takteingänge neuer Gehirne stärker anschließen (Nutzerentscheidung 25.10.2026).
 
 ## Anschließend
 
