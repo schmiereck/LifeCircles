@@ -64,8 +64,9 @@
 - [x] Tonus geprüft (`ActorRhythmTest`): Takte ab 1 s kommen als Vorzeichenwechsel an, Zufallsgehirne leiten sie kaum weiter.
 - [x] Takteingänge neuer Gehirne direkt mit Kraft und Größe verbinden (Nutzerentscheidung 25.10.2026): alle schwingen.
 - [x] RACE-Langlauf mit direkten Taktsynapsen (300 Generationen): stetiger Fortschritt bis 12–13 px, Median 4,5 px.
-- [ ] RACE: Anstieg flacht ab Generation 200 ab, Laufrichtung hängt teils von der Startdrehung ab. Längerer Lauf,
-  volle Schwerkraft oder 5 Startlagen? (Entscheidung Nutzer)
+- [x] RACE: Richtung egal, Start in der Bahnmitte, Betrag zählt (Nutzervorgabe 26.10.2026).
+- [ ] RACE-Langlauf 600 Generationen mit beidseitiger Wertung: Steigt der Bestwert nach Generation 200 weiter?
+- [ ] Danach offen: volle Schwerkraft, 5 Startlagen (Entscheidung Nutzer).
 
 ## Anschließend
 

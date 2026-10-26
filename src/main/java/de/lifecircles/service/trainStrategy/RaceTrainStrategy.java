@@ -7,7 +7,8 @@ import java.util.*;
 
 /**
  * Race lanes (RENNBAHN.md): each lane grows one small body from a single founder by clonal division and scores how far
- * the body moves itself to the right. Forces between cells cancel, so only grip on the terrain (friction where cells
+ * the body moves itself, in either direction: it starts in the middle of its lane and the distance counts, not the
+ * side (since 26.10.2026; before, only motion to the right counted). Forces between cells cancel, so only grip on the terrain (friction where cells
  * press on, anchors) moves a body. Progress counts only the motion of cells already present in the previous step:
  * placing children ahead or pushing by numbers does not count, and the body stays capped at a few cells. Each episode
  * starts with a growth phase; progress counts only after it, when the push of the last births has died away (with
@@ -23,7 +24,7 @@ import java.util.*;
 public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
     static final int ISLANDS = 4, ISLAND_LANES = 8, LANES = ISLANDS * ISLAND_LANES, CELL_LIMIT = 6, TOURNAMENT = 3,
             MIGRATION_INTERVAL = 10, STAGNATION_GENERATIONS = 30, EVALUATIONS = 3;
-    static final double LANE_WIDTH = 1600, START = 400, HEIGHT = 800, EPISODE_SECONDS = 60, WINDOW_SECONDS = 10,
+    static final double LANE_WIDTH = 1600, START = LANE_WIDTH / 2, HEIGHT = 800, EPISODE_SECONDS = 60, WINDOW_SECONDS = 10,
             SAMPLE_SECONDS = .5, ENERGY = .75, GROWTH_SECONDS = 30, RUN_START_SECONDS = 35, START_JITTER = 40,
             // A new island record must beat the old one by this much (noise from the random start is no progress).
             RECORD_MARGIN = .1, RECORD_FACTOR = 1.1;
@@ -56,8 +57,8 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
         boolean invalid;
         Body(int lane, Cell genome) { this.lane = lane; this.genome = genome; }
         int island() { return lane / ISLAND_LANES; }
-        /** Mean progress over the final window; an escaped body scores nothing. */
-        double score() { return invalid || windowSamples == 0 ? 0 : windowSum / windowSamples; }
+        /** Distance of the mean progress over the final window, left or right; an escaped body scores nothing. */
+        double score() { return invalid || windowSamples == 0 ? 0 : Math.abs(windowSum / windowSamples); }
     }
 
     /** One island: its best score so far and the generations since that record last improved. */
@@ -289,8 +290,8 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
 
     private void updateStatus() {
         double best = 0;
-        for (Body body : bodies) if (!body.invalid) best = Math.max(best, body.progress);
-        status = String.format(Locale.ROOT, "RACE · G%d · Start %d/%d · %.0f/%.0f s · %s · vorn %.1f px · letzte Bestwertung %s · %d Katastrophen",
+        for (Body body : bodies) if (!body.invalid) best = Math.max(best, Math.abs(body.progress));
+        status = String.format(Locale.ROOT, "RACE · G%d · Start %d/%d · %.0f/%.0f s · %s · weitester %.1f px · letzte Bestwertung %s · %d Katastrophen",
                 generation, evaluation + 1, EVALUATIONS, elapsed, EPISODE_SECONDS,
                 elapsed < GROWTH_SECONDS ? "Wachstum" : elapsed < RUN_START_SECONDS ? "Ruhe" : "Lauf", best,
                 lastEvaluation == null ? "—" : String.format(Locale.ROOT, "%.1f px", lastEvaluation.score()), catastrophes);

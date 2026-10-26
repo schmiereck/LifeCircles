@@ -4,6 +4,8 @@ Status: **experimentell umgesetzt** (24.10.2026). Frage des Nutzers: Können Zel
 Funktion entwickeln, konkret sich gemeinsam fortbewegen? Viele parallele Bahnen, Gewinner ist,
 wer am weitesten von links nach rechts kommt. Die Zellen sollen sich normal teilen, aber nicht
 durch schiere Anzahl nach rechts drücken; gewünscht ist ein kleiner, sich aktiv vermehrender Verbund.
+Seit 26.10.2026 (Nutzervorgabe: die Richtung ist nicht entscheidend, links nach rechts war ein Fehler in den
+Anforderungen) startet jeder Körper in der Bahnmitte, und der Weg in beide Richtungen zählt.
 
 ## Physikalischer Befund vorab
 
@@ -41,8 +43,9 @@ Der Reibungsgang und seine Parameter stehen in `BODENREIBUNG.md`.
 - **Welt:**
   - 32 Bahnen à 1600 px nebeneinander (51 200 × 800 px; bis 24.10.2026 abends 16 Bahnen), Boden, an jedem
     Bahnanfang eine Wand über die volle Höhe.
-  - Der Gründer startet 400 px (± 40 px zufällig) hinter seiner Bahnwand, damit ein Haufen nicht von der Wand
-    abstoßen kann, und mit zufälliger Drehung.
+  - Der Gründer startet in der Bahnmitte, 800 px (± 40 px zufällig) von beiden Wänden entfernt, damit ein Haufen
+    nicht von einer Wand abstoßen kann, und mit zufälliger Drehung. Bis 25.10.2026 startete er 400 px hinter der
+    linken Wand, und nur der Weg nach rechts zählte.
 - **Schalter beim Anlegen:** Geländereibung, Haftung, Bindungen, Geburtsbindung, Bodenfeld, Anker,
   „Anker nur am Boden“ (die Wände halten nicht). Die Policy folgt dem Hauptschalter Haftung wie die offenen
   Welten (nicht `trainingAdhesion`), denn ohne Haftung drückt kein Fuß an und es gibt keinen Vortrieb.
@@ -68,8 +71,10 @@ Der Reibungsgang und seine Parameter stehen in `BODENREIBUNG.md`.
   - Der Fortschritt zählt erst ab 35 s (Wachstum 0–30 s, Ruhe 30–35 s, Lauf 35–60 s). Mit Reibung schiebt
     eine Geburt den Verband an (Überlappung, die hinteren Zellen haften): 1,95 px in 20 s, wenn er mitzählt.
     Ohne die Phasen würde die Auswahl erst den Geburtsschub optimieren.
-  - Der Wert ist der Mittelwert dieses Fortschritts über die letzten 10 s der 60-s-Episode (alle 0,5 s),
-    belohnt also anhaltende Bewegung, keinen kurzen Ausschlag.
+  - Der Wert ist der Betrag des Mittelwerts dieses Fortschritts über die letzten 10 s der 60-s-Episode (alle
+    0,5 s), belohnt also anhaltende Bewegung, keinen kurzen Ausschlag. Links und rechts zählen gleich; jede
+    Startlage wird für sich gewertet, ein Körper darf also aus verschiedenen Lagen in verschiedene Richtungen
+    laufen. Wer nur hin und her wackelt, kommt im Mittel nicht weg und bekommt wenig.
   - Verlässt eine Zelle ihre Bahn, bekommt der Körper 0.
 - **Auswahl: Inselmodell mit Katastrophen** (Nutzervorgabe 24.10.2026: echte Evolution mit den
   Standardwerkzeugen gegen lokale Optima, kein Lehrplan):

@@ -9,6 +9,7 @@ Aktualisiert: 25.10.2026. Branch `master`.
   Studie mit Taktgebern (300 Generationen, 10 % Schwerkraft): kein schwingender Körper, Bestwert gemittelt
   1–2 px ohne Trend (Abdriften, kein Gang). Mit direkten Taktsynapsen (300 Generationen): stetiger
   Fortschritt, Bestwert 5,7 → 12,6 px, Median 0,5 → 4,5 px, Vortrieb ohne Anker. `RENNBAHN.md`.
+- RACE seit 26.10.2026: Start in der Bahnmitte, der Weg in beide Richtungen zählt (Betrag).
 
 - Rennbahn-Training RACE (experimentell): kleine klonale Verbände (≤ 6 Zellen) werden nach eigenem
   Fortschritt nach rechts ausgewählt; Teilung nach vorn zählt nicht, Teilung nur in einer Wachstumsphase

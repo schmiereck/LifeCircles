@@ -8,6 +8,7 @@
   `EnzymeThrottleTest`.
 - `ActorRhythmTest`: Tonus lässt Takte ab 1 s als Vorzeichenwechsel durch (0,5 s nicht, ungleiche Kraftgrenzen);
   Zufallsgehirne bewegen die Kraft durch die Takte im Median nur um 0,002.
+- 26.10.2026: RACE startet in der Bahnmitte und wertet den Weg in beide Richtungen (`RaceTrainStrategyTest`).
 - RACE-Langlauf mit direkten Taktsynapsen, 300 Generationen: Bestwert 5,7 → 12,6 px (Mittel je 50 Generationen),
   Median 0,5 → 4,5 px, Spitze 19,9 px; Elite wiederholt meist (`RENNBAHN.md`).
 - Direkte Taktsynapsen neuer Gehirne (12 Takteingänge → 12 Aktorkräfte und Größe, ± 0,5): Zufallsgründer

@@ -205,6 +205,29 @@ class RaceTrainStrategyTest {
         assertEquals(33, world.getCellList().getFirst().getGeneration(), "the steady mover is the elite");
     }
 
+    @Test void bodiesStartMidLaneAndEitherDirectionCounts() {
+        var strategy = strategy();
+        Environment world = setup(strategy, genome(false));
+        RaceTrainStrategy.Body first = strategy.bodies().getFirst();
+        assertEquals(RaceTrainStrategy.LANE_WIDTH / 2, first.cells.getFirst().getPosition().getX(), 1e-9);
+        strategy.bodies().get(3).genome.setGeneration(33);
+        double dt = 1.0 / 60;
+        long steps = Math.round(RaceTrainStrategy.EPISODE_SECONDS / dt);
+        for (int episode = 0; episode < RaceTrainStrategy.EVALUATIONS; episode++) {
+            // Lane 3 walks left in the first start and right in the others, lane 5 right at half the speed.
+            RaceTrainStrategy.Body walker = strategy.bodies().get(3), slow = strategy.bodies().get(5);
+            double speed = episode == 0 ? -10 : 10;
+            for (int i = 0; i < steps; i++) {
+                for (Cell cell : walker.cells) cell.setPosition(cell.getPosition().add(new Vector2D(dt * speed, 0)));
+                for (Cell cell : slow.cells) cell.setPosition(cell.getPosition().add(new Vector2D(dt * 5, 0)));
+                strategy.selectAndMutate(world, dt);
+            }
+        }
+        // 10 px/s from 35 s: about 200 px over the last window in every start, whichever way.
+        assertEquals(200, strategy.getLastEvaluation().score(), 30);
+        assertEquals(33, world.getCellList().getFirst().getGeneration(), "the faster walker is the elite");
+    }
+
     /** Ranked bodies per island: island i scores base[i], its lanes a little less each. */
     static List<List<RaceTrainStrategy.Body>> ranks(double... base) {
         List<List<RaceTrainStrategy.Body>> islands = new ArrayList<>();
