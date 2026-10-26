@@ -12,7 +12,8 @@ Aktualisiert: 25.10.2026. Branch `master`.
 - RACE seit 26.10.2026: Start in der Bahnmitte, der Weg in beide Richtungen zählt (Betrag). Studie 600
   Generationen: Anstieg bis G200 (Bestwert ~30 px), danach Plateau 20–26 px; vermutlich löschen Katastrophen
   die besten Inseln, weil ihr Rekord aus einer verrauschten Spitze stammt. Seitdem: Rekord als gleitendes
-  Mittel über 10 Generationen, die führende Insel wird nie gelöscht. `RENNBAHN.md`.
+  Mittel über 10 Generationen, die führende Insel wird nie gelöscht. Studie damit (600 Generationen): Anstieg
+  bis zum Ende, Bestwert zuletzt 34–35 px (vorher 22–25), Spitze 54,9 px, 32 Katastrophen. `RENNBAHN.md`.
 
 - Rennbahn-Training RACE (experimentell): kleine klonale Verbände (≤ 6 Zellen) werden nach eigenem
   Fortschritt nach rechts ausgewählt; Teilung nach vorn zählt nicht, Teilung nur in einer Wachstumsphase

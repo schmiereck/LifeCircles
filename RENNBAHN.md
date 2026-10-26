@@ -277,6 +277,33 @@ Werte deshalb etwas höher als dort (Rückwärtsläufer zählen jetzt).
 - **Abhilfe (umgesetzt 26.10.2026, Nutzerentscheidung):** Rekord aus dem gleitenden Mittel über 10 Generationen,
   die führende Insel wird nie gelöscht (oben, Auswahl). Nicht umgesetzt: Elite der gelöschten Insel als Migrant.
 
+## Studie mit gleitendem Rekord, 600 Generationen (26.10.2026, Seed 4711, Modellstand `d0f5037`, Schwerkraft 10 %)
+
+Wie die beidseitige Studie oben, aber Rekord als gleitendes Mittel über 10 Generationen und führende Insel geschützt.
+
+| Generationen | Bestwert (Mittel) | Maximum | Median | vorher (Spitzenrekord): Bestwert |
+|---|---|---|---|---|
+| 1–50 | 15,6 | 27,2 | 4,8 | 14,5 |
+| 51–100 | 19,5 | 32,0 | 6,4 | 21,6 |
+| 101–150 | 21,3 | 33,2 | 6,0 | 26,3 |
+| 151–200 | 20,3 | 31,2 | 7,5 | 29,8 |
+| 201–250 | 21,7 | 32,9 | 8,0 | 21,3 |
+| 251–300 | 18,9 | 31,1 | 5,8 | 24,3 |
+| 301–350 | 21,7 | 31,8 | 8,1 | 23,7 |
+| 351–400 | 22,0 | 32,8 | 7,4 | 25,8 |
+| 401–450 | 26,1 | 35,7 | 9,4 | 25,1 |
+| 451–500 | 27,5 | 42,1 | 9,9 | 19,8 |
+| 501–550 | 35,2 | 54,9 | 12,6 | 25,0 |
+| 551–600 | 33,9 | 44,8 | 12,0 | 21,9 |
+
+- **Kein festes Plateau mehr:** Nach langsamerem Beginn steigt der Bestwert ab etwa Generation 400 weiter, auf
+  34–35 px im Mittel der letzten 100 Generationen (vorher 22–25 px) und bis 54,9 px (G524, vorher höchstens
+  44,8 px). Median zuletzt 12 px (vorher 8,6–10,5 px). Bestwert über 40 px in 21 Generationen, über 50 px in 2.
+- 32 Katastrophen (vorher 40), jetzt etwa gleichmäßig verteilt; die führende Insel blieb verschont.
+- Alle 32 Körper schwingen; Anker fast keine (0–1,7 je Messpunkt).
+- **Grenzen:** je ein Lauf mit einem Seed, daher keine gesicherte Aussage über den Beginn (langsamer als vorher
+  ist vermutlich Zufall des Verlaufs). Ob der Anstieg am Ende weitergeht, zeigt erst ein längerer Lauf.
+
 ## Grenzen und offene Hebel
 
 - **Startproblem:** Zufällige Gehirne müssen graue, anziehende Fußaktoren, Lösen durch Abstoßen und
