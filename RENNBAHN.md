@@ -91,6 +91,10 @@ Der Reibungsgang und seine Parameter stehen in `BODENREIBUNG.md`.
     verbessert (der Rand trennt Fortschritt vom Rauschen des Zufallsstarts), wird sie vollständig mit neuen
     Zufallsgenomen gefüllt und ihr Rekord gelöscht. Höchstens eine Insel je Generation, die am längsten
     stillstehende; ihre besten Gene leben über frühere Migranten auf den Nachbarinseln weiter.
+  - **Rekord als gleitendes Mittel, Schutz der führenden Insel** (seit 26.10.2026, Nutzerentscheidung nach der
+    600er-Studie): Der Rekord einer Insel ist ihr bestes Mittel der Bestwerte der letzten 10 Generationen, nicht
+    mehr eine einzelne Spitze. Eine Glücksgeneration hebt ihn nur um ein Zehntel ihres Ausschlags. Die Insel mit
+    dem höchsten aktuellen Mittel wird nie gelöscht.
   - **Mehrere Startlagen** (seit 25.10.2026, Nutzerentscheidung): Eine Generation besteht aus 3 Episoden.
     Dieselben Gründer (unveränderte Kopien) laufen aus 3 zufälligen Startlagen; gewertet wird der Mittelwert.
     Ein Ruck aus einer einzigen Lage zählt damit nur noch ein Drittel, auch für den Rekord der Katastrophe.
@@ -270,9 +274,8 @@ Werte deshalb etwas höher als dort (Rückwärtsläufer zählen jetzt).
   kaum um 10 % übertroffen, und nach 30 Generationen wird die Insel gelöscht, auch wenn sie die beste ist.
   Beispiel: Insel 2 setzte in G171 den Rekord 44,8 px, lief danach stabil bei 23–34 px und wurde in G202 gelöscht;
   der Bestwert der Welt fiel von etwa 30 auf 20 px. Die Katastrophe räumt damit gerade die erfolgreichen Linien ab.
-- **Mögliche Abhilfe (nicht umgesetzt, Entscheidung Nutzer):** Rekord aus einem gleitenden Mittel über mehrere
-  Generationen statt aus einer Spitze; die global beste Insel nie löschen; oder die Elite der gelöschten Insel als
-  Migrant behalten.
+- **Abhilfe (umgesetzt 26.10.2026, Nutzerentscheidung):** Rekord aus dem gleitenden Mittel über 10 Generationen,
+  die führende Insel wird nie gelöscht (oben, Auswahl). Nicht umgesetzt: Elite der gelöschten Insel als Migrant.
 
 ## Grenzen und offene Hebel
 

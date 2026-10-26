@@ -273,9 +273,9 @@ class RaceTrainStrategyTest {
         var strategy = strategy();
         var islands = ranks(1, 2, 3, 4);
         strategy.nextSeeds(islands); // sets the records
-        // Islands 0-2 repeat their score (or gain within the noise margin), island 3 keeps improving by 20 %.
+        // Islands 0-2 repeat their score (or gain within the noise margin), island 3 keeps doubling.
         for (int g = 1; g < RaceTrainStrategy.STAGNATION_GENERATIONS; g++)
-            strategy.nextSeeds(ranks(1, 2, 1.1 * 3, 4 * Math.pow(1.2, g)));
+            strategy.nextSeeds(ranks(1, 2, 1.1 * 3, 4 * Math.pow(2, g)));
         assertEquals(0, strategy.getCatastrophes());
         assertEquals(RaceTrainStrategy.STAGNATION_GENERATIONS - 1, strategy.island(2).stagnant, "within the margin is no record");
         assertEquals(0, strategy.island(3).stagnant, "a new record beyond the margin resets the count");
@@ -290,6 +290,25 @@ class RaceTrainStrategyTest {
         strategy.nextSeeds(islands);
         assertEquals(2, strategy.getCatastrophes(), "next generation the next stagnant island");
         assertEquals(1, strategy.island(0).record, "the wiped island starts a new record");
+    }
+
+    @Test void aLuckyGenerationSetsOnlyATenthOfItsSpikeAsTheRecord() {
+        var strategy = strategy();
+        for (int g = 0; g < RaceTrainStrategy.RECORD_WINDOW; g++) strategy.nextSeeds(ranks(10, 1, 1, 1));
+        assertEquals(10, strategy.island(0).record, 1e-9);
+        strategy.nextSeeds(ranks(110, 1, 1, 1)); // one lucky generation
+        assertEquals(20, strategy.island(0).record, 1e-9, "moving mean of ten generations");
+        for (int g = 0; g < RaceTrainStrategy.RECORD_WINDOW - 1; g++) strategy.nextSeeds(ranks(25, 1, 1, 1));
+        assertTrue(strategy.island(0).record > 25, "a steady 25 beats the record the spike left");
+    }
+
+    @Test void theLeadingIslandIsNeverWiped() {
+        var strategy = strategy();
+        // Nobody improves; island 3 leads by its moving mean.
+        for (int g = 0; g < 4 * RaceTrainStrategy.STAGNATION_GENERATIONS; g++) strategy.nextSeeds(ranks(1, 2, 3, 40));
+        assertTrue(strategy.island(3).stagnant >= RaceTrainStrategy.STAGNATION_GENERATIONS, "stagnant long enough");
+        assertTrue(strategy.getCatastrophes() >= 3, "the others start over");
+        assertEquals(40, strategy.island(3).record, 1e-9, "the leader kept its record, so it was never wiped");
     }
 
     @Test void foundersStartWithARandomTurnAndOffset() {

@@ -19,11 +19,13 @@ import java.util.*;
  * EVALUATIONS such starts and ranks it by the mean (a lucky jolt from one start is no gait; the elite is re-evaluated
  * and keeps its place only by moving again), the best of each island
  * migrates to the next one now and then, and an island whose record has not improved for a long time is wiped and
- * refilled with fresh random genomes (catastrophe).
+ * refilled with fresh random genomes (catastrophe). The record is the island's best moving mean over RECORD_WINDOW
+ * generations, so a lucky generation cannot set a mark nobody beats again, and the island leading by that mean is
+ * never wiped.
  */
 public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
     static final int ISLANDS = 4, ISLAND_LANES = 8, LANES = ISLANDS * ISLAND_LANES, CELL_LIMIT = 6, TOURNAMENT = 3,
-            MIGRATION_INTERVAL = 10, STAGNATION_GENERATIONS = 30, EVALUATIONS = 3;
+            MIGRATION_INTERVAL = 10, STAGNATION_GENERATIONS = 30, EVALUATIONS = 3, RECORD_WINDOW = 10;
     static final double LANE_WIDTH = 1600, START = LANE_WIDTH / 2, HEIGHT = 800, EPISODE_SECONDS = 60, WINDOW_SECONDS = 10,
             SAMPLE_SECONDS = .5, ENERGY = .75, GROWTH_SECONDS = 30, RUN_START_SECONDS = 35, START_JITTER = 40,
             // A new island record must beat the old one by this much (noise from the random start is no progress).
@@ -61,10 +63,23 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
         double score() { return invalid || windowSamples == 0 ? 0 : Math.abs(windowSum / windowSamples); }
     }
 
-    /** One island: its best score so far and the generations since that record last improved. */
+    /** One island: its recent best scores, its best moving mean so far and the generations since that record last improved. */
     static final class Island {
+        final double[] recent = new double[RECORD_WINDOW];
+        int scores;
         double record;
         int stagnant;
+        /** Adds this generation's best score and returns the mean of the last RECORD_WINDOW (fewer at the start). */
+        double add(double score) {
+            recent[scores++ % RECORD_WINDOW] = score;
+            return mean();
+        }
+        double mean() {
+            int n = Math.min(scores, RECORD_WINDOW);
+            double sum = 0;
+            for (int i = 0; i < n; i++) sum += recent[i];
+            return n == 0 ? 0 : sum / n;
+        }
     }
 
     /** A lane's founder genome for the next episode; mutate false keeps an elite or migrant unchanged. */
@@ -229,15 +244,21 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
      * Next founders island by island, ranked by fitness: the elite unchanged in the island's first lane, the rest won by tournaments
      * and mutated. Every MIGRATION_INTERVAL generations the best of each island replaces the last lane of the next
      * one. The island stagnating longest past STAGNATION_GENERATIONS is wiped and refilled at random (one per
-     * generation, so the islands do not all start over together).
+     * generation, so the islands do not all start over together); records are moving means, and the island with the
+     * highest moving mean is spared.
      */
     List<Seed> nextSeeds(List<List<Body>> islandRanks) {
-        int wiped = -1;
+        int wiped = -1, leader = 0;
+        double[] means = new double[ISLANDS];
+        for (int i = 0; i < ISLANDS; i++) {
+            means[i] = islands[i].add(islandRanks.get(i).getFirst().fitness);
+            if (means[i] > means[leader]) leader = i;
+        }
         for (int i = 0; i < ISLANDS; i++) {
             Island island = islands[i];
-            double score = islandRanks.get(i).getFirst().fitness;
-            if (score > island.record * RECORD_FACTOR + RECORD_MARGIN) { island.record = score; island.stagnant = 0; }
-            else if (++island.stagnant >= STAGNATION_GENERATIONS && (wiped < 0 || island.stagnant > islands[wiped].stagnant)) wiped = i;
+            if (means[i] > island.record * RECORD_FACTOR + RECORD_MARGIN) { island.record = means[i]; island.stagnant = 0; }
+            else if (++island.stagnant >= STAGNATION_GENERATIONS && i != leader
+                    && (wiped < 0 || island.stagnant > islands[wiped].stagnant)) wiped = i;
         }
         boolean migrate = generation % MIGRATION_INTERVAL == 0;
         List<Seed> seeds = new ArrayList<>();

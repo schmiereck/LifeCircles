@@ -66,7 +66,8 @@
 - [x] RACE-Langlauf mit direkten Taktsynapsen (300 Generationen): stetiger Fortschritt bis 12–13 px, Median 4,5 px.
 - [x] RACE: Richtung egal, Start in der Bahnmitte, Betrag zählt (Nutzervorgabe 26.10.2026).
 - [x] RACE-Langlauf 600 Generationen beidseitig: Anstieg bis G200, dann Plateau 20–26 px.
-- [ ] RACE-Katastrophe: Rekord aus gleitendem Mittel und/oder beste Insel schützen (Entscheidung Nutzer).
+- [x] RACE-Katastrophe: Rekord aus gleitendem Mittel, führende Insel geschützt (Nutzerentscheidung 26.10.2026).
+- [ ] RACE-Langlauf 600 Generationen mit neuer Katastrophenregel: Hält der Anstieg über Generation 200 hinaus?
 - [ ] Danach offen: volle Schwerkraft, 5 Startlagen (Entscheidung Nutzer).
 
 ## Anschließend
