@@ -65,7 +65,8 @@
 - [x] Takteingänge neuer Gehirne direkt mit Kraft und Größe verbinden (Nutzerentscheidung 25.10.2026): alle schwingen.
 - [x] RACE-Langlauf mit direkten Taktsynapsen (300 Generationen): stetiger Fortschritt bis 12–13 px, Median 4,5 px.
 - [x] RACE: Richtung egal, Start in der Bahnmitte, Betrag zählt (Nutzervorgabe 26.10.2026).
-- [ ] RACE-Langlauf 600 Generationen mit beidseitiger Wertung: Steigt der Bestwert nach Generation 200 weiter?
+- [x] RACE-Langlauf 600 Generationen beidseitig: Anstieg bis G200, dann Plateau 20–26 px.
+- [ ] RACE-Katastrophe: Rekord aus gleitendem Mittel und/oder beste Insel schützen (Entscheidung Nutzer).
 - [ ] Danach offen: volle Schwerkraft, 5 Startlagen (Entscheidung Nutzer).
 
 ## Anschließend

@@ -246,6 +246,34 @@ sind nur die direkten Taktsynapsen neuer Gehirne (`TAKTGEBER.md`).
   Evolution solche mit Netto-Vortrieb aus und verbessert sie über Generationen. Die Geschwindigkeit ist noch
   gering (etwa 0,5 px/s im Mittel der Bestwerte), und die Laufrichtung ist nicht in allen Startlagen stabil.
 
+## Studie beidseitig, 600 Generationen (25./26.10.2026, Seed 4711, Modellstand `b8d2ba5`, Schwerkraft 10 %)
+
+Start in der Bahnmitte, Wertung des Betrags (beide Richtungen), sonst wie die Studie mit direkten Taktsynapsen.
+Werte deshalb etwas höher als dort (Rückwärtsläufer zählen jetzt).
+
+| Generationen | Bestwert (Mittel) | Maximum | Median |
+|---|---|---|---|
+| 1–50 | 14,5 | 28,6 | 4,6 |
+| 51–100 | 21,6 | 35,2 | 7,9 |
+| 101–150 | 26,3 | 40,3 | 10,2 |
+| 151–200 | 29,8 | 44,8 | 11,4 |
+| 201–250 | 21,3 | 29,4 | 7,1 |
+| 251–600 (je 50) | 19,8–25,8 | 28–38 | 7,7–12,0 |
+
+- **Anstieg bis Generation 200, danach Plateau** bei 20–26 px (etwa 1 px/s), nie über 45 px. Alle 32 Körper
+  schwingen; Anker selten (0,2–3 je Messpunkt).
+- Die Elite läuft in der ersten Startlage am Ende im Mittel 11 px weit, in 39 von 100 Generationen nach links.
+  Beide Richtungen werden also genutzt.
+- **40 Katastrophen**, etwa alle 15 Generationen eine, jede Insel rund alle 60 Generationen.
+- **Befund, Ursache des Plateaus (wahrscheinlich):** Der Inselrekord stammt aus einer einzelnen Spitzengeneration
+  (der Mittelwert aus 3 Starts streut stark, etwa 25–45 px für dieselbe Linie). Ein solcher Rekord wird danach
+  kaum um 10 % übertroffen, und nach 30 Generationen wird die Insel gelöscht, auch wenn sie die beste ist.
+  Beispiel: Insel 2 setzte in G171 den Rekord 44,8 px, lief danach stabil bei 23–34 px und wurde in G202 gelöscht;
+  der Bestwert der Welt fiel von etwa 30 auf 20 px. Die Katastrophe räumt damit gerade die erfolgreichen Linien ab.
+- **Mögliche Abhilfe (nicht umgesetzt, Entscheidung Nutzer):** Rekord aus einem gleitenden Mittel über mehrere
+  Generationen statt aus einer Spitze; die global beste Insel nie löschen; oder die Elite der gelöschten Insel als
+  Migrant behalten.
+
 ## Grenzen und offene Hebel
 
 - **Startproblem:** Zufällige Gehirne müssen graue, anziehende Fußaktoren, Lösen durch Abstoßen und
