@@ -1,6 +1,10 @@
 # Aktueller Projektstand
 
-Aktualisiert: 25.10.2026. Branch `master`.
+Aktualisiert: 27.10.2026. Branch `master`.
+
+- Brownsche Bewegung (27.10.2026, Schalter, Standard aus): zufällige Stöße ohne Strömung in allen Welten außer
+  RACE; Modelle COLLISIONS und LANGEVIN austauschbar, Dichte 20 Treffer/s und Stärke 5 px/s als kalibrierter
+  Standard (Einzelzellen wandern, verwandte Paare halten). `BROWNSCHE_BEWEGUNG.md`.
 
 - Taktgeber (25.10.2026, alle Welten): sechs vererbte Perioden (Oktaven 0,5–16 s als Start), Sinus/Kosinus des
   Zellalters als Eingänge 316–327, jetzt 328 Eingänge; alte Netze ohne neue Synapsen migriert. Neue Gehirne

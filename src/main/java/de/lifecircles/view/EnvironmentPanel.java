@@ -2,6 +2,7 @@ package de.lifecircles.view;
 
 import de.lifecircles.service.SimulationConfig;
 import de.lifecircles.model.EnergyType;
+import de.lifecircles.service.brownian.BrownianModel;
 import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -159,6 +160,39 @@ public class EnvironmentPanel extends VBox {
             refreshBlockerFriction.run();
         });
         refreshBlockerFriction.run();
+        // Brownian background motion (BROWNSCHE_BEWEGUNG.md): random hits without a current; RACE keeps it off.
+        ChoiceBox<BrownianModel> brownianModel = new ChoiceBox<>();
+        brownianModel.setId("brownian-model");
+        brownianModel.getItems().addAll(BrownianModel.values());
+        brownianModel.setValue(config.getBrownianModel());
+        Slider brownianDensity = new Slider(0, 100, config.getBrownianDensity());
+        brownianDensity.setId("brownian-density");
+        brownianDensity.setShowTickLabels(true);
+        brownianDensity.setShowTickMarks(true);
+        brownianDensity.setMajorTickUnit(25);
+        brownianDensity.setPrefWidth(270);
+        Slider brownianStrength = new Slider(0, 50, config.getBrownianStrength());
+        brownianStrength.setId("brownian-strength");
+        brownianStrength.setShowTickLabels(true);
+        brownianStrength.setShowTickMarks(true);
+        brownianStrength.setMajorTickUnit(10);
+        brownianStrength.setPrefWidth(270);
+        Label brownianValue = new Label();
+        Runnable refreshBrownian = () -> brownianValue.setText(String.format("Brownian %s: %.0f hits/s (radius 10 px) · %.1f px/s per hit",
+                config.getBrownianModel(), config.getBrownianDensity(), config.getBrownianStrength()));
+        brownianModel.valueProperty().addListener((obs, old, next) -> {
+            if (next != null) config.setBrownianModel(next);
+            refreshBrownian.run();
+        });
+        brownianDensity.valueProperty().addListener((obs, old, next) -> {
+            config.setBrownianDensity(next.doubleValue());
+            refreshBrownian.run();
+        });
+        brownianStrength.valueProperty().addListener((obs, old, next) -> {
+            config.setBrownianStrength(next.doubleValue());
+            refreshBrownian.run();
+        });
+        refreshBrownian.run();
         // Durable adhesion (ZELLVERBINDUNGEN.md); open NONE worlds, training worlds only with the opt-in.
         CheckBox adhesion = new CheckBox("Cell adhesion: forces held during brain pause,\nattraction only between matching actor colour and body type");
         adhesion.setId("cell-adhesion");
@@ -239,7 +273,8 @@ public class EnvironmentPanel extends VBox {
                     winterShare = config.getWinterIntensity(), halfLife = config.getRemainsForceHalfLife(),
                     rejectionShare = config.getAdhesionRejection(), sticky = config.getGroundStickiness(),
                     gravityValue = config.getGravity(), frictionValue = config.getViscosity(), rotationValue = config.getRotationalFriction(),
-                    terrainFriction = config.getBlockerFrictionCoefficient(), terrainRolling = config.getBlockerRollingResistance();
+                    terrainFriction = config.getBlockerFrictionCoefficient(), terrainRolling = config.getBlockerRollingResistance(),
+                    hits = config.getBrownianDensity(), hitStrength = config.getBrownianStrength();
             rate.setMax(Math.max(rate.getMax(), sunRate)); rate.setValue(sunRate);
             sourceType.setValue(config.getSunEnergyType()); zones.setSelected(config.isSunSpectralZones());
             zoneWidth.setValue(width); seasonLength.setValue(season / 60); winter.setValue(winterShare * 100);
@@ -248,6 +283,7 @@ public class EnvironmentPanel extends VBox {
             groundHold.setSelected(config.isGroundAdhesion()); anchors.setSelected(config.isGroundAnchors());
             groundOnly.setSelected(config.isGroundAnchorsGroundOnly()); blockerFriction.setSelected(config.isBlockerFriction());
             blockerFrictionCoefficient.setValue(terrainFriction); blockerRolling.setValue(terrainRolling);
+            brownianModel.setValue(config.getBrownianModel()); brownianDensity.setValue(hits); brownianStrength.setValue(hitStrength);
             remainsHalfLife.setValue(Double.isInfinite(halfLife) ? 61 : Math.min(60, halfLife / 60));
             rejection.setValue(rejectionShare * 100); stickiness.setValue(-sticky / maxAttraction * 100);
             gravity.setValue(gravityValue / SimulationConfig.GRAVITY * 100); friction.setValue(frictionValue); rotationFriction.setValue(rotationValue);
@@ -256,6 +292,8 @@ public class EnvironmentPanel extends VBox {
             config.setAdhesionRejection(rejectionShare); config.setGroundStickiness(sticky);
             config.setGravity(gravityValue); config.setViscosity(frictionValue); config.setRotationalFriction(rotationValue);
             config.setBlockerFrictionCoefficient(terrainFriction); config.setBlockerRollingResistance(terrainRolling);
+            config.setBrownianDensity(hits); config.setBrownianStrength(hitStrength);
+            refreshBrownian.run();
             refresh.run(); refreshZoneWidth.run(); refreshSeason.run(); refreshAdhesion.run(); refreshStickiness.run(); refreshMechanics.run(); refreshBlockerFriction.run();
         };
         VBox content = new VBox(8, title, rate, value, hint, new Label("Sun energy form:"), sourceType, zones,
@@ -266,6 +304,9 @@ public class EnvironmentPanel extends VBox {
                 new Label("Rotation friction:"), rotationFriction, mechanicsValue,
                 blockerFriction, new Label("Terrain friction coefficient:"), blockerFrictionCoefficient,
                 new Label("Rolling resistance (contact patch / radius):"), blockerRolling, blockerFrictionValue,
+                new Label("Brownian motion (all worlds except RACE):"), brownianModel,
+                new Label("Brownian density (hits per second):"), brownianDensity,
+                new Label("Brownian strength (px/s per hit):"), brownianStrength, brownianValue,
                 adhesion, trainingAdhesion, bonds, birthBonds, new Label("Remains force half-life (minutes, right end = forever):"), remainsHalfLife,
                 new Label("Rejection of foreign attraction (%):"), rejection, adhesionValue,
                 groundHold, anchors, groundOnly, new Label("Terrain stickiness (% of max attraction):"), stickiness, stickinessValue);

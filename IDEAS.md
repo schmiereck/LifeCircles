@@ -15,14 +15,5 @@
   noch nicht als allgemeine Weltregel festgelegt.
 - Ressourcenwelten, in denen Kooperation und dynamische Regulation messbare Vorteile bieten.
 - Nischen und stabile Lebensweisen über längere Zeit untersuchen; nicht nur Gesamtpopulation zählen.
-- **Brownsche Bewegung als Hintergrund** (Idee des Nutzers, 26.10.2026, noch nicht beschlossen): Die Umgebung
-  schubst und dreht die Zellen zufällig, statistisch gleichmäßig, ohne Strömung. Stark genug für Bewegung und
-  Drehung, schwach genug, dass Verbindungen halten; zusammen mit schwacher Gravitation mehr Bewegung im Bild.
-  Entwurf: Langevin-Thermostat auf der vorhandenen Dämpfung (Viskosität, Drehdämpfung). Je Zelle und Schritt ein
-  zufälliger Kraftstoß (Gauß, beide Achsen) und ein Drehstoß; Varianz aus Dämpfung und einer „Temperatur“ T
-  (Fluktuation-Dissipation), damit die mittlere Bewegungsenergie je Zelle T entspricht, unabhängig vom Zeitschritt
-  und mit kleinen Zellen stärker bewegt als großen. Eigener Zufallsstrom, Schalter, Standard aus. Keine
-  Energieform: mechanische Wärme aus der Umgebung, keine Zellenergie. Offene Punkte: T relativ zu
-  Haftung/Bindungslösung kalibrieren (Bindungen dürfen nicht ständig reißen), welche Welten, und RACE: dort würde
-  die zufällige Verschiebung (Irrfahrt, ~√t) mitgezählt; ohne Korrektur belohnt die Auswahl dann leicht schubsbare
-  Körper statt eigenen Vortrieb.
+- Brownsche Bewegung: umgesetzt (`BROWNSCHE_BEWEGUNG.md`). Offen: Wirkung auf Populationen, weitere Modelle
+  (etwa echtes Fluktuations-Dissipations-Thermostat mit massenabhängiger Wirkung).

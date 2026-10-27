@@ -30,6 +30,8 @@ public interface SimulationStepPolicy {
     default boolean useEnergyConversion() { return true; }
     /** Innate on-demand 000 -> 001 brain respiration; follows the metabolism switch by default. */
     default boolean useBasalBrainRespiration() { return useEnergyConversion(); }
+    /** Brownian background motion (BROWNSCHE_BEWEGUNG.md) when switched on; all worlds unless they opt out. */
+    default boolean useBrownianMotion() { return true; }
     /** Force tonus across pause/death and colour/type affinity; off for legacy and training worlds. */
     default boolean useCellAdhesion() { return false; }
     default BrainEnergyCosts brainEnergyCosts() { return SimulationConfig.getInstance().getBrainEnergyCosts(); }

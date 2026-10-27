@@ -90,3 +90,6 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
 - Geländereibung (`BODENREIBUNG.md`, experimentell, Schalter `blockerFriction` aus): Coulomb-Reibung und
   Rollwiderstand am Kontaktpunkt, begrenzt durch den Normalimpuls der Kollision, wirkt innerhalb des
   Schritts (Position/Drehwinkel korrigiert, kein Kriechen).
+- Brownsche Bewegung (`BROWNSCHE_BEWEGUNG.md`, Schalter `brownianModel`, Standard OFF): zufällige Stöße ohne
+  Strömung, Dichte und Stärke einstellbar, alle Welten außer RACE (`useBrownianMotion`). Modelle liegen
+  austauschbar in `service.brownian` hinter `BrownianMotion`; Stöße nur als Kräfte des Schritts, eigener Zufallsstrom.

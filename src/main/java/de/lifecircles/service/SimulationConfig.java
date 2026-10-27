@@ -449,6 +449,25 @@ public class SimulationConfig {
         this.gravity = gravity;
     }
 
+    // Brownian background motion (BROWNSCHE_BEWEGUNG.md), off by default: random hits without a current.
+    private volatile de.lifecircles.service.brownian.BrownianModel brownianModel = de.lifecircles.service.brownian.BrownianModel.OFF;
+    /** Hits per second on a cell of radius 10 px. */
+    private volatile double brownianDensity = 20;
+    /** Velocity change of one hit (px/s); 5 keeps attracting kin pairs together (calibrated in BrownianMotionTest). */
+    private volatile double brownianStrength = 5;
+    public de.lifecircles.service.brownian.BrownianModel getBrownianModel() { return brownianModel; }
+    public void setBrownianModel(de.lifecircles.service.brownian.BrownianModel model) { brownianModel = java.util.Objects.requireNonNull(model); }
+    public double getBrownianDensity() { return brownianDensity; }
+    public void setBrownianDensity(double density) {
+        if (!Double.isFinite(density) || density < 0) throw new IllegalArgumentException("Brownian density must be finite and >= 0");
+        brownianDensity = density;
+    }
+    public double getBrownianStrength() { return brownianStrength; }
+    public void setBrownianStrength(double strength) {
+        if (!Double.isFinite(strength) || strength < 0) throw new IllegalArgumentException("Brownian strength must be finite and >= 0");
+        brownianStrength = strength;
+    }
+
     // Blocker friction (BODENREIBUNG.md), experimental, off by default: Coulomb friction where cells press on terrain.
     private volatile boolean blockerFriction = false;
     /** Friction coefficient: the sliding contact can lose at most this share of the impulse pressing it on. */

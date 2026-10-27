@@ -100,6 +100,8 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
     // Anchors need adhesion: the race follows the main switch like the open worlds.
     @Override public boolean useCellAdhesion() { return config.isCellAdhesion(); }
     @Override public boolean useSunlight() { return false; }
+    // Random pushes would add a random walk to the scored distance and reward easily pushed bodies.
+    @Override public boolean useBrownianMotion() { return false; }
     @Override public boolean useEnergyConversion() { return false; }
     // Secured energy: division is limited by the cell cap, never by the energy needed for moving.
     @Override public BrainEnergyCosts brainEnergyCosts() { return BrainEnergyCosts.FREE; }

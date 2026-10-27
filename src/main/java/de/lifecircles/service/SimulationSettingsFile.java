@@ -53,6 +53,9 @@ public final class SimulationSettingsFile {
             new Setting("blockerFriction", c -> str(c.isBlockerFriction()), a -> a.config.setBlockerFriction(a.flag())),
             new Setting("blockerFrictionCoefficient", c -> str(c.getBlockerFrictionCoefficient()), a -> a.config.setBlockerFrictionCoefficient(a.number())),
             new Setting("blockerRollingResistance", c -> str(c.getBlockerRollingResistance()), a -> a.config.setBlockerRollingResistance(a.number())),
+            new Setting("brownianModel", c -> c.getBrownianModel().name(), a -> a.config.setBrownianModel(de.lifecircles.service.brownian.BrownianModel.valueOf(a.value))),
+            new Setting("brownianDensity", c -> str(c.getBrownianDensity()), a -> a.config.setBrownianDensity(a.number())),
+            new Setting("brownianStrength", c -> str(c.getBrownianStrength()), a -> a.config.setBrownianStrength(a.number())),
             new Setting("gravity", c -> str(c.getGravity()), a -> a.config.setGravity(a.number())),
             new Setting("viscosity", c -> str(c.getViscosity()), a -> a.config.setViscosity(a.number())),
             new Setting("rotationalFriction", c -> str(c.getRotationalFriction()), a -> a.config.setRotationalFriction(a.number())));

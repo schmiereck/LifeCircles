@@ -1,5 +1,12 @@
 # Abgeschlossene Schritte
 
+## Brownsche Bewegung (27.10.2026)
+
+- Paket `service.brownian` mit Schnittstelle `BrownianMotion`, Modellen COLLISIONS (Poisson-Stöße) und LANGEVIN
+  (Gauß), Auswahl, Dichte und Stärke in Konfiguration, GUI und Einstellungsdatei; RACE aus.
+- `BrownianMotionTest`: keine Strömung, beide Modelle gleich stark, unabhängig vom Zeitschritt, Kalibrierung
+  (Standard 5 px/s hält verwandte Paare, ab 7 px/s reißen die ersten).
+
 ## Taktgeber (25.10.2026)
 
 - Sechs vererbte Taktgeber, Sinus/Kosinus des Zellalters, angehängt (328 Eingänge), Migration von

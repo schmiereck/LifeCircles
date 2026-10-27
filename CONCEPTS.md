@@ -37,6 +37,9 @@
 - Zellen haben sechs vererbte Taktgeber (Nutzerentscheidung 25.10.2026): Perioden als Gen, Sinus/Kosinus
   des eigenen Alters als Eingänge, Mutation um einen Faktor. Kein weltweiter gemeinsamer Takt. Neue Gehirne
   sind angeboren direkt von den Takten zu Aktorkraft und Größe verdrahtet (± 0,5). `TAKTGEBER.md`.
+- Brownsche Bewegung (Nutzerentscheidung 27.10.2026): Ein unsichtbarer Hintergrund schubst und dreht die Zellen
+  zufällig, gleichmäßig in alle Richtungen, ohne Strömung und ohne Zellenergie. Dichte und Stärke einstellbar,
+  alle Welten außer RACE. Die Physik bleibt austauschbar ausgelagert. `BROWNSCHE_BEWEGUNG.md`.
 - DNA-erhaltende Ausführung spart CPU; genetische Reserven bleiben erhalten.
 - Default-Gründer beginnen mit 48 versteckten Neuronen (24 gemeinsam + 3 × 8
   Zustandsneuronen). 328 Sensor-/134 Ausgangsneuronen zählen zusätzlich. Das ist

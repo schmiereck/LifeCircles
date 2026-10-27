@@ -2,6 +2,9 @@
 
 ## Aktueller Auftrag
 
+- [x] Brownsche Bewegung als austauschbares Modul, kalibriert (Nutzerentscheidung 27.10.2026).
+- [ ] Brownsche Bewegung in einer NONE/WORLD2-Welt mit Population sichten (Nutzer, GUI) und Modelle vergleichen.
+
 - [x] Gehirnpause-Sackgasse (nur 000 aus Sonne, keine 000→001-Route) durch basale Notatmung und Umkehrmutation lösen.
 - [x] 600-s-NONE-Vergleich mit/ohne Notatmung auswerten (Enzymanteil, Pausen, Population).
 - [ ] Prüfen, ob der Enzymvorteil unter Notatmung stark genug selektiert (längerer Lauf,

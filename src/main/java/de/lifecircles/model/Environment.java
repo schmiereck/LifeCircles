@@ -17,6 +17,7 @@ public class Environment {
     private final SimulationConfig config;
     private final EnergySunCalcService energySunCalcService;
     private final SimulationProfiler profiler = new SimulationProfiler();
+    private final de.lifecircles.service.brownian.BrownianMotionService brownianMotion = new de.lifecircles.service.brownian.BrownianMotionService(0xB20E);
     public SimulationProfiler getProfiler() { return profiler; }
     private final List<SunRay> sunRayList;
     private double width;
@@ -181,6 +182,8 @@ public class Environment {
 
         }
         //);
+        // Random hits of the background, integrated with all other forces of this step.
+        if (policy.useBrownianMotion()) brownianMotion.agitate(this.cellList, deltaTime);
 
         this.cellList.parallelStream().forEach(cell -> {
             CellCalcService.updateForces(cell, deltaTime);
