@@ -14,4 +14,5 @@ module de.lifecircles {
     exports de.lifecircles.view;
     exports de.lifecircles.service.trainStrategy;
     exports de.lifecircles.service.partitioningStrategy;
+    exports de.lifecircles.service.brownian;
 }
