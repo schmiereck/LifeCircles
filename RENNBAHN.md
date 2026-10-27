@@ -304,6 +304,29 @@ Wie die beidseitige Studie oben, aber Rekord als gleitendes Mittel über 10 Gene
 - **Grenzen:** je ein Lauf mit einem Seed, daher keine gesicherte Aussage über den Beginn (langsamer als vorher
   ist vermutlich Zufall des Verlaufs). Ob der Anstieg am Ende weitergeht, zeigt erst ein längerer Lauf.
 
+## Langlauf 2000 Generationen, abgebrochen nach 681 (26./27.10.2026, Seed 4711, Modellstand `d0f5037`, 10 %)
+
+Gleiche Einstellungen wie die Studie mit gleitendem Rekord. Claude Code hat den Lauf nach 681 Generationen wegen
+Speichermangels des Rechners beendet (nicht wegen der Simulation).
+
+| Generationen | Bestwert (Mittel) | Maximum | Median |
+|---|---|---|---|
+| 1–100 | 16,3 | 34,3 | 5,2 |
+| 101–200 | 33,8 | 55,0 | 12,9 |
+| 201–300 | 47,7 | 72,1 | 20,8 |
+| 301–400 | 46,2 | 58,4 | 22,2 |
+| 401–500 | 45,6 | 58,9 | 22,0 |
+| 501–600 | 50,9 | 61,4 | 24,8 |
+| 601–681 | 50,7 | 64,7 | 21,8 |
+
+- Trotz gleichem Seed ein anderer Verlauf als die 600er-Studie: Die Simulation ist nicht bitgleich wiederholbar
+  (parallele Schritte), schon kleine Abweichungen führen zu anderen Linien. Die beiden Läufe sind damit zwei
+  unabhängige Stichproben derselben Einstellung.
+- Hier schneller Anstieg bis etwa Generation 250 (Bestwert ~47 px, Spitze 72,1 px in G230), danach Plateau mit
+  leichtem Anstieg auf ~51 px; Median 20–25 px. 39 Katastrophen bis G681.
+- Zusammen mit der 600er-Studie (Ende 34–35 px): Die Rennbahn erreicht mit dieser Einstellung 35–50 px im
+  Mittel der Bestwerte (etwa 2 px/s); ob es danach weiter steigt, ist offen.
+
 ## Grenzen und offene Hebel
 
 - **Startproblem:** Zufällige Gehirne müssen graue, anziehende Fußaktoren, Lösen durch Abstoßen und

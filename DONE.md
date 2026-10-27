@@ -8,6 +8,7 @@
   `EnzymeThrottleTest`.
 - `ActorRhythmTest`: Tonus lässt Takte ab 1 s als Vorzeichenwechsel durch (0,5 s nicht, ungleiche Kraftgrenzen);
   Zufallsgehirne bewegen die Kraft durch die Takte im Median nur um 0,002.
+- RACE-Langlauf 2000 Generationen, nach 681 abgebrochen (Speicher): Bestwert ~47 px ab G250, zuletzt ~51 px.
 - RACE-Studie mit gleitendem Rekord, 600 Generationen: kein Plateau, Bestwert zuletzt 34–35 px, Spitze 54,9 px.
 - RACE-Katastrophe: Rekord als gleitendes Mittel (10 Generationen), führende Insel geschützt (`RaceTrainStrategyTest`).
 - RACE-Studie beidseitig, 600 Generationen: Anstieg bis G200 (~30 px), Plateau 20–26 px, 40 Katastrophen.

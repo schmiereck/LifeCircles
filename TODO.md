@@ -68,7 +68,8 @@
 - [x] RACE-Langlauf 600 Generationen beidseitig: Anstieg bis G200, dann Plateau 20–26 px.
 - [x] RACE-Katastrophe: Rekord aus gleitendem Mittel, führende Insel geschützt (Nutzerentscheidung 26.10.2026).
 - [x] RACE-Langlauf 600 Generationen mit neuer Katastrophenregel: Anstieg bis zum Ende (34–35 px, Spitze 54,9 px).
-- [ ] RACE: längerer Lauf (1000+), volle Schwerkraft, weitere Seeds (Entscheidung Nutzer).
+- [ ] RACE: längerer Lauf (2000 geplant, Abbruch bei 681 wegen Speichermangel: Plateau ~50 px), volle Schwerkraft,
+  weitere Seeds (Entscheidung Nutzer).
 - [ ] Danach offen: volle Schwerkraft, 5 Startlagen (Entscheidung Nutzer).
 
 ## Anschließend
