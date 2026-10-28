@@ -1,6 +1,12 @@
 # Aktueller Projektstand
 
-Aktualisiert: 27.10.2026. Branch `master`.
+Aktualisiert: 28.10.2026. Branch `master`.
+
+- Teilung und Wachstum (28.10.2026, alle Welten): Die Teilung teilt die Fläche (Mutter r/√2, Kind wächst an ihrem
+  Rand auf die andere Hälfte), der Impuls wird geteilt, und keine Zelle wächst schneller als 20 px/s. Vorher
+  schleuderte schnelles Aufblähen Nachbarn mit 153 px/s weg (Lücke 32 px), jetzt 75 px/s (11 px). Gegen das
+  „Fliegen“ durch Teilung in großen Welten; Sichtung in der GUI steht aus. `TEILUNG.md`.
+- Geländereibung ist seit 28.10.2026 Standard (vorher nur RACE).
 
 - Brownsche Bewegung (27.10.2026, Schalter, Standard aus): zufällige Stöße ohne Strömung in allen Welten außer
   RACE; Modelle COLLISIONS und LANGEVIN austauschbar, Dichte 20 Treffer/s und Stärke 5 px/s als kalibrierter
@@ -26,7 +32,7 @@ Aktualisiert: 27.10.2026. Branch `master`.
   Inselmodell: 32 Bahnen in 4 Inseln, Turnier, Zufallsstart (Elite wird neu bewertet), Migration, Katastrophe
   nach 30 Generationen Stillstand. Studie (587 Generationen, wegen Speichermangel abgebrochen): einzelne
   Spitzen bis 5,5 px, die sich aus einer anderen Startlage nie wiederholen; Median 0; 58 Katastrophen. `RENNBAHN.md`.
-- Geländereibung (experimentell, Schalter, Standard aus; RACE schaltet sie ein): Coulomb-Reibung und
+- Geländereibung (Schalter, Standard an seit 28.10.2026; RACE schaltet sie ohnehin ein): Coulomb-Reibung und
   Rollwiderstand an Blockern, begrenzt durch das Andrücken. Ein von Hand geregelter Zwei-Zellen-Gang läuft
   damit ohne Anker 21 px in 30 s (mit Ankern 11 px). `BODENREIBUNG.md`.
 

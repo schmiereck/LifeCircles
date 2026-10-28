@@ -66,8 +66,8 @@ Der Reibungsgang und seine Parameter stehen in `BODENREIBUNG.md`.
   - Ein Kind zählt ab seiner Geburtsposition: Die Platzierung vor dem Elternteil zählt nicht, sein
     erster Stoß gegen den Elternteil hebt sich aber wie jede innere Kraft auf.
   - Geburt ist impulsneutral: Eltern und Kind teilen sich die Geschwindigkeit des Elternteils (je die
-    Hälfte). Im allgemeinen Modell erbt das Kind die volle Geschwindigkeit, das schafft Impuls aus dem
-    Nichts. Nur die Rennbahn ändert das, in `onBirth`.
+    Hälfte). Bis 28.10.2026 nur in der Rennbahn (`onBirth`), seitdem allgemein bei jeder Teilung
+    (`TEILUNG.md`).
   - Der Fortschritt zählt erst ab 35 s (Wachstum 0–30 s, Ruhe 30–35 s, Lauf 35–60 s). Mit Reibung schiebt
     eine Geburt den Verband an (Überlappung, die hinteren Zellen haften): 1,95 px in 20 s, wenn er mitzählt.
     Ohne die Phasen würde die Auswahl erst den Geburtsschub optimieren.

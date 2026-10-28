@@ -129,7 +129,7 @@ public class EnvironmentPanel extends VBox {
         });
         refreshMechanics.run();
         // Blocker friction (BODENREIBUNG.md), experimental: grip on terrain without anchors.
-        CheckBox blockerFriction = new CheckBox("Experimental: friction where cells press on terrain (rolling, walking)");
+        CheckBox blockerFriction = new CheckBox("Friction where cells press on terrain (rolling, walking)");
         blockerFriction.setId("blocker-friction");
         blockerFriction.setSelected(config.isBlockerFriction());
         Label blockerFrictionValue = new Label();

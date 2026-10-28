@@ -232,6 +232,8 @@ public class SimulationConfig {
 
     // Konstante für die Zellwachstumszeit in Sekunden
     public static final double CELL_GROWTH_DURATION = 1.0D;
+    /** TEILUNG.md: no cell grows faster than this (radius, px per simulation second); shrinking is not limited. */
+    public static final double CELL_MAX_GROWTH_SPEED = 20.0D;
 
     private double cellMinRadiusSize = 6.0D;
     private double cellMinGrowRadiusSize = 0.5D; //2.0D;
@@ -468,8 +470,8 @@ public class SimulationConfig {
         brownianStrength = strength;
     }
 
-    // Blocker friction (BODENREIBUNG.md), experimental, off by default: Coulomb friction where cells press on terrain.
-    private volatile boolean blockerFriction = false;
+    // Blocker friction (BODENREIBUNG.md), on by default since 28.10.2026: Coulomb friction where cells press on terrain.
+    private volatile boolean blockerFriction = true;
     /** Friction coefficient: the sliding contact can lose at most this share of the impulse pressing it on. */
     private volatile double blockerFrictionCoefficient = .5;
     public boolean isBlockerFriction() { return blockerFriction; }

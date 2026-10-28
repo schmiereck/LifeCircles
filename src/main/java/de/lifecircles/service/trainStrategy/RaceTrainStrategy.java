@@ -197,10 +197,7 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
         Body body = owners.get(parent);
         body.cells.add(child); owners.put(child, body);
         child.setEnergy(ENERGY);
-        // A child inherits the parent's velocity, which adds momentum from nothing: a body dividing during a forward
-        // jerk would coast ahead. Here parent and child share the momentum (equal masses: half the velocity each).
-        Vector2D shared = parent.getVelocity().multiply(.5);
-        parent.setVelocity(shared); child.setVelocity(shared);
+        // Parent and child already share the momentum (ReproductionManagerService, TEILUNG.md).
         // Counted from its birth position: the placement is no progress, but its first push on the parent is
         // internal and must cancel like every other (otherwise a child dropped behind shoves the parent ahead for free).
         body.lastX.put(child, child.getPosition().getX());

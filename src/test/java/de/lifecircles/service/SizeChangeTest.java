@@ -51,8 +51,15 @@ class SizeChangeTest {
         ((SizeBrain) cell.getBrain()).output = output;
     }
 
-    // Independent analytic reference for a constant command, tau = 0.1 seconds.
-    private double expected(double start, double target, double time) {
+    // Independent analytic reference for a constant command, tau = 0.1 seconds. Growing is limited to 20 px/s
+    // (TEILUNG.md): linear while the gap exceeds 20 · 0.1 = 2 px, then exponential. Shrinking is not limited.
+    static double expected(double start, double target, double time) {
+        double gap = target - start;
+        if (gap > 2) {
+            double linear = (gap - 2) / 20;
+            if (time <= linear) return start + 20 * time;
+            return target - 2 * Math.exp(-(time - linear) / 0.1);
+        }
         return target + (start - target) * Math.exp(-time / 0.1);
     }
 
@@ -123,7 +130,12 @@ class SizeChangeTest {
         CellBrainService.think(cell);
         assertEquals(10, cell.getRadiusSize());
         CellCalcService.updateCell(cell, 0.001);
+        assertEquals(10.02, cell.getRadiusSize(), 1e-12, "growing only at 20 px/s (TEILUNG.md)");
+        CellCalcService.updateCell(cell, 1);
         assertEquals(20, cell.getRadiusSize());
+        output(cell, 0);
+        CellCalcService.updateCell(cell, 0.001);
+        assertEquals(6, cell.getRadiusSize(), "shrinking at once");
     }
 
     @Test void largeStepDoesNotOvershootAndTinyStepStillAdvances() {
@@ -157,10 +169,12 @@ class SizeChangeTest {
         cell.startGrowthProcess();
         for (int i = 1; i <= 4; i++) {
             output(cell, i % 2);
+            double before = cell.getRadiusSize();
             CellCalcService.updateCell(cell, 0.25);
             double target = i % 2 == 1 ? 20 : 6;
             double minimum = config.getCellMinGrowRadiusSize();
-            assertEquals(minimum + (target - minimum) * i / 4, cell.getRadiusSize(), 1e-12);
+            // A raised target does not let the radius jump: at most 20 px/s · 0.25 s (TEILUNG.md).
+            assertEquals(Math.min(minimum + (target - minimum) * i / 4, before + 5), cell.getRadiusSize(), 1e-12);
         }
         assertFalse(cell.isGrowing());
         assertEquals(6, cell.getRadiusSize());

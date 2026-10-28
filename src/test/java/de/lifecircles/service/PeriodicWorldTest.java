@@ -16,12 +16,13 @@ class PeriodicWorldTest {
     private final SimulationConfig config = SimulationConfig.getInstance();
     private double sunRate;
     private int initialCount;
+    private boolean friction;
     @BeforeEach void configure() {
-        sunRate = config.getSunRayRate(); initialCount = config.getInitialCellCount();
+        sunRate = config.getSunRayRate(); initialCount = config.getInitialCellCount(); friction = config.isBlockerFriction();
         config.setSunRayRate(0); config.setInitialCellCount(0);
     }
     @AfterEach void restore() {
-        config.setSunRayRate(sunRate); config.setInitialCellCount(initialCount);
+        config.setSunRayRate(sunRate); config.setInitialCellCount(initialCount); config.setBlockerFriction(friction);
     }
 
     private Cell cell(double x, double y) {
@@ -177,6 +178,7 @@ class PeriodicWorldTest {
     }
 
     @Test void worldCollisionAcrossSeamRemovesOnlyInwardVelocityAndUpdatesActors() {
+        config.setBlockerFriction(false); // the sliding part is BlockerFrictionTest's
         Environment world = new Environment(300, 300);
         world.addBlocker(blocker(5, 100, 10, 100));
         Cell cell = cell(295, 100); cell.setVelocity(new Vector2D(3, 2)); world.addCell(cell);

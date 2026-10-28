@@ -126,7 +126,9 @@ class RaceTrainStrategyTest {
         }
         double pushed = strategy.bodies().getFirst().progress;
         System.out.printf(Locale.ROOT, "births counted with friction: %.3f px%n", pushed);
-        assertTrue(pushed > .5, "growth pressure moves the body: " + pushed);
+        // Before the area split (TEILUNG.md, 28.10.2026) a child grew to full size at the mother's rim and pushed the
+        // body by more than 0.5 px in 20 s. Now the mother keeps half the area and growth is limited: -0.3 px.
+        assertTrue(Math.abs(pushed) < 1, "growth pressure hardly moves the body any more: " + pushed);
     }
 
     @Test void progressCountsMovedCellsButNotNewcomers() {
@@ -138,10 +140,7 @@ class RaceTrainStrategyTest {
         strategy.track(world, true);
         assertEquals(10, body.progress, 1e-9);
         Cell child = new Cell(founder.getPosition().add(new Vector2D(200, 0)), 10, founder.getBrain());
-        founder.setVelocity(new Vector2D(30, 0));
         strategy.onBirth(founder, child);
-        assertEquals(15, founder.getVelocity().getX(), 1e-12, "momentum shared, not doubled");
-        assertEquals(15, child.getVelocity().getX(), 1e-12);
         strategy.track(world, true);
         assertEquals(10, body.progress, 1e-9, "a newcomer far ahead adds nothing");
         assertEquals(child.getPosition().getX(), body.lastX.get(child), "but it counts from its birth position on");

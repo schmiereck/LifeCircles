@@ -71,7 +71,11 @@ class DivisionMechanicsTest {
         } catch (ReflectiveOperationException e) { throw new AssertionError(e); }
     }
 
-    /** Two touching cells of half the area each that swell back to the full radius; and full repulsive actors. */
+    /**
+     * Two touching cells of half the area each that swell back to the full radius; and full repulsive actors.
+     * Before the growth limit (adults followed the brain with 100 ms) swelling r=20 halves parted at 153 px/s and
+     * coasted to a gap of 32 px; at 20 px/s it is 75 px/s and 11 px.
+     */
     @Test void swellingAndRepulsiveActors() {
         config.setGravity(0);
         for (double radius : new double[]{8, 15, 20}) {
@@ -88,6 +92,7 @@ class DivisionMechanicsTest {
                 System.out.printf(Locale.ROOT, "%s r=%.0f: peak overlap %.1f px, peak relative speed %.0f px/s, gap after 5 s %.1f px%n",
                         new String[]{"Swelling halves back", "Halves, neutral actors, adhesion", "Halves, repelling actors, adhesion"}[variant],
                         radius, r[2], r[0], r[1]);
+                if (variant == 0) assertTrue(r[0] < 100, "no catapult: " + r[0]);
             }
         }
     }
@@ -103,6 +108,7 @@ class DivisionMechanicsTest {
             Cell mother = cell(500, 500, radius);
             world.addCell(mother);
             for (SensorActor actor : mother.getSensorActors()) actor.setReproductionDesire(1);
+            mother.setVelocity(new Vector2D(30, 0));
             double area = radius * radius;
             Cell child = ReproductionManagerService.reproduceClonally(config, world, mother);
             assertNotNull(child);
@@ -110,10 +116,44 @@ class DivisionMechanicsTest {
             EnergyAllocationService.initializeFounder(child, 1); // reserves do not matter here, only the paid growth
             world.addCell(child);
             double start = distance(mother, child);
+            double half = radius / Math.sqrt(2);
+            assertEquals(half, mother.getRadiusSize(), 1e-12, "the mother keeps half of the area");
+            assertEquals(Math.max(half, config.getCellMinRadiusSize()), child.getTargetRadiusSize(), 1e-12, "the child grows to the other half");
+            assertEquals(config.getCellMinGrowRadiusSize(), child.getRadiusSize(), "and starts small at her rim");
+            assertEquals(half + 2 * config.getCellMinGrowRadiusSize(), start, 1e-9);
+            assertEquals(15, mother.getVelocity().getX(), 1e-12, "momentum shared, not doubled");
+            assertEquals(15, child.getVelocity().getX(), 1e-12);
+            mother.setVelocity(new Vector2D(0, 0)); child.setVelocity(new Vector2D(0, 0));
             double[] r = run(world, mother, child, 5);
             System.out.printf(Locale.ROOT, "Division r=%.0f: start distance %.1f, radii %.1f+%.1f (area %.0f of %.0f), peak overlap %.1f px, peak relative speed %.0f px/s, gap after 5 s %.1f px%n",
                     radius, start, mother.getRadiusSize(), child.getRadiusSize(),
                     mother.getRadiusSize() * mother.getRadiusSize() + child.getRadiusSize() * child.getRadiusSize(), area, r[2], r[0], r[1]);
+            // Both brains want the full radius back, so both swell at the limit: 40 px/s apart plus the spring.
+            assertTrue(r[0] < 100, "no catapult: " + r[0]);
+        }
+    }
+
+    @Test void noCellGrowsFasterThanTheLimit() {
+        double step = SimulationConfig.CELL_MAX_GROWTH_SPEED * DT;
+        Cell adult = cell(500, 500, 6);
+        adult.setRadiusSize(20);
+        double before = adult.getRadiusSize();
+        adult.applyDelayedSizeChange(DT);
+        assertEquals(before + step, adult.getRadiusSize(), 1e-12, "the brain's 100 ms smoothing would jump further");
+        adult = cell(500, 500, 20);
+        adult.setRadiusSize(6);
+        before = adult.getRadiusSize();
+        adult.applyDelayedSizeChange(DT);
+        assertTrue(before - adult.getRadiusSize() > step, "shrinking is not limited");
+
+        // A newborn whose brain raises the target halfway through its growth does not jump.
+        Cell newborn = cell(500, 500, 6);
+        newborn.startGrowthProcess();
+        for (int i = 0; i < 30; i++) {
+            if (i == 15) newborn.setRadiusSize(20);
+            before = newborn.getRadiusSize();
+            CellCalcService.advanceCell(newborn, DT);
+            assertTrue(newborn.getRadiusSize() - before <= step + 1e-12, "step " + i);
         }
     }
 }

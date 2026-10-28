@@ -87,7 +87,9 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
 - Bodenhalt (`BODENHALT.md`, experimentell, Schalter aus): Gelände zieht nur anziehende Aktoren
   an (Affinität zu Grau, keine Abweisung, kein Abstoßen); Anker sind Bindungen an einen festen
   Geländepunkt mit denselben Lösungsregeln.
-- Geländereibung (`BODENREIBUNG.md`, experimentell, Schalter `blockerFriction` aus): Coulomb-Reibung und
+- Teilung (`TEILUNG.md`): teilt die Fläche (Mutter r/√2, Kind wächst an ihrem Rand), teilt den Impuls; keine Zelle
+  wächst schneller als `CELL_MAX_GROWTH_SPEED` (20 px/s), Schrumpfen frei. Keine Fläche oder Bewegung aus dem Nichts.
+- Geländereibung (`BODENREIBUNG.md`, Schalter `blockerFriction`, Standard an seit 28.10.2026): Coulomb-Reibung und
   Rollwiderstand am Kontaktpunkt, begrenzt durch den Normalimpuls der Kollision, wirkt innerhalb des
   Schritts (Position/Drehwinkel korrigiert, kein Kriechen).
 - Brownsche Bewegung (`BROWNSCHE_BEWEGUNG.md`, Schalter `brownianModel`, Standard OFF): zufällige Stöße ohne

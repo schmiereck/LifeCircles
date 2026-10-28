@@ -145,8 +145,13 @@ class PopulationEnergyTest {
 
     @Test void blockedBirthLeavesParentEnergyUntouched() {
         Environment world = new Environment(300, 300); Cell parent = parent(world, 0.8, 9);
-        world.addBlocker(new Blocker(new Vector2D(111, 100), 4, 100, Color.GRAY, Blocker.BlockerType.WALL));
-        update(world, 0);
+        // The child starts at the rim of the halved mother, inside her old disc (TEILUNG.md), so only terrain she
+        // already touches can block it; a world step would first push her out. Hence the service directly.
+        world.addBlocker(new Blocker(new Vector2D(108, 100), 1, 100, Color.GRAY, Blocker.BlockerType.WALL));
+        for (SensorActor actor : parent.getSensorActors()) actor.updateCachedPosition();
+        parent.getSensorActors().getFirst().setReproductionDesire(1); // actor zero points right
+        assertNull(ReproductionManagerService.reproduce(SimulationConfig.getInstance(), world, parent));
         assertEquals(1, world.getCellList().size()); assertEquals(0.8, parent.getEnergy());
+        assertEquals(10, parent.getRadiusSize(), "and her size");
     }
 }

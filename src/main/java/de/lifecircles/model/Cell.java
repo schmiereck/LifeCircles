@@ -207,8 +207,28 @@ public class Cell implements SensableCell, Serializable {
     public void applyDelayedSizeChange(double deltaTime) {
         if (deltaTime == 0) return;
         double duration = SimulationConfig.getInstance().getSizeChangeDelay() / 1000.0;
-        double progress = duration <= 0 ? 1 : -Math.expm1(-deltaTime / duration);
-        this.radiusSize += (this.targetRadiusSize - this.radiusSize) * progress;
+        double gap = this.targetRadiusSize - this.radiusSize;
+        double speed = SimulationConfig.CELL_MAX_GROWTH_SPEED;
+        if (duration <= 0) { growTo(this.targetRadiusSize, deltaTime); return; }
+        // Growing is limited to CELL_MAX_GROWTH_SPEED (TEILUNG.md). The smoothing asks for gap/duration, so while the
+        // gap exceeds speed·duration the radius grows linearly, afterwards exponentially. Solved exactly, so that
+        // subdividing a step changes nothing.
+        double linearGap = speed * duration;
+        if (gap > linearGap) {
+            double linearTime = (gap - linearGap) / speed;
+            if (deltaTime <= linearTime) { this.radiusSize += speed * deltaTime; return; }
+            deltaTime -= linearTime;
+            gap = linearGap;
+        }
+        this.radiusSize = this.targetRadiusSize - gap * Math.exp(-deltaTime / duration);
+    }
+
+    /**
+     * Moves the radius to the given value, growing by at most CELL_MAX_GROWTH_SPEED·dt (TEILUNG.md): a fast
+     * swelling would push touching neighbours away like a piston. Shrinking is not limited.
+     */
+    public void growTo(double radius, double deltaTime) {
+        this.radiusSize = Math.min(radius, this.radiusSize + SimulationConfig.CELL_MAX_GROWTH_SPEED * deltaTime);
     }
 
     @Override

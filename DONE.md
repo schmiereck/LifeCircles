@@ -1,5 +1,14 @@
 # Abgeschlossene Schritte
 
+## Teilung und Wachstum (28.10.2026)
+
+- Messung `DivisionMechanicsTest`: Das Wegschleudern kam vor allem vom ungebremsten Aufblähen (153 px/s, 32 px).
+- Flächenteilung, Wachstumsgrenze 20 px/s (exakt für ausgewachsene Zellen, ohne Sprung im Geburtswachstum),
+  Impulsteilung allgemein statt nur in RACE; Geländereibung Standard. `TEILUNG.md`.
+- Angepasst: `SizeChangeTest` (Referenz mit Grenze), `InheritanceRegressionTest`, `PopulationEnergyTest`,
+  `PeriodicWorldTest`, `RaceTrainStrategyTest`, `MainControllerLayoutTest`; `MechanicsLab`/`GroundHoldTest`
+  bleiben reibungsfrei.
+
 ## Brownsche Bewegung (27.10.2026)
 
 - Paket `service.brownian` mit Schnittstelle `BrownianMotion`, Modellen COLLISIONS (Poisson-Stöße) und LANGEVIN

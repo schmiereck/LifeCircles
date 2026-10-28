@@ -31,8 +31,12 @@
 - Energieformen der Umwelt dürfen ortsabhängig sein (Spektralzonen). Druck zur
   Spezialisierung soll möglichst aus der Umgebung kommen, nicht aus Zellsonderregeln.
 - Physik muss Wachstum, Kontakte, Rotation und periodische Ränder sauber begrenzen.
-- Halt am Gelände darf reine Physik sein (Nutzervorgabe 24.10.2026): optionale Reibung an Blockern
-  (Coulomb plus Rollwiderstand der Kontaktfläche), begrenzt durch das tatsächliche Andrücken. Anker
+- Teilung teilt die Fläche (Nutzerentscheidung 28.10.2026): Die Mutter behält die Hälfte, das Kind wächst an ihrem
+  Rand auf die andere Hälfte, der Impuls wird geteilt. Keine Zelle wächst schneller als 20 px/s im Radius,
+  Schrumpfen ist frei. Fortbewegung soll aus Gestalt, Haftung und Reibung entstehen, nicht aus dem Wegschleudern
+  bei der Teilung. `TEILUNG.md`.
+- Halt am Gelände darf reine Physik sein (Nutzervorgabe 24.10.2026): Reibung an Blockern (Coulomb plus
+  Rollwiderstand der Kontaktfläche), begrenzt durch das tatsächliche Andrücken, seit 28.10.2026 Standard. Anker
   bleiben als zusätzlicher Mechanismus. Siehe `BODENREIBUNG.md`.
 - Zellen haben sechs vererbte Taktgeber (Nutzerentscheidung 25.10.2026): Perioden als Gen, Sinus/Kosinus
   des eigenen Alters als Eingänge, Mutation um einen Faktor. Kein weltweiter gemeinsamer Takt. Neue Gehirne

@@ -42,7 +42,8 @@ public class CellCalcService {
                 // Lineare Interpolation zwischen Startgröße und Zielgröße
                 double growthProgress = cell.getGrowthAge() / SimulationConfig.CELL_GROWTH_DURATION;
                 double minSize = SimulationConfig.getInstance().getCellMinGrowRadiusSize();
-                cell.setRealGrowRadiusSize(minSize + (cell.getTargetRadiusSize() - minSize) * growthProgress);
+                // A target raised while growing must not make the radius jump (TEILUNG.md).
+                cell.growTo(Math.max(minSize, minSize + (cell.getTargetRadiusSize() - minSize) * growthProgress), deltaTime);
             }
         }
 

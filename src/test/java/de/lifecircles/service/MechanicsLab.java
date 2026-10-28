@@ -29,12 +29,14 @@ final class MechanicsLab {
         private final double attraction = config.getCellActorMaxAttractiveForceStrength(), contact = config.getCellRepulsionStrength(),
                 viscosity = config.getViscosity(), damping = config.getRotationalFriction(), sunlight = config.getSunRayRate(), softening = config.getActorFieldSofteningFraction();
         private final int count = config.getInitialCellCount();
-        Settings() { config.setSunRayRate(0); config.setInitialCellCount(0); }
+        private final boolean friction = config.isBlockerFriction();
+        // The benchmarks were calibrated on frictionless terrain; friction became the default on 28.10.2026.
+        Settings() { config.setSunRayRate(0); config.setInitialCellCount(0); config.setBlockerFriction(false); }
         public void close() {
             config.setCellActorMaxAttractiveForceStrength(attraction); config.setCellRepulsionStrength(contact);
             config.setViscosity(viscosity); config.setRotationalFriction(damping);
             config.setSunRayRate(sunlight); config.setInitialCellCount(count);
-            config.setActorFieldSofteningFraction(softening);
+            config.setActorFieldSofteningFraction(softening); config.setBlockerFriction(friction);
         }
     }
 

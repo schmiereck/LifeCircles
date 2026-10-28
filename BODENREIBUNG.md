@@ -1,7 +1,9 @@
 # Reibung am Gelände
 
-Status: **experimentell umgesetzt** (24.10.2026), Schalter `blockerFriction`, Standard aus; RACE schaltet
-ihn beim Anlegen ein. Nutzervorgabe: Reibung an den Blockern soll als reine Physik wirken, ohne
+Status: **umgesetzt** (24.10.2026), Schalter `blockerFriction`, **Standard an seit 28.10.2026**
+(Nutzerentscheidung, damit Kriechen am Boden in allen Welten möglich ist); RACE schaltet ihn beim Anlegen ein.
+Gespeicherte Einstellungen mit `blockerFriction=false` bleiben aus. Mechanik-Benchmarks (`MechanicsLab`) und
+Ankertests (`GroundHoldTest`) laufen weiter auf reibungsfreiem Gelände, gegen das sie kalibriert wurden. Nutzervorgabe: Reibung an den Blockern soll als reine Physik wirken, ohne
 ausdrückliche Anker. Anker (`BODENHALT.md`) bleiben unverändert und können zusätzlich wirken.
 
 ## Ausgangslage
@@ -80,7 +82,8 @@ Ohne Rollwiderstand rollt die gegriffene Zelle weg und der Gang läuft sogar rü
 ## Folgen für die Rennbahn
 
 - Mit Reibung schiebt eine Geburt den Verband an: Das Kind wird überlappend abgelegt, die Abstoßung drückt
-  die Zellen auseinander, die hinteren haften. Gemessen 1,95 px in 20 s Teilung nach rechts. Das ist echte
+  die Zellen auseinander, die hinteren haften. Gemessen 1,95 px in 20 s Teilung nach rechts (vor der
+  Flächenteilung vom 28.10.2026, `TEILUNG.md`; seitdem −0,3 px). Das ist echte
   Physik (Wachstumsdruck), aber genau das Schieben durch Anzahl, das nicht zählen soll.
 - Deshalb hat jede RACE-Episode jetzt drei Phasen:
   - **Wachstum** 0–30 s: Teilung erlaubt; bei 8 s Teilungsalter reicht das für 6 Zellen.

@@ -220,7 +220,9 @@ class InheritanceRegressionTest {
         assertEquals(0.8, parent.getEnergy() + child.getEnergy(), 1e-12);
         assertEquals(0.2, child.getEnergy(), 1e-12);
         assertEquals(parent.getAngularVelocity(), child.getAngularVelocity(), 0);
-        assertEquals(2, child.getVelocity().getX(), 0);
+        // Equal linear masses: mother and child share the momentum (TEILUNG.md).
+        assertEquals(1, child.getVelocity().getX(), 0);
+        assertEquals(1, parent.getVelocity().getX(), 0);
         assertTrue(child.isGrowing());
     }
 
@@ -233,7 +235,8 @@ class InheritanceRegressionTest {
         actor.updateCachedPosition(); actor.setReproductionDesire(1); actor.setReproductionEnergyShareOutput(0.25);
         Cell child = ReproductionManagerService.reproduce(config, world, parent);
         assertNotNull(child);
-        assertEquals(10, child.getPosition().getX(), 1e-12);
+        // Rim of the mother, who keeps half the area (TEILUNG.md): 299 + 10/√2 + 1, wrapped.
+        assertEquals(299 + 10 / Math.sqrt(2) + 2 * config.getCellMinGrowRadiusSize() - 300, child.getPosition().getX(), 1e-12);
     }
 
     @Test void reproductionAppliesInheritedMutationFactors() {

@@ -52,11 +52,20 @@ public class ReproductionManagerService {
                 .max(Comparator.comparingDouble(SensorActor::getReproductionDesire)).orElse(null);
         if (chosenActor == null) return null;
         Vector2D direction = chosenActor.calcPosition().subtract(parentCell.getPosition()).normalize();
+        // TEILUNG.md: division splits the area. The mother keeps half of it at once; the child starts small at her
+        // new rim and grows to the other half (or what its brain wants) no faster than CELL_MAX_GROWTH_SPEED.
+        double half = parentCell.getRadiusSize() / Math.sqrt(2);
         Vector2D childPosition = wrap(parentCell.getPosition().add(direction.multiply(
-                parentCell.getRadiusSize() + config.getCellMinGrowRadiusSize() * 2)), environment);
+                half + config.getCellMinGrowRadiusSize() * 2)), environment);
         if (!isFreePosition(environment, childPosition, config.getCellMinGrowRadiusSize())) return null;
         double share = chosenActor.getReproductionEnergyShareOutput();
         Cell child = createMutatedChild(config, environment, parentCell, childPosition, chosenActor.getReproductionState(), share, divisionMultiplier, birthRandom);
+        child.setRadiusSize(half);
+        parentCell.setRealGrowRadiusSize(half);
+        // Every cell has the same linear mass, so copying the velocity would double the momentum: share it.
+        Vector2D shared = parentCell.getVelocity().multiply(.5);
+        parentCell.setVelocity(shared); child.setVelocity(shared);
+        for (SensorActor actor : parentCell.getSensorActors()) actor.updateCachedPosition();
         for (EnergyType type : EnergyType.ALL)
             parentCell.setEnergy(type, parentCell.getEnergy(type) - child.getEnergy(type));
         return child;

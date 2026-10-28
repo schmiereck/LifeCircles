@@ -13,8 +13,11 @@ class GroundHoldTest {
     static final CellType GREY = new CellType(.5, .5, .5), RED = CellAdhesionTest.RED, BODY = CellAdhesionTest.BODY;
     final SimulationConfig config = SimulationConfig.getInstance();
     double halfLife;
-    @BeforeEach void save() { halfLife = config.getRemainsForceHalfLife(); }
+    boolean friction;
+    // Anchors are compared with sliding terrain; friction (BODENREIBUNG.md, default since 28.10.2026) is its own test.
+    @BeforeEach void save() { halfLife = config.getRemainsForceHalfLife(); friction = config.isBlockerFriction(); config.setBlockerFriction(false); }
     @AfterEach void restore() {
+        config.setBlockerFriction(friction);
         config.setGroundAdhesion(false); config.setGroundAnchors(false); config.setGroundAnchorsGroundOnly(false);
         config.setGroundStickiness(0); config.setRemainsForceHalfLife(halfLife); config.setAdhesionRecognition(true);
     }
