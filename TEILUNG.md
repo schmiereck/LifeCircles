@@ -77,7 +77,7 @@ schnelle Teilung deshalb kaum.
 - Gilt für alle biologischen Teilungen, auch klonale (RACE, HIGH_POSITION3). Trainingsgründer sind unberührt.
 - Alte Speicherstände lesen das Feld als 0, als hätte die Zelle bei Geburt geteilt. Das wirkt nur auf Zellen,
   die jünger als die Pause sind.
-- Wie das Mindestalter steht die Pause nicht in der Einstellungsdatei.
+- Wie alle Reproduction-Einstellungen steht die Pause seit 29.10.2026 in der Einstellungsdatei (`reproductionCooldown`).
 - Test: `PopulationEnergyTest.motherRestsBetweenDivisions`.
 
 ## Grenzen und offene Fragen

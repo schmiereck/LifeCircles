@@ -34,6 +34,7 @@ public class MainController extends BorderPane {
     private final ViewConfig viewConfig;
     private final FileService fileService;
     private final EnvironmentPanel environmentPanel = new EnvironmentPanel();
+    private final ConfigPanel configPanel = new ConfigPanel();
 
     public MainController() {
         this.simulationConfig = SimulationConfig.getInstance();
@@ -55,7 +56,7 @@ public class MainController extends BorderPane {
         simulationView.setStyle("-fx-background-color: black;");
 
         // Keep the whole world width available; scroll controls on narrow windows.
-        HBox panels = new HBox(10, environmentPanel, new CellPanel(), new ConfigPanel(), new StatisticsPanel());
+        HBox panels = new HBox(10, environmentPanel, new CellPanel(), configPanel, new StatisticsPanel());
         ScrollPane panelScroll = new ScrollPane(panels);
         panelScroll.setFitToHeight(true);
         panelScroll.setPrefViewportHeight(260);
@@ -83,6 +84,7 @@ public class MainController extends BorderPane {
         newButton.setOnAction(e -> createScenarioDialog().showAndWait().ifPresent(mode -> {
             calculationService.newSimulation(mode);
             environmentPanel.syncFromConfig();
+            configPanel.syncFromConfig();
             simulationView.resetWorldView();
             startButton.setDisable(false); pauseButton.setDisable(true);
             if(getScene().getWindow() instanceof javafx.stage.Stage stage)
@@ -297,6 +299,7 @@ public class MainController extends BorderPane {
         else System.out.println("Settings: applied " + SimulationSettingsFile.pathFor(path).getFileName());
         settings.problems().forEach(problem -> System.out.println("Settings: " + problem));
         environmentPanel.syncFromConfig();
+        configPanel.syncFromConfig();
         return settings;
     }
 

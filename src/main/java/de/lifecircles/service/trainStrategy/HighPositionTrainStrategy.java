@@ -18,6 +18,11 @@ public class HighPositionTrainStrategy implements TrainStrategy {
     private final SimulationConfig config = SimulationConfig.getInstance();
     private final Random random = new Random();
     private long stepCounter = 0;
+    // Footer information (like RACE and HIGH_POSITION3); counts since the scenario started, not stored in saves.
+    private int generation = 1;
+    private double elapsed;
+    private Double lastBest;
+    private volatile String status = "";
 
     @Override
     public Environment initializeEnvironment() {
@@ -37,6 +42,8 @@ public class HighPositionTrainStrategy implements TrainStrategy {
     @Override
     public void initialize(Environment environment) {
         this.stepCounter = 0;
+        this.generation = 1; this.elapsed = 0; this.lastBest = null;
+        updateStatus(environment);
         // Add ground blocker by default
         environment.addGroundBlocker();
         //environment.addSunBlocker();
@@ -64,20 +71,49 @@ public class HighPositionTrainStrategy implements TrainStrategy {
         }
     }
 
+    @Override public String getStatus() { return status; }
+
+    @Override
+    public void selectAndMutate(Environment environment, double deltaTime) {
+        elapsed += deltaTime;
+        selectAndMutate(environment);
+    }
+
     @Override
     public void selectAndMutate(Environment environment) {
         stepCounter++;
         if (stepCounter % GENERATION_STEP != 0) {
+            if (stepCounter % 30 == 0) updateStatus(environment);
             return;
         }
+        generation++; elapsed = 0;
         List<Cell> cells = environment.getCellList().stream().filter(cell -> !cell.isRemains()).toList();
         if (cells.isEmpty()) {
+            lastBest = null;
+            updateStatus(environment);
             return;
         }
         int winnersCount = Math.min(SeperatorCount, cells.size());
         List<Cell> winners = cells.stream().sorted(Comparator.comparingDouble(c -> c.getPosition().getY()))
                 .limit(winnersCount).toList();
+        lastBest = heightAboveGround(winners.getFirst());
         TrainingPopulationBuilder.build(environment, winners, SeperatorCount, true, random)
                 .ifPresent(environment::resetCells);
+        updateStatus(environment);
+    }
+
+    /** Height of the cell's top above the ground surface in px. */
+    private double heightAboveGround(Cell cell) {
+        return config.getHeight() - Environment.GroundBlockerHeight - (cell.getPosition().getY() - cell.getRadiusSize());
+    }
+
+    /** Generation, time within it, living cells, current highest cell and the last winner's height. */
+    private void updateStatus(Environment environment) {
+        List<Cell> living = environment.getCellList().stream().filter(cell -> !cell.isRemains()).toList();
+        double highest = living.stream().mapToDouble(this::heightAboveGround).max().orElse(Double.NaN);
+        status = String.format(Locale.ROOT, "HIGH_POSITION · G%d · Schritt %d/%d · %.0f s · %d Zellen · höchste %s · letzte Bestwertung %s",
+                generation, stepCounter % GENERATION_STEP, GENERATION_STEP, elapsed, living.size(),
+                Double.isNaN(highest) ? "—" : String.format(Locale.ROOT, "%.0f px", highest),
+                lastBest == null ? "—" : String.format(Locale.ROOT, "%.0f px", lastBest));
     }
 }

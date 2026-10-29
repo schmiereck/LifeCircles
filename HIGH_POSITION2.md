@@ -19,6 +19,14 @@ Es erzeugt keine Bindungen und weist nicht nach, welche Zelle welche Last traegt
 Eine kurzzeitige Druckkette kann ebenfalls bodenverbunden sein. Deshalb wird die
 erreichte Hoehe zusaetzlich ueber die Zeit bewertet.
 
+## Fußzeile
+
+Seit 29.10.2026 zeigt die Fußzeile wie bei RACE und HIGH_POSITION3:
+`HIGH_POSITION2 · G<Generation> · Schritt <n>/3000 · <s> s · Wachstum|Bewertung · <lebende Zellen> · letzte Bestwertung <Wert>`.
+Die Bestwertung ist der dauerhafte Wert (unteres Quartil, 0–1 der Bodenhöhe) der ersten Siegerzelle.
+HIGH_POSITION zeigt Generation, Schritt/10000, Zeit, lebende Zellen, die aktuell höchste Oberkante und die des
+letzten Siegers in px über dem Boden. Die Zähler beginnen bei „New…“ neu und stehen nicht in Speicherständen.
+
 ## Bewertung
 
 Der Generationswechsel bleibt bei 3.000 Physikschritten, derzeit 50 Simulationssekunden.

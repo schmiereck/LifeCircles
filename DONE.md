@@ -1,5 +1,11 @@
 # Abgeschlossene Schritte
 
+## Reproduction-Einstellungen gespeichert, Fußzeile HIGH_POSITION (29.10.2026)
+
+- Acht Reproduction-Schlüssel in `SimulationSettingsFile`, `ConfigPanel.syncFromConfig` (erweitert den Reglerbereich
+  statt zu kappen); `SimulationSettingsFileTest.reproductionSettingsRoundTrip`.
+- Status von `HighPositionTrainStrategy`/`HighPosition2TrainStrategy`; `HighPosition2GenerationLengthTest.footerCountsGenerations`.
+
 ## Teilungspause (29.10.2026)
 
 - `reproductionCooldown`, `Cell.lastDivisionAge`, GUI-Regler; `PopulationEnergyTest.motherRestsBetweenDivisions`.

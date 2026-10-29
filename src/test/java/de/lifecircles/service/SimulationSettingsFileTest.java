@@ -52,6 +52,22 @@ class SimulationSettingsFileTest {
         assertEquals(.375, config.getBlockerRollingResistance());
     }
 
+    @Test void reproductionSettingsRoundTrip() throws Exception {
+        String cells = dir.resolve("reproduction.cells").toString();
+        config.setReproductionEnergyThreshold(.65); config.setMutationRate(.125); config.setMutationStrength(.375);
+        config.setReproductionDesireThreshold(.75); config.setReproductionAgeThreshold(14.5); config.setReproductionCooldown(7.25);
+        config.setDivisionMutationRateMultiplier(.25); config.setNormalizeBrainInputs(true);
+        SimulationSettingsFile.save(cells, config, 1);
+        config.setReproductionEnergyThreshold(.4); config.setMutationRate(.1); config.setMutationStrength(.2);
+        config.setReproductionDesireThreshold(.5); config.setReproductionAgeThreshold(8); config.setReproductionCooldown(0);
+        config.setDivisionMutationRateMultiplier(1); config.setNormalizeBrainInputs(false);
+        assertEquals(List.of(), SimulationSettingsFile.load(cells, config).problems());
+        assertEquals(.65, config.getReproductionEnergyThreshold()); assertEquals(.125, config.getMutationRate());
+        assertEquals(.375, config.getMutationStrength()); assertEquals(.75, config.getReproductionDesireThreshold());
+        assertEquals(14.5, config.getReproductionAgeThreshold()); assertEquals(7.25, config.getReproductionCooldown());
+        assertEquals(.25, config.getDivisionMutationRateMultiplier()); assertTrue(config.isNormalizeBrainInputs());
+    }
+
     @Test void oldCellsFilesWithoutSettingsKeepTheCurrentConfig() throws Exception {
         config.setSunZoneWidth(800);
         SimulationSettingsFile.Loaded loaded = SimulationSettingsFile.load(dir.resolve("old.cells").toString(), config);

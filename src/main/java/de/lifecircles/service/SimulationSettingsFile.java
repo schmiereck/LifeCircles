@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Environment settings from the GUI panel, stored beside a cells file as {@code <file>.cells.settings}
+ * Environment and reproduction settings from the GUI panels, stored beside a cells file as {@code <file>.cells.settings}
  * (readable properties). The cells file format stays unchanged, so old files load as before; missing keys keep
  * the current value. Scenario and world size are recorded for information only: loading cells keeps the world.
  * The simulation step count is stored too, so a loaded world shows how long it has been computed in total.
@@ -61,7 +61,16 @@ public final class SimulationSettingsFile {
             new Setting("brownianStrength", c -> str(c.getBrownianStrength()), a -> a.config.setBrownianStrength(a.number())),
             new Setting("gravity", c -> str(c.getGravity()), a -> a.config.setGravity(a.number())),
             new Setting("viscosity", c -> str(c.getViscosity()), a -> a.config.setViscosity(a.number())),
-            new Setting("rotationalFriction", c -> str(c.getRotationalFriction()), a -> a.config.setRotationalFriction(a.number())));
+            new Setting("rotationalFriction", c -> str(c.getRotationalFriction()), a -> a.config.setRotationalFriction(a.number())),
+            // Reproduction panel (ConfigPanel)
+            new Setting("reproductionEnergyThreshold", c -> str(c.getReproductionEnergyThreshold()), a -> a.config.setReproductionEnergyThreshold(nonNegative(a.number()))),
+            new Setting("mutationRate", c -> str(c.getMutationRate()), a -> a.config.setMutationRate(fraction(a.number()))),
+            new Setting("mutationStrength", c -> str(c.getMutationStrength()), a -> a.config.setMutationStrength(nonNegative(a.number()))),
+            new Setting("reproductionDesireThreshold", c -> str(c.getReproductionDesireThreshold()), a -> a.config.setReproductionDesireThreshold(a.number())),
+            new Setting("reproductionAgeThreshold", c -> str(c.getReproductionAgeThreshold()), a -> a.config.setReproductionAgeThreshold(nonNegative(a.number()))),
+            new Setting("reproductionCooldown", c -> str(c.getReproductionCooldown()), a -> a.config.setReproductionCooldown(nonNegative(a.number()))),
+            new Setting("divisionMutationRateMultiplier", c -> str(c.getDivisionMutationRateMultiplier()), a -> a.config.setDivisionMutationRateMultiplier(fraction(a.number()))),
+            new Setting("normalizeBrainInputs", c -> str(c.isNormalizeBrainInputs()), a -> a.config.setNormalizeBrainInputs(a.flag())));
 
     /** What a load found: problems (unreadable values, other world) and the stored step count, -1 if none. */
     public record Loaded(List<String> problems, long steps) {}
@@ -127,6 +136,11 @@ public final class SimulationSettingsFile {
     private static String str(boolean value) { return String.valueOf(value); }
     private static double nonNegative(double value) {
         if (!Double.isFinite(value) || value < 0) throw new IllegalArgumentException("must be finite and >= 0");
+        return value;
+    }
+
+    private static double fraction(double value) {
+        if (!(value >= 0 && value <= 1)) throw new IllegalArgumentException("must be in [0, 1]");
         return value;
     }
 

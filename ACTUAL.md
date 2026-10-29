@@ -2,6 +2,10 @@
 
 Aktualisiert: 29.10.2026. Branch `master`.
 
+- Einstellungsdatei enthält seit 29.10.2026 auch alle Reproduction-Einstellungen (Mindestenergie, Mutation,
+  Wunsch, Mindestalter, Teilungspause, Teilungsmutation, Eingangsnormierung); das Panel wird nach Load und
+  „New…“ nachgezogen. HIGH_POSITION und HIGH_POSITION2 zeigen in der Fußzeile Generation, Schritt, Phase und
+  letzte Bestwertung. `HIGH_POSITION2.md`.
 - Teilungspause (29.10.2026): `reproductionCooldown` (GUI „Division pause (s)“, Standard 0) ist die
   Mindestzeit zwischen zwei Teilungen derselben Mutter. Vorher galt nur das Mindestalter ab Geburt, danach
   durfte sie in jedem Schritt teilen. `TEILUNG.md`.

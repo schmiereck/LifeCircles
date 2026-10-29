@@ -38,8 +38,8 @@ gleich altem Verhalten, Sonne nutzt die eingestellte Breite), `MainControllerLay
   Geburtsbindung, Bodenfeld und Anker ein (Policy `OPEN_WORLD`). Das Umweltpanel zeigt
   die Werte nach „New…“ an (`EnvironmentPanel.syncFromConfig`). Die Schalter bleiben danach
   frei änderbar und gelten auch für später angelegte NONE-Welten, bis man sie zurückstellt.
-- **Speichern:** „Save“ legt die Umwelt-Einstellungen in `<datei>.cells.settings` ab, „Load“
-  stellt sie wieder her. Die Welt selbst entsteht weiter über „New… → WORLD2“; erst danach laden.
+- **Speichern:** „Save“ legt die Umwelt- und (seit 29.10.2026) die Reproduction-Einstellungen in
+  `<datei>.cells.settings` ab, „Load“ stellt sie wieder her und zeigt sie in beiden Panels an. Die Welt selbst entsteht weiter über „New… → WORLD2“; erst danach laden.
 - **Nicht verändert:** Sonnenrate, Energie pro Strahl, Jahreszeiten (aus), Lebensdauer,
   Gehirnkosten. Die Strahlen pro Sekunde wachsen mit der Breite; die Lichtdichte je px ist
   dieselbe wie in NONE.

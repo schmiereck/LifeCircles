@@ -17,6 +17,11 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
     private long stepCounter = 0;
     private final int generationSteps;
     private final GroundedColonyFitness fitness = new GroundedColonyFitness(SeperatorCount);
+    // Footer information (like RACE and HIGH_POSITION3); counts since the scenario started, not stored in saves.
+    private int generation = 1;
+    private double elapsed;
+    private Double lastBest;
+    private volatile String status = "";
 
     @FunctionalInterface
     interface EvaluationObserver {
@@ -56,6 +61,8 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
     public void initialize(Environment environment) {
         this.stepCounter = 0;
         this.fitness.reset();
+        this.generation = 1; this.elapsed = 0; this.lastBest = null;
+        updateStatus(environment);
         // Add ground blocker by default
         environment.addGroundBlocker();
         //environment.addSunBlocker();
@@ -83,6 +90,14 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
         }
     }
 
+    @Override public String getStatus() { return status; }
+
+    @Override
+    public void selectAndMutate(Environment environment, double deltaTime) {
+        elapsed += deltaTime;
+        selectAndMutate(environment);
+    }
+
     @Override
     public void selectAndMutate(Environment environment) {
         stepCounter++;
@@ -90,11 +105,15 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
         if (phase > generationSteps - EVALUATION_WINDOW_STEPS && phase % SAMPLE_INTERVAL_STEPS == 0)
             fitness.sample(environment);
         if (phase != generationSteps) {
+            if (phase % SAMPLE_INTERVAL_STEPS == 0) updateStatus(environment);
             return;
         }
+        generation++; elapsed = 0;
         List<Cell> cells = environment.getCellList().stream().filter(cell -> !cell.isRemains()).toList();
         if (cells.isEmpty()) {
             fitness.reset();
+            lastBest = null;
+            updateStatus(environment);
             return;
         }
         double xSpace = (environment.getWidth() / SeperatorCount);
@@ -117,9 +136,21 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
             }
         }
 
+        lastBest = winners.isEmpty() ? null : fitness.persistentScore(winners.getFirst());
         if (observer != null) observer.observe(environment,fitness,List.copyOf(winners));
         TrainingPopulationBuilder.build(environment, winners, SeperatorCount, true, random)
                 .ifPresent(environment::resetCells);
         fitness.reset();
+        updateStatus(environment);
+    }
+
+    /** Generation, time within it, phase, living cells and the last winner's sustained height (0..1 of the floor). */
+    private void updateStatus(Environment environment) {
+        long phase = stepCounter % generationSteps;
+        long living = environment.getCellList().stream().filter(cell -> !cell.isRemains()).count();
+        status = String.format(Locale.ROOT, "HIGH_POSITION2 · G%d · Schritt %d/%d · %.0f s · %s · %d Zellen · letzte Bestwertung %s",
+                generation, phase, generationSteps, elapsed,
+                phase > generationSteps - EVALUATION_WINDOW_STEPS ? "Bewertung" : "Wachstum", living,
+                lastBest == null ? "—" : String.format(Locale.ROOT, "%.3f", lastBest));
     }
 }

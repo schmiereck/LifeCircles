@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
  */
 public class ConfigPanel extends HBox {
     private final ViewConfig viewConfig;
+    private Runnable syncReproduction = () -> {};
 
     public ConfigPanel() {
         this.viewConfig = ViewConfig.getInstance();
@@ -101,10 +102,32 @@ public class ConfigPanel extends HBox {
         normalizedInputs.selectedProperty().addListener((obs, old, value) -> simulationConfig.setNormalizeBrainInputs(value));
         grid.addRow(7, normalizedInputs);
 
+        // After loading a settings file or starting a scenario that sets its own values.
+        syncReproduction = () -> {
+            show(energySlider, simulationConfig.getReproductionEnergyThreshold());
+            show(mutationSlider, simulationConfig.getMutationRate());
+            show(strengthSlider, simulationConfig.getMutationStrength());
+            show(desireSlider, simulationConfig.getReproductionDesireThreshold());
+            show(ageSlider, simulationConfig.getReproductionAgeThreshold());
+            show(pauseSlider, simulationConfig.getReproductionCooldown());
+            show(divisionMutation, simulationConfig.getDivisionMutationRateMultiplier());
+            normalizedInputs.setSelected(simulationConfig.isNormalizeBrainInputs());
+        };
+
         TitledPane pane = new TitledPane("Reproduction", grid);
         pane.setCollapsible(true);
         pane.setStyle("-fx-text-fill: black;");
         return pane;
+    }
+
+    /** Shows the current reproduction settings, e.g. after loading a settings file or starting a scenario. */
+    public void syncFromConfig() { syncReproduction.run(); }
+
+    /** Widens the range instead of clamping: the listener would otherwise write the clamped value back. */
+    private static void show(Slider slider, double value) {
+        slider.setMin(Math.min(slider.getMin(), value));
+        slider.setMax(Math.max(slider.getMax(), value));
+        slider.setValue(value);
     }
 
     private TitledPane createVisualizationSettings() {
