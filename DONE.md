@@ -1,5 +1,10 @@
 # Abgeschlossene Schritte
 
+## Sonne vom ganzen Himmel (29.10.2026)
+
+- Strahlen starten über die ganze Oberkante, brechen periodisch um, keine Seitenwände; Renderer zeichnet umgebrochen.
+  `SunSkyTest` (gleichmäßig ± 15 % in drei Höhen, Schatten über die Naht). `SPEKTRALZONEN.md`.
+
 ## Spektralzonen mischbar (29.10.2026)
 
 - `SunSpectrum.Mix` (Grundanteil, Übergangsbreite, S-Kurve), Konfiguration, GUI-Regler, Einstellungsdatei;

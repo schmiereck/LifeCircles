@@ -28,7 +28,8 @@
   Neue Genome starten inaktiv, alte Einzelregeln gelten in allen Rollen; Überreste reagieren nicht.
   Das Gehirn drosselt die Aktivität über einen angehängten Ausgang (≥ 0,5 = voll).
   Details: `ENERGIEUMWANDLUNG.md`.
-- Energieformen der Umwelt dürfen ortsabhängig sein (Spektralzonen, mit einstellbarem Grundanteil und weichen Übergängen). Druck zur
+- Energieformen der Umwelt dürfen ortsabhängig sein (Spektralzonen, mit einstellbarem Grundanteil und weichen Übergängen).
+- Sonnenlicht kommt vom ganzen Himmel und ist periodisch wie die Welt: jeder Ort erhält bei gleicher Lage gleich viel Licht. Druck zur
   Spezialisierung soll möglichst aus der Umgebung kommen, nicht aus Zellsonderregeln.
 - Physik muss Wachstum, Kontakte, Rotation und periodische Ränder sauber begrenzen.
 - Teilung teilt die Fläche (Nutzerentscheidung 28.10.2026): Die Mutter behält die Hälfte, das Kind wächst an ihrem

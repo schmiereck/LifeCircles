@@ -5,6 +5,8 @@
 - [x] Brownsche Bewegung als austauschbares Modul, kalibriert (Nutzerentscheidung 27.10.2026).
 - [ ] Brownsche Bewegung in einer NONE/WORLD2-Welt mit Population sichten (Nutzer, GUI) und Modelle vergleichen.
 - [x] Spektralzonen: Grundanteil, Übergangsbreite, Kurvenform einstellbar (29.10.2026).
+- [x] Sonne vom ganzen Himmel, periodisch umgebrochen (29.10.2026).
+- [ ] Laufzeit der Sonne in großen Welten nach dem Umbruch messen (`SunPerformanceStudyTest`, auf Wunsch).
 - [ ] WORLD2 mit weicheren Zonen sichten (Nutzer, GUI); ggf. Standardwerte für WORLD2 festlegen.
 - [x] Teilung teilt die Fläche, Wachstum höchstens 20 px/s, Impuls geteilt; Geländereibung Standard (28.10.2026).
 - [ ] Große Welten mit wenig Schwerkraft und Brownscher Bewegung erneut sichten: verschwindet das „Fliegen“ durch

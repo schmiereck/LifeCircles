@@ -6,6 +6,8 @@ import de.lifecircles.service.SunSpectrum;
 import de.lifecircles.service.SensorActorForceCellCalcService;
 import de.lifecircles.service.dto.SimulationStateDto;
 import de.lifecircles.service.SimulationConfig;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -58,9 +60,12 @@ public class Renderer {
             gc.setLineWidth(1.5);
             for (SimulationStateDto.SunRayStateDto ray : simulationStateDto.getSunRays()) {
                 gc.setStroke(sunRayColor(ray.getEnergyType(), .5));
-                Point2D start = camera.worldToScreen(new Vector2D(ray.getStartX(), ray.getStartY()));
-                Point2D end = camera.worldToScreen(new Vector2D(ray.getEndX(), ray.getEndY()));
-                gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
+                // Rays wrap around the periodic x axis: draw each piece inside the world.
+                for (double[] piece : wrappedPieces(ray.getStartX(), ray.getStartY(), ray.getEndX(), ray.getEndY(), simulationStateDto.getWidth())) {
+                    Point2D start = camera.worldToScreen(new Vector2D(piece[0], piece[1]));
+                    Point2D end = camera.worldToScreen(new Vector2D(piece[2], piece[3]));
+                    gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
+                }
             }
         }
 
@@ -98,6 +103,20 @@ public class Renderer {
     static javafx.scene.paint.Paint sunRayColor(EnergyType type, double opacity) {
         if (type == null || type == EnergyType.PRIMARY) return ViewConfig.SUN_COLOR;
         return Color.color(.3 + .7 * type.getRed(), .3 + .7 * type.getGreen(), .3 + .7 * type.getBlue(), opacity);
+    }
+
+    /** Pieces {x1, y1, x2, y2} of an unwrapped line, each cut at the world's x edges and moved into [0, width]. */
+    static List<double[]> wrappedPieces(double x1, double y1, double x2, double y2, double width) {
+        List<double[]> pieces = new ArrayList<>();
+        int first = (int) Math.floor(Math.min(x1, x2) / width), last = (int) Math.floor(Math.max(x1, x2) / width);
+        for (int k = first; k <= last; k++) {
+            double from = k * width, to = from + width;
+            double a = x1 == x2 ? 0 : Math.max(0, Math.min(1, ((x1 < x2 ? from : to) - x1) / (x2 - x1)));
+            double b = x1 == x2 ? 1 : Math.max(0, Math.min(1, ((x1 < x2 ? to : from) - x1) / (x2 - x1)));
+            if (b <= a && first != last) continue;
+            pieces.add(new double[]{x1 + (x2 - x1) * a - from, y1 + (y2 - y1) * a, x1 + (x2 - x1) * b - from, y1 + (y2 - y1) * b});
+        }
+        return pieces;
     }
 
     private void drawSpectralZones(double worldWidth, double worldHeight) {

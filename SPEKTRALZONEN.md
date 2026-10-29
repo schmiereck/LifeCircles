@@ -37,6 +37,34 @@ in Zellen ansammeln und als Aas zurückbleiben, ohne Sonderregeln in den Zellen.
   - Tests `SunSpectrumTest`: Grundanteil, Breite, Kurve, harte Kante, gleichmäßiges Licht, Summe 1, Ziehung nach
     Anteilen, Grenzen der Regler, absorbierte Strahlen mit Grundanteil (5 % je Fremdform in Zonenmitte).
 
+## Sonne: ganzer Himmel, periodisch umgebrochen (29.10.2026)
+
+Nutzerbeobachtung: Die Strahlen zielten so auf den Boden, dass er ganz abgedeckt war. Bei schrägem Licht blieben
+dadurch oben links bzw. rechts Bereiche ohne Einstrahlung. Ein Beispiel ist die Morgensonne (35°) in einer 300 px
+breiten Welt: Die Strahlen starteten bei x = −210 … 90 oberhalb der Welt und endeten an den Seitenwänden. Oben
+rechts (x > 90 + 0,7 · y) kam nie ein Strahl an.
+
+- Jetzt starten die Strahlen gleichmäßig über die ganze Oberkante (x in [0, Breite)), mit unveränderter Zahl je
+  Breite. Sie laufen schräg weiter und brechen am Weltrand periodisch um, wie Zellen und Gelände. Jeder Strahl
+  endet erst am Boden oder beim ersten Treffer, Seitenwände gibt es nicht mehr. So wird jeder Ort der Welt
+  gleich stark beleuchtet, und Schatten wandern über die Naht.
+- Umsetzung (`EnergySunCalcService`): Der Strahl wird ungefaltet verfolgt. Statt Zellen und Blocker als
+  periodische Bilder zu kopieren, wird der Strahl um ganze Weltbreiten verschoben und gegen die Originale
+  getestet. Es zählt der früheste Treffer über alle Verschiebungen. Der Projektionsindex deckt alle verschobenen
+  Strahlkoordinaten ab. Die Zone des Treffers wird am gefalteten Ort bestimmt.
+- `SunRay` trägt den ungefalteten Endpunkt (Start in [0, Breite)). Der Renderer zeichnet den Strahl in Stücken
+  innerhalb der Welt.
+- Tests `SunSkyTest`:
+  - Eine Reihe von Zellen über die Naht hinweg bekommt in drei Höhen (oben, Mitte, unten) gleich viel Licht,
+    ± 15 %; gemessen 0,87–1,14 des Mittels.
+  - Jeder Strahl reicht bis zum Boden.
+  - Der Schatten eines Dachs bricht über die Naht um.
+- Angepasst: `SunContactTest` und `MultiEnergySunTest`, deren fester Mittelstrahl jetzt bei x = 150 startet, sowie
+  `SunSpectrumTest`, der die Strahlenden gefaltet zählt. Index und Scan bleiben gleich (`SunIndexRegressionTest`,
+  `PerformanceEquivalenceTest`).
+- Nicht bitgleich zu früheren Läufen: andere Startpunkte, mehr Licht oben auf der Gegenseite und weniger dort, wo
+  sich früher die Strahlen am Boden bündelten. Der Index wird etwas breiter, die Laufzeit wurde nicht neu gemessen.
+
 Erwartete Dynamik (noch nicht durch Langlauf belegt): In 001 genügt die Startroute
 001 → 000 mit positiver Kapazität (eine Mutation). In 010/100 ist X → 000 über eine
 Quellmutation erreichbar. Wegen der Umwandlungsgrenze 0,1/s × Kapazität halten dort

@@ -19,7 +19,8 @@ class MultiEnergySunTest {
         config.setSunRayRate(rate);config.setSunRaySpacingPx(spacing);config.setEnergyPerRay(rayEnergy);config.setSunEnergyType(previousType);
     }
     private Cell cell() {
-        Cell c=new Cell(new Vector2D(150-100*Math.tan(Math.toRadians(35)),200),10,new PhysicsRegressionTest.ConstantBrain());
+        // The middle ray starts at the sky's center (x=150) and drifts right in the morning sun (35 degrees).
+        Cell c=new Cell(new Vector2D(150+200*Math.tan(Math.toRadians(35)),200),10,new PhysicsRegressionTest.ConstantBrain());
         c.setEnergy(.2);c.setEnergy(EnergyType.SECONDARY,.3);return c;
     }
     private EnergySunCalcService sun() {return new EnergySunCalcService(new Random(1){@Override public double nextDouble(){return .5;}});}

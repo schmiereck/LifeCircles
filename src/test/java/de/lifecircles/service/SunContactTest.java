@@ -29,7 +29,8 @@ class SunContactTest {
     }
 
     private Cell illuminatedCell() {
-        double x = 150 - 100 * Math.tan(Math.toRadians(35));
+        // The middle ray starts at the sky's center (x=150) and drifts right in the morning sun (35 degrees).
+        double x = 150 + 200 * Math.tan(Math.toRadians(35));
         Cell cell = new Cell(new Vector2D(x, 200), 10, new PhysicsRegressionTest.ConstantBrain());
         cell.setEnergy(0.2);
         return cell;
@@ -63,7 +64,7 @@ class SunContactTest {
         Cell cell = illuminatedCell();
         calculate(List.of(cell), List.of()); assertTrue(cell.isSunRayHit());
         double energy = cell.getEnergy();
-        Blocker shade = new Blocker(new Vector2D(150 - 200 * Math.tan(Math.toRadians(35)), 100),
+        Blocker shade = new Blocker(new Vector2D(150 + 100 * Math.tan(Math.toRadians(35)), 100),
                 20, 20, Color.GRAY, Blocker.BlockerType.PLATFORM);
         assertFalse(calculate(List.of(cell), List.of(shade)).isEmpty());
         assertFalse(cell.isSunRayHit()); assertEquals(0, brainSignal(cell));

@@ -82,9 +82,9 @@ class SunSpectrumTest {
             cell.setEnergy(0);cell.setEnergy(EnergyType.SECONDARY,0);cells.add(cell);
         }
         var sun=new EnergySunCalcService(new Random(11));int absorbed=0;
-        for(int i=0;i<400;i++)
+        for(int i=0;i<300;i++) // below full stores (1.0 per form)
             for(SunRay ray:sun.calculateSunEnergy(cells,List.of(),W,300,config,.05))
-                if(cells.stream().anyMatch(c->Math.abs(c.getPosition().getX()-ray.getEnd().getX())<11 && Math.abs(c.getPosition().getY()-ray.getEnd().getY())<11))absorbed++;
+                if(cells.stream().anyMatch(c->Math.abs(Math.IEEEremainder(c.getPosition().getX()-ray.getEnd().getX(),W))<11 && Math.abs(c.getPosition().getY()-ray.getEnd().getY())<11))absorbed++;
         double total=0;
         for(int zone=0;zone<4;zone++){
             Cell cell=cells.get(zone);EnergyType own=SunSpectrum.ZONES.get(zone);
