@@ -48,7 +48,7 @@ public class EnvironmentPanel extends VBox {
         });
         sourceType.setValue(config.getSunEnergyType());
         sourceType.valueProperty().addListener((obs, old, next) -> config.setSunEnergyType(next));
-        CheckBox zones = new CheckBox("Spectral zones: 000 | 001 | 010 | 100\n(narrow mixed borders, form chosen where a ray hits)");
+        CheckBox zones = new CheckBox("Spectral zones: 000 | 001 | 010 | 100\n(mixed borders, form chosen where a ray hits)");
         zones.setId("sun-spectral-zones");
         zones.setSelected(config.isSunSpectralZones());
         sourceType.setDisable(zones.isSelected());
@@ -71,6 +71,19 @@ public class EnvironmentPanel extends VBox {
             refreshZoneWidth.run();
         });
         refreshZoneWidth.run();
+        Label zoneMixValue = new Label();
+        Slider zoneBackground = percentSlider("sun-zone-background", 25, config.getSunZoneBackground() * 100);
+        Slider zoneTransition = percentSlider("sun-zone-transition", 100, config.getSunZoneTransition() * 100);
+        Slider zoneSoftness = percentSlider("sun-zone-softness", 100, config.getSunZoneSoftness() * 100);
+        Runnable refreshZoneMix = () -> zoneMixValue.setText(String.format(
+                "Every form %.1f %% everywhere, own form up to %.0f %%; borders %.0f %% of a zone wide, %s",
+                config.getSunZoneBackground() * 100, (1 - 3 * config.getSunZoneBackground()) * 100,
+                config.getSunZoneTransition() * 100,
+                config.getSunZoneSoftness() == 0 ? "linear" : String.format("%.0f %% S-curve", config.getSunZoneSoftness() * 100)));
+        zoneBackground.valueProperty().addListener((obs, old, next) -> { config.setSunZoneBackground(next.doubleValue() / 100); refreshZoneMix.run(); });
+        zoneTransition.valueProperty().addListener((obs, old, next) -> { config.setSunZoneTransition(next.doubleValue() / 100); refreshZoneMix.run(); });
+        zoneSoftness.valueProperty().addListener((obs, old, next) -> { config.setSunZoneSoftness(next.doubleValue() / 100); refreshZoneMix.run(); });
+        refreshZoneMix.run();
         Label seasonValue = new Label();
         Slider seasonLength = new Slider(0, 60, config.getSeasonDuration() / 60);
         seasonLength.setId("season-length");
@@ -269,6 +282,7 @@ public class EnvironmentPanel extends VBox {
         refreshAdhesion.run();
         syncFromConfig = () -> {
             // Slider listeners write back (rounded, clamped); keep the exact config values and restore them afterwards.
+            double zoneBack = config.getSunZoneBackground(), zoneBorder = config.getSunZoneTransition(), zoneCurve = config.getSunZoneSoftness();
             double sunRate = config.getSunRayRate(), width = config.getSunZoneWidth(), season = config.getSeasonDuration(),
                     winterShare = config.getWinterIntensity(), halfLife = config.getRemainsForceHalfLife(),
                     rejectionShare = config.getAdhesionRejection(), sticky = config.getGroundStickiness(),
@@ -278,6 +292,8 @@ public class EnvironmentPanel extends VBox {
             rate.setMax(Math.max(rate.getMax(), sunRate)); rate.setValue(sunRate);
             sourceType.setValue(config.getSunEnergyType()); zones.setSelected(config.isSunSpectralZones());
             zoneWidth.setValue(width); seasonLength.setValue(season / 60); winter.setValue(winterShare * 100);
+            zoneBackground.setValue(zoneBack * 100); zoneTransition.setValue(zoneBorder * 100); zoneSoftness.setValue(zoneCurve * 100);
+            config.setSunZoneBackground(zoneBack); config.setSunZoneTransition(zoneBorder); config.setSunZoneSoftness(zoneCurve);
             adhesion.setSelected(config.isCellAdhesion()); trainingAdhesion.setSelected(config.isTrainingAdhesion());
             bonds.setSelected(config.isAdhesionBonds()); birthBonds.setSelected(config.isAdhesionBirthBonds());
             groundHold.setSelected(config.isGroundAdhesion()); anchors.setSelected(config.isGroundAnchors());
@@ -294,10 +310,13 @@ public class EnvironmentPanel extends VBox {
             config.setBlockerFrictionCoefficient(terrainFriction); config.setBlockerRollingResistance(terrainRolling);
             config.setBrownianDensity(hits); config.setBrownianStrength(hitStrength);
             refreshBrownian.run();
-            refresh.run(); refreshZoneWidth.run(); refreshSeason.run(); refreshAdhesion.run(); refreshStickiness.run(); refreshMechanics.run(); refreshBlockerFriction.run();
+            refresh.run(); refreshZoneWidth.run(); refreshZoneMix.run(); refreshSeason.run(); refreshAdhesion.run(); refreshStickiness.run(); refreshMechanics.run(); refreshBlockerFriction.run();
         };
         VBox content = new VBox(8, title, rate, value, hint, new Label("Sun energy form:"), sourceType, zones,
                 new Label("Spectral zone width (px, 0 = one cycle per world):"), zoneWidth, zoneWidthValue,
+                new Label("Zone background: share of every form in every zone (%):"), zoneBackground,
+                new Label("Zone border width (% of a zone):"), zoneTransition,
+                new Label("Zone border curve (0 = linear, 100 = S-curve):"), zoneSoftness, zoneMixValue,
                 new Label("Year length (simulation minutes):"), seasonLength,
                 new Label("Winter light (% of summer):"), winter, seasonValue,
                 new Label("Gravity (% of standard):"), gravity, new Label("Friction (movement damping):"), friction,
@@ -316,4 +335,14 @@ public class EnvironmentPanel extends VBox {
 
     /** Re-read the switches and sliders from the config, e.g. after a new scenario. */
     public void syncFromConfig() { syncFromConfig.run(); }
+
+    private static Slider percentSlider(String id, double max, double value) {
+        Slider slider = new Slider(0, max, value);
+        slider.setId(id);
+        slider.setShowTickLabels(true);
+        slider.setShowTickMarks(true);
+        slider.setMajorTickUnit(max / 4);
+        slider.setPrefWidth(270);
+        return slider;
+    }
 }

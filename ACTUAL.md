@@ -1,6 +1,9 @@
 # Aktueller Projektstand
 
-Aktualisiert: 28.10.2026. Branch `master`.
+Aktualisiert: 29.10.2026. Branch `master`.
+
+- Spektralzonen mischbar (29.10.2026): Grundanteil jeder Form in jeder Zone, Übergangsbreite und Kurvenform
+  einstellbar (GUI, Einstellungsdatei); Standard wie bisher. `SPEKTRALZONEN.md`.
 
 - Teilung und Wachstum (28.10.2026, alle Welten): Die Teilung teilt die Fläche (Mutter r/√2, Kind wächst an ihrem
   Rand auf die andere Hälfte), der Impuls wird geteilt, und keine Zelle wächst schneller als 20 px/s. Vorher

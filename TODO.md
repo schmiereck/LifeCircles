@@ -4,6 +4,8 @@
 
 - [x] Brownsche Bewegung als austauschbares Modul, kalibriert (Nutzerentscheidung 27.10.2026).
 - [ ] Brownsche Bewegung in einer NONE/WORLD2-Welt mit Population sichten (Nutzer, GUI) und Modelle vergleichen.
+- [x] Spektralzonen: Grundanteil, Übergangsbreite, Kurvenform einstellbar (29.10.2026).
+- [ ] WORLD2 mit weicheren Zonen sichten (Nutzer, GUI); ggf. Standardwerte für WORLD2 festlegen.
 - [x] Teilung teilt die Fläche, Wachstum höchstens 20 px/s, Impuls geteilt; Geländereibung Standard (28.10.2026).
 - [ ] Große Welten mit wenig Schwerkraft und Brownscher Bewegung erneut sichten: verschwindet das „Fliegen“ durch
   Teilung, entstehen stabilere Verbände und Kriechen am Boden? (Nutzer, GUI)

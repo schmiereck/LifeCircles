@@ -185,6 +185,25 @@ public class SimulationConfig {
         if (!Double.isFinite(width) || width < 0) throw new IllegalArgumentException("Zone width must be finite and >= 0");
         sunZoneWidth = width;
     }
+    // Zone mixing (SPEKTRALZONEN.md): background share of every form, border width (fraction of a zone), border curve.
+    private volatile double sunZoneBackground = 0;
+    private volatile double sunZoneTransition = SunSpectrum.TRANSITION_FRACTION;
+    private volatile double sunZoneSoftness = 0;
+    public double getSunZoneBackground() { return sunZoneBackground; }
+    public void setSunZoneBackground(double share) {
+        new SunSpectrum.Mix(share, sunZoneTransition, sunZoneSoftness);
+        sunZoneBackground = share;
+    }
+    public double getSunZoneTransition() { return sunZoneTransition; }
+    public void setSunZoneTransition(double fraction) {
+        new SunSpectrum.Mix(sunZoneBackground, fraction, sunZoneSoftness);
+        sunZoneTransition = fraction;
+    }
+    public double getSunZoneSoftness() { return sunZoneSoftness; }
+    public void setSunZoneSoftness(double softness) {
+        new SunSpectrum.Mix(sunZoneBackground, sunZoneTransition, softness);
+        sunZoneSoftness = softness;
+    }
 
     public EnergyType getSunEnergyType() { return sunEnergyType; }
     public void setSunEnergyType(EnergyType energyType) {

@@ -1,5 +1,10 @@
 # Abgeschlossene Schritte
 
+## Spektralzonen mischbar (29.10.2026)
+
+- `SunSpectrum.Mix` (Grundanteil, Übergangsbreite, S-Kurve), Konfiguration, GUI-Regler, Einstellungsdatei;
+  `SunSpectrumTest` erweitert. `SPEKTRALZONEN.md`.
+
 ## Teilung und Wachstum (28.10.2026)
 
 - Messung `DivisionMechanicsTest`: Das Wegschleudern kam vor allem vom ungebremsten Aufblähen (153 px/s, 32 px).
