@@ -2,6 +2,9 @@
 
 Aktualisiert: 29.10.2026. Branch `master`.
 
+- Teilungspause (29.10.2026): `reproductionCooldown` (GUI „Division pause (s)“, Standard 0) ist die
+  Mindestzeit zwischen zwei Teilungen derselben Mutter. Vorher galt nur das Mindestalter ab Geburt, danach
+  durfte sie in jedem Schritt teilen. `TEILUNG.md`.
 - Sonne (29.10.2026): Strahlen kommen vom ganzen Himmel und brechen am Weltrand periodisch um; jeder Ort wird
   gleich beleuchtet, keine dunklen Ecken bei schrägem Licht mehr. `SPEKTRALZONEN.md`.
 - Spektralzonen mischbar (29.10.2026): Grundanteil jeder Form in jeder Zone, Übergangsbreite und Kurvenform

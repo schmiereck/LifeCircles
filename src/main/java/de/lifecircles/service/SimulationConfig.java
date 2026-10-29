@@ -277,6 +277,8 @@ public class SimulationConfig {
 
     private double reproductionEnergyThreshold = 0.4D;
     private double reproductionAgeThreshold = 8.0D; // seconds
+    // Minimum time between two divisions of the same mother (TEILUNG.md); 0 = only the age threshold applies.
+    private double reproductionCooldown = 0.0D; // seconds
     private double reproductionDesireThreshold = 0.5D;
 
     private double mutationRate = 0.1D;
@@ -554,6 +556,13 @@ public class SimulationConfig {
 
     public void setReproductionAgeThreshold(double reproductionAgeThreshold) {
         this.reproductionAgeThreshold = reproductionAgeThreshold;
+    }
+
+    public double getReproductionCooldown() { return this.reproductionCooldown; }
+
+    public void setReproductionCooldown(double reproductionCooldown) {
+        if (!(reproductionCooldown >= 0)) throw new IllegalArgumentException("Reproduction cooldown must be >= 0");
+        this.reproductionCooldown = reproductionCooldown;
     }
 
     public double getMutationRate() { return this.mutationRate; }

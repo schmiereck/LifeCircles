@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** Energy budgets in worlds deliberately below the former automatic repopulation threshold. */
 class PopulationEnergyTest {
     private final SimulationConfig config = SimulationConfig.getInstance();
-    private double sunRate, mutationRate, mutationStrength, energyThreshold, ageThreshold, desireThreshold, deathAge;
+    private double sunRate, mutationRate, mutationStrength, energyThreshold, ageThreshold, desireThreshold, deathAge, cooldown;
     private int initialCount;
 
     @BeforeEach void configure() {
@@ -21,6 +21,7 @@ class PopulationEnergyTest {
         mutationRate = config.getMutationRate(); mutationStrength = config.getMutationStrength();
         energyThreshold = config.getReproductionEnergyThreshold(); ageThreshold = config.getReproductionAgeThreshold();
         desireThreshold = config.getReproductionDesireThreshold(); deathAge = config.getCellDeathAge();
+        cooldown = config.getReproductionCooldown(); config.setReproductionCooldown(0);
         config.setSunRayRate(0); config.setInitialCellCount(20);
         config.setMutationRate(0); config.setMutationStrength(0);
         config.setReproductionEnergyThreshold(0.4); config.setReproductionAgeThreshold(8);
@@ -31,6 +32,7 @@ class PopulationEnergyTest {
         config.setMutationRate(mutationRate); config.setMutationStrength(mutationStrength);
         config.setReproductionEnergyThreshold(energyThreshold); config.setReproductionAgeThreshold(ageThreshold);
         config.setReproductionDesireThreshold(desireThreshold); config.setCellDeathAge(deathAge);
+        config.setReproductionCooldown(cooldown);
     }
 
     private static class ControlledBrain extends PhysicsRegressionTest.ConstantBrain {
@@ -98,6 +100,25 @@ class PopulationEnergyTest {
         assertFalse(ReproductionManagerService.canReproduce(config, parent));
         for (int i = 0; i < 10; i++) update(world, 0);
         assertEquals(8, world.getCellList().size()); assertEquals(0.8, totalEnergy(world), 1e-14);
+    }
+
+    /** TEILUNG.md, Teilungspause: the age threshold counts from birth, the pause from the mother's last division. */
+    @Test void motherRestsBetweenDivisions() {
+        config.setReproductionCooldown(2);
+        Environment world = new Environment(300, 300); Cell parent = parent(world, 0.8, 9);
+        ((ControlledBrain) parent.getBrain()).share = 0.1;
+        for (int i = 0; i < 5; i++) update(world, 0);
+        assertEquals(2, world.getCellList().size(), "one division, then a pause instead of one per step");
+        assertEquals(9, parent.getLastDivisionAge());
+        parent.setAge(10.99); config.setCellDeathAge(20);
+        update(world, 0);
+        assertEquals(2, world.getCellList().size());
+        parent.setAge(11);
+        update(world, 0);
+        assertEquals(3, world.getCellList().size());
+        assertEquals(0.8, totalEnergy(world), 1e-14);
+        Cell child = world.getCellList().get(1);
+        assertEquals(Double.NEGATIVE_INFINITY, child.getLastDivisionAge(), "a newborn has not divided yet");
     }
 
     @Test void insufficientEnergyIsNotBypassedByLowPopulation() {

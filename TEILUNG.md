@@ -62,6 +62,24 @@ Das Katapult war vor allem das schnelle Aufblähen. Eine Flächenteilung allein 
 - RACE (`RaceTrainStrategyTest`): Die Geburten schoben einen Verband vorher in 20 s Wachstum um mehr als 0,5 px
   an, jetzt um −0,3 px. Die Wachstumsphase bleibt trotzdem ungewertet.
 
+## Teilungspause
+
+Status: **umgesetzt** (29.10.2026), Nutzerwunsch nach HIGH_POSITION2-Läufen. „Min. Age“
+(`reproductionAgeThreshold`) zählt nur ab der Geburt. Danach durfte eine Mutter in jedem Schritt erneut
+teilen, solange Energie und Teilungswunsch reichten. Höheres Mindestalter bremste das Hochschieben durch
+schnelle Teilung deshalb kaum.
+
+- Neuer Parameter `reproductionCooldown` (GUI „Division pause (s)“, 0–20 s, Standard 0 = wie bisher): Eine Zelle
+  darf erst wieder teilen, wenn seit ihrer letzten eigenen Teilung so viel Zeit vergangen ist. Beide Bedingungen
+  gelten: Mindestalter ab Geburt und Pause ab letzter Teilung.
+- Die Zelle merkt sich ihr Alter bei der letzten Teilung (`Cell.lastDivisionAge`, nur bei erfolgreicher
+  Teilung gesetzt). Ein Neugeborenes hat noch nicht geteilt; für es gilt nur das Mindestalter.
+- Gilt für alle biologischen Teilungen, auch klonale (RACE, HIGH_POSITION3). Trainingsgründer sind unberührt.
+- Alte Speicherstände lesen das Feld als 0, als hätte die Zelle bei Geburt geteilt. Das wirkt nur auf Zellen,
+  die jünger als die Pause sind.
+- Wie das Mindestalter steht die Pause nicht in der Einstellungsdatei.
+- Test: `PopulationEnergyTest.motherRestsBetweenDivisions`.
+
 ## Grenzen und offene Fragen
 
 - Wachstum kostet weiterhin keine Energie. Ein Energiepreis je gewonnener Fläche wäre der nächste Schritt

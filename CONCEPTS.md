@@ -36,6 +36,8 @@
   Rand auf die andere Hälfte, der Impuls wird geteilt. Keine Zelle wächst schneller als 20 px/s im Radius,
   Schrumpfen ist frei. Fortbewegung soll aus Gestalt, Haftung und Reibung entstehen, nicht aus dem Wegschleudern
   bei der Teilung. `TEILUNG.md`.
+- Teilungsrhythmus: Mindestalter ab Geburt und Pause ab der letzten eigenen Teilung (`reproductionCooldown`) sind
+  getrennte Bedingungen (29.10.2026).
 - Halt am Gelände darf reine Physik sein (Nutzervorgabe 24.10.2026): Reibung an Blockern (Coulomb plus
   Rollwiderstand der Kontaktfläche), begrenzt durch das tatsächliche Andrücken, seit 28.10.2026 Standard. Anker
   bleiben als zusätzlicher Mechanismus. Siehe `BODENREIBUNG.md`.

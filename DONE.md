@@ -1,5 +1,10 @@
 # Abgeschlossene Schritte
 
+## Teilungspause (29.10.2026)
+
+- `reproductionCooldown`, `Cell.lastDivisionAge`, GUI-Regler; `PopulationEnergyTest.motherRestsBetweenDivisions`.
+  `TEILUNG.md`.
+
 ## Sonne vom ganzen Himmel (29.10.2026)
 
 - Strahlen starten über die ganze Oberkante, brechen periodisch um, keine Seitenwände; Renderer zeichnet umgebrochen.

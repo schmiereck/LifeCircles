@@ -14,11 +14,12 @@ public class ReproductionManagerService {
     private static final Random random = new Random();
 
     /**
-     * Checks if a cell is ready to reproduce.
+     * Checks if a cell is ready to reproduce: old enough since its birth and rested long enough since its last division.
      */
     public static boolean canReproduce(SimulationConfig config, Cell cell) {
         return !cell.isRemains() && cell.getEnergy() >= config.getReproductionEnergyThreshold() &&
                 cell.getAge() >= config.getReproductionAgeThreshold() &&
+                cell.getAge() - cell.getLastDivisionAge() >= config.getReproductionCooldown() &&
                 cell.getMaxReproductionDesire() >= config.getReproductionDesireThreshold();
     }
 
@@ -62,6 +63,7 @@ public class ReproductionManagerService {
         Cell child = createMutatedChild(config, environment, parentCell, childPosition, chosenActor.getReproductionState(), share, divisionMultiplier, birthRandom);
         child.setRadiusSize(half);
         parentCell.setRealGrowRadiusSize(half);
+        parentCell.setLastDivisionAge(parentCell.getAge());
         // Every cell has the same linear mass, so copying the velocity would double the momentum: share it.
         Vector2D shared = parentCell.getVelocity().multiply(.5);
         parentCell.setVelocity(shared); child.setVelocity(shared);

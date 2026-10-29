@@ -58,6 +58,8 @@ public class Cell implements SensableCell, Serializable {
     private transient boolean brainPaused;
     private transient boolean brainDecisionAuthorized;
     private double age; // in seconds
+    // Own age at the last own division (TEILUNG.md, Teilungspause). Old saves read 0: as if divided at birth.
+    private double lastDivisionAge = Double.NEGATIVE_INFINITY;
     private int generation; // generation counter
     private transient boolean sunRayHit = false; // Flag to indicate if cell was hit by sun ray
     private int cellState; // Zustand der Zelle, beeinflusst zusätzliche Hidden-Layer
@@ -475,6 +477,10 @@ public class Cell implements SensableCell, Serializable {
     public void setAge(double age) {
         this.age = age;
     }
+
+    public double getLastDivisionAge() { return this.lastDivisionAge; }
+
+    public void setLastDivisionAge(double lastDivisionAge) { this.lastDivisionAge = lastDivisionAge; }
 
     public void incAge(double age) {
         this.age += age;

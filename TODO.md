@@ -11,6 +11,8 @@
 - [x] Teilung teilt die Fläche, Wachstum höchstens 20 px/s, Impuls geteilt; Geländereibung Standard (28.10.2026).
 - [ ] Große Welten mit wenig Schwerkraft und Brownscher Bewegung erneut sichten: verschwindet das „Fliegen“ durch
   Teilung, entstehen stabilere Verbände und Kriechen am Boden? (Nutzer, GUI)
+- [x] Teilungspause `reproductionCooldown` (29.10.2026, Standard 0).
+- [ ] HIGH_POSITION2 mit Teilungspause sichten; ggf. Standardwert festlegen (Nutzer).
 - [ ] Wachstum kostet keine Energie: Preis je gewonnener Fläche? (Entscheidung Nutzer, `TEILUNG.md`)
 - [ ] Reibung zwischen Zellen (nur am Gelände vorhanden): später für Greifen/Abrollen an Nachbarn?
 

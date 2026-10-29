@@ -81,16 +81,25 @@ public class ConfigPanel extends HBox {
         grid.addRow(3, desireLabel, desireSlider);
         grid.addRow(4, ageLabel, ageSlider);
 
+        // Pause of a mother between two own divisions (TEILUNG.md)
+        Slider pauseSlider = new Slider(0.0, 20.0, simulationConfig.getReproductionCooldown());
+        pauseSlider.setShowTickLabels(true);
+        pauseSlider.valueProperty().addListener((obs, old, newValue) ->
+                simulationConfig.setReproductionCooldown(newValue.doubleValue()));
+        Label pauseLabel = new Label("Division pause (s):");
+        pauseLabel.setStyle("-fx-text-fill: black;");
+        grid.addRow(5, pauseLabel, pauseSlider);
+
         Slider divisionMutation = new Slider(0, 1, simulationConfig.getDivisionMutationRateMultiplier());
         divisionMutation.setShowTickLabels(true);
         divisionMutation.valueProperty().addListener((obs, old, value) ->
                 simulationConfig.setDivisionMutationRateMultiplier(value.doubleValue()));
-        grid.addRow(5, new Label("Division mutation (0 = clonal):"), divisionMutation);
+        grid.addRow(6, new Label("Division mutation (0 = clonal):"), divisionMutation);
 
         CheckBox normalizedInputs = new CheckBox("Normalize brain inputs (experiment)");
         normalizedInputs.setSelected(simulationConfig.isNormalizeBrainInputs());
         normalizedInputs.selectedProperty().addListener((obs, old, value) -> simulationConfig.setNormalizeBrainInputs(value));
-        grid.addRow(6, normalizedInputs);
+        grid.addRow(7, normalizedInputs);
 
         TitledPane pane = new TitledPane("Reproduction", grid);
         pane.setCollapsible(true);
