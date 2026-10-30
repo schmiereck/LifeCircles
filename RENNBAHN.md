@@ -388,6 +388,8 @@ Mit der Schwerkraft der Datei (17,57) kommt die Dreierraupe ohne Klebrigkeit 22,
 - **Klebrigkeit bremst die Raupe:** Sie drückt auch den gelösten Fuß an, die vorgeschobene Zelle gleitet schlechter.
   Die evolvierten Gehirne dagegen nutzen sie. Für echtes Greifen und Loslassen wäre eine Klebrigkeit von 0 die
   ehrlichere Einstellung; dann muss das Gehirn den Halt selbst erzeugen.
+- **Beobachtung des Nutzers (30.10.2026, GUI):** Mit Klebrigkeit 0 und 120 s Trainingsdauer kriechen die Körper
+  nach weiterem Training, eher als Hüpfen, aber mit Vortrieb. Nicht gemessen.
 
 ## Grenzen und offene Hebel
 
