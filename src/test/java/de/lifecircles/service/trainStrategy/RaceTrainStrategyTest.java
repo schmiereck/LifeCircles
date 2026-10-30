@@ -181,6 +181,9 @@ class RaceTrainStrategyTest {
         RaceTrainStrategy.Evaluation evaluation = strategy.getLastEvaluation();
         // Counted from 35 s at 10 px/s: 150 px at 50 s, 250 px at 60 s.
         assertTrue(evaluation.score() > 150 && evaluation.score() < 250, "mean over the last ten seconds: " + evaluation.score());
+        // Footer: the live distance and the finished generation's score are labelled apart.
+        assertTrue(strategy.getStatus().contains("jetzt weitester 0.0 px · G1: Note " + String.format(Locale.ROOT, "%.1f", evaluation.score())
+                + " px (Ø 3 Starts, letzte 10 s)"), strategy.getStatus());
         assertEquals(77, world.getCellList().getFirst().getGeneration(), "elite founder, not mutated");
         assertEquals(RaceTrainStrategy.LANES, world.getCellList().size(), "fresh founders");
         assertEquals(0, strategy.bodies().getFirst().progress);

@@ -32,6 +32,9 @@ Aktualisiert: 30.10.2026. Branch `master`.
   Zellalters als Eingänge 316–327, jetzt 328 Eingänge; alte Netze ohne neue Synapsen migriert. Neue Gehirne
   verbinden die Takte direkt mit Aktorkraft und Größe (± 0,5), Zufallskörper schwingen damit. `TAKTGEBER.md`.
 - RACE bewertet jedes Genom aus 3 Startlagen (Mittelwert); die Studie zählt schwingende und pulsierende Körper.
+- RACE-Diagnose (30.10.2026): eine fest programmierte Raupe aus 3/6 Zellen kriecht über Reibung 11–20 px in 30 s; evolvierte
+  Körper erreichen ähnlich viel, halten sich aber über die Geländeklebrigkeit statt über eigenes Greifen
+  (`RENNBAHN.md`). Fußzeile trennt „jetzt weitester“ und die Note der letzten Generation.
   Studie mit Taktgebern (300 Generationen, 10 % Schwerkraft): kein schwingender Körper, Bestwert gemittelt
   1–2 px ohne Trend (Abdriften, kein Gang). Mit direkten Taktsynapsen (300 Generationen): stetiger
   Fortschritt, Bestwert 5,7 → 12,6 px, Median 0,5 → 4,5 px, Vortrieb ohne Anker. `RENNBAHN.md`.

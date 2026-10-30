@@ -15,6 +15,8 @@
 - [ ] HIGH_POSITION2 mit Teilungspause sichten; ggf. Standardwert festlegen (Nutzer).
 - [ ] Wachstum kostet keine Energie: Preis je gewonnener Fläche? (Entscheidung Nutzer, `TEILUNG.md`)
 - [ ] Reibung zwischen Zellen (nur am Gelände vorhanden): später für Greifen/Abrollen an Nachbarn?
+- [ ] RACE: mit Geländeklebrigkeit 0 weitertrainieren, damit Halt aus dem Gehirn kommt? Hub der Raupe durch die
+  kurze Feldreichweite (etwa 9 px) begrenzt (Entscheidung Nutzer, `RENNBAHN.md`, Diagnose 30.10.2026).
 
 - [x] Gehirnpause-Sackgasse (nur 000 aus Sonne, keine 000→001-Route) durch basale Notatmung und Umkehrmutation lösen.
 - [x] 600-s-NONE-Vergleich mit/ohne Notatmung auswerten (Enzymanteil, Pausen, Population).

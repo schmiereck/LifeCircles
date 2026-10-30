@@ -1,5 +1,13 @@
 # Abgeschlossene Schritte
 
+## RACE-Diagnose, Raupe, Fußzeile (30.10.2026)
+
+- `RaceFileDiagnosisTest` (opt-in): gespeicherte Population in der Rennbahn, Fußaktoren, Affinität, Anker, Bodenkontakt,
+  Pulsieren, Weg. `RACE-R1-all-2026-10-30-a01`: kaum eigenes Greifen, Halt aus der Geländeklebrigkeit, keine Anker.
+- `CaterpillarGaitTest`: Raupe aus 3 und 6 Zellen mit festem Gehirn kriecht über Reibung, ohne Reibung 0 px.
+  Klebrigkeit −22,4 bremst sie. Details in `RENNBAHN.md`.
+- RACE-Fußzeile: „jetzt weitester“ und „G<n>: Note … (Ø 3 Starts, letzte 10 s)“; `RaceTrainStrategyTest`.
+
 ## Trainingsdauern HIGH_POSITION2/3, Dateiname im Titel (30.10.2026)
 
 - Eine gemeinsame Trainingsdauer `trainingDurationSeconds` statt drei Einzelwerten (Nutzerwunsch): ein Regler, 0 = Standard,

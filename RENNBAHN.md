@@ -109,7 +109,9 @@ Der Reibungsgang und seine Parameter stehen in `BODENREIBUNG.md`.
   - Alle starten frisch als einzelne Zelle.
   - Konsolenzeile `RACE generation=… score=… lastProgress=… cells=… median=… islands … catastrophes=…`
     (Mittelwerte, Bestwert je Insel) und `RACE catastrophe: island …`; Status in der GUI mit Start 1–3 und Zahl
-    der Katastrophen.
+    der Katastrophen. Seit 30.10.2026 trennt die Fußzeile beide Werte: „jetzt weitester“ ist der laufende Weg im
+    aktuellen Start, „G<n>: Note … (Ø 3 Starts, letzte 10 s)“ die Wertung der zuletzt abgeschlossenen Generation.
+    Die Note liegt meist darunter, weil sie über das Schlussfenster und die Startlagen mittelt.
 - **Import:** Ein Genom je Bahn aus den geladenen Zellen, danach Neustart der Episoden.
 
 ## Warum Schieben durch Masse nicht zählt
@@ -334,6 +336,59 @@ Speichermangels des Rechners beendet (nicht wegen der Simulation).
 - Zusammen mit der 600er-Studie (Ende 34–35 px): Die Rennbahn erreicht mit dieser Einstellung 35–50 px im
   Mittel der Bestwerte (etwa 2 px/s); ob es danach weiter steigt, ist offen.
 
+## Diagnose einer gespeicherten Population und Raupe (30.10.2026)
+
+Frage des Nutzers zu `RACE-R1-all-2026-10-30-a01.cells` (Einstellungen der Datei: Episode 90 s, Schwerkraft 17,57,
+Geländeklebrigkeit −22,4, Reibung 0,5/0,5, Anker an, Schärfe 4): Die Zellen liegen in einer Reihe am Boden und
+pulsieren. Versuchen sie, sich festzuhalten, und gelingt es ihnen?
+
+`RaceFileDiagnosisTest` (opt-in, `-Drace.diagnosis.file=…`, optional `-Drace.diagnosis.stickiness=…`) lädt die Datei
+mit ihren Einstellungen in die Rennbahn, läuft eine Episode und misst in der Laufphase je Bahn. Ergebnis, Mittel
+über 32 Bahnen, Seed 1:
+
+| Größe | Wert |
+|---|---|
+| Zellen je Körper | 6 (Obergrenze), 82 % der Zeit am Boden |
+| Fußaktoren (unteres Drittel) ziehen an | 34 % der Zeit |
+| Eigene Bodenkraft der Fußaktoren in Reichweite | Ø −6,7 (Maximum −90), Affinität zu Grau Ø 0,49 |
+| Geländeklebrigkeit je Fußaktor | −22,4, unabhängig vom Gehirn |
+| Anker | keiner (Einrasten verlangt Affinität ≥ 0,8) |
+| Radius | pulsiert zwischen 0,5 und 19,6 px |
+| Weg in 55 s Lauf | Ø 18,0 px (4,6–30,8), in beide Richtungen |
+| Dieselben Gehirne ohne Klebrigkeit | Ø 8,3 px |
+
+- **Festhalten:** Die Gehirne versuchen es kaum. Die Fußaktoren ziehen selten und schwach, ihre Farben sind nur
+  halb grau. Der Halt kommt zu drei Vierteln von der Geländeklebrigkeit, die jeden Fuß immer andrückt. Anker
+  entstehen keine.
+- **Vorankommen:** Es gelingt, aber langsam: im Mittel 18 px. Der Gang nutzt die Klebrigkeit. Ohne sie kommen
+  dieselben Gehirne nur halb so weit, die Evolution hat sich also an die Einstellung angepasst. Der Vortrieb kommt
+  aus Pulsieren und Reibung, nicht aus gezieltem Greifen und Loslassen.
+
+**Raupe (`CaterpillarGaitTest`):** drei oder sechs Zellen in einer Reihe mit fest programmiertem Gehirn. Eine Welle
+läuft von vorn nach hinten: In jedem Takt löst genau eine Zelle ihre grauen Fußaktoren, wird vom hinteren Nachbarn
+4 px vorgeschoben und vom vorderen nachgezogen. Die übrigen drücken an und haften über Reibung, danach folgt ein
+Haltetakt. Abstände regelt ein gedämpfter Regler wie im Zwei-Zellen-Gang. Ohne Anker, Weg des Schwerpunkts in 30 s:
+
+| Raupe | Takt | Reibung 0,5 | ohne Reibung | Klebrigkeit −22,4 |
+|---|---|---|---|---|
+| 3 Zellen | 0,25 s | 10,6 px | 0,0 | 5,3 px |
+| 3 Zellen | 0,5 s | 11,3 px | 0,0 | 6,9 px |
+| 3 Zellen | 1 s | 19,6 px | 0,0 | 12,6 px |
+| 6 Zellen | 0,25 s | 6,1 px | 0,0 | 3,8 px |
+| 6 Zellen | 0,5 s | 11,6 px | 0,0 | 5,8 px |
+| 6 Zellen | 1 s | 11,0 px | 0,0 | 8,8 px |
+
+Mit der Schwerkraft der Datei (17,57) kommt die Dreierraupe ohne Klebrigkeit 22,1 px weit, mit −22,4 nur 12,8 px.
+
+- **Die Physik trägt eine Raupe:** Mit Reibung kriecht sie, ohne Reibung bleibt der Schwerpunkt exakt stehen, weil
+  sich die Kräfte zwischen den Zellen aufheben.
+- **Sie ist langsam.** Ein Zyklus bringt höchstens den Hub von 4 px, denn die Aktorfelder reichen nur etwa 9 px
+  über den Rand. Die Dreierraupe schafft mit 1-s-Takten etwa 65 % davon. Die evolvierten Körper (18 px in 55 s)
+  liegen damit in derselben Größenordnung wie die von Hand gebaute Raupe.
+- **Klebrigkeit bremst die Raupe:** Sie drückt auch den gelösten Fuß an, die vorgeschobene Zelle gleitet schlechter.
+  Die evolvierten Gehirne dagegen nutzen sie. Für echtes Greifen und Loslassen wäre eine Klebrigkeit von 0 die
+  ehrlichere Einstellung; dann muss das Gehirn den Halt selbst erzeugen.
+
 ## Grenzen und offene Hebel
 
 - **Startproblem:** Zufällige Gehirne müssen graue, anziehende Fußaktoren, Lösen durch Abstoßen und
@@ -355,7 +410,9 @@ Speichermangels des Rechners beendet (nicht wegen der Simulation).
 ## Tests
 
 ```powershell
-mvn test '-Dtest=BlockerFrictionTest,RaceGaitTest,RaceTrainStrategyTest,TrainingAdhesionTest'
+mvn test '-Dtest=BlockerFrictionTest,RaceGaitTest,CaterpillarGaitTest,RaceTrainStrategyTest,TrainingAdhesionTest'
+# Opt-in: gespeicherte Population diagnostizieren
+mvn test '-Dtest=RaceFileDiagnosisTest' '-Drace.diagnosis.file=…cells'
 # Opt-in: echte Generationen mit Zufallsgründern
 mvn test '-Dtest=RaceTrainStrategyTest#study' '-Drace.study.generations=20'
 ```

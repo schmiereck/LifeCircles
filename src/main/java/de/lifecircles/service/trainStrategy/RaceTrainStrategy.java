@@ -316,9 +316,12 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
     private void updateStatus() {
         double best = 0;
         for (Body body : bodies) if (!body.invalid) best = Math.max(best, Math.abs(body.progress));
-        status = String.format(Locale.ROOT, "RACE · G%d · Start %d/%d · %.0f/%.0f s · %s · weitester %.1f px · letzte Bestwertung %s · %d Katastrophen",
+        // "jetzt weitester" is the live distance in this start; the score of the last finished generation is the mean
+        // over its starts of the progress averaged over each run's last 10 s, hence usually smaller.
+        status = String.format(Locale.ROOT, "RACE · G%d · Start %d/%d · %.0f/%.0f s · %s · jetzt weitester %.1f px · %s · %d Katastrophen",
                 generation, evaluation + 1, EVALUATIONS, elapsed, episodeSeconds,
                 elapsed < GROWTH_SECONDS ? "Wachstum" : elapsed < RUN_START_SECONDS ? "Ruhe" : "Lauf", best,
-                lastEvaluation == null ? "—" : String.format(Locale.ROOT, "%.1f px", lastEvaluation.score()), catastrophes);
+                lastEvaluation == null ? "noch keine Note" : String.format(Locale.ROOT, "G%d: Note %.1f px (Ø %d Starts, letzte %.0f s)",
+                        lastEvaluation.generation(), lastEvaluation.score(), EVALUATIONS, WINDOW_SECONDS), catastrophes);
     }
 }
