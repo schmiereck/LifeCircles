@@ -21,9 +21,9 @@ erreichte Hoehe zusaetzlich ueber die Zeit bewertet.
 
 ## Generationslänge (seit 30.10.2026 einstellbar)
 
-`highPosition2GenerationSeconds`, GUI „HIGH_POSITION2 generation length (s)“ im Umweltpanel, 15–600 s,
-Standard 50 s (3.000 Schritte), gespeichert in `<datei>.cells.settings`. Bewertet werden weiter die letzten 10 s.
-Die Länge wird zu Beginn jeder Generation gelesen; Studien mit fester Schrittzahl (`HighPosition2EvolutionStudyTest`)
+Ein gemeinsamer Regler „Training duration“ im Umweltpanel für alle Trainings (`trainingDurationSeconds`, gespeichert
+in `<datei>.cells.settings`). Linkes Ende = 50 s (3.000 Schritte); kürzere Werte hebt HIGH_POSITION2 auf 15 s an.
+Bewertet werden weiter die letzten 10 s. Die Länge wird zu Beginn jeder Generation gelesen; Studien mit fester Schrittzahl (`HighPosition2EvolutionStudyTest`)
 bleiben davon unberührt.
 
 ## Fußzeile

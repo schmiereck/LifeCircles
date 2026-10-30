@@ -487,35 +487,22 @@ public class SimulationConfig {
     }
     public double getBrownianStrength() { return brownianStrength; }
 
-    // RACE episode length in seconds (RENNBAHN.md); growth and rest phases stay fixed, the run phase gets the rest.
-    public static final double RACE_EPISODE_DEFAULT = 60, RACE_EPISODE_MIN = 45;
-    private double raceEpisodeSeconds = RACE_EPISODE_DEFAULT;
-    public double getRaceEpisodeSeconds() { return raceEpisodeSeconds; }
-    public void setRaceEpisodeSeconds(double seconds) {
-        if (!(seconds >= RACE_EPISODE_MIN) || !Double.isFinite(seconds))
-            throw new IllegalArgumentException("RACE episode must last at least " + RACE_EPISODE_MIN + " s");
-        this.raceEpisodeSeconds = seconds;
+    /**
+     * Duration of one training episode/generation in seconds (CONCEPTS.md, Trainingsdauer), shared by all trainings
+     * that use it (RACE, HIGH_POSITION2, HIGH_POSITION3). 0 = each training's own default (60/50/30 s). A training
+     * that needs a minimum (e.g. RACE 45 s: growth, rest and a 10 s rated run) raises a shorter value to it.
+     */
+    private double trainingDurationSeconds = 0;
+    public double getTrainingDurationSeconds() { return trainingDurationSeconds; }
+    public void setTrainingDurationSeconds(double seconds) {
+        if (!(seconds >= 0) || !Double.isFinite(seconds)) throw new IllegalArgumentException("Training duration must be finite and >= 0");
+        this.trainingDurationSeconds = seconds;
+    }
+    /** The duration a training with the given default and minimum uses now. */
+    public double trainingDuration(double defaultSeconds, double minimumSeconds) {
+        return trainingDurationSeconds == 0 ? defaultSeconds : Math.max(minimumSeconds, trainingDurationSeconds);
     }
 
-    // HIGH_POSITION2 generation length (HIGH_POSITION2.md); the evaluation window stays the final ten seconds.
-    public static final double HIGH_POSITION2_GENERATION_DEFAULT = 50, HIGH_POSITION2_GENERATION_MIN = 15;
-    private double highPosition2GenerationSeconds = HIGH_POSITION2_GENERATION_DEFAULT;
-    public double getHighPosition2GenerationSeconds() { return highPosition2GenerationSeconds; }
-    public void setHighPosition2GenerationSeconds(double seconds) {
-        if (!(seconds >= HIGH_POSITION2_GENERATION_MIN) || !Double.isFinite(seconds))
-            throw new IllegalArgumentException("HIGH_POSITION2 generation must last at least " + HIGH_POSITION2_GENERATION_MIN + " s");
-        this.highPosition2GenerationSeconds = seconds;
-    }
-
-    // HIGH_POSITION3 episode length (HIGH_POSITION3.md); kicks stay at 10 and 20 s, the final window is the last 5 s.
-    public static final double HIGH_POSITION3_EPISODE_DEFAULT = 30, HIGH_POSITION3_EPISODE_MIN = 25;
-    private double highPosition3EpisodeSeconds = HIGH_POSITION3_EPISODE_DEFAULT;
-    public double getHighPosition3EpisodeSeconds() { return highPosition3EpisodeSeconds; }
-    public void setHighPosition3EpisodeSeconds(double seconds) {
-        if (!(seconds >= HIGH_POSITION3_EPISODE_MIN) || !Double.isFinite(seconds))
-            throw new IllegalArgumentException("HIGH_POSITION3 episode must last at least " + HIGH_POSITION3_EPISODE_MIN + " s");
-        this.highPosition3EpisodeSeconds = seconds;
-    }
     public void setBrownianStrength(double strength) {
         if (!Double.isFinite(strength) || strength < 0) throw new IllegalArgumentException("Brownian strength must be finite and >= 0");
         brownianStrength = strength;

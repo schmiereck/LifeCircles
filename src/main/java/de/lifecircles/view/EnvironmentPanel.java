@@ -280,49 +280,29 @@ public class EnvironmentPanel extends VBox {
             refreshAdhesion.run();
         });
         refreshAdhesion.run();
-        // RACE episode length (RENNBAHN.md): takes effect with the next episode.
-        Label raceEpisodeValue = new Label();
-        Slider raceEpisode = new Slider(SimulationConfig.RACE_EPISODE_MIN, 300, config.getRaceEpisodeSeconds());
-        raceEpisode.setId("race-episode-seconds");
-        raceEpisode.setShowTickLabels(true);
-        raceEpisode.setShowTickMarks(true);
-        raceEpisode.setMajorTickUnit(60);
-        raceEpisode.setPrefWidth(270);
-        Runnable refreshRaceEpisode = () -> raceEpisodeValue.setText(String.format(
-                "RACE episode: %.0f s (growth 30 s, rest 5 s, run %.0f s), from the next episode",
-                config.getRaceEpisodeSeconds(), config.getRaceEpisodeSeconds() - 35));
-        raceEpisode.valueProperty().addListener((obs, old, next) -> {
-            config.setRaceEpisodeSeconds(Math.round(next.doubleValue()));
-            refreshRaceEpisode.run();
+        // Shared training duration (CONCEPTS.md): left end = each training's own default; from the next episode.
+        Label trainingDurationValue = new Label();
+        Slider trainingDuration = new Slider(0, 600, config.getTrainingDurationSeconds());
+        trainingDuration.setId("training-duration-seconds");
+        trainingDuration.setShowTickLabels(true);
+        trainingDuration.setShowTickMarks(true);
+        trainingDuration.setMajorTickUnit(60);
+        trainingDuration.setPrefWidth(270);
+        Runnable refreshTrainingDuration = () -> trainingDurationValue.setText(String.format(
+                "RACE %.0f s · HIGH_POSITION2 %.0f s · HIGH_POSITION3 %.0f s%s, from the next episode",
+                config.trainingDuration(60, 45), config.trainingDuration(50, 15), config.trainingDuration(30, 25),
+                config.getTrainingDurationSeconds() == 0 ? " (defaults)" : ""));
+        trainingDuration.valueProperty().addListener((obs, old, next) -> {
+            // Below 15 s means "default": no training runs that short.
+            double seconds = Math.round(next.doubleValue());
+            config.setTrainingDurationSeconds(seconds < 15 ? 0 : seconds);
+            refreshTrainingDuration.run();
         });
-        refreshRaceEpisode.run();
-        // HIGH_POSITION2 generation and HIGH_POSITION3 episode length: from the next generation/episode.
-        Label highPositionValue = new Label();
-        Slider highPosition2 = durationSlider("high-position2-generation-seconds", SimulationConfig.HIGH_POSITION2_GENERATION_MIN,
-                600, config.getHighPosition2GenerationSeconds());
-        Slider highPosition3 = durationSlider("high-position3-episode-seconds", SimulationConfig.HIGH_POSITION3_EPISODE_MIN,
-                300, config.getHighPosition3EpisodeSeconds());
-        Runnable refreshHighPosition = () -> highPositionValue.setText(String.format(
-                "HIGH_POSITION2: %.0f s (last 10 s rated) · HIGH_POSITION3: %.0f s (last 5 s), from the next one",
-                config.getHighPosition2GenerationSeconds(), config.getHighPosition3EpisodeSeconds()));
-        highPosition2.valueProperty().addListener((obs, old, next) -> {
-            config.setHighPosition2GenerationSeconds(Math.round(next.doubleValue()));
-            refreshHighPosition.run();
-        });
-        highPosition3.valueProperty().addListener((obs, old, next) -> {
-            config.setHighPosition3EpisodeSeconds(Math.round(next.doubleValue()));
-            refreshHighPosition.run();
-        });
-        refreshHighPosition.run();
+        refreshTrainingDuration.run();
         syncFromConfig = () -> {
-            double raceSeconds = config.getRaceEpisodeSeconds(), hp2Seconds = config.getHighPosition2GenerationSeconds(),
-                    hp3Seconds = config.getHighPosition3EpisodeSeconds();
-            raceEpisode.setMax(Math.max(raceEpisode.getMax(), raceSeconds)); raceEpisode.setValue(raceSeconds);
-            highPosition2.setMax(Math.max(highPosition2.getMax(), hp2Seconds)); highPosition2.setValue(hp2Seconds);
-            highPosition3.setMax(Math.max(highPosition3.getMax(), hp3Seconds)); highPosition3.setValue(hp3Seconds);
-            config.setRaceEpisodeSeconds(raceSeconds); config.setHighPosition2GenerationSeconds(hp2Seconds);
-            config.setHighPosition3EpisodeSeconds(hp3Seconds);
-            refreshRaceEpisode.run(); refreshHighPosition.run();
+            double trainingSeconds = config.getTrainingDurationSeconds();
+            trainingDuration.setMax(Math.max(trainingDuration.getMax(), trainingSeconds)); trainingDuration.setValue(trainingSeconds);
+            config.setTrainingDurationSeconds(trainingSeconds); refreshTrainingDuration.run();
             // Slider listeners write back (rounded, clamped); keep the exact config values and restore them afterwards.
             double zoneBack = config.getSunZoneBackground(), zoneBorder = config.getSunZoneTransition(), zoneCurve = config.getSunZoneSoftness();
             double sunRate = config.getSunRayRate(), width = config.getSunZoneWidth(), season = config.getSeasonDuration(),
@@ -371,25 +351,13 @@ public class EnvironmentPanel extends VBox {
                 adhesion, trainingAdhesion, bonds, birthBonds, new Label("Remains force half-life (minutes, right end = forever):"), remainsHalfLife,
                 new Label("Rejection of foreign attraction (%):"), rejection, adhesionValue,
                 groundHold, anchors, groundOnly, new Label("Terrain stickiness (% of max attraction):"), stickiness, stickinessValue,
-                new Label("RACE episode length (s):"), raceEpisode, raceEpisodeValue,
-                new Label("HIGH_POSITION2 generation length (s):"), highPosition2,
-                new Label("HIGH_POSITION3 episode length (s):"), highPosition3, highPositionValue);
+                new Label("Training duration per episode/generation (s, left end = defaults):"), trainingDuration, trainingDurationValue);
         content.setPadding(new Insets(5));
         getChildren().add(new TitledPane("Environment", content));
     }
 
     /** Re-read the switches and sliders from the config, e.g. after a new scenario. */
     public void syncFromConfig() { syncFromConfig.run(); }
-
-    private static Slider durationSlider(String id, double min, double max, double value) {
-        Slider slider = new Slider(min, max, value);
-        slider.setId(id);
-        slider.setShowTickLabels(true);
-        slider.setShowTickMarks(true);
-        slider.setMajorTickUnit(60);
-        slider.setPrefWidth(270);
-        return slider;
-    }
 
     private static Slider percentSlider(String id, double max, double value) {
         Slider slider = new Slider(0, max, value);

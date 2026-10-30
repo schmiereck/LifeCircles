@@ -53,3 +53,6 @@
   eine Anfangsgröße, keine Wachstumsgrenze; geladene/evolvierte DNA bleibt erhalten.
 - Experimente müssen Nutzen variabler Steuerung, Erwerb/Erhalt, Kosten und CPU-Zeit
   unterscheiden. Exakte Optimierung und neue Evolutionsregeln getrennt bewerten.
+- Trainingsdauer (30.10.2026, Nutzerentscheidung): ein gemeinsamer Wert `trainingDurationSeconds` für alle Trainings
+  mit Episoden/Generationen (RACE, HIGH_POSITION2, HIGH_POSITION3). 0 = Standard des Trainings; jedes Training hebt
+  zu kurze Werte auf seine Mindestdauer an. Gelesen zu Beginn jeder Episode/Generation.

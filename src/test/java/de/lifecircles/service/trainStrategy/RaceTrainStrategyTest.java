@@ -21,8 +21,8 @@ class RaceTrainStrategyTest {
         rate = config.getMutationRate(); strength = config.getMutationStrength(); age = config.getReproductionAgeThreshold();
         adhesion = config.isCellAdhesion(); ground = config.isGroundAdhesion(); anchors = config.isGroundAnchors();
         groundOnly = config.isGroundAnchorsGroundOnly(); bonds = config.isAdhesionBonds(); birthBonds = config.isAdhesionBirthBonds();
-        friction = config.isBlockerFriction(); episode = config.getRaceEpisodeSeconds();
-        config.setRaceEpisodeSeconds(RaceTrainStrategy.EPISODE_SECONDS);
+        friction = config.isBlockerFriction(); episode = config.getTrainingDurationSeconds();
+        config.setTrainingDurationSeconds(0);
         config.setMutationRate(0); config.setMutationStrength(0); config.setReproductionAgeThreshold(0);
         previous = NeuralNetwork.getRandom(); NeuralNetwork.setRandom(new Random(573));
     }
@@ -31,7 +31,7 @@ class RaceTrainStrategyTest {
         config.setMutationRate(rate); config.setMutationStrength(strength); config.setReproductionAgeThreshold(age);
         config.setCellAdhesion(adhesion); config.setGroundAdhesion(ground); config.setGroundAnchors(anchors);
         config.setGroundAnchorsGroundOnly(groundOnly); config.setAdhesionBonds(bonds); config.setAdhesionBirthBonds(birthBonds);
-        config.setBlockerFriction(friction); config.setRaceEpisodeSeconds(episode);
+        config.setBlockerFriction(friction); config.setTrainingDurationSeconds(episode);
         NeuralNetwork.setRandom(previous);
     }
 
@@ -188,10 +188,10 @@ class RaceTrainStrategyTest {
 
     /** RENNBAHN.md: the episode length is a setting; growth and rest stay, the run gets longer. */
     @Test void longerEpisodesGiveTheBodiesMoreTimeToRun() {
-        config.setRaceEpisodeSeconds(90);
+        config.setTrainingDurationSeconds(90);
         var strategy = strategy();
         Environment world = setup(strategy, genome(false));
-        config.setRaceEpisodeSeconds(60); // changed during an episode: only from the next episode on
+        config.setTrainingDurationSeconds(0); // changed during an episode: only from the next episode on (default 60 s)
         double dt = 1.0 / 60;
         for (int i = 0; i < Math.round(90 / dt) - 1; i++) {
             for (Cell cell : strategy.bodies().get(4).cells) cell.setPosition(cell.getPosition().add(new Vector2D(dt * 10, 0)));
@@ -202,7 +202,9 @@ class RaceTrainStrategyTest {
         assertEquals(550, strategy.bodies().get(4).progress, 2);
         strategy.selectAndMutate(world, dt);
         assertTrue(strategy.getStatus().contains("Start 2/3 · 0/60 s"), strategy.getStatus());
-        assertThrows(IllegalArgumentException.class, () -> config.setRaceEpisodeSeconds(40));
+        // Shorter than growth, rest and a rated window: raised to 45 s.
+        config.setTrainingDurationSeconds(20);
+        assertEquals(45, config.trainingDuration(RaceTrainStrategy.EPISODE_SECONDS, RaceTrainStrategy.MIN_EPISODE_SECONDS));
     }
 
     @Test void aSteadyMoverBeatsAJoltFromOneStart() {

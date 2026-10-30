@@ -2,14 +2,14 @@
 
 ## Trainingsdauern HIGH_POSITION2/3, Dateiname im Titel (30.10.2026)
 
-- `highPosition2GenerationSeconds`, `highPosition3EpisodeSeconds` (Schlussfenster HIGH_POSITION3 relativ zum Ende),
-  Regler, Einstellungsdatei; `HighPosition2GenerationLengthTest.lengthsComeFromTheSettings`.
+- Eine gemeinsame Trainingsdauer `trainingDurationSeconds` statt drei Einzelwerten (Nutzerwunsch): ein Regler, 0 = Standard,
+  Mindestwerte je Training; Schlussfenster HIGH_POSITION3 relativ zum Ende; `HighPosition2GenerationLengthTest`.
 - Titel „LifeCircles Simulation - MODUS - datei.cells“ nach Load/Save as, „Save as“ belegt Ordner und Namen vor;
   `MainControllerLayoutTest`.
 
 ## RACE-Episodenlänge einstellbar (30.10.2026)
 
-- `SimulationConfig.raceEpisodeSeconds`, Regler im Umweltpanel, Einstellungsdatei; gilt ab der nächsten Episode.
+- RACE liest seine Episodenlänge aus der gemeinsamen Trainingsdauer; gilt ab der nächsten Episode.
   `RaceTrainStrategyTest.longerEpisodesGiveTheBodiesMoreTimeToRun`. `RENNBAHN.md`.
 
 ## Reproduction-Einstellungen gespeichert, Fußzeile HIGH_POSITION (29.10.2026)

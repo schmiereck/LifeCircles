@@ -25,31 +25,32 @@ class HighPosition2GenerationLengthTest {
         assertThrows(IllegalArgumentException.class,()->new HighPosition2TrainStrategy(new Random(1),null,600));
     }
 
-    /** Generation (HIGH_POSITION2) and episode (HIGH_POSITION3) lengths are settings, read at each start. */
+    /** One shared training duration sets the HIGH_POSITION2 generation and HIGH_POSITION3 episode, read at each start. */
     @Test void lengthsComeFromTheSettings() {
         var config=de.lifecircles.service.SimulationConfig.getInstance();
-        double hp2=config.getHighPosition2GenerationSeconds(),hp3=config.getHighPosition3EpisodeSeconds();
+        double duration=config.getTrainingDurationSeconds();
         try {
-            config.setHighPosition2GenerationSeconds(20);
+            config.setTrainingDurationSeconds(20);
             assertEquals(0,selections(null,1199));
             assertEquals(1,selections(null,1200));
-            config.setHighPosition2GenerationSeconds(50);
-            assertEquals(0,selections(null,2999));
-            assertThrows(IllegalArgumentException.class,()->config.setHighPosition2GenerationSeconds(10));
+            config.setTrainingDurationSeconds(0);
+            assertEquals(0,selections(null,2999),"default 50 s");
+            assertEquals(1,selections(null,3000));
 
-            config.setHighPosition3EpisodeSeconds(40);
+            config.setTrainingDurationSeconds(40);
             var strategy=new HighPosition3TrainStrategy(new Random(1));
             Environment world=strategy.initializeEnvironment();strategy.initialize(world);
-            config.setHighPosition3EpisodeSeconds(30); // only from the next episode
+            config.setTrainingDurationSeconds(0); // only from the next episode (default 30 s)
             for(int i=0;i<35*2;i++)strategy.selectAndMutate(world,.5);
             assertEquals(1,strategy.getGeneration(),"still the 40 s episode");
             assertTrue(strategy.getStatus().contains("35/40 s"),strategy.getStatus());
             for(int i=0;i<5*2;i++)strategy.selectAndMutate(world,.5);
             assertEquals(2,strategy.getGeneration());
             assertTrue(strategy.getStatus().contains("/30 s"),strategy.getStatus());
-            assertThrows(IllegalArgumentException.class,()->config.setHighPosition3EpisodeSeconds(20));
+            config.setTrainingDurationSeconds(20);
+            assertEquals(25,config.trainingDuration(HighPosition3TrainStrategy.EPISODE_SECONDS,HighPosition3TrainStrategy.MIN_EPISODE_SECONDS));
         } finally {
-            config.setHighPosition2GenerationSeconds(hp2);config.setHighPosition3EpisodeSeconds(hp3);
+            config.setTrainingDurationSeconds(duration);
         }
     }
 

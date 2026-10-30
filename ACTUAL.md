@@ -2,11 +2,10 @@
 
 Aktualisiert: 30.10.2026. Branch `master`.
 
-- HIGH_POSITION2-Generation (15–600 s, Standard 50) und HIGH_POSITION3-Episode (25–300 s, Standard 30) einstellbar
-  und gespeichert (30.10.2026). Fenstertitel zeigt die zuletzt geladene/gespeicherte Datei, „Save as“ bietet ihren
+- Eine gemeinsame Trainingsdauer (30.10.2026, `trainingDurationSeconds`, Umweltpanel, Einstellungsdatei; linkes
+  Ende = Standard je Training: RACE 60 s, HIGH_POSITION2 50 s, HIGH_POSITION3 30 s; Mindestwerte 45/15/25 s).
+  Fenstertitel zeigt die zuletzt geladene/gespeicherte Datei, „Save as“ bietet ihren
   Namen an. `HIGH_POSITION2.md`, `HIGH_POSITION3.md`.
-- RACE-Episodenlänge einstellbar (30.10.2026, `raceEpisodeSeconds`, 45–300 s, Standard 60 s, Umweltpanel,
-  Einstellungsdatei); längere Laufphase bei gleichem Wachstum. `RENNBAHN.md`.
 - Einstellungsdatei enthält seit 29.10.2026 auch alle Reproduction-Einstellungen (Mindestenergie, Mutation,
   Wunsch, Mindestalter, Teilungspause, Teilungsmutation, Eingangsnormierung); das Panel wird nach Load und
   „New…“ nachgezogen. HIGH_POSITION und HIGH_POSITION2 zeigen in der Fußzeile Generation, Schritt, Phase und

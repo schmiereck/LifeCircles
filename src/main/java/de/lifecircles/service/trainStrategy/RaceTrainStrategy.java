@@ -28,6 +28,8 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
             MIGRATION_INTERVAL = 10, STAGNATION_GENERATIONS = 30, EVALUATIONS = 3, RECORD_WINDOW = 10;
     static final double LANE_WIDTH = 1600, START = LANE_WIDTH / 2, HEIGHT = 800, EPISODE_SECONDS = 60, WINDOW_SECONDS = 10,
             SAMPLE_SECONDS = .5, ENERGY = .75, GROWTH_SECONDS = 30, RUN_START_SECONDS = 35, START_JITTER = 40,
+            // Shortest episode: growth, rest and a full rated window (shared training duration is raised to it).
+            MIN_EPISODE_SECONDS = RUN_START_SECONDS + WINDOW_SECONDS,
             // A new island record must beat the old one by this much (noise from the random start is no progress).
             RECORD_MARGIN = .1, RECORD_FACTOR = 1.1;
     private final SimulationConfig config = SimulationConfig.getInstance();
@@ -181,7 +183,7 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
         world.resetCells(population);
         for (Body body : bodies) for (Cell cell : body.cells) body.lastX.put(cell, cell.getPosition().getX());
         elapsed = 0; sampleNumber = 0;
-        episodeSeconds = config.getRaceEpisodeSeconds();
+        episodeSeconds = config.trainingDuration(EPISODE_SECONDS, MIN_EPISODE_SECONDS);
         updateStatus();
     }
 

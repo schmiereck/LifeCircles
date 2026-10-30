@@ -33,7 +33,7 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
 
     public HighPosition2TrainStrategy() { this(new Random(), null); }
 
-    /** Generation length from the settings (highPosition2GenerationSeconds, default 50 s). */
+    /** Generation length from the shared training duration (default 50 s, at least 15 s). */
     HighPosition2TrainStrategy(Random random, EvaluationObserver observer) {
         this.random = Objects.requireNonNull(random);
         this.observer = observer;
@@ -53,7 +53,7 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
     /** One selection call per 60-Hz physics step: 50 s are the former 3000 steps. */
     private int configuredSteps() {
         return Math.max(EVALUATION_WINDOW_STEPS + SAMPLE_INTERVAL_STEPS,
-                (int) Math.round(config.getHighPosition2GenerationSeconds() * GENERATION_STEP / 50.0));
+                (int) Math.round(config.trainingDuration(50, 15) * GENERATION_STEP / 50.0));
     }
 
     @Override

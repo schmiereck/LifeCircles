@@ -98,9 +98,9 @@ spätere Gelenkigkeit sollen möglich bleiben.
 
 ## Episodenlänge (seit 30.10.2026 einstellbar)
 
-`highPosition3EpisodeSeconds`, GUI „HIGH_POSITION3 episode length (s)“ im Umweltpanel, 25–300 s, Standard 30 s,
-gespeichert in `<datei>.cells.settings`. Die Stöße bleiben bei 10 und 20 s; das Schlussfenster (Form- und
-Kontakterhalt beim Aufbauen, berichtete Werte) sind immer die letzten 5 s der Episode. Die Länge wird zu Beginn
+Ein gemeinsamer Regler „Training duration“ im Umweltpanel für alle Trainings (`trainingDurationSeconds`, gespeichert
+in `<datei>.cells.settings`). Linkes Ende = 30 s; kürzere Werte hebt HIGH_POSITION3 auf 25 s an. Die Stöße bleiben
+bei 10 und 20 s; das Schlussfenster (Form- und Kontakterhalt beim Aufbauen, berichtete Werte) sind immer die letzten 5 s der Episode. Die Länge wird zu Beginn
 jeder Episode gelesen. Längere Episoden mitteln über mehr Proben; Werte verschiedener Längen sind nur bedingt
 vergleichbar.
 

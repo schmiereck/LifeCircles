@@ -13,7 +13,8 @@ public class HighPosition3TrainStrategy implements TrainStrategy, SimulationStep
         Stage(String label) { this.label=label; }
     }
     static final int CANDIDATES=8, CELL_LIMIT=60, REQUIRED_SUCCESSES=3;
-    static final double SECTION_WIDTH=1400, EPISODE_SECONDS=30, SAMPLE_SECONDS=.5, ENERGY=.75;
+    // Shortest episode: both kicks (10 and 20 s) and the final five seconds after them.
+    static final double SECTION_WIDTH=1400, EPISODE_SECONDS=30, MIN_EPISODE_SECONDS=25, SAMPLE_SECONDS=.5, ENERGY=.75;
     private static final CellType GREEN=new CellType(0,1,0);
     private final SimulationConfig config=SimulationConfig.getInstance();
     private final Random random;
@@ -112,7 +113,7 @@ public class HighPosition3TrainStrategy implements TrainStrategy, SimulationStep
             for (SensorActor actor:cell.getSensorActors()) actor.updateCachedPosition();
         }
         elapsed=0;sampleNumber=0;firstKick=secondKick=false;
-        episodeSeconds=config.getHighPosition3EpisodeSeconds();
+        episodeSeconds=config.trainingDuration(EPISODE_SECONDS,MIN_EPISODE_SECONDS);
     }
 
     public void beforeStep(Environment world,double dt) {
