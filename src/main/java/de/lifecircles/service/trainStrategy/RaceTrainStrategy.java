@@ -39,6 +39,8 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
     /** Scores of each lane's genome over the episodes of this generation. */
     private final double[] scoreSums = new double[LANES];
     private double elapsed;
+    /** Length of the running episode, read from the config at its start so a change never splits an episode. */
+    private double episodeSeconds = EPISODE_SECONDS;
     private final Island[] islands = new Island[ISLANDS];
     /** Tests switch the random turn and offset off to place founders exactly. */
     boolean randomStart = true;
@@ -179,6 +181,7 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
         world.resetCells(population);
         for (Body body : bodies) for (Cell cell : body.cells) body.lastX.put(cell, cell.getPosition().getX());
         elapsed = 0; sampleNumber = 0;
+        episodeSeconds = config.getRaceEpisodeSeconds();
         updateStatus();
     }
 
@@ -211,11 +214,11 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
         track(world, elapsed + 1e-9 >= RUN_START_SECONDS);
         if (elapsed + 1e-9 >= (sampleNumber + 1) * SAMPLE_SECONDS) {
             sampleNumber++;
-            if (elapsed + 1e-9 > EPISODE_SECONDS - WINDOW_SECONDS)
+            if (elapsed + 1e-9 > episodeSeconds - WINDOW_SECONDS)
                 for (Body body : bodies) { body.windowSum += body.progress; body.windowSamples++; }
             updateStatus();
         }
-        if (elapsed + 1e-9 < EPISODE_SECONDS) return;
+        if (elapsed + 1e-9 < episodeSeconds) return;
         for (Body body : bodies) scoreSums[body.lane] += body.score();
         if (++evaluation < EVALUATIONS) {
             // The same founders again (unchanged copies) from new random starts.
@@ -312,7 +315,7 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
         double best = 0;
         for (Body body : bodies) if (!body.invalid) best = Math.max(best, Math.abs(body.progress));
         status = String.format(Locale.ROOT, "RACE · G%d · Start %d/%d · %.0f/%.0f s · %s · weitester %.1f px · letzte Bestwertung %s · %d Katastrophen",
-                generation, evaluation + 1, EVALUATIONS, elapsed, EPISODE_SECONDS,
+                generation, evaluation + 1, EVALUATIONS, elapsed, episodeSeconds,
                 elapsed < GROWTH_SECONDS ? "Wachstum" : elapsed < RUN_START_SECONDS ? "Ruhe" : "Lauf", best,
                 lastEvaluation == null ? "—" : String.format(Locale.ROOT, "%.1f px", lastEvaluation.score()), catastrophes);
     }

@@ -486,6 +486,16 @@ public class SimulationConfig {
         brownianDensity = density;
     }
     public double getBrownianStrength() { return brownianStrength; }
+
+    // RACE episode length in seconds (RENNBAHN.md); growth and rest phases stay fixed, the run phase gets the rest.
+    public static final double RACE_EPISODE_DEFAULT = 60, RACE_EPISODE_MIN = 45;
+    private double raceEpisodeSeconds = RACE_EPISODE_DEFAULT;
+    public double getRaceEpisodeSeconds() { return raceEpisodeSeconds; }
+    public void setRaceEpisodeSeconds(double seconds) {
+        if (!(seconds >= RACE_EPISODE_MIN) || !Double.isFinite(seconds))
+            throw new IllegalArgumentException("RACE episode must last at least " + RACE_EPISODE_MIN + " s");
+        this.raceEpisodeSeconds = seconds;
+    }
     public void setBrownianStrength(double strength) {
         if (!Double.isFinite(strength) || strength < 0) throw new IllegalArgumentException("Brownian strength must be finite and >= 0");
         brownianStrength = strength;

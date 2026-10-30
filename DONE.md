@@ -1,5 +1,10 @@
 # Abgeschlossene Schritte
 
+## RACE-Episodenlänge einstellbar (30.10.2026)
+
+- `SimulationConfig.raceEpisodeSeconds`, Regler im Umweltpanel, Einstellungsdatei; gilt ab der nächsten Episode.
+  `RaceTrainStrategyTest.longerEpisodesGiveTheBodiesMoreTimeToRun`. `RENNBAHN.md`.
+
 ## Reproduction-Einstellungen gespeichert, Fußzeile HIGH_POSITION (29.10.2026)
 
 - Acht Reproduction-Schlüssel in `SimulationSettingsFile`, `ConfigPanel.syncFromConfig` (erweitert den Reglerbereich

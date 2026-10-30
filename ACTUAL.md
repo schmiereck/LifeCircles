@@ -1,7 +1,9 @@
 # Aktueller Projektstand
 
-Aktualisiert: 29.10.2026. Branch `master`.
+Aktualisiert: 30.10.2026. Branch `master`.
 
+- RACE-Episodenlänge einstellbar (30.10.2026, `raceEpisodeSeconds`, 45–300 s, Standard 60 s, Umweltpanel,
+  Einstellungsdatei); längere Laufphase bei gleichem Wachstum. `RENNBAHN.md`.
 - Einstellungsdatei enthält seit 29.10.2026 auch alle Reproduction-Einstellungen (Mindestenergie, Mutation,
   Wunsch, Mindestalter, Teilungspause, Teilungsmutation, Eingangsnormierung); das Panel wird nach Load und
   „New…“ nachgezogen. HIGH_POSITION und HIGH_POSITION2 zeigen in der Fußzeile Generation, Schritt, Phase und

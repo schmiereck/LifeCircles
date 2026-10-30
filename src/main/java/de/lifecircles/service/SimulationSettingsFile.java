@@ -62,6 +62,7 @@ public final class SimulationSettingsFile {
             new Setting("gravity", c -> str(c.getGravity()), a -> a.config.setGravity(a.number())),
             new Setting("viscosity", c -> str(c.getViscosity()), a -> a.config.setViscosity(a.number())),
             new Setting("rotationalFriction", c -> str(c.getRotationalFriction()), a -> a.config.setRotationalFriction(a.number())),
+            new Setting("raceEpisodeSeconds", c -> str(c.getRaceEpisodeSeconds()), a -> a.config.setRaceEpisodeSeconds(a.number())),
             // Reproduction panel (ConfigPanel)
             new Setting("reproductionEnergyThreshold", c -> str(c.getReproductionEnergyThreshold()), a -> a.config.setReproductionEnergyThreshold(nonNegative(a.number()))),
             new Setting("mutationRate", c -> str(c.getMutationRate()), a -> a.config.setMutationRate(fraction(a.number()))),

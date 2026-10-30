@@ -280,7 +280,26 @@ public class EnvironmentPanel extends VBox {
             refreshAdhesion.run();
         });
         refreshAdhesion.run();
+        // RACE episode length (RENNBAHN.md): takes effect with the next episode.
+        Label raceEpisodeValue = new Label();
+        Slider raceEpisode = new Slider(SimulationConfig.RACE_EPISODE_MIN, 300, config.getRaceEpisodeSeconds());
+        raceEpisode.setId("race-episode-seconds");
+        raceEpisode.setShowTickLabels(true);
+        raceEpisode.setShowTickMarks(true);
+        raceEpisode.setMajorTickUnit(60);
+        raceEpisode.setPrefWidth(270);
+        Runnable refreshRaceEpisode = () -> raceEpisodeValue.setText(String.format(
+                "RACE episode: %.0f s (growth 30 s, rest 5 s, run %.0f s), from the next episode",
+                config.getRaceEpisodeSeconds(), config.getRaceEpisodeSeconds() - 35));
+        raceEpisode.valueProperty().addListener((obs, old, next) -> {
+            config.setRaceEpisodeSeconds(Math.round(next.doubleValue()));
+            refreshRaceEpisode.run();
+        });
+        refreshRaceEpisode.run();
         syncFromConfig = () -> {
+            double raceSeconds = config.getRaceEpisodeSeconds();
+            raceEpisode.setMax(Math.max(raceEpisode.getMax(), raceSeconds)); raceEpisode.setValue(raceSeconds);
+            config.setRaceEpisodeSeconds(raceSeconds); refreshRaceEpisode.run();
             // Slider listeners write back (rounded, clamped); keep the exact config values and restore them afterwards.
             double zoneBack = config.getSunZoneBackground(), zoneBorder = config.getSunZoneTransition(), zoneCurve = config.getSunZoneSoftness();
             double sunRate = config.getSunRayRate(), width = config.getSunZoneWidth(), season = config.getSeasonDuration(),
@@ -328,7 +347,8 @@ public class EnvironmentPanel extends VBox {
                 new Label("Brownian strength (px/s per hit):"), brownianStrength, brownianValue,
                 adhesion, trainingAdhesion, bonds, birthBonds, new Label("Remains force half-life (minutes, right end = forever):"), remainsHalfLife,
                 new Label("Rejection of foreign attraction (%):"), rejection, adhesionValue,
-                groundHold, anchors, groundOnly, new Label("Terrain stickiness (% of max attraction):"), stickiness, stickinessValue);
+                groundHold, anchors, groundOnly, new Label("Terrain stickiness (% of max attraction):"), stickiness, stickinessValue,
+                new Label("RACE episode length (s):"), raceEpisode, raceEpisodeValue);
         content.setPadding(new Insets(5));
         getChildren().add(new TitledPane("Environment", content));
     }

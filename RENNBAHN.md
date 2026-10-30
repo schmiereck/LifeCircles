@@ -71,6 +71,12 @@ Der Reibungsgang und seine Parameter stehen in `BODENREIBUNG.md`.
   - Der Fortschritt zählt erst ab 35 s (Wachstum 0–30 s, Ruhe 30–35 s, Lauf 35–60 s). Mit Reibung schiebt
     eine Geburt den Verband an (Überlappung, die hinteren Zellen haften): 1,95 px in 20 s, wenn er mitzählt.
     Ohne die Phasen würde die Auswahl erst den Geburtsschub optimieren.
+  - Episodenlänge einstellbar (30.10.2026, Nutzerwunsch: die Körper brauchen mehr Zeit zum Bewegen):
+    `raceEpisodeSeconds`, GUI „RACE episode length (s)“ im Umweltpanel, 45–300 s, Standard 60 s, gespeichert in
+    `<datei>.cells.settings`. Wachstum und Ruhe bleiben bei 30 bzw. 5 s, nur die Laufphase wird länger. Die
+    Länge wird zu Beginn jeder Episode gelesen; eine Änderung gilt ab der nächsten Startlage. Längere Läufe
+    ergeben höhere Werte (der Fortschritt wird aufsummiert), Rekorde und Bestwertungen verschiedener Längen sind
+    also nicht vergleichbar, auch nicht innerhalb eines Laufs, in dem die Länge geändert wurde.
   - Der Wert ist der Betrag des Mittelwerts dieses Fortschritts über die letzten 10 s der 60-s-Episode (alle
     0,5 s), belohnt also anhaltende Bewegung, keinen kurzen Ausschlag. Links und rechts zählen gleich; jede
     Startlage wird für sich gewertet, ein Körper darf also aus verschiedenen Lagen in verschiedene Richtungen
