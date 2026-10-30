@@ -496,6 +496,26 @@ public class SimulationConfig {
             throw new IllegalArgumentException("RACE episode must last at least " + RACE_EPISODE_MIN + " s");
         this.raceEpisodeSeconds = seconds;
     }
+
+    // HIGH_POSITION2 generation length (HIGH_POSITION2.md); the evaluation window stays the final ten seconds.
+    public static final double HIGH_POSITION2_GENERATION_DEFAULT = 50, HIGH_POSITION2_GENERATION_MIN = 15;
+    private double highPosition2GenerationSeconds = HIGH_POSITION2_GENERATION_DEFAULT;
+    public double getHighPosition2GenerationSeconds() { return highPosition2GenerationSeconds; }
+    public void setHighPosition2GenerationSeconds(double seconds) {
+        if (!(seconds >= HIGH_POSITION2_GENERATION_MIN) || !Double.isFinite(seconds))
+            throw new IllegalArgumentException("HIGH_POSITION2 generation must last at least " + HIGH_POSITION2_GENERATION_MIN + " s");
+        this.highPosition2GenerationSeconds = seconds;
+    }
+
+    // HIGH_POSITION3 episode length (HIGH_POSITION3.md); kicks stay at 10 and 20 s, the final window is the last 5 s.
+    public static final double HIGH_POSITION3_EPISODE_DEFAULT = 30, HIGH_POSITION3_EPISODE_MIN = 25;
+    private double highPosition3EpisodeSeconds = HIGH_POSITION3_EPISODE_DEFAULT;
+    public double getHighPosition3EpisodeSeconds() { return highPosition3EpisodeSeconds; }
+    public void setHighPosition3EpisodeSeconds(double seconds) {
+        if (!(seconds >= HIGH_POSITION3_EPISODE_MIN) || !Double.isFinite(seconds))
+            throw new IllegalArgumentException("HIGH_POSITION3 episode must last at least " + HIGH_POSITION3_EPISODE_MIN + " s");
+        this.highPosition3EpisodeSeconds = seconds;
+    }
     public void setBrownianStrength(double strength) {
         if (!Double.isFinite(strength) || strength < 0) throw new IllegalArgumentException("Brownian strength must be finite and >= 0");
         brownianStrength = strength;

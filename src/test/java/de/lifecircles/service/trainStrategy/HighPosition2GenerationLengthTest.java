@@ -25,6 +25,34 @@ class HighPosition2GenerationLengthTest {
         assertThrows(IllegalArgumentException.class,()->new HighPosition2TrainStrategy(new Random(1),null,600));
     }
 
+    /** Generation (HIGH_POSITION2) and episode (HIGH_POSITION3) lengths are settings, read at each start. */
+    @Test void lengthsComeFromTheSettings() {
+        var config=de.lifecircles.service.SimulationConfig.getInstance();
+        double hp2=config.getHighPosition2GenerationSeconds(),hp3=config.getHighPosition3EpisodeSeconds();
+        try {
+            config.setHighPosition2GenerationSeconds(20);
+            assertEquals(0,selections(null,1199));
+            assertEquals(1,selections(null,1200));
+            config.setHighPosition2GenerationSeconds(50);
+            assertEquals(0,selections(null,2999));
+            assertThrows(IllegalArgumentException.class,()->config.setHighPosition2GenerationSeconds(10));
+
+            config.setHighPosition3EpisodeSeconds(40);
+            var strategy=new HighPosition3TrainStrategy(new Random(1));
+            Environment world=strategy.initializeEnvironment();strategy.initialize(world);
+            config.setHighPosition3EpisodeSeconds(30); // only from the next episode
+            for(int i=0;i<35*2;i++)strategy.selectAndMutate(world,.5);
+            assertEquals(1,strategy.getGeneration(),"still the 40 s episode");
+            assertTrue(strategy.getStatus().contains("35/40 s"),strategy.getStatus());
+            for(int i=0;i<5*2;i++)strategy.selectAndMutate(world,.5);
+            assertEquals(2,strategy.getGeneration());
+            assertTrue(strategy.getStatus().contains("/30 s"),strategy.getStatus());
+            assertThrows(IllegalArgumentException.class,()->config.setHighPosition3EpisodeSeconds(20));
+        } finally {
+            config.setHighPosition2GenerationSeconds(hp2);config.setHighPosition3EpisodeSeconds(hp3);
+        }
+    }
+
     /** The footer shows the generation, the time within it and the phase, like RACE and HIGH_POSITION3. */
     @Test void footerCountsGenerations() {
         var hp2=new HighPosition2TrainStrategy(new Random(1),null);

@@ -35,6 +35,8 @@ public class MainController extends BorderPane {
     private final FileService fileService;
     private final EnvironmentPanel environmentPanel = new EnvironmentPanel();
     private final ConfigPanel configPanel = new ConfigPanel();
+    /** The cells file last loaded with "Load" or written with "Save as": shown in the title, offered by "Save as". */
+    private String currentFile;
 
     public MainController() {
         this.simulationConfig = SimulationConfig.getInstance();
@@ -87,8 +89,8 @@ public class MainController extends BorderPane {
             configPanel.syncFromConfig();
             simulationView.resetWorldView();
             startButton.setDisable(false); pauseButton.setDisable(true);
-            if(getScene().getWindow() instanceof javafx.stage.Stage stage)
-                stage.setTitle("LifeCircles Simulation - " + mode);
+            currentFile = null;
+            updateTitle();
         }));
 
         startButton.setOnAction(e -> {
@@ -117,10 +119,12 @@ public class MainController extends BorderPane {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Cells");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Cell Files", "*.cells"));
-            String lastFilePath = preferences.get(LAST_FILE_PATH_KEY, null);
+            String lastFilePath = currentFile != null ? currentFile : preferences.get(LAST_FILE_PATH_KEY, null);
             if (lastFilePath != null) {
                 fileChooser.setInitialDirectory(new File(lastFilePath).getParentFile());
             }
+            // Offer the current file's name; the dialog asks before overwriting it.
+            if (currentFile != null) fileChooser.setInitialFileName(new File(currentFile).getName());
             File file = fileChooser.showSaveDialog(getScene().getWindow());
             if (file != null) {
                 try {
@@ -128,6 +132,8 @@ public class MainController extends BorderPane {
                     fileService.saveCellsToFileWithProgress(file.getAbsolutePath(), Environment.getInstance().getCopyOfCellList());
                     SimulationSettingsFile.save(file.getAbsolutePath(), simulationConfig, calculationService.getStepCount());
                     preferences.put(LAST_FILE_PATH_KEY, file.getAbsolutePath());
+                    currentFile = file.getAbsolutePath();
+                    updateTitle();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -281,6 +287,8 @@ public class MainController extends BorderPane {
     void loadCells(String path) throws java.io.IOException, ClassNotFoundException {
         // Publish the loaded population between complete simulation steps.
         calculationService.loadCellsFromFile(path, false);
+        currentFile = path;
+        updateTitle();
         SimulationSettingsFile.Loaded settings = applySettings(path);
         if (settings.steps() >= 0) calculationService.setStepCount(settings.steps());
     }
@@ -301,6 +309,18 @@ public class MainController extends BorderPane {
         environmentPanel.syncFromConfig();
         configPanel.syncFromConfig();
         return settings;
+    }
+
+    String getCurrentFile() { return currentFile; }
+
+    /** "LifeCircles Simulation - MODE - file.cells" (without a file after "New…"). */
+    String title() {
+        return "LifeCircles Simulation - " + simulationConfig.getTrainMode()
+                + (currentFile == null ? "" : " - " + new File(currentFile).getName());
+    }
+
+    private void updateTitle() {
+        if (getScene() != null && getScene().getWindow() instanceof javafx.stage.Stage stage) stage.setTitle(title());
     }
 
     public void shutdown() {

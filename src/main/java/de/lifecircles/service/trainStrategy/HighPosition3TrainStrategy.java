@@ -23,6 +23,8 @@ public class HighPosition3TrainStrategy implements TrainStrategy, SimulationStep
     private Stage stage=Stage.HOLD;
     private int generation=1, successes, sampleNumber;
     private double elapsed;
+    /** Length of the running episode, read from the config at its start so a change never splits an episode. */
+    private double episodeSeconds=EPISODE_SECONDS;
     private boolean firstKick, secondKick;
     private volatile String status="";
     private StructureEpisodeFitness.Summary lastBest;
@@ -110,6 +112,7 @@ public class HighPosition3TrainStrategy implements TrainStrategy, SimulationStep
             for (SensorActor actor:cell.getSensorActors()) actor.updateCachedPosition();
         }
         elapsed=0;sampleNumber=0;firstKick=secondKick=false;
+        episodeSeconds=config.getHighPosition3EpisodeSeconds();
     }
 
     public void beforeStep(Environment world,double dt) {
@@ -163,9 +166,9 @@ public class HighPosition3TrainStrategy implements TrainStrategy, SimulationStep
         elapsed+=dt;
         if (elapsed+1e-9>=(sampleNumber+1)*SAMPLE_SECONDS) {
             invalidateEscapes(world);
-            fitness.sample(world,bodies,elapsed,stage==Stage.BUILD);sampleNumber++;updateStatus();
+            fitness.sample(world,bodies,elapsed,stage==Stage.BUILD,episodeSeconds);sampleNumber++;updateStatus();
         }
-        if (elapsed+1e-9<EPISODE_SECONDS) return;
+        if (elapsed+1e-9<episodeSeconds) return;
         List<StructureEpisodeFitness.Body> ranked=new ArrayList<>(bodies);
         ranked.sort(Comparator.comparingDouble((StructureEpisodeFitness.Body b)->b.summary(stage==Stage.BUILD).score()).reversed()
                 .thenComparingInt(b->b.slot));
@@ -189,7 +192,7 @@ public class HighPosition3TrainStrategy implements TrainStrategy, SimulationStep
         if (successes>=REQUIRED_SUCCESSES) { stage=Stage.values()[stage.ordinal()+1];successes=0; }
     }
     private void updateStatus() {
-        status=String.format(Locale.ROOT,"HIGH_POSITION3 · %s · G%d · %.0f/30 s · Bestwert %s · %d/3",
-                stage.label,generation,elapsed,lastBest==null?"—":String.format(Locale.ROOT,"%.3f",lastBest.score()),successes);
+        status=String.format(Locale.ROOT,"HIGH_POSITION3 · %s · G%d · %.0f/%.0f s · Bestwert %s · %d/3",
+                stage.label,generation,elapsed,episodeSeconds,lastBest==null?"—":String.format(Locale.ROOT,"%.3f",lastBest.score()),successes);
     }
 }

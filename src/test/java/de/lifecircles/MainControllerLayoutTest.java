@@ -155,6 +155,9 @@ class MainControllerLayoutTest {
             config.setGroundAdhesion(false);config.setGroundAnchors(false);config.setTrainingAdhesion(false);
             environmentPanel(controller).syncFromConfig();
             controller.loadCells(cells);
+            // The loaded file names the window and is offered by "Save as".
+            assertEquals(cells,controller.getCurrentFile());
+            assertTrue(controller.title().endsWith(" - saved.cells"),controller.title());
             assertEquals(16.5,config.getSunRayRate());assertTrue(config.isCellAdhesion());assertTrue(config.isAdhesionBonds());
             Slider sun=(Slider)environmentPanel(controller).lookup(".slider");
             assertEquals(16.5,sun.getValue(),1e-9);
@@ -165,6 +168,7 @@ class MainControllerLayoutTest {
             controller.mergeCells(cells,false);
             assertEquals(60,config.getSunRayRate());assertFalse(((CheckBox)controller.lookup("#cell-adhesion")).isSelected());
             controller.mergeCells(cells,true);
+            assertEquals(cells,controller.getCurrentFile(),"merging keeps the loaded file");
             assertEquals(16.5,config.getSunRayRate());assertTrue(((CheckBox)controller.lookup("#cell-adhesion")).isSelected());
             assertNotNull(controller.lookup("#merge-loads-settings"));
         } finally {

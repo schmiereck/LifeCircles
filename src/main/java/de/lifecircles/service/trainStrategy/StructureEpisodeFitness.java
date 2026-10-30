@@ -31,9 +31,9 @@ final class StructureEpisodeFitness {
             previous = new IdentityHashMap<>(reference);
             originalLinks = links(cells); previousLinks = originalLinks;
         }
-        void add(Measurement m, double seconds) {
+        void add(Measurement m, boolean late) {
             samples++; scoreSum += m.score;
-            if (seconds >= 25 - 1e-9) {
+            if (late) {
                 lateSamples++; lateScore += m.score; lateHeight += m.height; lateSupport += m.support;
                 lateContacts += m.contacts; lateForm += m.form;
             }
@@ -49,7 +49,14 @@ final class StructureEpisodeFitness {
     private final GroundedColonyFitness grounded;
     StructureEpisodeFitness(int sections) { grounded = new GroundedColonyFitness(sections); }
 
+    /** Samples of a 30 s episode; the final window is its last five seconds. */
     void sample(Environment world, List<Body> bodies, double seconds, boolean building) {
+        sample(world, bodies, seconds, building, 30);
+    }
+
+    /** The final window (form/contact retention, reported values) is the last five seconds of the episode. */
+    void sample(Environment world, List<Body> bodies, double seconds, boolean building, double episodeSeconds) {
+        boolean late = seconds >= episodeSeconds - 5 - 1e-9;
         Map<Cell, GroundedColonyFitness.Rating> ratings = grounded.current(world);
         Set<Cell> alive = Collections.newSetFromMap(new IdentityHashMap<>()); alive.addAll(world.getCellList());
         double floor = world.getHeight() - Environment.GroundBlockerHeight;
@@ -65,11 +72,11 @@ final class StructureEpisodeFitness {
             double form = shapeError(building ? body.previous : body.reference, body.cells);
             double score = height * support * (building ? 1 : contacts / (1 + form * form));
             // During construction only the last five seconds reward local form/contact retention.
-            if (building && seconds >= 25 - 1e-9) score *= contacts / (1 + form * form);
+            if (building && late) score *= contacts / (1 + form * form);
             if (!valid || !Double.isFinite(score)) {
                 body.invalid = true; score = height = support = contacts = 0; form = 100;
             }
-            body.add(new Measurement(score, height, support, contacts, form), seconds);
+            body.add(new Measurement(score, height, support, contacts, form), late);
             body.previous = new IdentityHashMap<>(); body.cells.forEach(c -> body.previous.put(c,copy(c.getPosition())));
             body.previousLinks = currentLinks;
         }

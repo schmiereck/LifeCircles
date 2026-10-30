@@ -15,7 +15,9 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
     private final Random random;
     private final EvaluationObserver observer;
     private long stepCounter = 0;
-    private final int generationSteps;
+    /** Steps of the running generation: from the config at its start, unless a study fixed them. */
+    private int generationSteps;
+    private final boolean fixedLength;
     private final GroundedColonyFitness fitness = new GroundedColonyFitness(SeperatorCount);
     // Footer information (like RACE and HIGH_POSITION3); counts since the scenario started, not stored in saves.
     private int generation = 1;
@@ -31,7 +33,13 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
 
     public HighPosition2TrainStrategy() { this(new Random(), null); }
 
-    HighPosition2TrainStrategy(Random random, EvaluationObserver observer) { this(random, observer, GENERATION_STEP); }
+    /** Generation length from the settings (highPosition2GenerationSeconds, default 50 s). */
+    HighPosition2TrainStrategy(Random random, EvaluationObserver observer) {
+        this.random = Objects.requireNonNull(random);
+        this.observer = observer;
+        this.fixedLength = false;
+        this.generationSteps = configuredSteps();
+    }
 
     /** Studies may lengthen generations; the evaluation window stays the final ten seconds. */
     HighPosition2TrainStrategy(Random random, EvaluationObserver observer, int generationSteps) {
@@ -39,6 +47,13 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
         this.generationSteps = generationSteps;
         this.random = Objects.requireNonNull(random);
         this.observer = observer;
+        this.fixedLength = true;
+    }
+
+    /** One selection call per 60-Hz physics step: 50 s are the former 3000 steps. */
+    private int configuredSteps() {
+        return Math.max(EVALUATION_WINDOW_STEPS + SAMPLE_INTERVAL_STEPS,
+                (int) Math.round(config.getHighPosition2GenerationSeconds() * GENERATION_STEP / 50.0));
     }
 
     @Override
@@ -61,6 +76,7 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
     public void initialize(Environment environment) {
         this.stepCounter = 0;
         this.fitness.reset();
+        if (!fixedLength) this.generationSteps = configuredSteps();
         this.generation = 1; this.elapsed = 0; this.lastBest = null;
         updateStatus(environment);
         // Add ground blocker by default
@@ -100,15 +116,15 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
 
     @Override
     public void selectAndMutate(Environment environment) {
-        stepCounter++;
-        long phase = (stepCounter - 1) % generationSteps + 1;
+        long phase = ++stepCounter;
         if (phase > generationSteps - EVALUATION_WINDOW_STEPS && phase % SAMPLE_INTERVAL_STEPS == 0)
             fitness.sample(environment);
         if (phase != generationSteps) {
             if (phase % SAMPLE_INTERVAL_STEPS == 0) updateStatus(environment);
             return;
         }
-        generation++; elapsed = 0;
+        generation++; elapsed = 0; stepCounter = 0;
+        if (!fixedLength) generationSteps = configuredSteps();
         List<Cell> cells = environment.getCellList().stream().filter(cell -> !cell.isRemains()).toList();
         if (cells.isEmpty()) {
             fitness.reset();
@@ -146,7 +162,7 @@ public class HighPosition2TrainStrategy implements TrainStrategy {
 
     /** Generation, time within it, phase, living cells and the last winner's sustained height (0..1 of the floor). */
     private void updateStatus(Environment environment) {
-        long phase = stepCounter % generationSteps;
+        long phase = stepCounter;
         long living = environment.getCellList().stream().filter(cell -> !cell.isRemains()).count();
         status = String.format(Locale.ROOT, "HIGH_POSITION2 · G%d · Schritt %d/%d · %.0f s · %s · %d Zellen · letzte Bestwertung %s",
                 generation, phase, generationSteps, elapsed,

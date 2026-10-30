@@ -19,10 +19,17 @@ Es erzeugt keine Bindungen und weist nicht nach, welche Zelle welche Last traegt
 Eine kurzzeitige Druckkette kann ebenfalls bodenverbunden sein. Deshalb wird die
 erreichte Hoehe zusaetzlich ueber die Zeit bewertet.
 
+## Generationslänge (seit 30.10.2026 einstellbar)
+
+`highPosition2GenerationSeconds`, GUI „HIGH_POSITION2 generation length (s)“ im Umweltpanel, 15–600 s,
+Standard 50 s (3.000 Schritte), gespeichert in `<datei>.cells.settings`. Bewertet werden weiter die letzten 10 s.
+Die Länge wird zu Beginn jeder Generation gelesen; Studien mit fester Schrittzahl (`HighPosition2EvolutionStudyTest`)
+bleiben davon unberührt.
+
 ## Fußzeile
 
 Seit 29.10.2026 zeigt die Fußzeile wie bei RACE und HIGH_POSITION3:
-`HIGH_POSITION2 · G<Generation> · Schritt <n>/3000 · <s> s · Wachstum|Bewertung · <lebende Zellen> · letzte Bestwertung <Wert>`.
+`HIGH_POSITION2 · G<Generation> · Schritt <n>/<Schritte> · <s> s · Wachstum|Bewertung · <lebende Zellen> · letzte Bestwertung <Wert>`.
 Die Bestwertung ist der dauerhafte Wert (unteres Quartil, 0–1 der Bodenhöhe) der ersten Siegerzelle.
 HIGH_POSITION zeigt Generation, Schritt/10000, Zeit, lebende Zellen, die aktuell höchste Oberkante und die des
 letzten Siegers in px über dem Boden. Die Zähler beginnen bei „New…“ neu und stehen nicht in Speicherständen.
