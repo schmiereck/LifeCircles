@@ -16,7 +16,7 @@
 - [ ] Wachstum kostet keine Energie: Preis je gewonnener Fläche? (Entscheidung Nutzer, `TEILUNG.md`)
 - [ ] Reibung zwischen Zellen (nur am Gelände vorhanden): später für Greifen/Abrollen an Nachbarn?
 - [x] RACE mit Geländeklebrigkeit 0 und 120 s: Körper kriechen bzw. hüpfen (Nutzer, GUI, 30.10.2026).
-- [ ] RACE: Gang mit Klebrigkeit 0 vermessen (Diagnose/Studie, auf Wunsch); Hub der Raupe durch die
+- [x] RACE: Gang mit Klebrigkeit 0 vermessen (31.10.2026, `RENNBAHN.md`); Hub der Raupe durch die
   kurze Feldreichweite (etwa 9 px) begrenzt (Entscheidung Nutzer, `RENNBAHN.md`, Diagnose 30.10.2026).
 
 - [x] Gehirnpause-Sackgasse (nur 000 aus Sonne, keine 000→001-Route) durch basale Notatmung und Umkehrmutation lösen.

@@ -1,5 +1,10 @@
 # Abgeschlossene Schritte
 
+## RACE-Nachmessung mit Klebrigkeit 0 (31.10.2026)
+
+- `RaceFileDiagnosisTest` zählt Gruppen und gestapelte Zellen. `RACE-R1-all-2026-10-31-a01`: Ø 72 px in 85 s (bis 198),
+  Halt aus den Gehirnen, Körper in Paare und Einzelzellen zerfallen, Hüpfer und Kriecher (`RENNBAHN.md`).
+
 ## RACE-Diagnose, Raupe, Fußzeile (30.10.2026)
 
 - `RaceFileDiagnosisTest` (opt-in): gespeicherte Population in der Rennbahn, Fußaktoren, Affinität, Anker, Bodenkontakt,

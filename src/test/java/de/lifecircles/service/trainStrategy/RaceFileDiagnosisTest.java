@@ -23,7 +23,7 @@ class RaceFileDiagnosisTest {
 
     /** Per-lane sums over the run phase, sampled every step. */
     static final class Stats {
-        int cells; double score; long ready, readyDown, readyBlocked, readySmall, cellSteps, footSteps, footAttracting, footInReach, onGround, anchors;
+        int cells, samples; double score, groups, stacked; long ready, readyDown, readyBlocked, readySmall, cellSteps, footSteps, footAttracting, footInReach, onGround, anchors;
         double maxDesire, ownPull, stickinessPull, affinity, minRadius = Double.MAX_VALUE, maxRadius;
         final List<Double> progress = new ArrayList<>();
     }
@@ -85,7 +85,12 @@ class RaceFileDiagnosisTest {
             boolean sample = step % 30 == 0;
             for (RaceTrainStrategy.Body body : strategy.bodies()) {
                 Stats stats = lanes.computeIfAbsent(body.lane, lane -> new Stats());
-                if (sample) stats.progress.add(body.progress);
+                if (sample) {
+                    stats.progress.add(body.progress);
+                    stats.samples++;
+                    stats.groups += groups(body.cells, world.getWidth(), world.getHeight());
+                    stats.stacked += stacked(body.cells, floor, world.getWidth(), world.getHeight());
+                }
                 if (time < episode - DT / 2) { stats.cells = Math.max(stats.cells, body.cells.size()); stats.score = body.score(); }
                 for (Cell cell : body.cells) {
                     stats.cellSteps++;
@@ -111,17 +116,54 @@ class RaceFileDiagnosisTest {
                 }
             }
         }
-        System.out.println("lane cells onGround% foot:attracting% inReach% affinity ownPull stickiness anchors/cell radius desire ready/down/blocked/r<5 progress(every 5 s) score");
+        System.out.println("lane cells groups stacked onGround% foot:attracting% inReach% affinity ownPull stickiness anchors/cell radius desire ready/down/blocked/r<5 progress(every 5 s) score");
         for (var entry : lanes.entrySet()) {
             Stats s = entry.getValue();
             StringBuilder progress = new StringBuilder();
             for (int i = 0; i < s.progress.size(); i += 10) progress.append(String.format(Locale.ROOT, " %.1f", s.progress.get(i)));
-            System.out.printf(Locale.ROOT, "%2d %d %3.0f%% %3.0f%% %3.0f%% %.2f %6.1f %6.1f %.2f %.1f-%.1f %.2f %d/%d/%d/%d%s | %.1f%n",
-                    entry.getKey(), s.cells, 100.0 * s.onGround / s.cellSteps,
+            System.out.printf(Locale.ROOT, "%2d %d %.1f %.1f %3.0f%% %3.0f%% %3.0f%% %.2f %6.1f %6.1f %.2f %.1f-%.1f %.2f %d/%d/%d/%d%s | %.1f%n",
+                    entry.getKey(), s.cells, s.groups / Math.max(1, s.samples), s.stacked / Math.max(1, s.samples), 100.0 * s.onGround / s.cellSteps,
                     100.0 * s.footAttracting / Math.max(1, s.footSteps), 100.0 * s.footInReach / Math.max(1, s.footSteps),
                     s.affinity / Math.max(1, s.footSteps), s.ownPull / Math.max(1, s.footInReach),
                     s.stickinessPull / Math.max(1, s.footInReach), (double) s.anchors / s.cellSteps,
                     s.minRadius, s.maxRadius, s.maxDesire, s.ready, s.readyDown, s.readyBlocked, s.readySmall, progress, s.score);
         }
+    }
+
+    /** Cells closer than 3 px rim to rim count as touching. */
+    static boolean touching(Cell a, Cell b, double width, double height) {
+        return a.getPosition().getShortestDirectionWithWrapAround(b.getPosition(), width, height).length()
+                < a.getRadiusSize() + b.getRadiusSize() + 3;
+    }
+
+    /** Number of touching groups within a body. */
+    static int groups(List<Cell> cells, double width, double height) {
+        int[] group = new int[cells.size()];
+        Arrays.fill(group, -1);
+        int count = 0;
+        for (int i = 0; i < cells.size(); i++) {
+            if (group[i] >= 0) continue;
+            Deque<Integer> open = new ArrayDeque<>(List.of(i));
+            group[i] = count;
+            while (!open.isEmpty()) {
+                int c = open.pop();
+                for (int j = 0; j < cells.size(); j++)
+                    if (group[j] < 0 && touching(cells.get(c), cells.get(j), width, height)) { group[j] = count; open.push(j); }
+            }
+            count++;
+        }
+        return count;
+    }
+
+    /** Cells off the ground resting on a lower cell of the body (centre at least half a radius higher). */
+    static int stacked(List<Cell> cells, double floor, double width, double height) {
+        int count = 0;
+        for (Cell cell : cells) {
+            if (cell.getPosition().getY() + cell.getRadiusSize() >= floor - 1) continue;
+            for (Cell below : cells)
+                if (below != cell && below.getPosition().getY() > cell.getPosition().getY() + .5 * cell.getRadiusSize()
+                        && touching(cell, below, width, height)) { count++; break; }
+        }
+        return count;
     }
 }

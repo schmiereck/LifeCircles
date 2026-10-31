@@ -391,6 +391,35 @@ Mit der Schwerkraft der Datei (17,57) kommt die Dreierraupe ohne Klebrigkeit 22,
 - **Beobachtung des Nutzers (30.10.2026, GUI):** Mit Klebrigkeit 0 und 120 s Trainingsdauer kriechen die Körper
   nach weiterem Training, eher als Hüpfen, aber mit Vortrieb. Nicht gemessen.
 
+**Nachmessung `RACE-R1-all-2026-10-31-a01.cells` (31.10.2026):** Klebrigkeit 0, Episode 120 s (Lauf 85 s), sonst
+wie oben; trainiert in der GUI des Nutzers, 15,3 Mio. Schritte. Der Nutzer sieht zwei Gangarten: Hüpfen in Zweiergruppen,
+bei denen eine Zelle auf der anderen balanciert, und Kriechen mit beiden Zellen am Boden. Die Diagnose zählt jetzt
+auch Gruppen (Zellen mit höchstens 3 px Randabstand) und gestapelte Zellen (in der Luft, auf einer tieferen Zelle).
+Mittel über 32 Bahnen, Seed 1:
+
+| Größe | 30.10. (Klebrigkeit −22,4, 90 s) | 31.10. (Klebrigkeit 0, 120 s) |
+|---|---|---|
+| Weg im Lauf | Ø 18 px in 55 s (höchstens 31) | Ø 72 px in 85 s (höchstens 198) |
+| Geschwindigkeit | ≈ 0,3 px/s | ≈ 0,85 px/s, beste ≈ 2,3 px/s |
+| Fußaktoren ziehen an | 34 % | 56 % |
+| Eigene Bodenkraft in Reichweite | −6,7 | −11,8 |
+| Affinität zu Grau | 0,49 | 0,42 |
+| Anker | keiner | praktisch keiner (eine Bahn) |
+| Zellen am Boden | 82 % | 58 % |
+| Gruppen je Körper aus 6 Zellen | – | 4,3 |
+| Gestapelte Zellen je Körper | – | 1,0 (bis 2) |
+
+- **Der Halt kommt jetzt aus dem Gehirn:** Die Fußaktoren ziehen öfter und fast doppelt so stark. Ihre Farbe ist
+  dabei nicht grauer geworden, Anker spielen keine Rolle; gehalten wird über Andrücken und Reibung.
+- **Die Körper zerfallen in kleine Gruppen:** Aus 6 Zellen werden im Mittel 4,3 Gruppen, meist Einzelzellen und Paare.
+  Das passt zu den Zweiergruppen, die der Nutzer sieht. Die Wertung (mittlerer Schritt aller Zellen) bleibt dabei
+  dicht, denn jede Gruppe muss sich selbst über den Boden abstoßen.
+- **Beide Gangarten führen:** Die 17 Bahnen über 50 px haben mehr gestapelte Zellen (1,2 gegen 0,7) und sind seltener
+  am Boden (52 % gegen 64 %), das Hüpfen mit balancierender Zelle ist also häufig unter den Schnellen. Es gibt aber
+  auch schnelle Kriecher (Bahn 14: 166 px, 0,2 gestapelt, 75 % am Boden).
+- Grenzen: eine Episode, ein Seed, ein Genom je Bahn aus der gespeicherten Population; Werte verschiedener
+  Episodenlängen und Klebrigkeiten sind nur über die Geschwindigkeit vergleichbar.
+
 ## Grenzen und offene Hebel
 
 - **Startproblem:** Zufällige Gehirne müssen graue, anziehende Fußaktoren, Lösen durch Abstoßen und
