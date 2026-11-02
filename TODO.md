@@ -5,7 +5,8 @@
 - [x] Brownsche Bewegung als austauschbares Modul, kalibriert (Nutzerentscheidung 27.10.2026).
 - [ ] Brownsche Bewegung in einer NONE/WORLD2-Welt mit Population sichten (Nutzer, GUI) und Modelle vergleichen.
 - [x] Höhenprofil der Brownschen Bewegung: unten/oben warm, Knick einstellbar (02.11.2026).
-- [ ] Reaktion der Zellen auf das Höhenprofil beobachten (Nutzer, GUI); bei Bedarf Profil in der Weltansicht zeigen.
+- [x] Höhenprofil als Hintergrundtönung, abschaltbar (02.11.2026).
+- [ ] Reaktion der Zellen auf das Höhenprofil beobachten (Nutzer, GUI).
 - [x] Spektralzonen: Grundanteil, Übergangsbreite, Kurvenform einstellbar (29.10.2026).
 - [x] Sonne vom ganzen Himmel, periodisch umgebrochen (29.10.2026).
 - [ ] Laufzeit der Sonne in großen Welten nach dem Umbruch messen (`SunPerformanceStudyTest`, auf Wunsch).

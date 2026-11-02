@@ -171,6 +171,13 @@ public class ConfigPanel extends HBox {
         forceBox.selectedProperty().addListener((obs, old, newValue) -> 
             viewConfig.setShowForceFields(newValue));
 
+        // Brownian height profile as a warm background tint
+        CheckBox brownianBox = new CheckBox("Show Brownian Profile");
+        brownianBox.setStyle("-fx-text-fill: black;");
+        brownianBox.setSelected(viewConfig.isShowBrownianProfile());
+        brownianBox.selectedProperty().addListener((obs, old, newValue) ->
+            viewConfig.setShowBrownianProfile(newValue));
+
         // Debug information
         CheckBox debugBox = new CheckBox("Show Debug");
         debugBox.setStyle("-fx-text-fill: black;");
@@ -183,7 +190,8 @@ public class ConfigPanel extends HBox {
         grid.addRow(2, specBox);
         grid.addRow(3, gridBox);
         grid.addRow(4, forceBox);
-        grid.addRow(5, debugBox);
+        grid.addRow(5, brownianBox);
+        grid.addRow(6, debugBox);
 
         TitledPane pane = new TitledPane("Visualization", grid);
         pane.setCollapsible(true);

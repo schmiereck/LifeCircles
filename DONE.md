@@ -5,6 +5,7 @@
 - `BrownianProfile` UNIFORM/WARM_BOTTOM/WARM_TOP, Kaltanteil, Knickhöhe über dem Boden, Anteil der Änderung unter
   dem Knick; Konfiguration, GUI (mit Stärken an vier Höhen), Einstellungsdatei.
 - `BrownianMotionTest.theProfileBendsAtTheKnee`, `cellsNearTheWarmGroundAreHitHarder`.
+- Weltansicht: orange Hintergrundtönung nach Stärkeanteil, Schalter „Show Brownian Profile“ (Visualization).
 
 ## RACE: Katastrophe nur für schwache Inseln (02.11.2026)
 

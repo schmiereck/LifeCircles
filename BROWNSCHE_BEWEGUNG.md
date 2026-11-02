@@ -57,8 +57,10 @@ gewärmt) oder unten warm (Luft über warmem Boden), mit einem deutlichen Gradie
   - `theProfileBendsAtTheKnee`: Werte der Knickkurve, Spiegelung, Begrenzung.
   - `cellsNearTheWarmGroundAreHitHarder`: Zellen in 10, 100 und 990 px Höhe erhalten die erwartete Stärke
     (gemessen 0,92 / 0,20 / 0,00 bei `WARM_BOTTOM`).
-- Offen: Die Wirkung auf eine Population ist noch nicht beobachtet (Nutzer, GUI). Eine Anzeige des Profils in der
-  Weltansicht gibt es noch nicht.
+- Anzeige (02.11.2026): Die Weltansicht tönt den Hintergrund orange, die Deckkraft folgt dem Stärkeanteil (bis 16 %),
+  vom Boden bis zur Oberkante mit dem Knick als Verlaufspunkt. Nur bei eingeschalteter Brownscher Bewegung und
+  Profil ungleich `UNIFORM`; abschaltbar mit „Show Brownian Profile“ im Bereich Visualization (Standard an).
+- Offen: Die Wirkung auf eine Population ist noch nicht beobachtet (Nutzer, GUI).
 
 ## Prüfungen und Kalibrierung (`BrownianMotionTest`)
 

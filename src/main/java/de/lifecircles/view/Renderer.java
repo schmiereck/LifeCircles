@@ -1,6 +1,9 @@
 package de.lifecircles.view;
 
 import de.lifecircles.model.EnergyType;
+import de.lifecircles.model.Environment;
+import de.lifecircles.service.brownian.BrownianModel;
+import de.lifecircles.service.brownian.BrownianProfile;
 import de.lifecircles.model.Vector2D;
 import de.lifecircles.service.SunSpectrum;
 import de.lifecircles.service.SensorActorForceCellCalcService;
@@ -11,6 +14,9 @@ import java.util.List;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.Font;
 import javafx.geometry.VPos;
@@ -36,6 +42,9 @@ public class Renderer {
         }
         if (SimulationConfig.getInstance().isSunSpectralZones()) {
             this.drawSpectralZones(simulationStateDto.getWidth(), simulationStateDto.getHeight());
+        }
+        if (config.isShowBrownianProfile()) {
+            this.drawBrownianProfile(simulationStateDto.getWidth(), simulationStateDto.getHeight());
         }
 
         // Render blockers first (background)
@@ -130,6 +139,27 @@ public class Renderer {
                     worldHeight * camera.getScale());
         }
     }
+
+    /**
+     * Brownian height profile (BROWNSCHE_BEWEGUNG.md, Höhenprofil): a warm tint whose opacity follows the strength
+     * share, from the ground surface to the top; the knee is a gradient stop, so the bend shows as drawn.
+     */
+    private void drawBrownianProfile(double worldWidth, double worldHeight) {
+        SimulationConfig simConfig = SimulationConfig.getInstance();
+        BrownianProfile profile = simConfig.getBrownianProfile();
+        if (simConfig.getBrownianModel() == BrownianModel.OFF || profile == BrownianProfile.UNIFORM) return;
+        double top = worldHeight - Environment.GroundBlockerHeight;
+        double knee = Math.max(0, Math.min(top, simConfig.getBrownianKneeHeight()));
+        double cold = simConfig.getBrownianColdShare(), share = simConfig.getBrownianKneeShare();
+        // Offsets run from the top of the world (0) to the ground surface (1).
+        List<Stop> stops = new ArrayList<>();
+        for (double height : new double[]{top, knee, 0})
+            stops.add(new Stop(1 - height / top, BROWNIAN_WARM.deriveColor(0, 1, 1, .16 * profile.factor(height, top, cold, knee, share))));
+        Point2D upper = camera.worldToScreen(new Vector2D(0, 0)), ground = camera.worldToScreen(new Vector2D(worldWidth, top));
+        gc.setFill(new LinearGradient(0, upper.getY(), 0, ground.getY(), false, CycleMethod.NO_CYCLE, stops));
+        gc.fillRect(upper.getX(), upper.getY(), ground.getX() - upper.getX(), ground.getY() - upper.getY());
+    }
+    private static final Color BROWNIAN_WARM = Color.color(1, .4, .1);
 
     private void clear() {
         gc.setFill(config.getBackgroundColor());

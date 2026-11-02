@@ -41,6 +41,8 @@ public class ViewConfig {
     // Sun ray visualization
     public static final Paint SUN_COLOR = Color.YELLOW.deriveColor(0, 1, 0.5D, 0.5);
     private boolean showSunRays = true;
+    /** Warm tint of the Brownian height profile (BROWNSCHE_BEWEGUNG.md, Höhenprofil). */
+    private boolean showBrownianProfile = true;
     private Color energyBarColor = Color.GREEN;
     private Color ageBarColor = Color.BLUE;
 
@@ -210,5 +212,13 @@ public class ViewConfig {
 
     public void setShowSunRays(boolean showSunRays) {
         this.showSunRays = showSunRays;
+    }
+
+    public boolean isShowBrownianProfile() {
+        return showBrownianProfile;
+    }
+
+    public void setShowBrownianProfile(boolean showBrownianProfile) {
+        this.showBrownianProfile = showBrownianProfile;
     }
 }
