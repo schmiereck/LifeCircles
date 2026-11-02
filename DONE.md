@@ -1,5 +1,10 @@
 # Abgeschlossene Schritte
 
+## RACE: Rückgang der Hüpfer untersucht (02.11.2026)
+
+- Diagnose der Dateien vom 01. und 02.11. mit drei Seeds: Das Hüpfen ist noch da (bester Körper 391 px). Es ist aber
+  seltener geworden, weil eine Katastrophe die Hüpferinsel 0 gelöscht hat (`RENNBAHN.md`).
+
 ## RACE-Nachmessung mit Klebrigkeit 0 (31.10.2026)
 
 - `RaceFileDiagnosisTest` zählt Gruppen und gestapelte Zellen. `RACE-R1-all-2026-10-31-a01`: Ø 72 px in 85 s (bis 198),

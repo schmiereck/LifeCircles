@@ -420,6 +420,34 @@ Mittel über 32 Bahnen, Seed 1:
 - Grenzen: eine Episode, ein Seed, ein Genom je Bahn aus der gespeicherten Population; Werte verschiedener
   Episodenlängen und Klebrigkeiten sind nur über die Geschwindigkeit vergleichbar.
 
+**Verlieren sie das Hüpfen? (`…-11-01-a01`, `…-11-02-a01`, 02.11.2026):** Der Nutzer sieht in der GUI seit der Nacht
+kaum noch Hüpfer. Die Einstellungen sind unverändert, nur die Schrittzahl steigt (20,5 und 35,8 Mio.). Je drei
+Diagnosen (Seeds 1–3, 85 s Lauf); als Hüpfer zählt eine Bahn mit mindestens 1,5 gestapelten Zellen im Mittel:
+
+| Datei | Weg Ø | bester Körper | Hüpferbahnen von 32 | am Boden |
+|---|---|---|---|---|
+| 31.10. (Seed 1) | 72 px | 198 px | 8 | 58 % |
+| 01.11. | 137–157 px | 287–328 px | 16–20 | 53–58 % |
+| 02.11. | 67–100 px | 299–391 px | 6–8 | 64–68 % |
+
+Mittlerer Weg je Insel (Bahnen 0–7, 8–15, 16–23, 24–31):
+
+| Datei | Insel 0 | Insel 1 | Insel 2 | Insel 3 |
+|---|---|---|---|---|
+| 01.11. (Seed 1) | 194 px, Hüpfer | 7 px | 232 px, Hüpfer | 193 px, Hüpfer |
+| 02.11. (Seeds 1–3) | 2–6 px | 109–155 px | 92–136 px | 57–103 px |
+
+- **Das Hüpfen ist nicht verloren:** Der beste Körper vom 02.11. ist ein Hüpfer (drei gestapelte Zellen, 391 px). Er
+  ist schneller als alle Körper vom 01.11.
+- **Aber es ist seltener geworden, und der Mittelwert hat sich halbiert.** Hauptursache ist eine Katastrophe: Insel 0,
+  am 01.11. eine Hüpferinsel mit 194 px, ist am 02.11. frisch mit Zufallsgenomen gefüllt (2–6 px). Insel 1 war am
+  01.11. ebenso frisch und hat sich bis zum 02.11. auf 109–155 px erholt, mit weniger Hüpfern. Auch in den Inseln 2
+  und 3 gibt es weniger Hüpfer.
+- **Vermutete Ursache:** Die Katastrophenregel verlangt, dass das gleitende Mittel einer Insel binnen 30 Generationen
+  um 10 % + 0,1 px steigt. Bei 200–300 px sind das 20–30 px. Eine ausgereifte Insel schafft das kaum und wird
+  gelöscht, wenn sie nicht gerade führt. Derselbe Befund wie im Abschnitt zur beidseitigen Studie (Generation 202);
+  damals waren die Werte kleiner. Nicht direkt belegt, denn die Konsolenzeilen des GUI-Laufs liegen nicht vor.
+
 ## Grenzen und offene Hebel
 
 - **Startproblem:** Zufällige Gehirne müssen graue, anziehende Fußaktoren, Lösen durch Abstoßen und
