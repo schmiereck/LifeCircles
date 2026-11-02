@@ -3,6 +3,7 @@ package de.lifecircles.view;
 import de.lifecircles.service.SimulationConfig;
 import de.lifecircles.model.EnergyType;
 import de.lifecircles.service.brownian.BrownianModel;
+import de.lifecircles.service.brownian.BrownianProfile;
 import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -206,6 +207,56 @@ public class EnvironmentPanel extends VBox {
             refreshBrownian.run();
         });
         refreshBrownian.run();
+        // Height profile of the Brownian strength (BROWNSCHE_BEWEGUNG.md, Höhenprofil): warm at the ground or at the top.
+        ChoiceBox<BrownianProfile> brownianProfile = new ChoiceBox<>();
+        brownianProfile.setId("brownian-profile");
+        brownianProfile.getItems().addAll(BrownianProfile.values());
+        brownianProfile.setValue(config.getBrownianProfile());
+        Slider brownianCold = new Slider(0, 100, config.getBrownianColdShare() * 100);
+        brownianCold.setId("brownian-cold");
+        brownianCold.setShowTickLabels(true);
+        brownianCold.setShowTickMarks(true);
+        brownianCold.setMajorTickUnit(25);
+        brownianCold.setPrefWidth(270);
+        Slider brownianKnee = new Slider(0, 1000, config.getBrownianKneeHeight());
+        brownianKnee.setId("brownian-knee");
+        brownianKnee.setShowTickLabels(true);
+        brownianKnee.setShowTickMarks(true);
+        brownianKnee.setMajorTickUnit(250);
+        brownianKnee.setPrefWidth(270);
+        Slider brownianKneeShare = new Slider(0, 100, config.getBrownianKneeShare() * 100);
+        brownianKneeShare.setId("brownian-knee-share");
+        brownianKneeShare.setShowTickLabels(true);
+        brownianKneeShare.setShowTickMarks(true);
+        brownianKneeShare.setMajorTickUnit(25);
+        brownianKneeShare.setPrefWidth(270);
+        Label brownianProfileValue = new Label();
+        Runnable refreshBrownianProfile = () -> {
+            BrownianProfile profile = config.getBrownianProfile();
+            double top = config.getHeight() - de.lifecircles.model.Environment.GroundBlockerHeight, knee = config.getBrownianKneeHeight();
+            java.util.function.DoubleUnaryOperator at = h -> config.getBrownianStrength() * profile.factor(h, top, config.getBrownianColdShare(),
+                    knee, config.getBrownianKneeShare());
+            brownianProfileValue.setText(String.format("Strength (px/s): ground %.1f · %.0f px %.1f · %.0f px %.1f · top (%.0f px) %.1f",
+                    at.applyAsDouble(0), knee / 2, at.applyAsDouble(knee / 2), knee, at.applyAsDouble(knee), top, at.applyAsDouble(top)));
+        };
+        brownianProfile.valueProperty().addListener((obs, old, next) -> {
+            if (next != null) config.setBrownianProfile(next);
+            refreshBrownianProfile.run();
+        });
+        brownianCold.valueProperty().addListener((obs, old, next) -> {
+            config.setBrownianColdShare(next.doubleValue() / 100);
+            refreshBrownianProfile.run();
+        });
+        brownianKnee.valueProperty().addListener((obs, old, next) -> {
+            config.setBrownianKneeHeight(next.doubleValue());
+            refreshBrownianProfile.run();
+        });
+        brownianKneeShare.valueProperty().addListener((obs, old, next) -> {
+            config.setBrownianKneeShare(next.doubleValue() / 100);
+            refreshBrownianProfile.run();
+        });
+        brownianStrength.valueProperty().addListener((obs, old, next) -> refreshBrownianProfile.run());
+        refreshBrownianProfile.run();
         // Durable adhesion (ZELLVERBINDUNGEN.md); open NONE worlds, training worlds only with the opt-in.
         CheckBox adhesion = new CheckBox("Cell adhesion: forces held during brain pause,\nattraction only between matching actor colour and body type");
         adhesion.setId("cell-adhesion");
@@ -310,7 +361,8 @@ public class EnvironmentPanel extends VBox {
                     rejectionShare = config.getAdhesionRejection(), sticky = config.getGroundStickiness(),
                     gravityValue = config.getGravity(), frictionValue = config.getViscosity(), rotationValue = config.getRotationalFriction(),
                     terrainFriction = config.getBlockerFrictionCoefficient(), terrainRolling = config.getBlockerRollingResistance(),
-                    hits = config.getBrownianDensity(), hitStrength = config.getBrownianStrength();
+                    hits = config.getBrownianDensity(), hitStrength = config.getBrownianStrength(),
+                    coldShare = config.getBrownianColdShare(), kneeHeight = config.getBrownianKneeHeight(), kneeShare = config.getBrownianKneeShare();
             rate.setMax(Math.max(rate.getMax(), sunRate)); rate.setValue(sunRate);
             sourceType.setValue(config.getSunEnergyType()); zones.setSelected(config.isSunSpectralZones());
             zoneWidth.setValue(width); seasonLength.setValue(season / 60); winter.setValue(winterShare * 100);
@@ -322,6 +374,8 @@ public class EnvironmentPanel extends VBox {
             groundOnly.setSelected(config.isGroundAnchorsGroundOnly()); blockerFriction.setSelected(config.isBlockerFriction());
             blockerFrictionCoefficient.setValue(terrainFriction); blockerRolling.setValue(terrainRolling);
             brownianModel.setValue(config.getBrownianModel()); brownianDensity.setValue(hits); brownianStrength.setValue(hitStrength);
+            brownianProfile.setValue(config.getBrownianProfile()); brownianCold.setValue(coldShare * 100);
+            brownianKnee.setMax(Math.max(brownianKnee.getMax(), kneeHeight)); brownianKnee.setValue(kneeHeight); brownianKneeShare.setValue(kneeShare * 100);
             remainsHalfLife.setValue(Double.isInfinite(halfLife) ? 61 : Math.min(60, halfLife / 60));
             rejection.setValue(rejectionShare * 100); stickiness.setValue(-sticky / maxAttraction * 100);
             gravity.setValue(gravityValue / SimulationConfig.GRAVITY * 100); friction.setValue(frictionValue); rotationFriction.setValue(rotationValue);
@@ -331,7 +385,8 @@ public class EnvironmentPanel extends VBox {
             config.setGravity(gravityValue); config.setViscosity(frictionValue); config.setRotationalFriction(rotationValue);
             config.setBlockerFrictionCoefficient(terrainFriction); config.setBlockerRollingResistance(terrainRolling);
             config.setBrownianDensity(hits); config.setBrownianStrength(hitStrength);
-            refreshBrownian.run();
+            config.setBrownianColdShare(coldShare); config.setBrownianKneeHeight(kneeHeight); config.setBrownianKneeShare(kneeShare);
+            refreshBrownian.run(); refreshBrownianProfile.run();
             refresh.run(); refreshZoneWidth.run(); refreshZoneMix.run(); refreshSeason.run(); refreshAdhesion.run(); refreshStickiness.run(); refreshMechanics.run(); refreshBlockerFriction.run();
         };
         VBox content = new VBox(8, title, rate, value, hint, new Label("Sun energy form:"), sourceType, zones,
@@ -348,6 +403,10 @@ public class EnvironmentPanel extends VBox {
                 new Label("Brownian motion (all worlds except RACE):"), brownianModel,
                 new Label("Brownian density (hits per second):"), brownianDensity,
                 new Label("Brownian strength (px/s per hit):"), brownianStrength, brownianValue,
+                new Label("Brownian height profile (warm = full strength):"), brownianProfile,
+                new Label("Strength at the cold end (% of strength):"), brownianCold,
+                new Label("Knee height above the ground (px):"), brownianKnee,
+                new Label("Change between ground and knee (%):"), brownianKneeShare, brownianProfileValue,
                 adhesion, trainingAdhesion, bonds, birthBonds, new Label("Remains force half-life (minutes, right end = forever):"), remainsHalfLife,
                 new Label("Rejection of foreign attraction (%):"), rejection, adhesionValue,
                 groundHold, anchors, groundOnly, new Label("Terrain stickiness (% of max attraction):"), stickiness, stickinessValue,

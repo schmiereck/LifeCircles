@@ -27,6 +27,8 @@ Aktualisiert: 30.10.2026. Branch `master`.
 - Brownsche Bewegung (27.10.2026, Schalter, Standard aus): zufällige Stöße ohne Strömung in allen Welten außer
   RACE; Modelle COLLISIONS und LANGEVIN austauschbar, Dichte 20 Treffer/s und Stärke 5 px/s als kalibrierter
   Standard (Einzelzellen wandern, verwandte Paare halten). `BROWNSCHE_BEWEGUNG.md`.
+  Höhenprofil (02.11.2026, Standard gleichmäßig): unten oder oben warm, Knick in einstellbarer Höhe über dem Boden
+  mit einstellbarem Anteil der Änderung und Kaltanteil; noch nicht mit Population beobachtet.
 
 - Taktgeber (25.10.2026, alle Welten): sechs vererbte Perioden (Oktaven 0,5–16 s als Start), Sinus/Kosinus des
   Zellalters als Eingänge 316–327, jetzt 328 Eingänge; alte Netze ohne neue Synapsen migriert. Neue Gehirne

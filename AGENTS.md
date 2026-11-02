@@ -93,5 +93,6 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
   Rollwiderstand am Kontaktpunkt, begrenzt durch den Normalimpuls der Kollision, wirkt innerhalb des
   Schritts (Position/Drehwinkel korrigiert, kein Kriechen).
 - Brownsche Bewegung (`BROWNSCHE_BEWEGUNG.md`, Schalter `brownianModel`, Standard OFF): zufällige Stöße ohne
-  Strömung, Dichte und Stärke einstellbar, alle Welten außer RACE (`useBrownianMotion`). Modelle liegen
+  Strömung, Dichte und Stärke einstellbar, alle Welten außer RACE (`useBrownianMotion`). Höhenprofil
+  (`BrownianProfile`: unten/oben warm, Knick über dem Boden) skaliert die Stärke je Zelle. Modelle liegen
   austauschbar in `service.brownian` hinter `BrownianMotion`; Stöße nur als Kräfte des Schritts, eigener Zufallsstrom.

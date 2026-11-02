@@ -32,6 +32,34 @@ Die Physik ist ausgelagert, weil verschiedene Umsetzungen verglichen werden soll
 - Keine Energieform: Die Bewegung ist Wärme der Umgebung und kostet keine Zellenergie. Alle Zellen haben im Modell
   dieselbe Masse; nur die Drehträgheit wächst mit dem Radius.
 
+## Höhenprofil (02.11.2026)
+
+Nutzeridee: Die Stärke („Temperatur“) soll von der Höhe abhängen, oben warm (Wasserwelt, von der Oberfläche
+gewärmt) oder unten warm (Luft über warmem Boden), mit einem deutlichen Gradienten in der Lebensebene am Boden.
+
+- `BrownianProfile` (Konfiguration, GUI, Einstellungsdatei):
+  - `UNIFORM`: überall dieselbe Stärke (Standard, wie bisher).
+  - `WARM_BOTTOM`: volle Stärke am Boden, kalt oben.
+  - `WARM_TOP`: volle Stärke oben, kalt am Boden.
+- Die Höhe wird über der Bodenoberfläche gemessen (Weltunterkante + 50 px Bodenblock), auch in Welten ohne Boden.
+  Zellen tiefer als die Oberfläche zählen als Höhe 0, die Weltoberkante als oberes Ende.
+- Form: zwei Geraden mit einem Knick. Zwischen Boden und **Knickhöhe** (`brownianKneeHeight`, px, Standard 100)
+  liegt der **Anteil der Änderung** (`brownianKneeShare`, Standard 80 %), der Rest verteilt sich bis zur
+  Weltoberkante. Das kalte Ende behält den **Kaltanteil** (`brownianColdShare`, Standard 0 %) der Stärke.
+  - Beispiel `WARM_BOTTOM` mit Standardwerten, Stärke 5 px/s, 1150 px über dem Boden: Boden 5, 50 px 3, 100 px 1,
+    oben 0 px/s.
+  - Knickhöhe 0 mit Anteil > 0 ergibt einen Sprung direkt am Boden. Ein Anteil gleich Knickhöhe/Oberkante ergibt
+    die Gerade.
+- Das Profil skaliert die Stärke eines Treffers; die Trefferzahl bleibt. Die Bewegungsenergie (mittleres Quadrat
+  der Geschwindigkeitsänderung) folgt damit dem **Quadrat** des Faktors: halbe Stärke ist ein Viertel der „Wärme“.
+- Die GUI zeigt die Stärke am Boden, bei halber Knickhöhe, am Knick und oben.
+- Prüfungen in `BrownianMotionTest`:
+  - `theProfileBendsAtTheKnee`: Werte der Knickkurve, Spiegelung, Begrenzung.
+  - `cellsNearTheWarmGroundAreHitHarder`: Zellen in 10, 100 und 990 px Höhe erhalten die erwartete Stärke
+    (gemessen 0,92 / 0,20 / 0,00 bei `WARM_BOTTOM`).
+- Offen: Die Wirkung auf eine Population ist noch nicht beobachtet (Nutzer, GUI). Eine Anzeige des Profils in der
+  Weltansicht gibt es noch nicht.
+
 ## Prüfungen und Kalibrierung (`BrownianMotionTest`)
 
 - Beide Modelle (Prüfung mit Dichte 20, Stärke 10): mittleres Quadrat der Geschwindigkeitsänderung 2001 je

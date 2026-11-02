@@ -183,7 +183,7 @@ public class Environment {
         }
         //);
         // Random hits of the background, integrated with all other forces of this step.
-        if (policy.useBrownianMotion()) brownianMotion.agitate(this.cellList, deltaTime);
+        if (policy.useBrownianMotion()) brownianMotion.agitate(this.cellList, deltaTime, this.height);
 
         this.cellList.parallelStream().forEach(cell -> {
             CellCalcService.updateForces(cell, deltaTime);

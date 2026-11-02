@@ -507,6 +507,29 @@ public class SimulationConfig {
         if (!Double.isFinite(strength) || strength < 0) throw new IllegalArgumentException("Brownian strength must be finite and >= 0");
         brownianStrength = strength;
     }
+    // Height profile of the Brownian strength (BROWNSCHE_BEWEGUNG.md, Höhenprofil), uniform by default.
+    private volatile de.lifecircles.service.brownian.BrownianProfile brownianProfile = de.lifecircles.service.brownian.BrownianProfile.UNIFORM;
+    /** Share of the strength at the cold end (0..1). */
+    private volatile double brownianColdShare = 0;
+    /** Knee height above the ground surface (px). */
+    private volatile double brownianKneeHeight = 100;
+    /** Share of the change between the ground and the knee (0..1). */
+    private volatile double brownianKneeShare = .8;
+    public de.lifecircles.service.brownian.BrownianProfile getBrownianProfile() { return brownianProfile; }
+    public void setBrownianProfile(de.lifecircles.service.brownian.BrownianProfile profile) { brownianProfile = java.util.Objects.requireNonNull(profile); }
+    public double getBrownianColdShare() { return brownianColdShare; }
+    public void setBrownianColdShare(double share) { brownianColdShare = share(share, "Brownian cold share"); }
+    public double getBrownianKneeHeight() { return brownianKneeHeight; }
+    public void setBrownianKneeHeight(double height) {
+        if (!Double.isFinite(height) || height < 0) throw new IllegalArgumentException("Brownian knee height must be finite and >= 0");
+        brownianKneeHeight = height;
+    }
+    public double getBrownianKneeShare() { return brownianKneeShare; }
+    public void setBrownianKneeShare(double share) { brownianKneeShare = share(share, "Brownian knee share"); }
+    private static double share(double value, String name) {
+        if (!(value >= 0 && value <= 1)) throw new IllegalArgumentException(name + " must be within 0..1");
+        return value;
+    }
 
     // Blocker friction (BODENREIBUNG.md), on by default since 28.10.2026: Coulomb friction where cells press on terrain.
     private volatile boolean blockerFriction = true;

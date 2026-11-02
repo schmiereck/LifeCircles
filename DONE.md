@@ -1,5 +1,11 @@
 # Abgeschlossene Schritte
 
+## Höhenprofil der Brownschen Bewegung (02.11.2026)
+
+- `BrownianProfile` UNIFORM/WARM_BOTTOM/WARM_TOP, Kaltanteil, Knickhöhe über dem Boden, Anteil der Änderung unter
+  dem Knick; Konfiguration, GUI (mit Stärken an vier Höhen), Einstellungsdatei.
+- `BrownianMotionTest.theProfileBendsAtTheKnee`, `cellsNearTheWarmGroundAreHitHarder`.
+
 ## RACE: Katastrophe nur für schwache Inseln (02.11.2026)
 
 - `RaceTrainStrategy.WEAK_SHARE` 0,5: Löschen nur unter der Hälfte des gleitenden Mittels des Leaders (+ 0,1 px);

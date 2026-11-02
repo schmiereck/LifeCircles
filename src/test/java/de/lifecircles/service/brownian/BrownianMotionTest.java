@@ -14,16 +14,21 @@ class BrownianMotionTest {
     static final double DT = 1.0 / 60;
     final SimulationConfig config = SimulationConfig.getInstance();
     BrownianModel model;
-    double density, strength, gravity;
+    BrownianProfile profile;
+    double density, strength, gravity, coldShare, kneeHeight, kneeShare;
     boolean adhesion;
 
     @BeforeEach void save() {
         model = config.getBrownianModel(); density = config.getBrownianDensity(); strength = config.getBrownianStrength();
         gravity = config.getGravity(); adhesion = config.isCellAdhesion();
+        profile = config.getBrownianProfile(); coldShare = config.getBrownianColdShare();
+        kneeHeight = config.getBrownianKneeHeight(); kneeShare = config.getBrownianKneeShare();
     }
     @AfterEach void restore() {
         config.setBrownianModel(model); config.setBrownianDensity(density); config.setBrownianStrength(strength);
         config.setGravity(gravity); config.setCellAdhesion(adhesion);
+        config.setBrownianProfile(profile); config.setBrownianColdShare(coldShare);
+        config.setBrownianKneeHeight(kneeHeight); config.setBrownianKneeShare(kneeShare);
     }
 
     /** Fixed outputs: radius 10, all actors red and at full attraction (attract) or neutral. */
@@ -102,6 +107,57 @@ class BrownianMotionTest {
                 perSecond[k] = sum / (steps * dts[k]);
             }
             assertEquals(perSecond[0], perSecond[1], perSecond[0] * .06, m + " at 60 and 120 Hz");
+        }
+    }
+
+    /** Height profile: two straight pieces meeting at the knee, warm at the ground or at the top. */
+    @Test void theProfileBendsAtTheKnee() {
+        double top = 1000;
+        assertEquals(1, BrownianProfile.UNIFORM.factor(500, top, 0, 100, .8), 1e-12);
+        // Warm ground, cold top: 80 % of the change within the lowest 100 px.
+        assertEquals(1, BrownianProfile.WARM_BOTTOM.factor(0, top, 0, 100, .8), 1e-12);
+        assertEquals(.6, BrownianProfile.WARM_BOTTOM.factor(50, top, 0, 100, .8), 1e-12);
+        assertEquals(.2, BrownianProfile.WARM_BOTTOM.factor(100, top, 0, 100, .8), 1e-12);
+        assertEquals(.1, BrownianProfile.WARM_BOTTOM.factor(550, top, 0, 100, .8), 1e-12);
+        assertEquals(0, BrownianProfile.WARM_BOTTOM.factor(top, top, 0, 100, .8), 1e-12);
+        assertEquals(0, BrownianProfile.WARM_BOTTOM.factor(top + 20, top, 0, 100, .8), 1e-12, "clamped");
+        // Warm top: the mirror image of the change, the cold end keeps half the strength.
+        assertEquals(.5, BrownianProfile.WARM_TOP.factor(-20, top, .5, 100, .8), 1e-12, "clamped");
+        assertEquals(.9, BrownianProfile.WARM_TOP.factor(100, top, .5, 100, .8), 1e-12);
+        assertEquals(1, BrownianProfile.WARM_TOP.factor(top, top, .5, 100, .8), 1e-12);
+        // A knee at the ground puts the share there as a jump; share 0 leaves the lowest part warm.
+        assertEquals(.2, BrownianProfile.WARM_BOTTOM.factor(0, top, 0, 0, .8), 1e-12);
+        assertEquals(1, BrownianProfile.WARM_BOTTOM.factor(100, top, 0, 100, 0), 1e-12);
+    }
+
+    /** In a world the strength follows the cell's height above the ground surface. */
+    @Test void cellsNearTheWarmGroundAreHitHarder() {
+        config.setBrownianModel(BrownianModel.LANGEVIN);
+        config.setBrownianDensity(20); config.setBrownianStrength(10);
+        config.setBrownianColdShare(0); config.setBrownianKneeHeight(100); config.setBrownianKneeShare(.8);
+        double height = 1050, ground = height - Environment.GroundBlockerHeight; // 1000 px above the ground
+        for (BrownianProfile p : BrownianProfile.values()) {
+            config.setBrownianProfile(p);
+            BrownianMotionService service = new BrownianMotionService(3);
+            Cell low = cell(100, ground - 10, .5), knee = cell(200, ground - 100, .5), high = cell(300, ground - 990, .5);
+            double[] square = new double[3];
+            for (int i = 0; i < 100_000; i++) {
+                List<Cell> cells = List.of(low, knee, high);
+                for (Cell cell : cells) { cell.setVelocity(new Vector2D(0, 0)); cell.setAngularVelocity(0); }
+                service.agitate(cells, DT, height);
+                for (int c = 0; c < 3; c++) {
+                    cells.get(c).updateForce(DT);
+                    double v = cells.get(c).getVelocity().length();
+                    square[c] += v * v;
+                }
+            }
+            double expected = 20 * 100 * 100_000 * DT; // full strength: rate 20/s · 10² over the run
+            double[] factors = {p.factor(10, 1000, 0, 100, .8), p.factor(100, 1000, 0, 100, .8), p.factor(990, 1000, 0, 100, .8)};
+            System.out.printf(Locale.ROOT, "%s: strength share low %.2f knee %.2f high %.2f (expected %.2f %.2f %.2f)%n", p,
+                    Math.sqrt(square[0] / expected), Math.sqrt(square[1] / expected), Math.sqrt(square[2] / expected),
+                    factors[0], factors[1], factors[2]);
+            for (int c = 0; c < 3; c++)
+                assertEquals(factors[c] * factors[c], square[c] / expected, .05, p + " cell " + c);
         }
     }
 
