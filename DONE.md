@@ -1,5 +1,10 @@
 # Abgeschlossene Schritte
 
+## RACE: Katastrophe nur für schwache Inseln (02.11.2026)
+
+- `RaceTrainStrategy.WEAK_SHARE` 0,5: Löschen nur unter der Hälfte des gleitenden Mittels des Leaders (+ 0,1 px);
+  `RaceTrainStrategyTest.onlyWeakIslandsAreWiped`.
+
 ## RACE: Rückgang der Hüpfer untersucht (02.11.2026)
 
 - Diagnose der Dateien vom 01. und 02.11. mit drei Seeds: Das Hüpfen ist noch da (bester Körper 391 px). Es ist aber

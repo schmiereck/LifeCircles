@@ -102,6 +102,10 @@ Der Reibungsgang und seine Parameter stehen in `BODENREIBUNG.md`.
     600er-Studie): Der Rekord einer Insel ist ihr bestes Mittel der Bestwerte der letzten 10 Generationen, nicht
     mehr eine einzelne Spitze. Eine Glücksgeneration hebt ihn nur um ein Zehntel ihres Ausschlags. Die Insel mit
     dem höchsten aktuellen Mittel wird nie gelöscht.
+  - **Nur schwache Inseln** (seit 02.11.2026, Nutzerentscheidung nach dem Verlust einer Hüpferinsel, siehe Diagnose):
+    Gelöscht werden darf nur eine Insel, deren gleitendes Mittel unter der Hälfte des Leaders liegt (plus 0,1 px
+    Rauschrand). Eine ausgereifte Insel, die nicht mehr um 10 % zulegt, bleibt erhalten. Stehen zu Beginn alle bei 0,
+    werden sie weiter neu gewürfelt.
   - **Mehrere Startlagen** (seit 25.10.2026, Nutzerentscheidung): Eine Generation besteht aus 3 Episoden.
     Dieselben Gründer (unveränderte Kopien) laufen aus 3 zufälligen Startlagen; gewertet wird der Mittelwert.
     Ein Ruck aus einer einzigen Lage zählt damit nur noch ein Drittel, auch für den Rekord der Katastrophe.
@@ -447,6 +451,8 @@ Mittlerer Weg je Insel (Bahnen 0–7, 8–15, 16–23, 24–31):
   um 10 % + 0,1 px steigt. Bei 200–300 px sind das 20–30 px. Eine ausgereifte Insel schafft das kaum und wird
   gelöscht, wenn sie nicht gerade führt. Derselbe Befund wie im Abschnitt zur beidseitigen Studie (Generation 202);
   damals waren die Werte kleiner. Nicht direkt belegt, denn die Konsolenzeilen des GUI-Laufs liegen nicht vor.
+- Abhilfe (02.11.2026, Nutzerentscheidung): Katastrophen nur noch für Inseln unter der Hälfte des Leaders (Auswahl oben).
+  Wirkung noch nicht gemessen.
 
 ## Grenzen und offene Hebel
 

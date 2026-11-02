@@ -336,6 +336,20 @@ class RaceTrainStrategyTest {
         assertEquals(40, strategy.island(3).record, 1e-9, "the leader kept its record, so it was never wiped");
     }
 
+    /** RENNBAHN.md (02.11.2026): mature islands near the leader stay, however long they stagnate; weak ones go. */
+    @Test void onlyWeakIslandsAreWiped() {
+        var strategy = strategy();
+        for (int g = 0; g < 4 * RaceTrainStrategy.STAGNATION_GENERATIONS; g++) strategy.nextSeeds(ranks(250, 200, 300, 140));
+        assertTrue(strategy.island(1).stagnant >= RaceTrainStrategy.STAGNATION_GENERATIONS, "stagnant long enough");
+        assertTrue(strategy.getCatastrophes() >= 2, "island 3 (below half the leader) starts over again and again");
+        assertEquals(250, strategy.island(0).record, 1e-9, "never wiped");
+        assertEquals(200, strategy.island(1).record, 1e-9, "never wiped: two thirds of the leader");
+        // All standing still at the start: they still start over.
+        var still = strategy();
+        for (int g = 0; g < 2 * RaceTrainStrategy.STAGNATION_GENERATIONS; g++) still.nextSeeds(ranks(0, 0, 0, 0));
+        assertTrue(still.getCatastrophes() >= 2, "no record anywhere: random restarts as before");
+    }
+
     @Test void foundersStartWithARandomTurnAndOffset() {
         var strategy = strategy();
         strategy.randomStart = true;

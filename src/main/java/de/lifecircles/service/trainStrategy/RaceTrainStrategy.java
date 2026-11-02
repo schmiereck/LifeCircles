@@ -31,7 +31,10 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
             // Shortest episode: growth, rest and a full rated window (shared training duration is raised to it).
             MIN_EPISODE_SECONDS = RUN_START_SECONDS + WINDOW_SECONDS,
             // A new island record must beat the old one by this much (noise from the random start is no progress).
-            RECORD_MARGIN = .1, RECORD_FACTOR = 1.1;
+            RECORD_MARGIN = .1, RECORD_FACTOR = 1.1,
+            // Only a weak island may be wiped: its moving mean below this share of the leader's (plus the noise margin,
+            // so islands that all stand still at the start still start over).
+            WEAK_SHARE = .5;
     private final SimulationConfig config = SimulationConfig.getInstance();
     private final Random random;
     private final List<Body> bodies = new ArrayList<>();
@@ -248,8 +251,9 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
      * Next founders island by island, ranked by fitness: the elite unchanged in the island's first lane, the rest won by tournaments
      * and mutated. Every MIGRATION_INTERVAL generations the best of each island replaces the last lane of the next
      * one. The island stagnating longest past STAGNATION_GENERATIONS is wiped and refilled at random (one per
-     * generation, so the islands do not all start over together); records are moving means, and the island with the
-     * highest moving mean is spared.
+     * generation, so the islands do not all start over together); records are moving means, the island with the
+     * highest moving mean is spared, and so is every island reaching WEAK_SHARE of it (a mature island no longer
+     * gains 10 %, but it is no dead end).
      */
     List<Seed> nextSeeds(List<List<Body>> islandRanks) {
         int wiped = -1, leader = 0;
@@ -262,6 +266,7 @@ public class RaceTrainStrategy implements TrainStrategy, SimulationStepPolicy {
             Island island = islands[i];
             if (means[i] > island.record * RECORD_FACTOR + RECORD_MARGIN) { island.record = means[i]; island.stagnant = 0; }
             else if (++island.stagnant >= STAGNATION_GENERATIONS && i != leader
+                    && means[i] < WEAK_SHARE * means[leader] + RECORD_MARGIN
                     && (wiped < 0 || island.stagnant > islands[wiped].stagnant)) wiped = i;
         }
         boolean migrate = generation % MIGRATION_INTERVAL == 0;

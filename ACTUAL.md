@@ -49,7 +49,7 @@ Aktualisiert: 30.10.2026. Branch `master`.
   (Fortschritt zählt erst danach). Vortrieb über Anker oder die neue Geländereibung; Zufallsgründer finden
   auch mit Reibung in 100 Generationen keinen Gang (Bestwert ein einzelner Ruck von 0,85 px). Seit `ab64ff7`
   Inselmodell: 32 Bahnen in 4 Inseln, Turnier, Zufallsstart (Elite wird neu bewertet), Migration, Katastrophe
-  nach 30 Generationen Stillstand. Studie (587 Generationen, wegen Speichermangel abgebrochen): einzelne
+  nach 30 Generationen Stillstand (seit 02.11.2026 nur für Inseln unter der Hälfte des Leaders). Studie (587 Generationen, wegen Speichermangel abgebrochen): einzelne
   Spitzen bis 5,5 px, die sich aus einer anderen Startlage nie wiederholen; Median 0; 58 Katastrophen. `RENNBAHN.md`.
 - Geländereibung (Schalter, Standard an seit 28.10.2026; RACE schaltet sie ohnehin ein): Coulomb-Reibung und
   Rollwiderstand an Blockern, begrenzt durch das Andrücken. Ein von Hand geregelter Zwei-Zellen-Gang läuft
