@@ -119,7 +119,39 @@ Befunde:
 - Kragarm und einlagige Brücke ändern sich durch mehr Zugsteifigkeit kaum. Sie versagen über Gelenkdrehung: Zwei Kreise
   berühren sich an einem Punkt, und das Biegemoment entsteht nur über den kleinen Abstand benachbarter Randaktoren.
   Eine haltende einlagige Brücke braucht Biegesteifigkeit, also ein Drehmoment zwischen gekoppelten Zellen
-  (Winkelfeder), nicht mehr Zug. Das ist noch nicht umgesetzt.
+  (Winkelfeder), nicht mehr Zug.
+
+## Winkelfeder (experimentell, Standard aus)
+
+`springBending` κ (0 = aus), `springBendingDamping` (Sekunden, 0 = aus), in `newSimulation` zurückgesetzt, kein GUI-Schalter.
+Wirkt nur zwischen Zellpaaren, die gerade über ein Feder-Aktorpaar ziehen (reißt also mit der Feder ab), und nur bei
+gleicher Aktorzahl n = 12. Gedächtnislos: Ruhelage ist „der Nachbar sitzt vor einem Aktor“ (Winkel vom Zellmittelpunkt).
+
+- Energie E = c·[(1 − cos nΔ_A) + (1 − cos nΔ_B)], Δ_A = Bindungswinkel − Drehung A, Δ_B analog von B aus,
+  c = κ·w·scale/n², w = stärkster Federzug des Paars. Drehmoment auf jede Zelle plus Querkraftpaar an den Mittelpunkten:
+  Impuls und Drehimpuls bleiben erhalten (Test `bendingSpringTurnsATwistedCellBack`).
+- Kosten: ein atan2 und zwei sin pro ziehendem Zellpaar, nur wenn κ > 0. Turm-Lauf 80 s: 1,30 s gegen 1,27 s ohne.
+
+Turm-Langlauf (`TestASpringFiguresTest#towerLongRunTrace`, `-Dlife.towerTrace=true -Dlife.towerVariant=true
+-Dlife.springBending=κ`, 03.11.2026). Der Federturm bleibt in allen Läufen ein Stück. Ohne Winkelfeder kippt er ab
+~25 s langsam, exponentiell wachsend (Neigung −4,6 R bei 40 s, liegt bei ~60 s). Fuß bleibt flach, Mitte fast auf der
+Linie Fuß–Spitze: der Turm schert bzw. knickt in den unteren Reihen, er schaukelt nicht auf dem Fuß.
+
+| Variante | liegt ab ca. |
+|---|---|
+| κ 0, 60 Hz | 55–60 s |
+| κ 30 / 100 / 300, 60 Hz | 45–60 s (Richtung zufällig, kein Gewinn) |
+| κ 1000, 60 Hz | 75–80 s (Neigung bei 40 s nur 0,1 R) |
+| κ 1500 oder 3000, 60 Hz | instabil (Zellen rotieren auf), fällt in 10–20 s |
+| κ 1000/3000 + Winkeldämpfung 0,01–0,1 s, 60 Hz | schlechter bis explodiert (explizite Dämpfung) |
+| κ 0, 120 Hz | 55–60 s |
+| κ 3000, 120 Hz (Laufzeit ×1,9) | ~80 s |
+
+Befund: Die Winkelfeder verzögert das Umfallen bis etwa zur Stabilitätsgrenze des expliziten Schritts
+(Paar ~10000, im Gitter mit sechs Nachbarn ~1000–1500 bei 60 Hz), verhindert es aber nicht. Die Dämpfung macht es
+schlimmer, weil sie selbst explizit integriert wird. Dauerhaft stehende Türme brauchen nach jetzigem Stand ein
+implizites bzw. positionsbasiertes Lösen der Paarbedingungen (XPBD-artig) oder Substeps. Beides kostet mehr und
+greift tiefer ein.
 
 ## Grenzen
 

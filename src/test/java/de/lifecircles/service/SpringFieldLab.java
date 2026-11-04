@@ -44,10 +44,10 @@ final class SpringFieldLab {
         private final boolean spring = config.isSpringAdhesion();
         private final double threshold = config.getSpringAdhesionThreshold(), tear = config.getSpringTearFactor(), limit = config.getSpringStiffnessLimit();
         private final boolean preload = config.isSpringPreload();
-        private final double damping = config.getSpringDamping();
+        private final double damping = config.getSpringDamping(), bending = config.getSpringBending(), bendingDamping = config.getSpringBendingDamping();
         public void close() {
             config.setSpringAdhesion(spring); config.setSpringAdhesionThreshold(threshold); config.setSpringTearFactor(tear); config.setSpringStiffnessLimit(limit);
-            config.setSpringPreload(preload); config.setSpringDamping(damping);
+            config.setSpringPreload(preload); config.setSpringDamping(damping); config.setSpringBending(bending); config.setSpringBendingDamping(bendingDamping);
             mechanics.close();
         }
     }

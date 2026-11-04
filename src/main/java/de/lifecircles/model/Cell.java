@@ -284,6 +284,11 @@ public class Cell implements SensableCell, Serializable {
         this.angularVelocityForce += torque / (this.radiusSize * this.radiusSize); // Moment of inertia approximated as size²
     }
 
+    /** Pure torque (no linear force), scaled like the torque of {@link #applyForce(Vector2D, Vector2D)}. */
+    public void applyTorque(double torque) {
+        this.angularVelocityForce += torque / SimulationConfig.CELL_ANGULAR_VELOCITY_DIFF / (this.radiusSize * this.radiusSize);
+    }
+
     /**
      * velocityForce to velocity.
      * angularVelocityForce to angularVelocity

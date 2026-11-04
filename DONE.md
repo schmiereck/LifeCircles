@@ -1,5 +1,12 @@
 # Abgeschlossene Schritte
 
+## Zugfeder: Winkelfeder und Turm-Langlauf (03.11.2026)
+
+- Diagnose `towerLongRunTrace`: Der Federturm bleibt ganz, schert aber ab ~25 s in den unteren Reihen und liegt bei ~60 s.
+- Experimentelle Winkelfeder `springBending` mit `springBendingDamping` (Standard aus), `Cell.applyTorque`.
+  Impuls- und drehimpulserhaltend, Paartest dreht verdrehte Zelle zurück. κ 1000 verzögert das Umfallen auf ~80 s,
+  höhere κ und die Dämpfung sind bei 60 Hz instabil. Kosten ~2 %. Messwerte in `FEDERFELD.md`, „Winkelfeder“.
+
 ## TEST_A: Federzwillinge entzerrt, Verstärkung gemessen (02.11.2026)
 
 - TEST_A ist 7200 px breit (Skalierung 7,2), die Zwillinge stehen mit mindestens 12 R Abstand. Der Test prüft > 4 R.

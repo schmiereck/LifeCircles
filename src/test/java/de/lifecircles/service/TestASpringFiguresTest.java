@@ -113,6 +113,59 @@ class TestASpringFiguresTest {
         assertTrue(twins.get(6).component() < 1.0, twins.get(6).row());
     }
 
+    /** Tower twins over a long run (-Dlife.towerTrace=true): height ratio, tilt of the top and mean spin every 5 s. */
+    @Test
+    void towerLongRunTrace() {
+        org.junit.jupiter.api.Assumptions.assumeTrue(Boolean.getBoolean("life.towerTrace"));
+        SimulationConfig config = SimulationConfig.getInstance();
+        double width = config.getWidth(), height = config.getHeight(), scale = config.getScaleSimulation(), ray = config.getEnergyPerRay();
+        try (SpringFieldLab.Settings spring = new SpringFieldLab.Settings()) {
+            config.setBlockerFriction(true);
+            TestATrainStrategy strategy = new TestATrainStrategy();
+            Environment world = strategy.initializeEnvironment();
+            if (Boolean.getBoolean("life.towerVariant")) towerVariant(config);
+            world.addGroundBlocker();
+            int tower = Arrays.asList(TestATrainStrategy.TWIN_NAMES).indexOf("Turm");
+            List<List<Cell>> figures = List.of(TestATrainStrategy.addTwin(world, tower, 0), TestATrainStrategy.addTwin(world, tower, 1));
+            List<Double> heights = figures.stream().map(MechanicsLab::height).toList();
+            List<Cell> cells = world.getCellList();
+            int hz = Integer.getInteger("life.springHz", 60); double dt = 1.0 / hz, radius = config.getCellMaxRadiusSize();
+            SpatialGridPartitioningStrategy grid = new SpatialGridPartitioningStrategy(world.getWidth(), world.getHeight(), 80);
+            int seconds = Integer.getInteger("life.towerSeconds", 80);
+            long start = System.nanoTime();
+            for (int step = 0; step <= seconds * hz; step++) {
+                if (step % (5 * hz) == 0) for (int i = 0; i < 2; i++) {
+                    List<Cell> f = figures.get(i);
+                    double top = f.stream().mapToDouble(c -> c.getPosition().getY()).min().orElseThrow();
+                    double bottom = f.stream().mapToDouble(c -> c.getPosition().getY()).max().orElseThrow();
+                    double topX = f.stream().filter(c -> c.getPosition().getY() < top + radius).mapToDouble(c -> c.getPosition().getX()).average().orElseThrow();
+                    double bottomX = f.stream().filter(c -> c.getPosition().getY() > bottom - radius).mapToDouble(c -> c.getPosition().getX()).average().orElseThrow();
+                    double spin = f.stream().mapToDouble(Cell::getAngularVelocity).average().orElseThrow();
+                    double rot = f.stream().mapToDouble(c -> Math.IEEEremainder(c.getRotation(), Math.PI / 3)).map(Math::abs).max().orElseThrow();
+                    double midY = (top + bottom) / 2;
+                    double midX = f.stream().filter(c -> Math.abs(c.getPosition().getY() - midY) < radius * 1.5).mapToDouble(c -> c.getPosition().getX()).average().orElse(Double.NaN);
+                    List<Cell> base = f.stream().filter(c -> c.getPosition().getY() > bottom - radius).sorted(java.util.Comparator.comparingDouble(c -> c.getPosition().getX())).toList();
+                    double baseTilt = base.size() < 2 ? 0 : (base.get(base.size() - 1).getPosition().getY() - base.get(0).getPosition().getY()) / radius;
+                    System.out.printf(Locale.ROOT, "TOWER t=%3ds %-7s height=%.3f tilt=%6.2fR bend=%6.2fR base=%6.3fR spin=%8.5f maxRotOff=%.3f component=%.3f%n",
+                            step / hz, i == 0 ? "classic" : "spring", MechanicsLab.height(f) / heights.get(i), (topX - bottomX) / radius,
+                            (midX - (topX + bottomX) / 2) / radius, baseTilt,
+                            spin, rot, MechanicsLab.largestComponent(f) / (double) f.size());
+                }
+                grid.build(cells);
+                world.update(dt, grid, strategy.stepPolicy());
+            }
+            System.out.printf(Locale.ROOT, "TOWER runtime %.2fs%n", (System.nanoTime() - start) / 1e9);
+        } finally {
+            config.setWidth(width); config.setHeight(height); config.setScaleSimulation(scale); config.setEnergyPerRay(ray);
+        }
+    }
+
+    /** Hook for tower variants in the trace (-Dlife.towerVariant=true). */
+    private static void towerVariant(SimulationConfig config) {
+        config.setSpringBending(Double.parseDouble(System.getProperty("life.springBending", "0")));
+        config.setSpringBendingDamping(Double.parseDouble(System.getProperty("life.springBendingDamping", "0")));
+    }
+
     /** Reinforcement variants (FEDERFELD.md „Verstärkung“), only with -Dlife.springVariants=true. */
     @Test
     void reinforcementVariantsStudy() {

@@ -95,7 +95,9 @@ Aktualisiert: 30.10.2026. Branch `master`.
   mindestens 12 R Abstand. Als Feder bleiben Turm und Fallbalken formstabil und ganz, der Turm knickt klassisch und
   der Balken zerbricht. Kragarm und einlagige Brücke hängen in beiden Modi ähnlich durch (Gelenkdrehung, keine
   Biegesteifigkeit). Experimentelle Verstärkung `springPreload`/`springDamping` (aus) bringt bei 60 Hz wenig;
-  höhere Steifigkeit braucht kleinere Zeitschritte (`FEDERFELD.md`, „Verstärkung“).
+  höhere Steifigkeit braucht kleinere Zeitschritte (`FEDERFELD.md`, „Verstärkung“). Im Langlauf schert auch der
+  Federturm ab ~25 s und liegt bei ~60 s; die experimentelle Winkelfeder `springBending` (aus) verzögert das nur
+  (`FEDERFELD.md`, „Winkelfeder“).
 
 - Langlauf 45 min Zonen ± Jahreszeiten: ohne Jahreszeiten stabile ~420 Zellen, 001- und
   teils 100-Zone besiedelt, Aas mit 100/010/001 (nie 000). Mit 25 % Winterlicht sterben

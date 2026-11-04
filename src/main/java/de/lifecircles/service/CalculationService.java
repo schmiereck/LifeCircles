@@ -59,6 +59,7 @@ public class CalculationService implements Runnable {
             config.setSpringStiffnessLimit(SimulationConfig.DEFAULT_SPRING_STIFFNESS_LIMIT);
             config.setSpringPreload(false);
             config.setSpringDamping(0);
+            config.setSpringBending(0); config.setSpringBendingDamping(0);
             this.environment = this.trainStrategy.initializeEnvironment();
             double interactionRadius = (config.getCellMaxRadiusSize() + config.getCellActorMaxFieldRadius()) * 2;
             this.partitioner = PartitioningStrategyFactory.createStrategy(

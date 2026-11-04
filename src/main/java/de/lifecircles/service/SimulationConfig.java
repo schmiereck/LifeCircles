@@ -138,6 +138,20 @@ public class SimulationConfig {
     private volatile double springDamping = 0;
     public boolean isSpringPreload() { return springPreload; }
     public void setSpringPreload(boolean preload) { springPreload = preload; }
+    /** Experimental angular spring (FEDERFELD.md „Winkelfeder“): spring pairs keep the neighbour in front of an actor (0 = off). */
+    private volatile double springBending = 0;
+    public double getSpringBending() { return springBending; }
+    public void setSpringBending(double bending) {
+        if (!Double.isFinite(bending) || bending < 0) throw new IllegalArgumentException("Spring bending must be >= 0");
+        springBending = bending;
+    }
+    /** Damping time of the angular spring in seconds: dashpot against cell rotation relative to the bond (0 = off). */
+    private volatile double springBendingDamping = 0;
+    public double getSpringBendingDamping() { return springBendingDamping; }
+    public void setSpringBendingDamping(double seconds) {
+        if (!Double.isFinite(seconds) || seconds < 0) throw new IllegalArgumentException("Spring bending damping must be >= 0");
+        springBendingDamping = seconds;
+    }
     public double getSpringDamping() { return springDamping; }
     public void setSpringDamping(double damping) {
         if (!Double.isFinite(damping) || damping < 0) throw new IllegalArgumentException("Spring damping must be >= 0");

@@ -24,6 +24,7 @@ class SpringFieldTest {
         assertEquals(36, config.getSpringStiffnessLimit());
         assertFalse(config.isSpringPreload());
         assertEquals(0, config.getSpringDamping());
+        assertEquals(0, config.getSpringBending());
     }
 
     @Test
@@ -102,6 +103,39 @@ class SpringFieldTest {
         double[] free = pairOscillation(0), damped = pairOscillation(.05);
         assertEquals(0, damped[1], 1e-6, "damping must keep actio = reactio");
         assertTrue(damped[0] < free[0], "free=" + free[0] + " damped=" + damped[0]);
+    }
+
+    /** Pair with cell a twisted by 10°: returns {|a offset from the 30° actor grid| after 2 s, |b offset|, |momentum|}. */
+    private static double[] twistedPair(double bending) {
+        MechanicsLab.configure(new MechanicsLab.Parameters("balanced", 90, 125, .8, 3, .25));
+        SimulationConfig config = SimulationConfig.getInstance();
+        config.setSpringAdhesion(true); config.setSpringAdhesionThreshold(.75); config.setSpringBending(bending);
+        var world = new de.lifecircles.model.Environment(4000, 4000);
+        var a = SpringFieldLab.add(world, 2000, 2000, 12);
+        var b = SpringFieldLab.add(world, 2024, 2000, 12);
+        SpringFieldLab.attract(a, 1); SpringFieldLab.attract(b, 1);
+        a.setRotation(Math.toRadians(10));
+        var grid = new de.lifecircles.service.partitioningStrategy.SpatialGridPartitioningStrategy(4000, 4000, 80);
+        var cells = world.getCellList();
+        for (int step = 0; step < 120; step++) {
+            for (var c : cells) c.applyForce(SimulationConfig.GRAVITY_VECTOR.multiply(-1));
+            grid.build(cells); world.update(1.0 / 60, grid);
+            if (Boolean.getBoolean("life.twistTrace") && step % 10 == 0)
+                System.out.printf(java.util.Locale.ROOT, "TWIST k=%.0f step=%d a=%.4f b=%.4f bond=%.4f%n", bending, step,
+                        Math.toDegrees(a.getRotation()), Math.toDegrees(b.getRotation()),
+                        Math.toDegrees(Math.atan2(b.getPosition().getY() - a.getPosition().getY(), b.getPosition().getX() - a.getPosition().getX())));
+        }
+        double off = Math.abs(Math.IEEEremainder(a.getRotation(), Math.PI / 6));
+        double offB = Math.abs(Math.IEEEremainder(b.getRotation(), Math.PI / 6));
+        return new double[]{off, offB, a.getVelocity().add(b.getVelocity()).length()};
+    }
+
+    @Test
+    void bendingSpringTurnsATwistedCellBack() {
+        double free = twistedPair(0)[0];
+        double[] bent = twistedPair(1000);
+        assertTrue(bent[0] < free / 2, "free=" + Math.toDegrees(free) + "° bent=" + Math.toDegrees(bent[0]) + "°");
+        assertEquals(0, bent[2], 1e-6, "angular spring must keep actio = reactio");
     }
 
     @Test

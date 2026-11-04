@@ -75,6 +75,8 @@ public class SensorActorForceCellCalcService {
         final double springStiffnessLimit = SimulationConfig.getInstance().getSpringStiffnessLimit();
         final boolean springPreload = SimulationConfig.getInstance().isSpringPreload();
         final double springDamping = SimulationConfig.getInstance().getSpringDamping();
+        final double springBending = SimulationConfig.getInstance().getSpringBending();
+        final double bendingDamping = SimulationConfig.getInstance().getSpringBendingDamping();
         final double maxRadiusSquared = Math.pow(SimulationConfig.getInstance().getCellMaxRadiusSize(), 2);
         // Field range per listed cell, once (calcSensorRadius takes a sine).
         final double[] range = new double[cells.size()];
@@ -128,6 +130,8 @@ public class SensorActorForceCellCalcService {
                 }
             }
             int own = first[cell.getListIndex()];
+            // Angular spring: strongest spring pull per candidate pair, collected over all actor pairs.
+            final double[] bendWeight = springBending > 0 ? new double[candidates.size()] : null;
             for (SensorActor actor : cell.getSensorActors()) {
                 final double ownX = relX[own], ownY = relY[own++];
                 double nearest = Double.POSITIVE_INFINITY;
@@ -165,7 +169,8 @@ public class SensorActorForceCellCalcService {
                         cell.applyForce(towardSurface.multiply(-strength * groundScale), actor.getCachedPosition());
                     }
                 }
-                for (Candidate candidate : candidates) {
+                for (int ci = 0; ci < candidates.size(); ci++) {
+                    final Candidate candidate = candidates.get(ci);
                     final Cell other = candidate.cell();
                     final double otherRange = candidate.range();
                     final double scale = candidate.scale();
@@ -227,6 +232,11 @@ public class SensorActorForceCellCalcService {
                             strength += emitted * (!emittedPull ? classic
                                     : springPreload ? Math.max(pairSpringGain / ownRange, classic) : pairSpringGain / ownRange);
                         }
+                        if (bendWeight != null) {
+                            // Symmetric: the reverse pair sees received and emitted swapped.
+                            if (receivedPull) bendWeight[ci] = Math.max(bendWeight[ci], -received);
+                            if (emittedPull) bendWeight[ci] = Math.max(bendWeight[ci], -emitted);
+                        }
                         if (springDamping > 0 && (receivedPull || emittedPull)) {
                             // Dashpot along the pair: relative speed of the two actor points projected on the axis.
                             // The reverse pair sees the negated speed and axis, so actio = reactio holds.
@@ -244,6 +254,36 @@ public class SensorActorForceCellCalcService {
                             cell.applyForce(new Vector2D(dx * (-strength * scale), dy * (-strength * scale)), actor.getCachedPosition());
                         }
                     }
+                }
+            }
+            if (bendWeight != null) {
+                // E = c·Σ(1 − cos(n·Δ)) with Δ = bond angle − cell rotation for both cells: rest where the neighbour
+                // sits in front of an actor. Torque on the own cell plus the transverse pair force on the centres
+                // (reverse traversal applies the opposite) keep momentum and angular momentum.
+                final int n = cell.getSensorActors().size();
+                for (int ci = 0; ci < candidates.size(); ci++) {
+                    if (bendWeight[ci] <= 0) continue;
+                    final Candidate candidate = candidates.get(ci);
+                    final Cell other = candidate.cell();
+                    if (other.getSensorActors().size() != n) continue;
+                    final double d = Math.sqrt(candidate.dx() * candidate.dx() + candidate.dy() * candidate.dy());
+                    if (d <= 1e-9) continue;
+                    final double c = springBending * bendWeight[ci] * candidate.scale() / (n * n);
+                    final double phi = Math.atan2(candidate.dy(), candidate.dx());
+                    // Generalised torque per end: spring plus dashpot against rotation relative to the bond.
+                    double ownG = c * n * Math.sin(n * (phi - cell.getRotation()));
+                    double otherG = c * n * Math.sin(n * (phi + Math.PI - other.getRotation()));
+                    if (bendingDamping > 0) {
+                        final double eta = bendingDamping * c * n * n;
+                        final double bondOmega = (candidate.dx() * (other.getVelocity().getY() - cell.getVelocity().getY())
+                                - candidate.dy() * (other.getVelocity().getX() - cell.getVelocity().getX())) / (d * d);
+                        ownG -= eta * (cell.getAngularVelocity() - bondOmega);
+                        otherG -= eta * (other.getAngularVelocity() - bondOmega);
+                    }
+                    cell.applyTorque(ownG);
+                    final double s = (ownG + otherG) / d;
+                    // Tangent (−u_y, u_x); the own cell is pulled along +t when the bond lags behind the actors.
+                    cell.applyForce(new Vector2D(-candidate.dy() / d * s, candidate.dx() / d * s));
                 }
             }
         });
