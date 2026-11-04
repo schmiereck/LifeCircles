@@ -97,9 +97,9 @@ Aktualisiert: 30.10.2026. Branch `master`.
   Biegesteifigkeit). Experimentelle Verstärkung `springPreload`/`springDamping` (aus) bringt bei 60 Hz wenig;
   höhere Steifigkeit braucht kleinere Zeitschritte (`FEDERFELD.md`, „Verstärkung“). Im Langlauf schert auch der
   Federturm ab ~25 s und liegt bei ~60 s; die experimentelle Winkelfeder `springBending` (aus) verzögert das nur
-  (`FEDERFELD.md`, „Winkelfeder“).
-
-- Langlauf 45 min Zonen ± Jahreszeiten: ohne Jahreszeiten stabile ~420 Zellen, 001- und
+  (`FEDERFELD.md`, „Winkelfeder“). Die experimentellen XPBD-Randgelenke `springSolver` (aus) lösen ziehende
+  Feder-Zellpaare positionsbasiert: Turm steht 160 s, Kragarm/Fallbalken nahezu formtreu, +11 % Laufzeit
+  (`FEDERFELD.md`, „XPBD-Gelenke“). 45 min Zonen ± Jahreszeiten: ohne Jahreszeiten stabile ~420 Zellen, 001- und
   teils 100-Zone besiedelt, Aas mit 100/010/001 (nie 000). Mit 25 % Winterlicht sterben
   alle Fremdzonen; Drossel driftet ohne Jahreszeiteneffekt. Folgelauf mit 50 % Winterlicht:
   ebenso, Fremdzonen im ersten Jahr leer. Fortsetzung einer angepassten Population mit

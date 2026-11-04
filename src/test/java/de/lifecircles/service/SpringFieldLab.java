@@ -45,9 +45,13 @@ final class SpringFieldLab {
         private final double threshold = config.getSpringAdhesionThreshold(), tear = config.getSpringTearFactor(), limit = config.getSpringStiffnessLimit();
         private final boolean preload = config.isSpringPreload();
         private final double damping = config.getSpringDamping(), bending = config.getSpringBending(), bendingDamping = config.getSpringBendingDamping();
+        private final boolean solver = config.isSpringSolver();
+        private final double solverStiffness = config.getSpringSolverStiffness();
+        private final int solverIterations = config.getSpringSolverIterations();
         public void close() {
             config.setSpringAdhesion(spring); config.setSpringAdhesionThreshold(threshold); config.setSpringTearFactor(tear); config.setSpringStiffnessLimit(limit);
             config.setSpringPreload(preload); config.setSpringDamping(damping); config.setSpringBending(bending); config.setSpringBendingDamping(bendingDamping);
+            config.setSpringSolver(solver); config.setSpringSolverStiffness(solverStiffness); config.setSpringSolverIterations(solverIterations);
             mechanics.close();
         }
     }

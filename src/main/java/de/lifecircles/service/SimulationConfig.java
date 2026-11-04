@@ -152,6 +152,24 @@ public class SimulationConfig {
         if (!Double.isFinite(seconds) || seconds < 0) throw new IllegalArgumentException("Spring bending damping must be >= 0");
         springBendingDamping = seconds;
     }
+    /** Experimental XPBD (FEDERFELD.md „XPBD“): each pulling cell pair becomes a rim hinge solved after integration. */
+    private volatile boolean springSolver = false;
+    /** Stiffness of the hinges relative to the explicit springs (compliance 1/(k·factor); ∞ = rigid, still tears). */
+    private volatile double springSolverStiffness = Double.POSITIVE_INFINITY;
+    /** Gauss-Seidel sweeps over all hinges per step (towers stand from 6 on). */
+    private volatile int springSolverIterations = 8;
+    public boolean isSpringSolver() { return springSolver; }
+    public void setSpringSolver(boolean solver) { springSolver = solver; }
+    public double getSpringSolverStiffness() { return springSolverStiffness; }
+    public void setSpringSolverStiffness(double factor) {
+        if (Double.isNaN(factor) || factor <= 0) throw new IllegalArgumentException("Spring solver stiffness must be > 0");
+        springSolverStiffness = factor;
+    }
+    public int getSpringSolverIterations() { return springSolverIterations; }
+    public void setSpringSolverIterations(int iterations) {
+        if (iterations < 1) throw new IllegalArgumentException("Spring solver iterations must be >= 1");
+        springSolverIterations = iterations;
+    }
     public double getSpringDamping() { return springDamping; }
     public void setSpringDamping(double damping) {
         if (!Double.isFinite(damping) || damping < 0) throw new IllegalArgumentException("Spring damping must be >= 0");

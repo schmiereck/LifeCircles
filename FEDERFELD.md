@@ -150,8 +150,50 @@ Linie Fuß–Spitze: der Turm schert bzw. knickt in den unteren Reihen, er schau
 Befund: Die Winkelfeder verzögert das Umfallen bis etwa zur Stabilitätsgrenze des expliziten Schritts
 (Paar ~10000, im Gitter mit sechs Nachbarn ~1000–1500 bei 60 Hz), verhindert es aber nicht. Die Dämpfung macht es
 schlimmer, weil sie selbst explizit integriert wird. Dauerhaft stehende Türme brauchen nach jetzigem Stand ein
-implizites bzw. positionsbasiertes Lösen der Paarbedingungen (XPBD-artig) oder Substeps. Beides kostet mehr und
-greift tiefer ein.
+implizites bzw. positionsbasiertes Lösen der Paarbedingungen (XPBD-artig) oder Substeps. → Umgesetzt als
+„XPBD-Gelenke“ (unten).
+
+## XPBD-Gelenke (experimentell, Standard aus)
+
+`springSolver` (aus), `springSolverStiffness` (Faktor auf die Federsteifigkeit, Standard ∞ = starr),
+`springSolverIterations` (Standard 8), in `newSimulation` zurückgesetzt, kein GUI-Schalter. Klasse `SpringLinkSolver`.
+
+- Die Kraftphase wendet für ziehende Feder-Aktorpaare keine Federkraft (und keine `springDamping`) an, sondern fasst
+  jedes ziehende Zellpaar zu **einem Gelenk** zusammen: je ein Punkt auf dem Rand beider Zellen in Richtung des
+  steifigkeitsgewichteten Schwerpunkts der ziehenden Aktoren; erfüllt, wenn sich die Zellen dort berühren.
+  Gesamtsteifigkeit Σk, Haltekraft gedeckelt auf die Summe der Reißkräfte (das Gelenk rutscht, statt unbegrenzt zu
+  halten). Abstoßung, Klassik-Paare und alle anderen Kräfte bleiben explizit.
+- Nach der Integration (vor der Gelände-Kollision) korrigieren Gauss-Seidel-Durchläufe die Gelenkpunkte mit
+  Nachgiebigkeit 1/(k·Faktor·dt²); Verschiebung und Drehung beider Zellen mit den inversen Massen des expliziten
+  Integrators. Geschwindigkeiten folgen den Korrekturen (Δx/dt, Δθ/dt). Impuls und Drehimpuls bleiben erhalten
+  (Test `solverHingeClosesTheGapAndKeepsMomentum`). Das Feld reißt weiter über die Aktorreichweite ab.
+- Modelländerung gegenüber den Einzelfedern: Der Rotationsrest der Aktorpaare entfällt; die Starrheit kommt aus der
+  Triangulierung (drei Scheiben mit drei Gelenken bilden ein starres Dreieck).
+- Fehlversuch zuvor: ein Punkt-Constraint je Aktorpaar (Ruhelänge 0). Mehrere Aktorpaare eines Zellpaars
+  widersprechen sich, die Zellen verdrehen sich (bis 30°), steifer wurde schlechter (Turm liegt bei ~40 s).
+  Ebenso Gelenkpunkte im Schwerpunkt *innerhalb* der Zelle: nur Verzögerung (∞: 96 % Höhe bei 80 s, liegt bei 120 s).
+
+Turm-Langlauf mit Randgelenken (`-Dlife.springSolver=true -Dlife.springSolverStiffness=… -Dlife.springSolverIterations=…
+-Dlife.towerSeconds=160`, 03.11.2026), Laufzeit für 160 s Simulation (zwei Türme):
+
+| Variante | Verlauf | Laufzeit |
+|---|---|---|
+| ohne Solver | liegt bei ~60–80 s | 2,42 s |
+| ∞, 4 Iterationen | 80 s Neigung 8,6 R, liegt bei 120 s | 2,88 s |
+| ∞, 6 Iterationen | steht 160 s, Höhe 0,998, Neigung 1,7 R, ruhig (spin 0) | 3,11 s |
+| ∞, 8 Iterationen (Standard) | steht 160 s, Höhe 0,998, Neigung 1,5 R | 3,12 s |
+| ∞, 10 Iterationen | steht 160 s, Höhe 0,999, Neigung 1,4 R | 3,24 s |
+| 100, 10 Iterationen | steht 160 s, Höhe 0,998 | 3,28 s |
+| 10, 10 Iterationen | 80 s Neigung 4,8 R, liegt bei 160 s | 3,30 s |
+| ∞, 4 Iterationen + Winkelfeder κ 300/1000 | liegt bei 80 s (schlechter) | 3,1–3,2 s |
+
+Alle Zwillinge 60 s (`solverTwinsStudy`, `-Dlife.springSolverStudy=true -Dlife.studySeconds=60`, Standard ∞/8),
+Formfehler der Federfigur ohne → mit Solver: Kragarm 0,40 → 0,03 R (kippt als Ganzes, Spitze sinkt 4,8 R),
+Brücke 2,38 → 2,88 R (Mitte sinkt nur 0,36 statt 0,71 R), Turm 1,69 → 0,02 R (Höhe 0,31 → 0,998),
+Fallbalken 1,24 → 0,15 R; alle ganz. Klassik-Zwillinge unverändert. Laufzeit der ganzen Szene 2,00 → 2,23 s (+11 %).
+
+Befund: Starre Gelenke mit 6–8 Iterationen halten Turm und zweilagige Körper dauerhaft bei ~+10–30 % Mechanikzeit.
+Offen: GUI-Schalter, Verhalten in Evolutionswelten (Gehirne lösen/setzen Federn ständig um), einlagige Brücke.
 
 ## Grenzen
 

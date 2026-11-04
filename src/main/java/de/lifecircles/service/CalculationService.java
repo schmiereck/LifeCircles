@@ -60,6 +60,7 @@ public class CalculationService implements Runnable {
             config.setSpringPreload(false);
             config.setSpringDamping(0);
             config.setSpringBending(0); config.setSpringBendingDamping(0);
+            config.setSpringSolver(false); config.setSpringSolverStiffness(Double.POSITIVE_INFINITY); config.setSpringSolverIterations(8);
             this.environment = this.trainStrategy.initializeEnvironment();
             double interactionRadius = (config.getCellMaxRadiusSize() + config.getCellActorMaxFieldRadius()) * 2;
             this.partitioner = PartitioningStrategyFactory.createStrategy(

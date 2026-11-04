@@ -164,6 +164,23 @@ class TestASpringFiguresTest {
     private static void towerVariant(SimulationConfig config) {
         config.setSpringBending(Double.parseDouble(System.getProperty("life.springBending", "0")));
         config.setSpringBendingDamping(Double.parseDouble(System.getProperty("life.springBendingDamping", "0")));
+        config.setSpringSolver(Boolean.getBoolean("life.springSolver"));
+        config.setSpringSolverStiffness(Double.parseDouble(System.getProperty("life.springSolverStiffness", "Infinity")));
+        config.setSpringSolverIterations(Integer.getInteger("life.springSolverIterations", 8));
+    }
+
+    /** All twins with and without XPBD hinges (FEDERFELD.md „XPBD“), only with -Dlife.springSolverStudy=true. */
+    @Test
+    void solverTwinsStudy() {
+        org.junit.jupiter.api.Assumptions.assumeTrue(Boolean.getBoolean("life.springSolverStudy"));
+        double seconds = Double.parseDouble(System.getProperty("life.studySeconds", "20"));
+        for (boolean solver : new boolean[]{false, true}) {
+            long start = System.nanoTime();
+            List<Twin> twins = simulate(seconds, c -> c.setSpringSolver(solver));
+            double runtime = (System.nanoTime() - start) / 1e9;
+            twins.forEach(t -> System.out.println("SOLVER " + solver + " " + t.row()));
+            System.out.printf(Locale.ROOT, "SOLVER %s runtime %.2fs gap %.1fR%n", solver, runtime, minimumGap);
+        }
     }
 
     /** Reinforcement variants (FEDERFELD.md „Verstärkung“), only with -Dlife.springVariants=true. */

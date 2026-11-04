@@ -24,6 +24,11 @@ public class Environment {
     private double height;
     private final List<Cell> cellList;
     private final List<Blocker> blockerList;
+    /** Spring constraints of the current step (FEDERFELD.md „XPBD“), filled by the force phase. */
+    private List<de.lifecircles.service.SpringLinkSolver.Link> springLinks = List.of();
+
+    public List<de.lifecircles.service.SpringLinkSolver.Link> getSpringLinks() { return springLinks; }
+    public void setSpringLinks(List<de.lifecircles.service.SpringLinkSolver.Link> links) { springLinks = links; }
 
     // Singleton-Instanz für einfachen Zugriff
     private static Environment instance;
@@ -216,6 +221,16 @@ public class Environment {
             Cell cell = this.cellList.get(i);
             // Brain storage/work were already charged exactly once above.
             CellCalcService.advanceCell(cell, deltaTime, de.lifecircles.service.BrainEnergyCosts.FREE);
+            this.wrapPosition(cell);
+        });
+        // XPBD spring constraints act on the moved cells before the terrain corrects them.
+        if (!this.springLinks.isEmpty()) {
+            de.lifecircles.service.SpringLinkSolver.solve(this.springLinks, this.width, this.height, deltaTime,
+                    this.config.getSpringSolverStiffness(), this.config.getSpringSolverIterations());
+            this.springLinks = List.of();
+        }
+        IntStream.range(0, this.cellList.size()).parallel().forEach(i -> {
+            Cell cell = this.cellList.get(i);
             this.wrapPosition(cell);
             BlockerCellCalcService.handleBlockerCollisions(cell, this.blockerList, this, blockerFriction, blockerRolling, deltaTime);
             this.wrapPosition(cell);

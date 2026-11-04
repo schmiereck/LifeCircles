@@ -145,4 +145,44 @@ class SpringFieldTest {
         assertEquals(1, spring.finalComponent(), 1e-9, spring.csv());
         assertTrue(spring.residualShape() < .2, spring.csv());
     }
+
+    @Test
+    void springSolverIsOffByDefault() {
+        SimulationConfig config = SimulationConfig.getInstance();
+        assertFalse(config.isSpringSolver());
+        assertEquals(Double.POSITIVE_INFINITY, config.getSpringSolverStiffness());
+        assertEquals(8, config.getSpringSolverIterations());
+    }
+
+    @Test
+    void solverHingeClosesTheGapAndKeepsMomentum() {
+        MechanicsLab.configure(new MechanicsLab.Parameters("balanced", 90, 125, .8, 3, .25));
+        var world = new de.lifecircles.model.Environment(4000, 4000);
+        var a = SpringFieldLab.add(world, 2000, 2000, 12);
+        var b = SpringFieldLab.add(world, 2030, 2004, 12);
+        a.setRotation(.3);
+        a.setVelocity(new de.lifecircles.model.Vector2D(2, -1)); b.setVelocity(new de.lifecircles.model.Vector2D(-1, 3));
+        double r = a.getRadiusSize();
+        var link = new SpringLinkSolver.Link(a, r, 0, b, -r, 0, 1e9, 1e9);
+        var before = a.getVelocity().add(b.getVelocity());
+        SpringLinkSolver.solve(java.util.List.of(link), 4000, 4000, 1.0 / 60, Double.POSITIVE_INFINITY, 8);
+        double ca = Math.cos(a.getRotation()), sa = Math.sin(a.getRotation()), cb = Math.cos(b.getRotation()), sb = Math.sin(b.getRotation());
+        double gap = Math.hypot(b.getPosition().getX() - r * cb - a.getPosition().getX() - r * ca,
+                b.getPosition().getY() - r * sb - a.getPosition().getY() - r * sa);
+        assertEquals(0, gap, 1e-6, "rigid hinge must close");
+        assertEquals(0, a.getVelocity().add(b.getVelocity()).subtract(before).length(), 1e-9, "actio = reactio");
+        // Capped pull: the hinge slips and only moves by the tear force.
+        var c = SpringFieldLab.add(world, 2100, 2000, 12);
+        var d = SpringFieldLab.add(world, 2130, 2000, 12);
+        SpringLinkSolver.solve(java.util.List.of(new SpringLinkSolver.Link(c, r, 0, d, -r, 0, 1e9, 1)), 4000, 4000,
+                1.0 / 60, Double.POSITIVE_INFINITY, 8);
+        assertEquals(2 * SpringLinkSolver.W_LINEAR / 3600, 30 - (d.getPosition().getX() - c.getPosition().getX()), 1e-9);
+    }
+
+    @Test
+    void solverBoneHoldsTension() {
+        SimulationConfig.getInstance().setSpringSolver(true);
+        var spring = SpringFieldLab.run(SPRING, new SpringFieldLab.Probe("bar", 9, 3, "tension", 600));
+        assertEquals(1, spring.finalComponent(), 1e-9, spring.csv());
+    }
 }

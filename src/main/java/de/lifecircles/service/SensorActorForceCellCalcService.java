@@ -77,6 +77,10 @@ public class SensorActorForceCellCalcService {
         final double springDamping = SimulationConfig.getInstance().getSpringDamping();
         final double springBending = SimulationConfig.getInstance().getSpringBending();
         final double bendingDamping = SimulationConfig.getInstance().getSpringBendingDamping();
+        // XPBD: spring pulls become constraints (no explicit spring force, no stiffness cap, no dashpot).
+        final boolean springSolver = SimulationConfig.getInstance().isSpringSolver() && springLimit > Double.NEGATIVE_INFINITY;
+        @SuppressWarnings("unchecked")
+        final List<SpringLinkSolver.Link>[] springLinks = springSolver ? new List[cells.size()] : null;
         final double maxRadiusSquared = Math.pow(SimulationConfig.getInstance().getCellMaxRadiusSize(), 2);
         // Field range per listed cell, once (calcSensorRadius takes a sine).
         final double[] range = new double[cells.size()];
@@ -132,6 +136,7 @@ public class SensorActorForceCellCalcService {
             int own = first[cell.getListIndex()];
             // Angular spring: strongest spring pull per candidate pair, collected over all actor pairs.
             final double[] bendWeight = springBending > 0 ? new double[candidates.size()] : null;
+            final double[][] linkSums = springSolver ? new double[candidates.size()][] : null;
             for (SensorActor actor : cell.getSensorActors()) {
                 final double ownX = relX[own], ownY = relY[own++];
                 double nearest = Double.POSITIVE_INFINITY;
@@ -222,12 +227,27 @@ public class SensorActorForceCellCalcService {
                         // With preload it never pulls weaker than the classic field (no soft spot near contact).
                         final boolean receivedPull = receivedSpring && received < 0 && distance < otherRange;
                         final boolean emittedPull = emittedSpring && emitted < 0 && distance < ownRange;
-                        if (distance < otherRange) {
+                        if (springSolver && (receivedPull || emittedPull)) {
+                            // Recorded once per actor pair, by the cell with the lower list index; the
+                            // explicit spring term of the pulling directions is left to the solver.
+                            if (candidate.first() >= 0 && index < other.getListIndex()) {
+                                double k = 0, maxForce = 0;
+                                if (receivedPull) { k -= received * springGain / otherRange; maxForce -= received * springGain; }
+                                if (emittedPull) { k -= emitted * springGain / ownRange; maxForce -= emitted * springGain; }
+                                // Unrotated actor offsets, weighted by stiffness: the pair's springs act like one
+                                // spring between the two weighted centroids (plus a rotation-only remainder).
+                                final double[] sum = linkSums[ci] == null ? (linkSums[ci] = new double[6]) : linkSums[ci];
+                                sum[0] += k; sum[5] += maxForce;
+                                sum[1] += k * Math.cos(actor.getAngleOnCell()); sum[2] += k * Math.sin(actor.getAngleOnCell());
+                                sum[3] += k * Math.cos(otherActor.getAngleOnCell()); sum[4] += k * Math.sin(otherActor.getAngleOnCell());
+                            }
+                        }
+                        if (distance < otherRange && !(springSolver && receivedPull)) {
                             final double classic = (1 - distance / otherRange) / Math.max(distance, otherRange * softening);
                             strength += received * (!receivedPull ? classic
                                     : springPreload ? Math.max(pairSpringGain / otherRange, classic) : pairSpringGain / otherRange);
                         }
-                        if (distance < ownRange) {
+                        if (distance < ownRange && !(springSolver && emittedPull)) {
                             final double classic = (1 - distance / ownRange) / Math.max(distance, ownRange * softening);
                             strength += emitted * (!emittedPull ? classic
                                     : springPreload ? Math.max(pairSpringGain / ownRange, classic) : pairSpringGain / ownRange);
@@ -237,7 +257,7 @@ public class SensorActorForceCellCalcService {
                             if (receivedPull) bendWeight[ci] = Math.max(bendWeight[ci], -received);
                             if (emittedPull) bendWeight[ci] = Math.max(bendWeight[ci], -emitted);
                         }
-                        if (springDamping > 0 && (receivedPull || emittedPull)) {
+                        if (springDamping > 0 && !springSolver && (receivedPull || emittedPull)) {
                             // Dashpot along the pair: relative speed of the two actor points projected on the axis.
                             // The reverse pair sees the negated speed and axis, so actio = reactio holds.
                             final double ownOmega = cell.getAngularVelocity(), otherOmega = other.getAngularVelocity();
@@ -254,6 +274,22 @@ public class SensorActorForceCellCalcService {
                             cell.applyForce(new Vector2D(dx * (-strength * scale), dy * (-strength * scale)), actor.getCachedPosition());
                         }
                     }
+                }
+            }
+            if (linkSums != null) {
+                for (int ci = 0; ci < candidates.size(); ci++) {
+                    final double[] sum = linkSums[ci];
+                    if (sum == null || sum[0] <= 0) continue;
+                    final Cell other = candidates.get(ci).cell();
+                    final double scale = candidates.get(ci).scale();
+                    // Hinge on the rim in the direction of the weighted actors: satisfied when the cells touch.
+                    final double ownNorm = Math.hypot(sum[1], sum[2]), otherNorm = Math.hypot(sum[3], sum[4]);
+                    if (ownNorm <= 1e-12 || otherNorm <= 1e-12) continue;
+                    if (springLinks[index] == null) springLinks[index] = new ArrayList<>();
+                    springLinks[index].add(new SpringLinkSolver.Link(
+                            cell, cell.getRadiusSize() * sum[1] / ownNorm, cell.getRadiusSize() * sum[2] / ownNorm,
+                            other, other.getRadiusSize() * sum[3] / otherNorm, other.getRadiusSize() * sum[4] / otherNorm,
+                            sum[0] * scale, sum[5] * scale));
                 }
             }
             if (bendWeight != null) {
@@ -287,6 +323,13 @@ public class SensorActorForceCellCalcService {
                 }
             }
         });
+        if (springLinks != null) {
+            final List<SpringLinkSolver.Link> all = new ArrayList<>();
+            for (List<SpringLinkSolver.Link> list : springLinks) if (list != null) all.addAll(list);
+            environment.setSpringLinks(all);
+        } else {
+            environment.setSpringLinks(List.of());
+        }
     }
 
     public static double calcSensorRadius(final double radiusSize, final int totalSensors) {

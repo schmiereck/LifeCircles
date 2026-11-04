@@ -1,5 +1,13 @@
 # Abgeschlossene Schritte
 
+## Zugfeder: XPBD-Randgelenke (03.11.2026)
+
+- `SpringLinkSolver` und Schalter `springSolver` (aus, ∞ Steifigkeit, 8 Iterationen): ziehende Feder-Zellpaare als
+  ein Randgelenk, positionsbasiert nach der Integration gelöst, Haltekraft auf die Reißkraft gedeckelt.
+- Turm steht 160 s (ohne: liegt bei ~60 s), Kragarm 0,03 R und Fallbalken 0,15 R Formfehler; +11 % Laufzeit TEST_A.
+  Aktorpaar-Constraints und Gelenke im Zellinneren scheiterten. Tests in `SpringFieldTest`, Studie
+  `TestASpringFiguresTest#solverTwinsStudy`; Messwerte in `FEDERFELD.md`, „XPBD-Gelenke“.
+
 ## Zugfeder: Winkelfeder und Turm-Langlauf (03.11.2026)
 
 - Diagnose `towerLongRunTrace`: Der Federturm bleibt ganz, schert aber ab ~25 s in den unteren Reihen und liegt bei ~60 s.

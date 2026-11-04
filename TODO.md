@@ -22,8 +22,9 @@
 - [x] Zugfeder-Figuren in TEST_A, stehende Proben unter Schwerkraft (02.11.2026, `FEDERFELD.md`).
 - [x] Zugfeder-Verstärkung gemessen: Vorspannung, Dämpfung, höhere Steifigkeit bei 180 Hz (02.11.2026, `FEDERFELD.md`).
 - [x] Winkelfeder `springBending` (aus) gebaut und am Turm gemessen: verzögert, verhindert das Umfallen nicht (03.11.2026).
-- [ ] Federturm dauerhaft stehend: XPBD-artige Paarbedingungen oder Substeps nur für die Mechanik? Kosten
-  messen, bevor umgebaut wird. (Entscheidung Nutzer)
+- [x] Federturm dauerhaft stehend: XPBD-Randgelenke `springSolver` (aus), Turm steht 160 s, +11–30 % Laufzeit
+  (03.11.2026, `FEDERFELD.md`, „XPBD-Gelenke“).
+- [ ] XPBD-Gelenke: GUI-Schalter, Test in Evolutionswelten, ggf. Standard in TEST_A einschalten? (Entscheidung Nutzer)
 - [ ] Zugfeder: GUI-Schalter und Speicherung in der Einstellungsdatei;
   Evolution in NONE/WORLD2 mit und ohne Feder vergleichen; Energiekosten starker Haftung? (Entscheidung Nutzer)
 - [x] RACE mit Geländeklebrigkeit 0 und 120 s: Körper kriechen bzw. hüpfen (Nutzer, GUI, 30.10.2026).
