@@ -85,7 +85,9 @@ Aktualisiert: 30.10.2026. Branch `master`.
   besser: 1 von 4 Seeds kam über HOLD hinaus, ohne Bindungen 0 von 8. Mit 120-s-Generationen
   wird HIGH_POSITION2 in beiden Varianten höher (293 / 251 px statt ~150), aber als größere
   Haufen; mit Bindungen eher niedriger. `BODENHALT.md`.
-- Zugfeder-Felder experimentell (02.11.2026, Schalter `springAdhesion` aus, kein GUI-Schalter): Ab 75 % der
+- Zugfeder-Felder mit XPBD-Randgelenken seit 04.11.2026 **global an** (`springAdhesion`, `springSolver`, Schwelle
+  75 %, TEST_A 100 %; kein GUI-Schalter). Kosten im dichten Schlechtestfall +18 %; klassisch kalibrierte RACE-Gänge
+  laufen damit schlechter (`FEDERFELD.md`, „Global eingeschaltet“). Zugfeder-Felder (02.11.2026): Ab 75 % der
   Anziehung zieht ein Aktor wie eine Feder (|F| = k·|s|·d/R, Abriss bei R, k = 3, begrenzt auf k·r ≤ 36).
   Im Labor mit festen Gehirnen hält ein Knochen 9×3 Zug 600 elastisch und federt nach Biegung zurück
   (klassisch reißt er bzw. bleibt verbogen). Ein zweilagiger Panzerring hält Zug 600. Einlagige Ringe bleiben

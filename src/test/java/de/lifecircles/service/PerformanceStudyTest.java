@@ -23,6 +23,9 @@ class PerformanceStudyTest {
         int steps = Integer.getInteger("performance.steps", 30);
         try (MechanicsLab.Settings ignored = new MechanicsLab.Settings()) {
             config.setSunRayRate(10); config.setSunRaySpacingPx(60);
+            // Opt-in: spring fields with XPBD hinges and an attracting actor output (0 = full attraction).
+            if (Boolean.getBoolean("performance.spring")) { config.setSpringAdhesion(true); config.setSpringSolver(true); }
+            double force = Double.parseDouble(System.getProperty("performance.force", "0.5"));
             for (String layout : new String[]{"sparse", "dense"})
                 for (String countText : System.getProperty("performance.counts", "1024,4096").split(","))
                     for (int repeat = 0; repeat < 3; repeat++) {
@@ -39,6 +42,8 @@ class PerformanceStudyTest {
                             double[] controls = new PhysicsRegressionTest.ConstantBrain().process().clone();
                             controls[GlobalOutputFeature.SIZE.ordinal()] = (12 - config.getCellMinRadiusSize())
                                     / (config.getCellMaxRadiusSize() - config.getCellMinRadiusSize());
+                            for (int a = 0; a < 12; a++) controls[GlobalOutputFeature.values().length
+                                    + a * ActorOutputFeature.values().length + ActorOutputFeature.FORCE.ordinal()] = force;
                             CellBrain brain = new CellBrain(network) {
                                 @Override public double[] process() { super.process(); return controls; }
                             };

@@ -12,11 +12,14 @@ class CellAdhesionTest {
     static final CellType RED = new CellType(1, 0, 0), BLUE = new CellType(0, 0, 1), BODY = new CellType(.2, .6, .4);
     final SimulationConfig config = SimulationConfig.getInstance();
     double tau, halfLife, sharpness, rejection;
+    MechanicsLab.ClassicField classic;
     @BeforeEach void save() {
+        classic = new MechanicsLab.ClassicField();
         tau = config.getActorForceTonusSeconds(); halfLife = config.getRemainsForceHalfLife();
         sharpness = config.getAdhesionSharpness(); rejection = config.getAdhesionRejection();
     }
     @AfterEach void restore() {
+        classic.close();
         config.setActorForceTonusSeconds(tau); config.setRemainsForceHalfLife(halfLife);
         config.setAdhesionSharpness(sharpness); config.setAdhesionRejection(rejection);
         config.setAdhesionHoldForces(true); config.setAdhesionRecognition(true);

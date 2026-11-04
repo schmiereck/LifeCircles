@@ -25,7 +25,10 @@
 - [x] Federturm dauerhaft stehend: XPBD-Randgelenke `springSolver` (aus), Turm steht 160 s, +11–30 % Laufzeit
   (03.11.2026, `FEDERFELD.md`, „XPBD-Gelenke“).
 - [x] XPBD-Gelenke in TEST_A standardmäßig eingeschaltet (04.11.2026, Nutzer sichtet in der GUI).
-- [ ] XPBD-Gelenke: GUI-Schalter, Test in Evolutionswelten? (Entscheidung Nutzer)
+- [x] Zugfeder mit XPBD-Gelenken global eingeschaltet, Schwelle 75 % (04.11.2026, Nutzerentscheidung).
+- [ ] Evolution mit Feder in NONE/WORLD2/RACE beobachten (Nutzer, GUI); RACE ggf. ausnehmen? Klassisch kalibrierte
+  Gänge laufen schlechter (`FEDERFELD.md`, „Global eingeschaltet“). `SpringLinkSolver` bei Bedarf parallelisieren.
+- [ ] XPBD-Gelenke: GUI-Schalter? (Entscheidung Nutzer)
 - [ ] Zugfeder: GUI-Schalter und Speicherung in der Einstellungsdatei;
   Evolution in NONE/WORLD2 mit und ohne Feder vergleichen; Energiekosten starker Haftung? (Entscheidung Nutzer)
 - [x] RACE mit Geländeklebrigkeit 0 und 120 s: Körper kriechen bzw. hüpfen (Nutzer, GUI, 30.10.2026).

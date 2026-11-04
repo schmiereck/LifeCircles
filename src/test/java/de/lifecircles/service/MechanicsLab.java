@@ -24,19 +24,30 @@ final class MechanicsLab {
         }
     }
 
+    /** Pins the classic field (no springs, no XPBD hinges; default since 04.11.2026) and restores the switches. */
+    static final class ClassicField implements AutoCloseable {
+        private final SimulationConfig config = SimulationConfig.getInstance();
+        private final boolean spring = config.isSpringAdhesion(), solver = config.isSpringSolver();
+        ClassicField() { config.setSpringAdhesion(false); config.setSpringSolver(false); }
+        public void close() { config.setSpringAdhesion(spring); config.setSpringSolver(solver); }
+    }
+
     static final class Settings implements AutoCloseable {
         private final SimulationConfig config = SimulationConfig.getInstance();
         private final double attraction = config.getCellActorMaxAttractiveForceStrength(), contact = config.getCellRepulsionStrength(),
                 viscosity = config.getViscosity(), damping = config.getRotationalFriction(), sunlight = config.getSunRayRate(), softening = config.getActorFieldSofteningFraction();
         private final int count = config.getInitialCellCount();
         private final boolean friction = config.isBlockerFriction();
-        // The benchmarks were calibrated on frictionless terrain; friction became the default on 28.10.2026.
+        // The benchmarks were calibrated on frictionless terrain (friction default since 28.10.2026) and on the
+        // classic field (springs with hinges default since 04.11.2026).
+        private final ClassicField classic = new ClassicField();
         Settings() { config.setSunRayRate(0); config.setInitialCellCount(0); config.setBlockerFriction(false); }
         public void close() {
             config.setCellActorMaxAttractiveForceStrength(attraction); config.setCellRepulsionStrength(contact);
             config.setViscosity(viscosity); config.setRotationalFriction(damping);
             config.setSunRayRate(sunlight); config.setInitialCellCount(count);
             config.setActorFieldSofteningFraction(softening); config.setBlockerFriction(friction);
+            classic.close();
         }
     }
 

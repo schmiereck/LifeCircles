@@ -25,6 +25,10 @@ class ForceSignTest {
     @ParameterizedTest @ValueSource(doubles = {-0.5, 0, 0.25, 0.5, 0.75, 1, 1.5})
     void outputMappingAndPhysicalDirectionAgreeOnBothAxesAndAcrossSeams(double output) {
         SimulationConfig config = SimulationConfig.getInstance();
+        try (var classic = new MechanicsLab.ClassicField()) { check(config, output); }
+    }
+
+    private static void check(SimulationConfig config, double output) {
         double normalizedStrength = Math.max(-1, Math.min(1, output * 2 - 1));
         double expectedStrength = normalizedStrength * (output < 0.5
                 ? config.getCellActorMaxAttractiveForceStrength() : config.getCellActorMaxRepulsiveForceStrength());

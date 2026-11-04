@@ -17,14 +17,18 @@ class RaceGaitTest {
     final SimulationConfig config = SimulationConfig.getInstance();
     boolean adhesion, recognition, ground, anchors, bonds, birthBonds, friction;
     double coefficient, rolling;
+    // The scripted gait was tuned on the classic field (springs default since 04.11.2026).
+    MechanicsLab.ClassicField classic;
 
     @BeforeEach void save() {
+        classic = new MechanicsLab.ClassicField();
         adhesion = config.isCellAdhesion(); recognition = config.isAdhesionRecognition(); ground = config.isGroundAdhesion();
         anchors = config.isGroundAnchors(); bonds = config.isAdhesionBonds(); birthBonds = config.isAdhesionBirthBonds();
         friction = config.isBlockerFriction(); coefficient = config.getBlockerFrictionCoefficient();
         rolling = config.getBlockerRollingResistance();
     }
     @AfterEach void restore() {
+        classic.close();
         config.setCellAdhesion(adhesion); config.setAdhesionRecognition(recognition); config.setGroundAdhesion(ground);
         config.setGroundAnchors(anchors); config.setAdhesionBonds(bonds); config.setAdhesionBirthBonds(birthBonds);
         config.setBlockerFriction(friction); config.setBlockerFrictionCoefficient(coefficient);

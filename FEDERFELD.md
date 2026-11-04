@@ -13,8 +13,8 @@ umso leichter, je weiter er gedehnt wird. Bindungen und Anker nutzen dasselbe Pr
 
 ## Modell
 
-- Schalter `springAdhesion` (Standard **aus**, global in allen Welten, kein GUI-Schalter und keine Speicherung
-  in der Einstellungsdatei).
+- Schalter `springAdhesion` (Standard seit 04.11.2026 **an**, global in allen Welten, kein GUI-Schalter und keine
+  Speicherung in der Einstellungsdatei; Abschnitt „Global eingeschaltet“).
 - Ein Sender ist eine Feder, wenn sein Rohbefehl s ≤ −Schwelle·maxAnziehung ist (`springAdhesionThreshold`,
   Standard 0,75). Die Entscheidung fällt je Sender, beide Richtungen eines Paars rechnen also dieselben Terme
   (actio = reactio).
@@ -153,9 +153,9 @@ schlimmer, weil sie selbst explizit integriert wird. Dauerhaft stehende Türme b
 implizites bzw. positionsbasiertes Lösen der Paarbedingungen (XPBD-artig) oder Substeps. → Umgesetzt als
 „XPBD-Gelenke“ (unten).
 
-## XPBD-Gelenke (experimentell, Standard aus)
+## XPBD-Gelenke (Standard an seit 04.11.2026)
 
-`springSolver` (aus), `springSolverStiffness` (Faktor auf die Federsteifigkeit, Standard ∞ = starr),
+`springSolver` (an), `springSolverStiffness` (Faktor auf die Federsteifigkeit, Standard ∞ = starr),
 `springSolverIterations` (Standard 8), in `newSimulation` zurückgesetzt, kein GUI-Schalter. Klasse `SpringLinkSolver`.
 
 - Die Kraftphase wendet für ziehende Feder-Aktorpaare keine Federkraft (und keine `springDamping`) an, sondern fasst
@@ -196,6 +196,24 @@ Befund: Starre Gelenke mit 6–8 Iterationen halten Turm und zweilagige Körper 
 TEST_A schaltet `springSolver` seit 04.11.2026 ein (`TestATrainStrategy`); der Zwillingstest prüft bei der Brücke
 seitdem die Durchbiegung der Mitte statt des Formfehlers (Deck knickt an den Gelenken, Mitte sinkt weniger).
 Offen: GUI-Schalter, Verhalten in Evolutionswelten (Gehirne lösen/setzen Federn ständig um), einlagige Brücke.
+
+## Global eingeschaltet (04.11.2026, Nutzerentscheidung)
+
+`springAdhesion` und `springSolver` sind in `SimulationConfig` und in `CalculationService.newSimulation` für **alle**
+Welten an (auch NONE, WORLD2, RACE, Trainingswelten), Schwelle 75 %. TEST_A behält Schwelle 100 % (Altfiguren 99 %
+klassisch). Strategien können die Werte in `initializeEnvironment` überschreiben.
+
+- Tests, die das klassische Feld oder kalibrierte Abläufe vermessen, fixieren den Klassikmodus
+  (`MechanicsLab.ClassicField`, auch in `MechanicsLab.Settings`): Mechanik-Benchmarks, `ForceSignTest`,
+  `CellAdhesionTest`, `InteractionEquivalenceTest` (Referenz kennt keine Federn), `RaceGaitTest`, `CaterpillarGaitTest`.
+- Befund: Die festverdrahteten RACE-Gänge wurden klassisch kalibriert. Mit Feder und Gelenken läuft der Inchworm aus
+  `RaceGaitTest` rückwärts (−23,7 px statt > 8), die Raupe wird mit Geländeklebrigkeit nicht mehr langsamer
+  (19,78 statt < 18,99). Evolvierte Gänge müssen sich neu anpassen. Eine schmale Säule
+  (`StandingStructureTest`) steht mit Feder – gewollter Effekt.
+- Laufzeit (`PerformanceStudyTest`, `-Dperformance.force=0.1 -Dperformance.spring=true|false`, 4096 Zellen, alle
+  Aktoren 80 % Anziehung, je 3 × 30 Schritte): dicht 12,6 → 14,9 ms/Schritt (+18 %, INTEGRATION +2 ms, INTERACTIONS
+  +0,4 ms), locker ohne Kontakte unverändert (13,2 → 13,5). Schlechtester Fall, weil alle Zellen dauerhaft ziehen;
+  `SpringLinkSolver` läuft sequenziell.
 
 ## Grenzen
 

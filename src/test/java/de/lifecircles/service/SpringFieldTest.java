@@ -16,9 +16,10 @@ class SpringFieldTest {
     @AfterEach void tearDown() { settings.close(); }
 
     @Test
-    void springIsOffByDefault() {
+    void springIsOnByDefault() {
+        settings.close(); // the lab pins the classic field
         SimulationConfig config = SimulationConfig.getInstance();
-        assertFalse(config.isSpringAdhesion());
+        assertTrue(config.isSpringAdhesion());
         assertEquals(.75, config.getSpringAdhesionThreshold());
         assertEquals(3, config.getSpringTearFactor());
         assertEquals(36, config.getSpringStiffnessLimit());
@@ -147,9 +148,10 @@ class SpringFieldTest {
     }
 
     @Test
-    void springSolverIsOffByDefault() {
+    void springSolverIsOnByDefault() {
+        settings.close();
         SimulationConfig config = SimulationConfig.getInstance();
-        assertFalse(config.isSpringSolver());
+        assertTrue(config.isSpringSolver());
         assertEquals(Double.POSITIVE_INFINITY, config.getSpringSolverStiffness());
         assertEquals(8, config.getSpringSolverIterations());
     }

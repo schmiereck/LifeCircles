@@ -1,5 +1,12 @@
 # Abgeschlossene Schritte
 
+## Zugfeder global eingeschaltet (04.11.2026)
+
+- `springAdhesion` und `springSolver` standardmäßig an (`SimulationConfig`, `CalculationService.newSimulation`),
+  Schwelle 75 %, TEST_A 100 %. Kalibrierte Tests fixieren `MechanicsLab.ClassicField`; 29 gezielte Testklassen grün.
+- `PerformanceStudyTest` mit `performance.spring`/`performance.force`: dicht 4096 Zellen +18 %. RACE-Gang-Befund in
+  `FEDERFELD.md`, „Global eingeschaltet“.
+
 ## Zugfeder: XPBD-Randgelenke (03.11.2026)
 
 - `SpringLinkSolver` und Schalter `springSolver` (aus, ∞ Steifigkeit, 8 Iterationen): ziehende Feder-Zellpaare als

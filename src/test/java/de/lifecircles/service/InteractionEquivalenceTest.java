@@ -60,13 +60,16 @@ class InteractionEquivalenceTest {
         List<Cell> cells = world.getCellList();
         grid.build(cells);
         double[][] before = InteractionBenchmarkTest.state(cells);
-        SensorActorForceReference.processInteractions(cells, grid, world, affinity, ground);
-        var expected = InteractionBenchmarkTest.observe(cells);
-        InteractionBenchmarkTest.restore(cells, before);
-        SensorActorForceCellCalcService.processInteractions(cells, grid, world, affinity, ground);
-        var actual = InteractionBenchmarkTest.observe(cells);
-        InteractionBenchmarkTest.restore(cells, before);
-        InteractionBenchmarkTest.close(expected, actual, where);
+        // The reference algorithm predates the spring fields.
+        try (var classic = new MechanicsLab.ClassicField()) {
+            SensorActorForceReference.processInteractions(cells, grid, world, affinity, ground);
+            var expected = InteractionBenchmarkTest.observe(cells);
+            InteractionBenchmarkTest.restore(cells, before);
+            SensorActorForceCellCalcService.processInteractions(cells, grid, world, affinity, ground);
+            var actual = InteractionBenchmarkTest.observe(cells);
+            InteractionBenchmarkTest.restore(cells, before);
+            InteractionBenchmarkTest.close(expected, actual, where);
+        }
     }
 
     @Test void sameForAllSwitchesSeamsBondsAndAnchors() {

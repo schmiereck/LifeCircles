@@ -118,9 +118,9 @@ public class SimulationConfig {
     private volatile boolean adhesionBirthBonds = false;
     /** A locked pair's field is this many times its frozen attraction (a plain field is a weak spring). */
     private volatile double bondFieldFactor = 3;
-    // Tension-spring fields (FEDERFELD.md), experimental, off by default, in every world:
+    // Tension-spring fields (FEDERFELD.md), on by default in every world since 04.11.2026:
     /** Strong attraction acts as a spring whose pull grows with distance until it tears at the field range. */
-    private volatile boolean springAdhesion = false;
+    private volatile boolean springAdhesion = true;
     /** Share of the maximum attraction from which an actor's field becomes a spring. */
     public static final double DEFAULT_SPRING_ADHESION_THRESHOLD = .75;
     private volatile double springAdhesionThreshold = DEFAULT_SPRING_ADHESION_THRESHOLD;
@@ -152,8 +152,8 @@ public class SimulationConfig {
         if (!Double.isFinite(seconds) || seconds < 0) throw new IllegalArgumentException("Spring bending damping must be >= 0");
         springBendingDamping = seconds;
     }
-    /** Experimental XPBD (FEDERFELD.md „XPBD“): each pulling cell pair becomes a rim hinge solved after integration. */
-    private volatile boolean springSolver = false;
+    /** XPBD (FEDERFELD.md „XPBD-Gelenke“), on by default: each pulling cell pair becomes a rim hinge solved after integration. */
+    private volatile boolean springSolver = true;
     /** Stiffness of the hinges relative to the explicit springs (compliance 1/(k·factor); ∞ = rigid, still tears). */
     private volatile double springSolverStiffness = Double.POSITIVE_INFINITY;
     /** Gauss-Seidel sweeps over all hinges per step (towers stand from 6 on). */
