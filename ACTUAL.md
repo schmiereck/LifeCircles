@@ -85,6 +85,11 @@ Aktualisiert: 30.10.2026. Branch `master`.
   besser: 1 von 4 Seeds kam über HOLD hinaus, ohne Bindungen 0 von 8. Mit 120-s-Generationen
   wird HIGH_POSITION2 in beiden Varianten höher (293 / 251 px statt ~150), aber als größere
   Haufen; mit Bindungen eher niedriger. `BODENHALT.md`.
+- Zugfeder-Felder experimentell (02.11.2026, Schalter `springAdhesion` aus, kein GUI-Schalter): Ab 75 % der
+  Anziehung zieht ein Aktor wie eine Feder (|F| = k·|s|·d/R, Abriss bei R, k = 3, begrenzt auf k·r ≤ 36).
+  Im Labor mit festen Gehirnen hält ein Knochen 9×3 Zug 600 elastisch und federt nach Biegung zurück
+  (klassisch reißt er bzw. bleibt verbogen). Ein zweilagiger Panzerring hält Zug 600. Einlagige Ringe bleiben
+  unter Druck plastisch, kleine Zellen schwach. Evolution ungeprüft. `FEDERFELD.md`.
 
 - Langlauf 45 min Zonen ± Jahreszeiten: ohne Jahreszeiten stabile ~420 Zellen, 001- und
   teils 100-Zone besiedelt, Aas mit 100/010/001 (nie 000). Mit 25 % Winterlicht sterben

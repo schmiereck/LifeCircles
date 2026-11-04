@@ -118,6 +118,32 @@ public class SimulationConfig {
     private volatile boolean adhesionBirthBonds = false;
     /** A locked pair's field is this many times its frozen attraction (a plain field is a weak spring). */
     private volatile double bondFieldFactor = 3;
+    // Tension-spring fields (FEDERFELD.md), experimental, off by default, in every world:
+    /** Strong attraction acts as a spring whose pull grows with distance until it tears at the field range. */
+    private volatile boolean springAdhesion = false;
+    /** Share of the maximum attraction from which an actor's field becomes a spring. */
+    private volatile double springAdhesionThreshold = .75;
+    /** Spring pull at the tear distance in units of the attraction (3 = 75 % of the old core stiffness; 4 collapsed at r = 12). */
+    private volatile double springTearFactor = 3;
+    /** Upper bound of tear factor × larger pair radius (px): stiffness grows with r at equal mass; drift began near 40 at 60 Hz. */
+    private volatile double springStiffnessLimit = 36;
+    public boolean isSpringAdhesion() { return springAdhesion; }
+    public void setSpringAdhesion(boolean spring) { springAdhesion = spring; }
+    public double getSpringStiffnessLimit() { return springStiffnessLimit; }
+    public void setSpringStiffnessLimit(double limit) {
+        if (!Double.isFinite(limit) || limit <= 0) throw new IllegalArgumentException("Spring stiffness limit must be > 0");
+        springStiffnessLimit = limit;
+    }
+    public double getSpringAdhesionThreshold() { return springAdhesionThreshold; }
+    public void setSpringAdhesionThreshold(double threshold) {
+        if (!Double.isFinite(threshold) || threshold <= 0 || threshold > 1) throw new IllegalArgumentException("Spring threshold must be in (0, 1]");
+        springAdhesionThreshold = threshold;
+    }
+    public double getSpringTearFactor() { return springTearFactor; }
+    public void setSpringTearFactor(double factor) {
+        if (!Double.isFinite(factor) || factor <= 0) throw new IllegalArgumentException("Spring tear factor must be > 0");
+        springTearFactor = factor;
+    }
     public double getBondFieldFactor() { return bondFieldFactor; }
     public void setBondFieldFactor(double factor) {
         if (!Double.isFinite(factor) || factor <= 0) throw new IllegalArgumentException("Bond factor must be > 0");

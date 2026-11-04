@@ -1,5 +1,14 @@
 # Abgeschlossene Schritte
 
+## Zugfeder-Felder (02.11.2026, experimentell)
+
+- Geprüft: Es gab noch kein Federfeld, das klassische Feld fällt außerhalb des Kerns linear ab.
+- `SimulationConfig.springAdhesion` (aus), `springAdhesionThreshold` (0,75), `springTearFactor` (3) und
+  `springStiffnessLimit` (36, k·r je Paar). Federzweig je Sender in `SensorActorForceCellCalcService`.
+- Labor `SpringFieldLab` mit fest verdrahteten Gehirnen (Knochen-Balken, Panzer-Ring), Studien
+  `SpringFieldSweepTest` (sweep, tear, size, sizelimit) mit CSVs in `docs/spring-field/` und Regressionstest
+  `SpringFieldTest` (6). `FEDERFELD.md`.
+
 ## Höhenprofil der Brownschen Bewegung (02.11.2026)
 
 - `BrownianProfile` UNIFORM/WARM_BOTTOM/WARM_TOP, Kaltanteil, Knickhöhe über dem Boden, Anteil der Änderung unter

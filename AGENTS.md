@@ -96,3 +96,7 @@ thematische Dokumente verlinken, Messwerte mit Herkunft und Grenzen dokumentiere
   Strömung, Dichte und Stärke einstellbar, alle Welten außer RACE (`useBrownianMotion`). Höhenprofil
   (`BrownianProfile`: unten/oben warm, Knick über dem Boden) skaliert die Stärke je Zelle. Modelle liegen
   austauschbar in `service.brownian` hinter `BrownianMotion`; Stöße nur als Kräfte des Schritts, eigener Zufallsstrom.
+- Zugfeder-Felder (`FEDERFELD.md`, experimentell, Schalter `springAdhesion` aus, global): ein Sender ab
+  `springAdhesionThreshold` der maximalen Anziehung zieht mit k·|s|·d/R und reißt bei R ab. Die Entscheidung fällt je Sender
+  (Paarsymmetrie). k je Paar auf `springStiffnessLimit`/max(r) begrenzt (60-Hz-Stabilität bei gleicher Masse).
+  Abweisung, Bindungen, Anker und Bodenfeld bleiben klassisch.

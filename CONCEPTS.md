@@ -48,6 +48,9 @@
   zufällig, gleichmäßig in alle Richtungen, ohne Strömung und ohne Zellenergie. Dichte und Stärke einstellbar,
   alle Welten außer RACE. Die Physik bleibt austauschbar ausgelagert. `BROWNSCHE_BEWEGUNG.md`.
   Die Stärke darf von der Höhe über dem Boden abhängen (Höhenprofil, 02.11.2026): unten oder oben warm, Knickkurve.
+- Zugfeder-Felder (Vorschlag des Nutzers, 02.11.2026, experimentell): Starke Anziehung (ab einer Schwelle, Standard 75 %)
+  wirkt als Zugfeder, die mit dem Abstand stärker wird und bei der Feldreichweite abreißt. Gesteuert wird sie allein über die
+  vorhandene Aktorstärke, ohne neuen Ausgang. `FEDERFELD.md`.
 - DNA-erhaltende Ausführung spart CPU; genetische Reserven bleiben erhalten.
 - Default-Gründer beginnen mit 48 versteckten Neuronen (24 gemeinsam + 3 × 8
   Zustandsneuronen). 328 Sensor-/134 Ausgangsneuronen zählen zusätzlich. Das ist

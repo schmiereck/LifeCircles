@@ -66,6 +66,13 @@ public class SensorActorForceCellCalcService {
         final double height = environment.getHeight();
         final double softening = SimulationConfig.getInstance().getActorFieldSofteningFraction();
         final double bondFactor = SimulationConfig.getInstance().getBondFieldFactor();
+        // Spring fields: commands at or beyond this (negative) strength pull with spring gain springGain / range.
+        final double springLimit = SimulationConfig.getInstance().isSpringAdhesion()
+                ? -SimulationConfig.getInstance().getSpringAdhesionThreshold() * SimulationConfig.getInstance().getCellActorMaxAttractiveForceStrength()
+                : Double.NEGATIVE_INFINITY;
+        final double springGain = SimulationConfig.getInstance().getSpringTearFactor();
+        // Equal masses, but the spring stiffness grows with the cell radius: cap gain·radius for the explicit 60 Hz step.
+        final double springStiffnessLimit = SimulationConfig.getInstance().getSpringStiffnessLimit();
         final double maxRadiusSquared = Math.pow(SimulationConfig.getInstance().getCellMaxRadiusSize(), 2);
         // Field range per listed cell, once (calcSensorRadius takes a sine).
         final double[] range = new double[cells.size()];
@@ -166,6 +173,9 @@ public class SensorActorForceCellCalcService {
                     final double reach = other.getRadiusSize() + pairRange + 1e-6;
                     final double toCentreX = candidate.dx() - ownX, toCentreY = candidate.dy() - ownY;
                     if (toCentreX * toCentreX + toCentreY * toCentreY > reach * reach) continue;
+                    // Same cap in both directions of the pair keeps actio = reactio.
+                    final double pairSpringGain = Math.min(springGain,
+                            springStiffnessLimit / Math.max(cell.getRadiusSize(), other.getRadiusSize()));
                     final List<SensorActor> otherActors = other.getSensorActors();
                     for (int m = 0; m < otherActors.size(); m++) {
                         final SensorActor otherActor = otherActors.get(m);
@@ -190,18 +200,22 @@ public class SensorActorForceCellCalcService {
                         // Received field plus the reaction to our emitted field.
                         double strength = 0;
                         double received = otherActor.getForceStrength(), emitted = actor.getForceStrength();
+                        // Decided per emitter from its command, so both directions of the pair agree.
+                        boolean receivedSpring = received <= springLimit, emittedSpring = emitted <= springLimit;
                         if (actor.getBondPartner() == otherActor) {
                             // A bond replaces this pair's fields with its frozen, already recognised attraction.
                             received = actor.getBondStrength() * bondFactor; emitted = received;
+                            receivedSpring = emittedSpring = false;
                         } else if (affinity != null && (received < 0 || emitted < 0)) {
                             double a = candidate.typeAffinity() * affinity.of(actor.getType(), otherActor.getType());
                             received = affinity.effective(received, a);
                             emitted = affinity.effective(emitted, a);
                         }
-                        if (distance < otherRange) strength += received * (1 - distance / otherRange)
-                                / Math.max(distance, otherRange * softening);
-                        if (distance < ownRange) strength += emitted * (1 - distance / ownRange)
-                                / Math.max(distance, ownRange * softening);
+                        // A spring pulls with |F| = gain·|s|·d/range and tears at the range; rejection stays a plain field.
+                        if (distance < otherRange) strength += receivedSpring && received < 0 ? received * pairSpringGain / otherRange
+                                : received * (1 - distance / otherRange) / Math.max(distance, otherRange * softening);
+                        if (distance < ownRange) strength += emittedSpring && emitted < 0 ? emitted * pairSpringGain / ownRange
+                                : emitted * (1 - distance / ownRange) / Math.max(distance, ownRange * softening);
                         if (strength != 0) {
                             // towardOtherActor points TO the other actor. The minus sign
                             // makes negative strength attract and positive strength repel.

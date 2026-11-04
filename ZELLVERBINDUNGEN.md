@@ -480,3 +480,7 @@ verbundener Verband, dessen Höhe über Gelände (statt `maxLift` einzelner Zell
 2. Sollen Bindungen zuerst kostenlos sein?
 3. Erkennung über Aktorfarbe (vom Gehirn steuerbar, nachahmbar) oder über DNA-Ähnlichkeit?
 4. Reihenfolge: Vorschlag ist erst Stufe 1 und 2 umsetzen und messen, dann 3 und 4.
+
+## Zugfeder-Variante
+
+Experimentell: Starke Anziehung (ab 75 %) kann per Schalter als Zugfeder wirken, die bis zur Feldreichweite stärker zieht. Bindungspaare bleiben klassisch. Siehe `FEDERFELD.md`.
