@@ -193,6 +193,8 @@ Brücke 2,38 → 2,88 R (Mitte sinkt nur 0,36 statt 0,71 R), Turm 1,69 → 0,02 
 Fallbalken 1,24 → 0,15 R; alle ganz. Klassik-Zwillinge unverändert. Laufzeit der ganzen Szene 2,00 → 2,23 s (+11 %).
 
 Befund: Starre Gelenke mit 6–8 Iterationen halten Turm und zweilagige Körper dauerhaft bei ~+10–30 % Mechanikzeit.
+TEST_A schaltet `springSolver` seit 04.11.2026 ein (`TestATrainStrategy`); der Zwillingstest prüft bei der Brücke
+seitdem die Durchbiegung der Mitte statt des Formfehlers (Deck knickt an den Gelenken, Mitte sinkt weniger).
 Offen: GUI-Schalter, Verhalten in Evolutionswelten (Gehirne lösen/setzen Federn ständig um), einlagige Brücke.
 
 ## Grenzen

@@ -102,8 +102,11 @@ class TestASpringFiguresTest {
             Twin classic = twins.get(i), spring = twins.get(i + 1);
             String both = classic.row() + " / " + spring.row();
             assertEquals(1.0, spring.component(), both);
-            if (classic.name().equals("Brücke") || classic.name().equals("Kragarm")) {
-                // Bridge and cantilever: both sag (spring is softer near contact), neither breaks; spring not worse.
+            if (classic.name().equals("Brücke")) {
+                // Single-layer bridge: hinges bend the deck (shape), but the middle sags less than classic.
+                assertTrue(spring.sag() < classic.sag(), both);
+            } else if (classic.name().equals("Kragarm")) {
+                // Cantilever tips over as a whole; the spring arm itself stays straight.
                 assertTrue(spring.shape() <= classic.shape() + 0.25, both);
             } else {
                 assertTrue(spring.shape() < 0.6 * classic.shape(), both);
@@ -164,7 +167,7 @@ class TestASpringFiguresTest {
     private static void towerVariant(SimulationConfig config) {
         config.setSpringBending(Double.parseDouble(System.getProperty("life.springBending", "0")));
         config.setSpringBendingDamping(Double.parseDouble(System.getProperty("life.springBendingDamping", "0")));
-        config.setSpringSolver(Boolean.getBoolean("life.springSolver"));
+        config.setSpringSolver(Boolean.parseBoolean(System.getProperty("life.springSolver", "true")));
         config.setSpringSolverStiffness(Double.parseDouble(System.getProperty("life.springSolverStiffness", "Infinity")));
         config.setSpringSolverIterations(Integer.getInteger("life.springSolverIterations", 8));
     }

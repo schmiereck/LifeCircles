@@ -64,6 +64,8 @@ public class TestATrainStrategy implements TrainStrategy {
 
         this.config.setSpringAdhesion(true);
         this.config.setSpringAdhesionThreshold(SPRING);
+        // Spring pairs as rigid XPBD rim hinges (FEDERFELD.md „XPBD-Gelenke“): spring towers stand permanently.
+        this.config.setSpringSolver(true);
 
         return new Environment(config.getWidth(), config.getHeight());
     }
