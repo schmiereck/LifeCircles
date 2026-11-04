@@ -1,5 +1,15 @@
 # Abgeschlossene Schritte
 
+## TEST_A: Federzwillinge (02.11.2026)
+
+- TEST_A schaltet die Feder mit Schwelle 1,0 ein. Die Altfiguren ziehen mit 99 % an (klassisch). Die Welt ist jetzt
+  4800 px breit, Skalierung 4,8.
+- Zwillinge (links klassisch 99 %, rechts Feder 100 %): Kragarm, einlagige Brücke, Turm 2×16, Fallbalken 11×2 auf
+  einem Sockel. Neu: `TestATrainStrategy.addFigure/addTwin`, `TestTrainStrategyUtils.createAndAddCell(…, level)`.
+- `CalculationService.newSimulation` setzt Feder und Schwelle vor jeder Strategie auf die Standardwerte zurück.
+- `TestASpringFiguresTest`: 20 s bei 60 Hz. Federfiguren bleiben ganz, Kragarm, Turm und Balken haben weniger als
+  60 % des klassischen Formfehlers.
+
 ## Zugfeder-Felder (02.11.2026, experimentell)
 
 - Geprüft: Es gab noch kein Federfeld, das klassische Feld fällt außerhalb des Kerns linear ab.

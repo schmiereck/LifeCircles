@@ -3,7 +3,8 @@
 ## Ergebnis
 
 Der Schneemann ist die erste große Anziehungsgruppe in `TEST_A`: 15 Körperzellen
-mit sechs zusätzlich von oben fallenden Zellen. Die Instabilität war nicht nur eine
+mit sechs zusätzlich von oben fallenden Zellen (seit 02.11.2026 mit 99 % statt 100 % Anziehung, damit er
+neben den Federzwillingen klassisch bleibt; `FEDERFELD.md`). Die Instabilität war nicht nur eine
 ungünstige Anziehungsstärke. Die alte Aktorkraft hatte am Kontaktpunkt einen
 Richtungssprung: Für einen beliebig kleinen Abstand blieb ihr Betrag fast maximal;
 beim Überschreiten des anderen Aktors wechselte die Richtung. Selbst ein isoliertes

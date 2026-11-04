@@ -122,7 +122,8 @@ public class SimulationConfig {
     /** Strong attraction acts as a spring whose pull grows with distance until it tears at the field range. */
     private volatile boolean springAdhesion = false;
     /** Share of the maximum attraction from which an actor's field becomes a spring. */
-    private volatile double springAdhesionThreshold = .75;
+    public static final double DEFAULT_SPRING_ADHESION_THRESHOLD = .75;
+    private volatile double springAdhesionThreshold = DEFAULT_SPRING_ADHESION_THRESHOLD;
     /** Spring pull at the tear distance in units of the attraction (3 = 75 % of the old core stiffness; 4 collapsed at r = 12). */
     private volatile double springTearFactor = 3;
     /** Upper bound of tear factor × larger pair radius (px): stiffness grows with r at equal mass; drift began near 40 at 60 Hz. */

@@ -64,11 +64,30 @@ BALANCED, Schwerkraft kompensiert, 60 Hz. Ablauf: 4 s Einlauf, 2 s Last, 6 s Ent
   kleine Zellen grundsätzlich schwächer, klassisch reißen dort alle Proben.
 - 60 und 120 Hz liefern mit Grenze vergleichbare Ergebnisse.
 
+## TEST_A: Zwillingsfiguren unter Schwerkraft
+
+TEST_A (fest verdrahtete Gehirne, BALANCED, Radius 20, Bodenreibung) schaltet die Feder mit **Schwelle 1,0** ein.
+Nur volle Anziehung (FORCE = 0) ist Feder. Schneemann und Altfiguren ziehen mit 99 % an und bleiben klassisch.
+Rechts davon steht jede Figur zweimal, links klassisch (99 %), rechts als Feder (100 %).
+Die Figuren sind hexagonal gepackt (`TestATrainStrategy.addFigure`, Masken mit `#`).
+
+Formfehler nach 20 s bei 60 Hz, starr ausgerichtet, in Radien. `TestASpringFiguresTest`, 02.11.2026:
+
+| Figur | klassisch | Feder | Bemerkung |
+|---|---|---|---|
+| Kragarm (Säule 2×4, Arm 9×2) | 2,68 R, Teil abgebrochen | 0,55 R, ganz | Feder: Arm hängt elastisch (Spitze 4,8 R tiefer) |
+| Brücke (Pfeiler 2×2, Deck 14×1) | 2,39 R | 2,37 R | beide ganz, gleiches Durchhängen |
+| Turm 2×16 | 1,70 R, knickt (Höhe 86 %) | 0,68 R (Höhe 93 %) | |
+| Fallbalken 11×2 auf Sockel (22 R Fall) | 2,72 R, in zwei Hälften | 1,19 R, ganz | |
+
+Die Feder ist nahe am Kontakt weicher als das klassische Feld (|F| wächst erst mit dem Abstand). Darum hängen
+ruhende Strukturen etwas mehr durch, reißen aber unter großer Dehnung nicht ab. Die Brücke zeigt das als Gleichstand.
+
 ## Grenzen
 
 - Druckversagen bei 600 bleibt (Kontaktmodell, nicht das Feld). Ein einlagiger Panzer verformt sich unter Druck in
   allen Modi plastisch, nur der zweilagige ist formstabil.
-- Nicht geprüft: stehende Strukturen unter Schwerkraft, Evolution (wählen Gehirne die Feder?), Energiekosten
+- Nicht geprüft: Evolution (wählen Gehirne die Feder?), Energiekosten
   starker Haftung, Wechselwirkung mit Bindungen (Bindungspaare bleiben klassisch × 3).
 - Feste Gehirne mit voller Anziehung. Evolvierte Gehirne schalten zwischen Feder und Feld nur über die Stärke.
 
@@ -76,7 +95,7 @@ BALANCED, Schwerkraft kompensiert, 60 Hz. Ablauf: 4 s Einlauf, 2 s Last, 6 s Ent
 
 ```
 mvn test -Dtest=SpringFieldTest
-mvn test -Dtest=SpringFieldSweepTest -Dspring.sweep=true        # sweep.csv
+mvn test -Dtest=TestASpringFiguresTest                          # TEST_A-Zwillinge, Tabelle auf stdoutmvn test -Dtest=SpringFieldSweepTest -Dspring.sweep=true        # sweep.csv
 mvn test -Dtest=SpringFieldSweepTest -Dspring.tearsweep=true    # tear.csv
 mvn test -Dtest=SpringFieldSweepTest -Dspring.sizesweep=true    # size.csv
 mvn test -Dtest=SpringFieldSweepTest -Dspring.sizelimit=true    # sizelimit.csv

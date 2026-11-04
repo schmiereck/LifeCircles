@@ -90,6 +90,10 @@ Aktualisiert: 30.10.2026. Branch `master`.
   Im Labor mit festen Gehirnen hält ein Knochen 9×3 Zug 600 elastisch und federt nach Biegung zurück
   (klassisch reißt er bzw. bleibt verbogen). Ein zweilagiger Panzerring hält Zug 600. Einlagige Ringe bleiben
   unter Druck plastisch, kleine Zellen schwach. Evolution ungeprüft. `FEDERFELD.md`.
+  TEST_A zeigt die Feder sichtbar (Schwelle 100 %, Altfiguren 99 % klassisch): Zwillinge Kragarm, Brücke, Turm und
+  Fallbalken auf Sockel stehen unter Schwerkraft je klassisch (links) und als Feder (rechts). Als Feder bleiben
+  Kragarm, Turm und Fallbalken formstabil und ganz. Klassisch bricht der Kragarm, der Turm knickt und der Balken
+  zerbricht. Die einlagige Brücke hängt in beiden Modi gleich durch.
 
 - Langlauf 45 min Zonen ± Jahreszeiten: ohne Jahreszeiten stabile ~420 Zellen, 001- und
   teils 100-Zone besiedelt, Aas mit 100/010/001 (nie 000). Mit 25 % Winterlicht sterben

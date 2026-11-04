@@ -34,6 +34,22 @@ public abstract class TestTrainStrategyUtils {
 
     public static void createAndAddCell(Environment environment, double x, double y, final double radiusSize,
                                          final boolean isAttraction, final boolean isRepulsion, final boolean isDelivery, final boolean isAbsorbtion) {
+        final double force = isAttraction ? 0.0D : (isRepulsion ? 1.0D : 0.5D);
+        createAndAddCell(environment, x, y, radiusSize, force, isDelivery, isAbsorbtion);
+    }
+
+    /**
+     * Attracting cell with the given strength in (0, 1] of the maximum attraction: FORCE = (1 - level) / 2.
+     * With spring fields (FEDERFELD.md) a level at or above the threshold makes the cell a spring.
+     */
+    public static Cell createAndAddCell(Environment environment, double x, double y, final double radiusSize,
+                                        final double attractionLevel) {
+        final double level = Math.max(0.0D, Math.min(1.0D, attractionLevel));
+        return createAndAddCell(environment, x, y, radiusSize, (1.0D - level) / 2.0D, false, false);
+    }
+
+    private static Cell createAndAddCell(Environment environment, double x, double y, final double radiusSize,
+                                         final double forceOutput, final boolean isDelivery, final boolean isAbsorbtion) {
         final CellBrainInterface cellBrain = new CellBrainInterface() {
 
             double cellEnergy = 0.75D;
@@ -82,16 +98,7 @@ public abstract class TestTrainStrategyUtils {
                     }
 
 
-                    if (isAttraction) {
-                        this.output[actorOffset + ActorOutputFeature.FORCE.ordinal()] = 0.0D;
-                    } else {
-                        if (isRepulsion) {
-                            this.output[actorOffset + ActorOutputFeature.FORCE.ordinal()] = 1.0D;
-                        } else {
-                            this.output[actorOffset + ActorOutputFeature.FORCE.ordinal()] = 0.5D;
-                        }
-
-                    }
+                    this.output[actorOffset + ActorOutputFeature.FORCE.ordinal()] = forceOutput;
                 }
             }
 
@@ -144,5 +151,6 @@ public abstract class TestTrainStrategyUtils {
         final Cell cell = new Cell(new Vector2D(x, y), radiusSize, cellBrain);
         CellBrainService.think(cell);
         environment.addCell(cell);
+        return cell;
     }
 }
