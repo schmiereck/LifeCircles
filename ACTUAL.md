@@ -91,9 +91,11 @@ Aktualisiert: 30.10.2026. Branch `master`.
   (klassisch reißt er bzw. bleibt verbogen). Ein zweilagiger Panzerring hält Zug 600. Einlagige Ringe bleiben
   unter Druck plastisch, kleine Zellen schwach. Evolution ungeprüft. `FEDERFELD.md`.
   TEST_A zeigt die Feder sichtbar (Schwelle 100 %, Altfiguren 99 % klassisch): Zwillinge Kragarm, Brücke, Turm und
-  Fallbalken auf Sockel stehen unter Schwerkraft je klassisch (links) und als Feder (rechts). Als Feder bleiben
-  Kragarm, Turm und Fallbalken formstabil und ganz. Klassisch bricht der Kragarm, der Turm knickt und der Balken
-  zerbricht. Die einlagige Brücke hängt in beiden Modi gleich durch.
+  Fallbalken auf Sockel stehen unter Schwerkraft je klassisch (links) und als Feder (rechts), 7200 px breit mit
+  mindestens 12 R Abstand. Als Feder bleiben Turm und Fallbalken formstabil und ganz, der Turm knickt klassisch und
+  der Balken zerbricht. Kragarm und einlagige Brücke hängen in beiden Modi ähnlich durch (Gelenkdrehung, keine
+  Biegesteifigkeit). Experimentelle Verstärkung `springPreload`/`springDamping` (aus) bringt bei 60 Hz wenig;
+  höhere Steifigkeit braucht kleinere Zeitschritte (`FEDERFELD.md`, „Verstärkung“).
 
 - Langlauf 45 min Zonen ± Jahreszeiten: ohne Jahreszeiten stabile ~420 Zellen, 001- und
   teils 100-Zone besiedelt, Aas mit 100/010/001 (nie 000). Mit 25 % Winterlicht sterben

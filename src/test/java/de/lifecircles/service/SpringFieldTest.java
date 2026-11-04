@@ -22,6 +22,8 @@ class SpringFieldTest {
         assertEquals(.75, config.getSpringAdhesionThreshold());
         assertEquals(3, config.getSpringTearFactor());
         assertEquals(36, config.getSpringStiffnessLimit());
+        assertFalse(config.isSpringPreload());
+        assertEquals(0, config.getSpringDamping());
     }
 
     @Test
@@ -73,5 +75,40 @@ class SpringFieldTest {
         assertEquals(1, capped.finalComponent(), 1e-9, capped.csv());
         assertTrue(capped.maxOverlap() < .15, capped.csv());
         assertTrue(raw.finalComponent() < .9 || raw.maxOverlap() > .3, raw.csv());
+    }
+
+    /** Two spring cells oscillating against each other: returns {relative speed after 3 s, |momentum drift|}. */
+    private static double[] pairOscillation(double damping) {
+        MechanicsLab.configure(new MechanicsLab.Parameters("balanced", 90, 125, .8, 3, .25));
+        SimulationConfig config = SimulationConfig.getInstance();
+        config.setSpringAdhesion(true); config.setSpringAdhesionThreshold(.75); config.setSpringDamping(damping);
+        var world = new de.lifecircles.model.Environment(4000, 4000);
+        var a = SpringFieldLab.add(world, 2000, 2000, 12);
+        var b = SpringFieldLab.add(world, 2024, 2000, 12);
+        SpringFieldLab.attract(a, 1); SpringFieldLab.attract(b, 1);
+        a.setVelocity(new de.lifecircles.model.Vector2D(-6, 1)); b.setVelocity(new de.lifecircles.model.Vector2D(6, -1));
+        var grid = new de.lifecircles.service.partitioningStrategy.SpatialGridPartitioningStrategy(4000, 4000, 80);
+        var cells = world.getCellList();
+        for (int step = 0; step < 180; step++) {
+            for (var c : cells) c.applyForce(SimulationConfig.GRAVITY_VECTOR.multiply(-1));
+            grid.build(cells); world.update(1.0 / 60, grid);
+        }
+        var momentum = a.getVelocity().add(b.getVelocity());
+        return new double[]{a.getVelocity().subtract(b.getVelocity()).length(), momentum.length()};
+    }
+
+    @Test
+    void springDampingIsSymmetricAndDissipative() {
+        double[] free = pairOscillation(0), damped = pairOscillation(.05);
+        assertEquals(0, damped[1], 1e-6, "damping must keep actio = reactio");
+        assertTrue(damped[0] < free[0], "free=" + free[0] + " damped=" + damped[0]);
+    }
+
+    @Test
+    void preloadKeepsTheBoneIntact() {
+        SimulationConfig.getInstance().setSpringPreload(true);
+        var spring = SpringFieldLab.run(SPRING, new SpringFieldLab.Probe("bar", 9, 3, "tension", 600));
+        assertEquals(1, spring.finalComponent(), 1e-9, spring.csv());
+        assertTrue(spring.residualShape() < .2, spring.csv());
     }
 }

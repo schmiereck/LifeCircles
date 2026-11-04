@@ -125,11 +125,24 @@ public class SimulationConfig {
     public static final double DEFAULT_SPRING_ADHESION_THRESHOLD = .75;
     private volatile double springAdhesionThreshold = DEFAULT_SPRING_ADHESION_THRESHOLD;
     /** Spring pull at the tear distance in units of the attraction (3 = 75 % of the old core stiffness; 4 collapsed at r = 12). */
-    private volatile double springTearFactor = 3;
+    public static final double DEFAULT_SPRING_TEAR_FACTOR = 3;
+    private volatile double springTearFactor = DEFAULT_SPRING_TEAR_FACTOR;
     /** Upper bound of tear factor × larger pair radius (px): stiffness grows with r at equal mass; drift began near 40 at 60 Hz. */
-    private volatile double springStiffnessLimit = 36;
+    public static final double DEFAULT_SPRING_STIFFNESS_LIMIT = 36;
+    private volatile double springStiffnessLimit = DEFAULT_SPRING_STIFFNESS_LIMIT;
     public boolean isSpringAdhesion() { return springAdhesion; }
     public void setSpringAdhesion(boolean spring) { springAdhesion = spring; }
+    /** Experimental: a spring never pulls weaker than the classic field would (|F| = max(classic, spring)). */
+    private volatile boolean springPreload = false;
+    /** Experimental: dashpot along spring pairs, force per px/s relative actor speed along the pair axis (0 = off). */
+    private volatile double springDamping = 0;
+    public boolean isSpringPreload() { return springPreload; }
+    public void setSpringPreload(boolean preload) { springPreload = preload; }
+    public double getSpringDamping() { return springDamping; }
+    public void setSpringDamping(double damping) {
+        if (!Double.isFinite(damping) || damping < 0) throw new IllegalArgumentException("Spring damping must be >= 0");
+        springDamping = damping;
+    }
     public double getSpringStiffnessLimit() { return springStiffnessLimit; }
     public void setSpringStiffnessLimit(double limit) {
         if (!Double.isFinite(limit) || limit <= 0) throw new IllegalArgumentException("Spring stiffness limit must be > 0");

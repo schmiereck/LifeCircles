@@ -1,9 +1,18 @@
 # Abgeschlossene Schritte
 
+## TEST_A: Federzwillinge entzerrt, Verstärkung gemessen (02.11.2026)
+
+- TEST_A ist 7200 px breit (Skalierung 7,2), die Zwillinge stehen mit mindestens 12 R Abstand. Der Test prüft > 4 R.
+- Korrektur: Der Bruch des klassischen Kragarms kam von der Berührung mit dem Zwilling. Mit Abstand bleibt er ganz
+  (0,61 R gegen 0,42 R als Feder). Der Test verlangt für Kragarm und Brücke nur noch „Feder nicht schlechter“.
+- Experimentelle Schalter `springPreload` und `springDamping` (Standard aus), Tests für Symmetrie und Dissipation.
+  Variantenstudie in `FEDERFELD.md`: Bei 60 Hz nur kleine Gewinne. Bei 180 Hz und k 4–6 wird der Fallbalken deutlich steifer.
+  Die einlagige Brücke braucht Biegesteifigkeit (Winkelfeder), nicht mehr Zug.
+
 ## TEST_A: Federzwillinge (02.11.2026)
 
 - TEST_A schaltet die Feder mit Schwelle 1,0 ein. Die Altfiguren ziehen mit 99 % an (klassisch). Die Welt ist jetzt
-  4800 px breit, Skalierung 4,8.
+  4800 px breit (später 7200 px), Skalierung 4,8.
 - Zwillinge (links klassisch 99 %, rechts Feder 100 %): Kragarm, einlagige Brücke, Turm 2×16, Fallbalken 11×2 auf
   einem Sockel. Neu: `TestATrainStrategy.addFigure/addTwin`, `TestTrainStrategyUtils.createAndAddCell(…, level)`.
 - `CalculationService.newSimulation` setzt Feder und Schwelle vor jeder Strategie auf die Standardwerte zurück.

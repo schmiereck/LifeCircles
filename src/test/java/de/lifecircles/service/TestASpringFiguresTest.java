@@ -22,12 +22,18 @@ class TestASpringFiguresTest {
     }
 
     private static List<Twin> simulate(double seconds) {
+        return simulate(seconds, c -> {});
+    }
+
+    private static List<Twin> simulate(double seconds, java.util.function.Consumer<SimulationConfig> variant) {
+        minimumGap = Double.POSITIVE_INFINITY;
         SimulationConfig config = SimulationConfig.getInstance();
         double width = config.getWidth(), height = config.getHeight(), scale = config.getScaleSimulation(), ray = config.getEnergyPerRay();
         try (SpringFieldLab.Settings spring = new SpringFieldLab.Settings()) {
             config.setBlockerFriction(true);
             TestATrainStrategy strategy = new TestATrainStrategy();
             Environment world = strategy.initializeEnvironment();
+            variant.accept(config);
             world.addGroundBlocker();
             final double radius = config.getCellMaxRadiusSize();
             List<List<Cell>> figures = new ArrayList<>();
@@ -38,13 +44,15 @@ class TestASpringFiguresTest {
             List<Double> tips = figures.stream().map(TestASpringFiguresTest::tipY).toList();
             List<Cell> cells = world.getCellList();
             int count = cells.size();
-            double dt = 1.0 / 60;
+            double dt = 1.0 / Integer.getInteger("life.springHz", 60);
             SpatialGridPartitioningStrategy grid = new SpatialGridPartitioningStrategy(world.getWidth(), world.getHeight(), 80);
             for (int step = 0; step < Math.round(seconds / dt); step++) {
                 grid.build(cells);
                 world.update(dt, grid, strategy.stepPolicy());
                 for (Cell c : cells) assertTrue(Double.isFinite(c.getPosition().getX()) && Double.isFinite(c.getPosition().getY()));
+                if (step % 30 == 0) minimumGap = Math.min(minimumGap, gap(figures));
             }
+            minimumGap = Math.min(minimumGap, gap(figures));
             assertEquals(count, cells.size(), "population changed");
             List<Twin> result = new ArrayList<>();
             for (int i = 0; i < figures.size(); i++) {
@@ -62,6 +70,20 @@ class TestASpringFiguresTest {
         }
     }
 
+    /** Smallest x distance between cells of different figures, in radii (shortest periodic distance). */
+    static double minimumGap;
+
+    private static double gap(List<List<Cell>> figures) {
+        double width = SimulationConfig.getInstance().getWidth(), radius = SimulationConfig.getInstance().getCellMaxRadiusSize();
+        double min = Double.POSITIVE_INFINITY;
+        for (int a = 0; a < figures.size(); a++) for (int b = a + 1; b < figures.size(); b++)
+            for (Cell x : figures.get(a)) for (Cell y : figures.get(b)) {
+                double dx = Math.abs(x.getPosition().getX() - y.getPosition().getX());
+                min = Math.min(min, Math.min(dx, width - dx) / radius);
+            }
+        return min;
+    }
+
     /** Mean y of the cells in the right-most column of the top row (cantilever and bridge tip / middle). */
     private static double tipY(List<Cell> figure) {
         double top = figure.stream().mapToDouble(c -> c.getPosition().getY()).min().orElseThrow();
@@ -73,12 +95,15 @@ class TestASpringFiguresTest {
     void springTwinsHoldTheirShapeAtLeastAsWellAsClassic() {
         List<Twin> twins = simulate(20);
         twins.forEach(t -> System.out.println(t.row()));
+        System.out.printf(Locale.ROOT, "minimum gap between figures: %.1fR%n", minimumGap);
+        // Cell centres 2 R apart touch; with the actor range (< 1 R) figures must stay clearly apart.
+        assertTrue(minimumGap > 4, "figures came too close: " + minimumGap);
         for (int i = 0; i < twins.size(); i += 2) {
             Twin classic = twins.get(i), spring = twins.get(i + 1);
             String both = classic.row() + " / " + spring.row();
             assertEquals(1.0, spring.component(), both);
-            if (classic.name().equals("Brücke")) {
-                // Single-deck bridge: both sag about equally (spring is softer near contact), neither breaks.
+            if (classic.name().equals("Brücke") || classic.name().equals("Kragarm")) {
+                // Bridge and cantilever: both sag (spring is softer near contact), neither breaks; spring not worse.
                 assertTrue(spring.shape() <= classic.shape() + 0.25, both);
             } else {
                 assertTrue(spring.shape() < 0.6 * classic.shape(), both);
@@ -86,5 +111,23 @@ class TestASpringFiguresTest {
         }
         // The classic falling beam breaks on the pedestal, the spring beam stays whole.
         assertTrue(twins.get(6).component() < 1.0, twins.get(6).row());
+    }
+
+    /** Reinforcement variants (FEDERFELD.md „Verstärkung“), only with -Dlife.springVariants=true. */
+    @Test
+    void reinforcementVariantsStudy() {
+        org.junit.jupiter.api.Assumptions.assumeTrue(Boolean.getBoolean("life.springVariants"));
+        Map<String, java.util.function.Consumer<SimulationConfig>> variants = new LinkedHashMap<>();
+        variants.put("base", c -> {});
+        variants.put("preload", c -> c.setSpringPreload(true));
+        for (double d : new double[]{0.01, 0.03, 0.1, 0.3}) variants.put("damp" + d, c -> c.setSpringDamping(d));
+        for (double k : new double[]{4, 6}) for (double d : new double[]{0, 0.03, 0.1}) {
+            variants.put("k" + k + "+damp" + d, c -> { c.setSpringTearFactor(k); c.setSpringStiffnessLimit(k * 20); c.setSpringDamping(d); });
+            variants.put("k" + k + "+damp" + d + "+preload", c -> { c.setSpringTearFactor(k); c.setSpringStiffnessLimit(k * 20); c.setSpringDamping(d); c.setSpringPreload(true); });
+        }
+        variants.forEach((name, v) -> {
+            List<Twin> twins = simulate(20, v);
+            for (int i = 1; i < twins.size(); i += 2) System.out.println("VARIANT " + name + " " + twins.get(i).row());
+        });
     }
 }

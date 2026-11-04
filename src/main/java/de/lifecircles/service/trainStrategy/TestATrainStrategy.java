@@ -26,7 +26,9 @@ public class TestATrainStrategy implements TrainStrategy {
     /** Full attraction: a spring with threshold 1.0. */
     public static final double SPRING = 1.0D;
     /** Twin figures (cantilever, bridge, tower, falling beam), positions in cell radii from the left. */
-    public static final double[][] TWIN_X = { { 70, 88 }, { 106, 138 }, { 172, 180 }, { 188, 214 } };
+    public static final double[][] TWIN_X = { { 70, 100 }, { 132, 172 }, { 216, 252 }, { 290, 324 } };
+    /** World width in px (radius 20 → 360 R): room for the twins, a falling tower must not reach its twin. */
+    public static final double WIDTH = 7200.0D;
     public static final String[] TWIN_NAMES = { "Kragarm", "Brücke", "Turm", "Fallbalken" };
     public static final String[][] TWIN_SHAPES = {
             { "#########",
@@ -51,10 +53,10 @@ public class TestATrainStrategy implements TrainStrategy {
     @Override
     public Environment initializeEnvironment() {
         MechanicsPreset.BALANCED.apply(config);
-        this.config.setWidth(4800);
+        this.config.setWidth(WIDTH);
         this.config.setHeight(800);
 
-        this.config.setScaleSimulation(4.8D);
+        this.config.setScaleSimulation(WIDTH / 1000.0D);
 
         config.setEnergyPerRay(0.01D); // 0.005; //0.015; // 0.025;
 
@@ -224,7 +226,7 @@ public class TestATrainStrategy implements TrainStrategy {
 
         // Federzwillinge: links klassisch (99 %), rechts Feder (100 %). Only in the full-width world: the
         // mechanics benchmarks reuse the snowman in a 1400 px world, where the twins would wrap onto it.
-        if (environment.getWidth() >= 4800) for (int figure = 0; figure < TWIN_NAMES.length; figure++) {
+        if (environment.getWidth() >= WIDTH) for (int figure = 0; figure < TWIN_NAMES.length; figure++) {
             addTwin(environment, figure, 0);
             addTwin(environment, figure, 1);
         }

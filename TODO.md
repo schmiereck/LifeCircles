@@ -20,6 +20,9 @@
 - [ ] Reibung zwischen Zellen (nur am Gelände vorhanden): später für Greifen/Abrollen an Nachbarn?
 - [x] Zugfeder-Felder ab 75 % Anziehung, Labor für Knochen und Panzer (02.11.2026, `FEDERFELD.md`).
 - [x] Zugfeder-Figuren in TEST_A, stehende Proben unter Schwerkraft (02.11.2026, `FEDERFELD.md`).
+- [x] Zugfeder-Verstärkung gemessen: Vorspannung, Dämpfung, höhere Steifigkeit bei 180 Hz (02.11.2026, `FEDERFELD.md`).
+- [ ] Zugfeder steifer: Substeps nur für die Mechanik (Kosten?) oder Winkelfeder für Biegesteifigkeit einlagiger
+  Ketten (Brücke, Kragarm), die Energie und actio = reactio wahrt. (Entscheidung Nutzer)
 - [ ] Zugfeder: GUI-Schalter und Speicherung in der Einstellungsdatei;
   Evolution in NONE/WORLD2 mit und ohne Feder vergleichen; Energiekosten starker Haftung? (Entscheidung Nutzer)
 - [x] RACE mit Geländeklebrigkeit 0 und 120 s: Körper kriechen bzw. hüpfen (Nutzer, GUI, 30.10.2026).

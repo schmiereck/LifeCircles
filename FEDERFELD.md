@@ -69,19 +69,57 @@ BALANCED, Schwerkraft kompensiert, 60 Hz. Ablauf: 4 s Einlauf, 2 s Last, 6 s Ent
 TEST_A (fest verdrahtete Gehirne, BALANCED, Radius 20, Bodenreibung) schaltet die Feder mit **Schwelle 1,0** ein.
 Nur volle Anziehung (FORCE = 0) ist Feder. Schneemann und Altfiguren ziehen mit 99 % an und bleiben klassisch.
 Rechts davon steht jede Figur zweimal, links klassisch (99 %), rechts als Feder (100 %).
-Die Figuren sind hexagonal gepackt (`TestATrainStrategy.addFigure`, Masken mit `#`).
+Die Figuren sind hexagonal gepackt (`TestATrainStrategy.addFigure`, Masken mit `#`). Die Welt ist 7200 px breit
+(Skalierung 7,2); zwischen allen Figuren bleiben mindestens 12 R Luft (vom Test geprüft, > 4 R).
 
 Formfehler nach 20 s bei 60 Hz, starr ausgerichtet, in Radien. `TestASpringFiguresTest`, 02.11.2026:
 
 | Figur | klassisch | Feder | Bemerkung |
 |---|---|---|---|
-| Kragarm (Säule 2×4, Arm 9×2) | 2,68 R, Teil abgebrochen | 0,55 R, ganz | Feder: Arm hängt elastisch (Spitze 4,8 R tiefer) |
-| Brücke (Pfeiler 2×2, Deck 14×1) | 2,39 R | 2,37 R | beide ganz, gleiches Durchhängen |
-| Turm 2×16 | 1,70 R, knickt (Höhe 86 %) | 0,68 R (Höhe 93 %) | |
+| Kragarm (Säule 2×4, Arm 9×2) | 0,61 R, ganz | 0,42 R, ganz | Arm hängt in beiden Modi (Spitze ~5 R tiefer) |
+| Brücke (Pfeiler 2×2, Deck 14×1) | 2,56 R | 2,37 R | beide ganz, ähnliches Durchhängen |
+| Turm 2×16 | 1,68 R, knickt (Höhe 86 %) | 0,68 R (Höhe 93 %) | |
 | Fallbalken 11×2 auf Sockel (22 R Fall) | 2,72 R, in zwei Hälften | 1,19 R, ganz | |
+
+Korrektur: In der ersten, engeren Anordnung (4800 px) brach der klassische Kragarm ab. Ursache war die Berührung
+mit seinem Federzwilling, nicht das Feld. Mit mehr Abstand bleibt er ganz.
 
 Die Feder ist nahe am Kontakt weicher als das klassische Feld (|F| wächst erst mit dem Abstand). Darum hängen
 ruhende Strukturen etwas mehr durch, reißen aber unter großer Dehnung nicht ab. Die Brücke zeigt das als Gleichstand.
+
+## Verstärkung (experimentell, Standard aus)
+
+Zwei Schalter in `SimulationConfig`, beide in `newSimulation` zurückgesetzt, kein GUI-Schalter:
+
+- `springPreload`: Ein Federsender zieht nie schwächer als das klassische Feld, |F| = max(Feder, klassisch).
+  Das schließt die weiche Stelle am Kontakt. Stetig, Abriss weiterhin bei R.
+- `springDamping` c: Dämpfer entlang der Achse jedes Feder-Aktorpaars, F = c·((v_B − v_A)·u)·u mit den
+  Aktor-Geschwindigkeiten (v + ω×r). Symmetrisch (actio = reactio) und nur dissipativ, keine Energie aus dem Nichts.
+  Pro Zelle wirken Dutzende Aktorpaare, darum sind nur kleine Werte stabil: c = 1 explodiert bei 60 Hz.
+
+Variantenstudie (`TestASpringFiguresTest#reinforcementVariantsStudy`, `-Dlife.springVariants=true`, Schrittrate
+`-Dlife.springHz`), Formfehler der Federzwillinge in R nach 20 s, 02.11.2026:
+
+| Variante | Kragarm | Brücke | Turm | Fallbalken |
+|---|---|---|---|---|
+| Basis (k 3, Grenze 36 → wirksam 1,8), 60 Hz | 0,42 | 2,37 | 0,68 | 1,19 |
+| Vorspannung, 60 Hz | 0,52 | 2,44 | 0,66 | 1,02 |
+| Dämpfung 0,03, 60 Hz | 0,42 | 2,36 | 0,56 | 1,21 |
+| Dämpfung 0,3, 60 Hz | 0,55 | 2,47 | 0,44 | 1,23 |
+| k 3 ohne wirksame Grenze (≥ 60) oder k 4/6, 60 Hz, auch mit Dämpfung | zerfällt | zerfällt | zerfällt | zerfällt |
+| Basis, 180 Hz | 0,60 | 2,24 | 0,62 | 1,22 |
+| k 4 (Grenze 80) + Dämpfung 0,1, 180 Hz | 0,49 | 2,52 | 0,63 | 0,74 |
+| k 6 (Grenze 120) + Dämpfung 0,03, 180 Hz | 0,61 | 1,43 | 0,87 | 0,72 |
+
+Befunde:
+- Bei 60 Hz begrenzt das explizite Verfahren die Steifigkeit. Dämpfung hebt diese Grenze **nicht** an.
+- Vorspannung und kleine Dämpfung bringen nur wenig (Turm bis 0,44 R, Balken 1,02 R).
+- Mit kleineren Schritten (180 Hz, dreifache Rechenzeit) sind k = 4–6 stabil. Der Fallbalken wird dann deutlich steifer
+  (0,72 R statt 1,19 R).
+- Kragarm und einlagige Brücke ändern sich durch mehr Zugsteifigkeit kaum. Sie versagen über Gelenkdrehung: Zwei Kreise
+  berühren sich an einem Punkt, und das Biegemoment entsteht nur über den kleinen Abstand benachbarter Randaktoren.
+  Eine haltende einlagige Brücke braucht Biegesteifigkeit, also ein Drehmoment zwischen gekoppelten Zellen
+  (Winkelfeder), nicht mehr Zug. Das ist noch nicht umgesetzt.
 
 ## Grenzen
 
@@ -95,7 +133,9 @@ ruhende Strukturen etwas mehr durch, reißen aber unter großer Dehnung nicht ab
 
 ```
 mvn test -Dtest=SpringFieldTest
-mvn test -Dtest=TestASpringFiguresTest                          # TEST_A-Zwillinge, Tabelle auf stdoutmvn test -Dtest=SpringFieldSweepTest -Dspring.sweep=true        # sweep.csv
+mvn test -Dtest=TestASpringFiguresTest                          # TEST_A-Zwillinge, Tabelle auf stdout
+mvn test -Dtest=TestASpringFiguresTest#reinforcementVariantsStudy -Dlife.springVariants=true [-Dlife.springHz=180]
+mvn test -Dtest=SpringFieldSweepTest -Dspring.sweep=true        # sweep.csv
 mvn test -Dtest=SpringFieldSweepTest -Dspring.tearsweep=true    # tear.csv
 mvn test -Dtest=SpringFieldSweepTest -Dspring.sizesweep=true    # size.csv
 mvn test -Dtest=SpringFieldSweepTest -Dspring.sizelimit=true    # sizelimit.csv

@@ -73,6 +73,8 @@ public class SensorActorForceCellCalcService {
         final double springGain = SimulationConfig.getInstance().getSpringTearFactor();
         // Equal masses, but the spring stiffness grows with the cell radius: cap gain·radius for the explicit 60 Hz step.
         final double springStiffnessLimit = SimulationConfig.getInstance().getSpringStiffnessLimit();
+        final boolean springPreload = SimulationConfig.getInstance().isSpringPreload();
+        final double springDamping = SimulationConfig.getInstance().getSpringDamping();
         final double maxRadiusSquared = Math.pow(SimulationConfig.getInstance().getCellMaxRadiusSize(), 2);
         // Field range per listed cell, once (calcSensorRadius takes a sine).
         final double[] range = new double[cells.size()];
@@ -212,10 +214,28 @@ public class SensorActorForceCellCalcService {
                             emitted = affinity.effective(emitted, a);
                         }
                         // A spring pulls with |F| = gain·|s|·d/range and tears at the range; rejection stays a plain field.
-                        if (distance < otherRange) strength += receivedSpring && received < 0 ? received * pairSpringGain / otherRange
-                                : received * (1 - distance / otherRange) / Math.max(distance, otherRange * softening);
-                        if (distance < ownRange) strength += emittedSpring && emitted < 0 ? emitted * pairSpringGain / ownRange
-                                : emitted * (1 - distance / ownRange) / Math.max(distance, ownRange * softening);
+                        // With preload it never pulls weaker than the classic field (no soft spot near contact).
+                        final boolean receivedPull = receivedSpring && received < 0 && distance < otherRange;
+                        final boolean emittedPull = emittedSpring && emitted < 0 && distance < ownRange;
+                        if (distance < otherRange) {
+                            final double classic = (1 - distance / otherRange) / Math.max(distance, otherRange * softening);
+                            strength += received * (!receivedPull ? classic
+                                    : springPreload ? Math.max(pairSpringGain / otherRange, classic) : pairSpringGain / otherRange);
+                        }
+                        if (distance < ownRange) {
+                            final double classic = (1 - distance / ownRange) / Math.max(distance, ownRange * softening);
+                            strength += emitted * (!emittedPull ? classic
+                                    : springPreload ? Math.max(pairSpringGain / ownRange, classic) : pairSpringGain / ownRange);
+                        }
+                        if (springDamping > 0 && (receivedPull || emittedPull)) {
+                            // Dashpot along the pair: relative speed of the two actor points projected on the axis.
+                            // The reverse pair sees the negated speed and axis, so actio = reactio holds.
+                            final double ownOmega = cell.getAngularVelocity(), otherOmega = other.getAngularVelocity();
+                            final double relVX = other.getVelocity().getX() - otherOmega * otherY - (cell.getVelocity().getX() - ownOmega * ownY);
+                            final double relVY = other.getVelocity().getY() + otherOmega * otherX - (cell.getVelocity().getY() + ownOmega * ownX);
+                            // strength multiplies -dx: closing speed along dx/d per unit distance.
+                            strength -= springDamping * (relVX * dx + relVY * dy) / squared;
+                        }
                         if (strength != 0) {
                             // towardOtherActor points TO the other actor. The minus sign
                             // makes negative strength attract and positive strength repel.

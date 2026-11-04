@@ -55,6 +55,10 @@ public class CalculationService implements Runnable {
             // Spring fields have no GUI switch: only strategies that want them (TEST_A) turn them on.
             config.setSpringAdhesion(false);
             config.setSpringAdhesionThreshold(SimulationConfig.DEFAULT_SPRING_ADHESION_THRESHOLD);
+            config.setSpringTearFactor(SimulationConfig.DEFAULT_SPRING_TEAR_FACTOR);
+            config.setSpringStiffnessLimit(SimulationConfig.DEFAULT_SPRING_STIFFNESS_LIMIT);
+            config.setSpringPreload(false);
+            config.setSpringDamping(0);
             this.environment = this.trainStrategy.initializeEnvironment();
             double interactionRadius = (config.getCellMaxRadiusSize() + config.getCellActorMaxFieldRadius()) * 2;
             this.partitioner = PartitioningStrategyFactory.createStrategy(

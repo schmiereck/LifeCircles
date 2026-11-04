@@ -43,8 +43,11 @@ final class SpringFieldLab {
         private final SimulationConfig config = SimulationConfig.getInstance();
         private final boolean spring = config.isSpringAdhesion();
         private final double threshold = config.getSpringAdhesionThreshold(), tear = config.getSpringTearFactor(), limit = config.getSpringStiffnessLimit();
+        private final boolean preload = config.isSpringPreload();
+        private final double damping = config.getSpringDamping();
         public void close() {
             config.setSpringAdhesion(spring); config.setSpringAdhesionThreshold(threshold); config.setSpringTearFactor(tear); config.setSpringStiffnessLimit(limit);
+            config.setSpringPreload(preload); config.setSpringDamping(damping);
             mechanics.close();
         }
     }
@@ -83,12 +86,12 @@ final class SpringFieldLab {
         } else throw new IllegalArgumentException(p.geometry);
         return new Fixture(world, a, b, middle);
     }
-    private static Cell add(Environment world, double x, double y, double radius) {
+    static Cell add(Environment world, double x, double y, double radius) {
         TestTrainStrategyUtils.createAndAddCell(world, x, y, radius, true, false, false, false);
         return world.getCellList().getLast();
     }
     /** Hard-wired command: every actor attracts with level × maximum attraction. */
-    private static void attract(Cell cell, double level) {
+    static void attract(Cell cell, double level) {
         double[] outputs = cell.getBrain().process();
         for (int i = 0; i < SimulationConfig.CELL_SENSOR_ACTOR_COUNT; i++)
             outputs[GlobalOutputFeature.values().length + i * ActorOutputFeature.values().length + ActorOutputFeature.FORCE.ordinal()] = (1 - level) / 2;
